@@ -1,0 +1,79 @@
+# MAPLE-SYRUP Phase 2 recipe: MAHLERAN Plot 1 -> an actual MAPLE case.
+#
+# Authored configuration only. Generated output (case.yaml, source/,
+# processed/, diagnostics/, provenance.yaml, syrup/) is written by
+#   python -m maple_syrup.case_import --recipe cases/plot1/recipe.yaml --output-dir <NEW dir>
+# into a directory that must not exist yet, and never into this directory.
+#
+# Everything below is either read from the MAHLERAN source (and checked) or
+# an explicit, documented assumption. See docs/phase2/plot1_import.md.
+schema: maple_syrup.plot1_recipe.v1
+case_name: mahleran_plot1_corrected
+
+mahleran:
+  # Read-only legacy reference. Override with --mahleran-root.
+  root: /home/okin/MAHLERAN
+  xml: mahleran_input.xml
+  expected_version: "1.2.3"
+  # The XML declares `.\Input\input_p1\`; the importer checks it resolves here.
+  expected_input_folder: Input/input_p1
+
+legacy_grid:
+  # p1dem.asc header; every Plot 1 raster must agree.
+  nrows: 62
+  ncols: 22
+  cellsize_m: 0.5
+  # Legacy computed loops (topog_attrib.for 44-45: i = 2..nr, k = 2..nc with
+  # nr = n_rows - 1, nc = n_cols - 1). 1-based, inclusive, file (north-first)
+  # row order. The surrounding one-cell ring is boundary evidence only.
+  interior_rows_north_first_1based: [2, 61]
+  interior_cols_1based: [2, 21]
+
+grain_maps:
+  # SCIENTIFIC DECISION (Codex data check, 2026-09-29): the root XML maps
+  # phi_1..phi_6 all to plot1_phi1.asc. This fixture deliberately corrects
+  # that to the six DISTINCT supplied maps. It is a documented corrected
+  # fixture, not a reproduction of the root XML.
+  correction: distinct_supplied_maps
+  corrected_maps:
+    phi_1: plot1_phi1.asc
+    phi_2: plot1_phi2.asc
+    phi_3: plot1_phi3.asc
+    phi_4: plot1_phi4.asc
+    phi_5: plot1_phi5.asc
+    phi_6: plot1_phi6.asc
+  # Only float-storage roundoff is normalized; any cell whose six fractions
+  # miss 1 by more than this is rejected as material nonclosure.
+  closure_roundoff_tolerance: 1.0e-6
+  # legacy_storm_setting: MAHLERAN_storm_setting_xml.f90 352-369 (pavement
+  # cover sets the phi_5 + phi_6 share where pave > 0 and grav != 0).
+  # none: keep the normalized map fractions.
+  pavement_rescaling: legacy_storm_setting
+
+bed:
+  # MAPLE-style defaults; no MAHLERAN value exists for any of these.
+  voxel_dz_m: 0.1
+  active_layer_thickness_m: 0.002
+  # ASSUMPTION: MAHLERAN has no bulk density (see plot1_import.md for the
+  # theta_sat-based alternative that was investigated and not adopted).
+  bulk_density_kg_m3: 1250.0
+  # ASSUMPTION: finite erodible column. The lowest interior DEM cell gets at
+  # least this much sediment; every other cell keeps its DEM height above it.
+  # Not MAHLERAN's soil_thickness (a soil-water depth) and not a legacy
+  # inventory equivalence.
+  minimum_fill_depth_m: 0.3
+  # The constant datum offset is rounded UP to this step so the declared
+  # shift is a clean number.
+  datum_offset_rounding_m: 0.001
+  # Empty column allocated above the highest initial surface.
+  headroom_m: 0.2
+
+maple:
+  seed: 1173
+  # Explicit: every active-layer class starts 100 % available. MAHLERAN
+  # pavement/vegetation effects are kept as SYRUP surface fields for later
+  # water laws, not encoded as MAPLE (aeolian) availability.
+  sediment_available_fraction: 1.0
+  # Sediment-boundary METADATA for MAPLE (and future wind events): no
+  # periodic wrap, zero prescribed inflow. Not a hydraulic wall or outlet.
+  boundary: prescribed_zero_inflow

@@ -1,0 +1,24 @@
+# Local environments, caches and packaging
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local orchestration captures and generated model artifacts
+agent_handoffs/
+cases/**/processed/
+cases/**/diagnostics/
+cases/**/outputs/
+cases/**/runs/
+outputs/
+runs/
+port_feasibility/benchmark_results.json
+
+# Local agent configuration and credentials
+.agents/
+.codex/
+.aws/

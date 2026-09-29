@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maple-syrup"
+version = "0.0.1.dev0"
+description = "MAPLE-SYRUP (Sediment Yield, Runoff, and Uptake by Plants): water extension for MAPLE"
+requires-python = ">=3.11"
+# MAPLE itself is deliberately NOT listed here. Its distribution name is
+# `maple` (version 0.0.1, /home/okin/MAPLE/pyproject.toml), which is also
+# the name of an unrelated project on PyPI, and MAPLE is not published
+# anywhere. A bare `maple` requirement would let a resolver fetch that
+# unrelated package; a `maple @ file://...` reference would pin a mutable
+# live checkout by absolute path. Neither is acceptable (AGENTS.md), so the
+# dependency is resolved from the running environment and its identity,
+# source origin and required API surface are verified at runtime by
+# `maple_syrup.dependency`. See docs/phase1/interface_contract.md section 1.
+dependencies = [
+    "numpy",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+maple-syrup-probe = "maple_syrup.probe:main"
+maple-syrup-plot1-import = "maple_syrup.case_import:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+# Phase suites are collected by default; the older port_feasibility/
+# experiment keeps its own invocation.
+testpaths = ["tests/phase1", "tests/phase2"]
+pythonpath = ["src"]
