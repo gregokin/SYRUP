@@ -54,6 +54,7 @@ import numpy as np
 import maple_syrup
 from maple_syrup.dependency import (
     ApiRequirement,
+    MapleDependency,
     MapleDependencyError,
     check_required_api,
     resolve_maple_dependency,
@@ -85,6 +86,7 @@ __all__ = [
     "plan_bed",
     "resolve_particle_size_maps",
     "stage_legacy_ascii",
+    "verify_plot1_case",
 ]
 
 RECIPE_SCHEMA = "maple_syrup.plot1_recipe.v1"
@@ -678,9 +680,11 @@ def resolve_legacy_options(xml: dict[str, Any]) -> dict[str, Any]:
          "note": "storm_setting 736-766"},
         {"option": "friction factor", "resolved": f"type {ff_type}: {by_type['friction_factor_mean']} per surface type",
          "note": "storm_setting 557-568"},
-        {"option": "soil_thickness", "resolved": f"{by_type['soil_thickness']} parsed only",
-         "note": "declared in parameters_from_xml.f90:67 and read by the XML reader; no storm-code "
-                 "consumer found by source search. It is a soil-water depth, not a sediment inventory."},
+        {"option": "soil_thickness", "resolved": f"{by_type['soil_thickness']} per surface type (m)",
+         "note": "initialize_values_xml.f90 228-229 and 360-362: initial and maximum soil water "
+                 "(ciinit = theta_0 * soil_thick * 1000, sminit = theta_sat * soil_thick * 1000 mm) "
+                 "copied to cum_inf and stmax for infilt.for. It is a soil-water depth, not a "
+                 "sediment inventory."},
         {"option": "particle density",
          "resolved": f"{float(densities[0]) * 1000.0} kg/m3 (XML {densities[0]} g/cm3, "
                      f"{len(density_records)} identical occurrences)", "note": ""},
@@ -1657,6 +1661,141 @@ def _require_same_state(compiled: Any, loaded: Any) -> None:
     _require(
         compiled.provenance_record["case_identity_sha256"] == loaded.provenance_record["case_identity_sha256"],
         "reloaded case identity differs",
+    )
+
+
+# --------------------------------------------------------------------------
+# Re-verification of a completed import (used by later phases)
+# --------------------------------------------------------------------------
+@dataclass(frozen=True)
+class VerifiedPlot1Case:
+    case_dir: Path
+    case: Any  # MAPLE CompiledCase from load_compiled_case
+    fields: dict[str, np.ndarray]  # sidecar arrays, equal to a fresh audit
+    report: dict[str, Any]
+    binding: dict[str, Any]
+    rainfall_path: Path  # staged copy inside the case, hash-checked
+    checks: dict[str, Any]
+    maple_dependency: MapleDependency  # the MAPLE actually imported (roots for output refusal)
+    maple_provenance: dict[str, Any]  # capture_maple_provenance at verification time
+
+
+def _same_json(a: Any, b: Any) -> bool:
+    def norm(x):
+        return json.loads(json.dumps(_json_safe(x), sort_keys=True))
+    return norm(a) == norm(b)
+
+
+def verify_plot1_case(
+    case_dir: str | Path,
+    *,
+    mahleran_root: str | Path | None = None,
+    expected_maple_root: str | Path | None = None,
+    allow_maple_source_change: bool = False,
+) -> VerifiedPlot1Case:
+    """Re-verify a completed Phase 2 import before any later phase uses it.
+
+    1. The binding is a completed import and every file it binds (case.yaml,
+       provenance.yaml, report, sidecar fields) still hashes to its value.
+    2. MAPLE's `load_compiled_case` (which re-hashes every processed artifact
+       against provenance.yaml) reproduces the bound case identity and
+       artifact hash; MAPLE's staged source files still hash as recorded.
+    3. The imported MAPLE source digest equals the one bound at import,
+       unless `allow_maple_source_change` (the drift is then reported).
+    4. `audit_plot1` is re-run from the recipe and the MAHLERAN inputs in a
+       temporary directory: recipe, XML, source and staged-copy hashes,
+       resolved legacy settings/maps and every sidecar array must agree
+       exactly, and `check_compiled_plot1` passes on the loaded case.
+    5. No `calib.dat` exists in the legacy input folder, so the legacy
+       ksat_mod / psi_mod calibration multipliers are 1.
+
+    Raises `Plot1ImportError` on any disagreement. Reads only.
+    """
+    import tempfile
+
+    from maple.case_tools.compilers.case_compiler import load_compiled_case
+
+    case_dir = Path(case_dir).resolve()
+    sidecar = case_dir / SIDECAR_DIR
+    binding_path = sidecar / BINDING_NAME
+    _require(binding_path.is_file(), f"{binding_path} missing: not a completed Phase 2 import")
+    _require(not (sidecar / FAILURE_NAME).exists(), f"{sidecar / FAILURE_NAME} exists: the import failed")
+    binding = json.loads(binding_path.read_text(encoding="utf-8"))
+    _require(binding.get("schema") == BINDING_SCHEMA and binding.get("status") == "ok",
+             "binding schema/status is not a completed Phase 2 import")
+    for key, path in (("case_yaml_sha256", case_dir / "case.yaml"),
+                      ("provenance_yaml_sha256", case_dir / "provenance.yaml"),
+                      ("syrup_report_sha256", sidecar / REPORT_NAME),
+                      ("syrup_fields_sha256", sidecar / FIELDS_NAME)):
+        _require(path.is_file() and _sha256_file(path) == binding[key], f"{path.name} does not match binding {key}")
+    report = json.loads((sidecar / REPORT_NAME).read_text(encoding="utf-8"))
+    with np.load(sidecar / FIELDS_NAME, allow_pickle=False) as data:
+        fields = {name: data[name] for name in data.files}
+
+    dependency = resolve_maple_dependency(expected_maple_root)
+    check_required_api(PHASE2_REQUIRED_MAPLE_API)
+    maple_record = capture_maple_provenance(dependency)
+    maple_now = maple_record["package_source_digest"]["digest_sha256"]
+    maple_bound = binding["maple"]["package_source_digest"]["digest_sha256"]
+    _require(allow_maple_source_change or maple_now == maple_bound,
+             f"MAPLE source digest {maple_now} differs from the one bound at import {maple_bound}")
+
+    case = load_compiled_case(case_dir)  # raises on any processed-artifact hash mismatch
+    record = case.provenance_record
+    _require(record["case_identity_sha256"] == binding["maple_case_identity_sha256"], "case identity differs")
+    _require(record["artifact_sha256"] == binding["maple_artifact_sha256"], "artifact hash differs")
+    _require(_same_json(record["source"]["files"], binding["maple_source_files"]), "MAPLE source records differ")
+    for entry in binding["maple_source_files"]:
+        path = case_dir / entry["authored_path"]
+        _require(path.is_file() and _sha256_file(path) == entry["sha256"], f"{entry['authored_path']} modified")
+
+    recipe_record = report["recipe"]
+    recipe = load_recipe(recipe_record["recipe_path"],
+                         mahleran_root=mahleran_root or recipe_record["mahleran_root"])
+    _require(recipe.recipe_sha256 == recipe_record["recipe_sha256"], "recipe changed since the import")
+    with tempfile.TemporaryDirectory(prefix="plot1_verify_") as tmp:
+        fresh = audit_plot1(recipe, Path(tmp) / "case")
+    fresh_report = fresh.report
+    _require(fresh_report["mahleran"]["xml_sha256"] == report["mahleran"]["xml_sha256"], "MAHLERAN XML changed")
+    for key in ("settings", "maps", "particle_size_map_references"):
+        _require(_same_json(fresh_report["legacy_options"][key], report["legacy_options"][key]),
+                 f"resolved legacy {key} differ from the import")
+    _require(set(fresh_report["staged_sources"]) == set(report["staged_sources"]), "staged source set differs")
+    for name, rec in report["staged_sources"].items():
+        new = fresh_report["staged_sources"][name]
+        _require(new["original_sha256"] == rec["original_sha256"], f"MAHLERAN source {name} changed")
+        _require(new["staged_sha256"] == rec["staged_sha256"], f"staging of {name} differs")
+        path = case_dir / rec["relpath"]
+        _require(path.is_file() and _sha256_file(path) == rec["staged_sha256"], f"staged {name} modified")
+    rain = report["rainfall"]
+    _require(fresh_report["rainfall"]["sha256"] == rain["sha256"], "MAHLERAN rainfall file changed")
+    rainfall_path = sidecar / "rainfall" / rain["file"]
+    _require(rainfall_path.is_file() and _sha256_file(rainfall_path) == rain["sha256"], "staged rainfall modified")
+    _require(set(fields) == set(fresh.fields), "sidecar array names differ from a fresh audit")
+    for name, array in fresh.fields.items():
+        _require(fields[name].dtype == array.dtype and np.array_equal(fields[name], array),
+                 f"sidecar array {name} differs from a fresh audit")
+    compiled_checks = check_compiled_plot1(case, fresh)
+    input_dir = Path(fresh_report["mahleran"]["input_folder_resolved"])
+    _require(not (input_dir / "calib.dat").exists(),
+             f"{input_dir / 'calib.dat'} exists: legacy ksat_mod/psi_mod calibration is not supported")
+
+    return VerifiedPlot1Case(
+        case_dir=case_dir, case=case, fields=fields, report=report, binding=binding,
+        rainfall_path=rainfall_path,
+        checks={
+            "binding_sha256": _sha256_file(binding_path),
+            "bound_files": "case.yaml, provenance.yaml, report, fields match the binding",
+            "maple_artifacts": "load_compiled_case re-hashed processed artifacts; identity matches",
+            "maple_source_digest_now": maple_now,
+            "maple_source_digest_bound": maple_bound,
+            "maple_source_changed_since_import": maple_now != maple_bound,
+            "fresh_audit": "recipe, XML, sources, staged copies, legacy settings and all sidecar arrays equal",
+            "compiled_state": compiled_checks,
+            "calibration": "no calib.dat: ksat_mod = psi_mod = 1",
+        },
+        maple_dependency=dependency,
+        maple_provenance=maple_record,
     )
 
 

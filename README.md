@@ -4,7 +4,7 @@
 
 Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.md`.
 
-## Current status: Phase 1 accepted, Phase 2 implemented (under review)
+## Current status: Phases 1–3 accepted (CPU column milestone)
 
 Implemented:
 
@@ -14,7 +14,7 @@ Implemented:
 - `docs/phase1/interface_contract.md`: dependency, state ownership, gaps and selected integration approach;
 - `src/maple_syrup/case_import.py` (Phase 2): audits MAHLERAN Plot 1 and compiles it into an actual MAPLE case with MAPLE's own `compile_case`/`load_compiled_case`; recipe `cases/plot1/recipe.yaml`; see `docs/phase2/plot1_import.md`.
 
-There is no rainfall, infiltration, routing or sediment physics yet. The Plot 1 case is a documented **corrected** fixture (six distinct grain maps instead of the root XML's repeated map), not a reproduction of the root XML. `port_feasibility/` is an older, separate feasibility experiment.
+Phase 3 adds exact rainfall integration and conservative, independent soil-water columns, using actual MAPLE water state and backend helpers. Spatial routing and sediment physics are still pending. See `docs/phase3/infiltration.md` for the equations and deliberate legacy departures. The Plot 1 case is a documented **corrected** fixture (six distinct grain maps instead of the root XML's repeated map), not a reproduction of the root XML. `port_feasibility/` is an older, separate feasibility experiment.
 
 ## Dependency
 
@@ -51,3 +51,18 @@ Probe options:
 - `--backend cupy`: fails with `BackendUnavailableError` when CuPy or a CUDA device is unavailable (true for the current venv); never falls back to CPU.
 
 Exit status: 0 success, 1 failed check or MAPLE source changed during the probe, 2 dependency/backend/usage error.
+
+## Phase 3 column experiment
+
+After importing Plot 1, run rainfall and infiltration through the rainfall window:
+
+```
+PYTHONDONTWRITEBYTECODE=1 GIT_OPTIONAL_LOCKS=0 PYTHONPATH=src /home/okin/MAPLE/.venv/bin/python \
+    -m maple_syrup.column_experiment --case-dir outputs/plot1 --max-dt-s 1 \
+    --output-dir outputs/plot1_columns
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /home/okin/MAPLE/.venv/bin/python -m pytest -q -p no:cacheprovider
+```
+
+The output directory must be new. The runner verifies the imported case and sources before calculation. It writes a water budget and final grids; it keeps ponded water at rainfall end. This is a **no-routing diagnostic**, not a complete storm: no runoff hydrograph, erosion, wind event, evapotranspiration or dry reset. Conductivity uses the XML's deterministic positive mean instead of its potentially negative normal draw. CuPy-compatible kernels are present; GPU execution remains unverified in the current environment.
+
+Phase 3 validation: 222 tests passed, 2 GPU tests skipped; see `docs/phase3/acceptance.md`. Phase 2 baseline is `951f0db`; Phase 3 implementation and acceptance evidence are tracked together.

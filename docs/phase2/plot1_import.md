@@ -46,7 +46,7 @@ Source: `MAHLERAN_storm_setting_xml.f90` (line numbers as read 2026-09-29). The 
 | `initial_soil-moisture_map` p1sm290905.asc | no | theta_0 = 0.25 deterministic |
 | `saturated_soil-moisture_map` thetasat39.asc | yes (736-740) | sidecar `saturated_soil_moisture` |
 | suction / drainage / friction maps | no (empty names, flags false) | psi 46.6 x `psi_mod` (from `calibration_xml`, not traced); drainage 0.05; friction factor type 1 = 21.45 |
-| `soil_thickness` 0.3 | parsed only; source search found no storm consumer | a soil-water depth, **not** sediment inventory |
+| `soil_thickness` 0.3 | Phase 3 source correction: `initialize_values_xml.f90` 228–229 initializes retained and maximum soil water from thickness | a soil-water depth, **not** sediment inventory |
 | `particle_density` 2.65 (twice, identical) | yes | 2650 kg/m3 for every MAPLE grain class |
 | `active_layer_sensitivity` 1.52e-6 | yes | a detachment coefficient, **not** an active-layer thickness |
 | `update_topography` "n" | `initialize_values_xml.f90` 138-142 | false |

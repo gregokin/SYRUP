@@ -28,6 +28,7 @@ dev = [
 [project.scripts]
 maple-syrup-probe = "maple_syrup.probe:main"
 maple-syrup-plot1-import = "maple_syrup.case_import:main"
+maple-syrup-columns = "maple_syrup.column_experiment:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -35,5 +36,5 @@ where = ["src"]
 [tool.pytest.ini_options]
 # Phase suites are collected by default; the older port_feasibility/
 # experiment keeps its own invocation.
-testpaths = ["tests/phase1", "tests/phase2"]
+testpaths = ["tests/phase1", "tests/phase2", "tests/phase3"]
 pythonpath = ["src"]
