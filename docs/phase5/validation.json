@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-30",
+  "scope": "Phase 5 bounded CPU milestone; final timestep comparison recorded separately",
+  "syrup_git_head_before_uncommitted_phases_4_and_5": "ddf13c1248f5304bf77fdc4e372410220ba5d697",
+  "syrup_package_sha256": "3bc43d044ef46471c965c3f04589dd4e56096bbfb69d34ea22aa4cd5c2a2ac5b",
+  "maple_package_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "case_identity_sha256": "e1afad46a27b3b428c40f2c7ab17a4af7f0b9d42dc974759d45b0c4c4d64efab",
+  "regression": {
+    "passed": 446,
+    "skipped": 6,
+    "elapsed_s": 107.21,
+    "skip_reason": "CuPy/device unavailable; no GPU execution claimed",
+    "original_fortran_tests": "executed, not skipped",
+    "log_sha256": "f9254f3c377ad47bef845c312087ee022e02825404a65ab47836649c97254ec0",
+    "log": "agent_handoffs/tasks/phase5b_integration/final_regression.log"
+  },
+  "environment": {
+    "interpreter": "/home/okin/MAPLE/.venv/bin/python",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "PYTHONPATH": "src:outputs/dependencies/maple_d3d007024/editable:outputs/dependencies/maple_d3d007024/source/src:/tmp/syrup-numba",
+    "MAPLE_SYRUP_GFORTRAN": "/tmp/syrup-fortran/root/usr/bin/gfortran-13",
+    "MAPLE_SYRUP_GFORTRAN_FLAGS": "-B/tmp/syrup-fortran/root/usr/libexec/gcc/x86_64-linux-gnu/13/ -B/usr/lib/gcc/x86_64-linux-gnu/13/",
+    "MAPLE_SYRUP_GFORTRAN_LDFLAGS": "-L/tmp/syrup-fortran/root/usr/lib/gcc/x86_64-linux-gnu/13/"
+  },
+  "single_dt1_process_measurement": {
+    "wall_s": 231.59,
+    "step_loop_wall_s": 228.55508588906378,
+    "max_rss_kib": 359760,
+    "tool": "/usr/bin/time -v",
+    "raw_log": "agent_handoffs/tasks/phase5b_integration/time_dt1.txt"
+  },
+  "qualifications": [
+    "No full original-MAHLERAN sediment storm comparison",
+    "No GPU execution",
+    "No event completion/dry reset/restart/wind handoff",
+    "No live upstream MAPLE changes adopted",
+    "Refinement runs concurrent; timings are not controlled throughput comparisons"
+  ],
+  "comparison_artifacts": {
+    "docs/phase5/storm_comparison.json": "b5a44ef4197f05c486fe0dabe79ade5eca25df6ce011dce9e3fa7b02dbca7bf8",
+    "docs/phase5/storm_comparison.svg": "1ed3e0e1226d20299640a868496126fc5e8f8c0d643888bfcd2054e7b0d90d42",
+    "docs/phase5/storm_comparison.png": "e23a472129605c2902ce16023c4397e8dcf6dba45568a077626e3edb30ef98e3"
+  },
+  "status": "accepted bounded CPU Phase 5 milestone",
+  "review": {
+    "service": "Claude",
+    "implementation": "agent_handoffs/tasks/phase5b_integration/final_claude_review.md",
+    "evidence": "agent_handoffs/tasks/phase5b_integration/evidence_claude_review.md",
+    "remaining_blockers": 0,
+    "verification_executor": "Codex"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "upstream_git_revision": "74dd3e79d9a7df85244355439e3a4a762abb9273",
+  "package_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "package_file_count": 324,
+  "patch_file": "maple_baseline.patch",
+  "patch_sha256": "11cf69648f08db3f58d2414b5932bb83126d3bb1b320b3b36694fcb9cd6aedbf",
+  "preserved_preexisting_dirty_files": [
+    "src/maple/experiment/orchestrator.py",
+    "src/maple/surface/voxels/transfer.py"
+  ],
+  "reason": "Reproduce the exact MAPLE package used at Plot1 import and Phases1-4; live upstream changed during Phase5. No new MAPLE changes adopted or authored by SYRUP.",
+  "pyproject_sha256": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+}

@@ -24,11 +24,20 @@ dependencies = [
 dev = [
     "pytest",
 ]
+# Phase 4b: optional compiled CPU routing sweep (routing_numba.py). Never a
+# base dependency; the array implementation stays the default and there is
+# no silent fallback. Codex tested Numba 0.67.0 / llvmlite 0.49.0 on
+# NumPy 2.5.2 / Python 3.12.3 in an isolated tree outside MAPLE's venv.
+numba = [
+    "numba>=0.61",
+]
 
 [project.scripts]
 maple-syrup-probe = "maple_syrup.probe:main"
 maple-syrup-plot1-import = "maple_syrup.case_import:main"
 maple-syrup-columns = "maple_syrup.column_experiment:main"
+maple-syrup-storm = "maple_syrup.storm_experiment:main"
+maple-syrup-sediment = "maple_syrup.sediment_experiment:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -36,5 +45,5 @@ where = ["src"]
 [tool.pytest.ini_options]
 # Phase suites are collected by default; the older port_feasibility/
 # experiment keeps its own invocation.
-testpaths = ["tests/phase1", "tests/phase2", "tests/phase3"]
+testpaths = ["tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5"]
 pythonpath = ["src"]

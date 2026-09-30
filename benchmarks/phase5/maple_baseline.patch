@@ -1,0 +1,84 @@
+--- a/src/maple/experiment/orchestrator.py
++++ b/src/maple/experiment/orchestrator.py
+@@ -1519,29 +1519,20 @@
+ def _seed_records_launch_air(resolved, scheduler_config) -> bool:
+     """Whether this case's seed must carry per-cohort launch-air metadata.
+ 
+-    The drag-reconstructed, upwind-capable trajectory reconstructs every
+-    airborne cohort's own flight from the air it launched under. This is
+-    needed by EITHER launch mode: a distributed splash ejection angle
+-    (reconstructed splash) OR a distributed rebound launch angle (the
+-    COMSALT route, reconstructed rebound). A compiled seed has no such
+-    field (the compiler cannot know the run's wind), and the transport
+-    step refuses to fabricate one for a row that is already airborne -- so
+-    an ordinary seeded new-mode run would be rejected at its first coupled
+-    step. Seed realization is
+-    where the run's real first wind is known, so that is where the field
+-    is authored.
+-
+-    Asked through the single shared COMBINED selector
+-    ``uses_reconstructed_trajectory`` -- the exact predicate every
+-    metadata/closure boundary in ``aeolian/flux/step.py`` reads -- so the
+-    seed cannot answer this question differently from the launch path,
+-    metadata initialization or the stress attribution. A legacy
+-    single/single case (or ``None`` spec) keeps ``None`` metadata and the
+-    accepted chord unchanged; a distributed-speed-only case likewise keeps
+-    the accepted chord, so this stays False for it.
++    The drag-reconstructed splash trajectory reconstructs every airborne
++    cohort's own flight from the air it launched under. A compiled seed
++    has no such field (the compiler cannot know the run's wind), and the
++    transport step refuses to fabricate one for a row that is already
++    airborne -- so an ordinary seeded new-mode run would be rejected at
++    its first coupled step. Seed realization is where the run's real
++    first wind is known, so that is where the field is authored.
++
++    Asked through the single shared selector, so the seed cannot answer
++    this question differently from the launch path or the stress
++    attribution.
+     """
+     from maple.core.parameters.impact_rebound_splash import (
+-        uses_reconstructed_trajectory,
++        uses_reconstructed_splash_trajectory,
+     )
+ 
+     spec = (
+@@ -1549,7 +1540,7 @@
+         if scheduler_config is not None
+         else resolved.config.impact_rebound_splash
+     )
+-    return uses_reconstructed_trajectory(spec)
++    return uses_reconstructed_splash_trajectory(spec)
+ 
+ 
+ def _realize_seed_under_first_wind(
+--- a/src/maple/surface/voxels/transfer.py
++++ b/src/maple/surface/voxels/transfer.py
+@@ -977,17 +977,17 @@
+     # limited cell every occupied voxel is already correctly fully
+     # drained above, and terminal_pos can point anywhere (even voxel 0,
+     # the same all-False-argmax fallback the deposit kernel guards
+-    # against), so the override below must never fire there. It must
+-    # also never fire when
+-    # the terminal voxel is itself fully_drained: take_total_at_terminal_
+-    # satisfied can land a few ULPs above that voxel's own exact total in
+-    # the non-exact-boundary branch (`requested - cum_before_terminal`),
+-    # and the fully_drained branch's exact copy is what safely clamps that
+-    # to the voxel's real content -- overriding it with a proportional
+-    # take scaled by that slightly-too-large total would place a request
+-    # for more than the voxel actually holds, producing negative mass
+-    # after subtraction (caught empirically: n_voxels=18, 2 full voxels,
+-    # request == their exact combined total).
++    # against), so the override below must never fire there. It must also
++    # never fire when the terminal voxel is itself fully_drained:
++    # take_total_at_terminal_satisfied can land a few ULPs above that
++    # voxel's own exact total in the non-exact-boundary branch
++    # (`requested - cum_before_terminal`), and the fully_drained branch's
++    # exact copy is what safely clamps that to the voxel's real content --
++    # overriding it with a proportional take scaled by that slightly-too-
++    # large total would place a request for more than the voxel actually
++    # holds, producing negative mass after subtraction (caught
++    # empirically: n_voxels=18, 2 full voxels, request == their exact
++    # combined total).
+     terminal_take_total = xp.take_along_axis(take_total_topdown, terminal_pos[..., None], axis=-1)[..., 0]
+     terminal_voxel_vec = xp.take_along_axis(
+         voxel_vecs_topdown, terminal_pos[..., None, None], axis=-2

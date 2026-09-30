@@ -1,0 +1,139 @@
+{
+  "array": {
+    "implementation": "array",
+    "scope": "synthetic planar routing-only fixed states; extra traced memory excludes existing state/graph and compiler native memory",
+    "results": [
+      {
+        "shape": [
+          60,
+          20
+        ],
+        "levels": 60,
+        "max_width": 20,
+        "setup_s": 0.4330834449501708,
+        "first_step_s": 0.012261016992852092,
+        "warm_step_s": [
+          0.011477340012788773,
+          0.011489636031910777,
+          0.011379383970052004
+        ],
+        "extra_traced_peak_bytes": 218343,
+        "residual_m3": -1.3552527156068805e-19
+      },
+      {
+        "shape": [
+          128,
+          128
+        ],
+        "levels": 128,
+        "max_width": 128,
+        "setup_s": 0.01670772407669574,
+        "first_step_s": 0.02813448989763856,
+        "warm_step_s": [
+          0.028345547965727746,
+          0.029267058009281754,
+          0.02829119109082967
+        ],
+        "extra_traced_peak_bytes": 2905971,
+        "residual_m3": -8.673617379884035e-19
+      },
+      {
+        "shape": [
+          512,
+          512
+        ],
+        "levels": 512,
+        "max_width": 512,
+        "setup_s": 0.2771360819460824,
+        "first_step_s": 0.18068171304184943,
+        "warm_step_s": [
+          0.1800294180866331,
+          0.17595964402426034,
+          0.18256657593883574
+        ],
+        "extra_traced_peak_bytes": 46405315,
+        "residual_m3": -3.122502256758253e-17
+      }
+    ]
+  },
+  "numba": {
+    "implementation": "numba",
+    "scope": "synthetic planar routing-only fixed states; extra traced memory excludes existing state/graph and compiler native memory",
+    "results": [
+      {
+        "shape": [
+          60,
+          20
+        ],
+        "levels": 60,
+        "max_width": 20,
+        "setup_s": 0.4253618660150096,
+        "first_step_s": 0.7309753100853413,
+        "warm_step_s": [
+          0.0009518230799585581,
+          0.0009357830276712775,
+          0.0009695449844002724
+        ],
+        "extra_traced_peak_bytes": 218459,
+        "residual_m3": -1.3552527156068805e-19
+      },
+      {
+        "shape": [
+          128,
+          128
+        ],
+        "levels": 128,
+        "max_width": 128,
+        "setup_s": 0.01663237693719566,
+        "first_step_s": 0.008166898041963577,
+        "warm_step_s": [
+          0.008000786998309195,
+          0.008041694993153214,
+          0.007884703925810754
+        ],
+        "extra_traced_peak_bytes": 2906027,
+        "residual_m3": -8.673617379884035e-19
+      },
+      {
+        "shape": [
+          512,
+          512
+        ],
+        "levels": 512,
+        "max_width": 512,
+        "setup_s": 0.29165438399650156,
+        "first_step_s": 0.1353844089899212,
+        "warm_step_s": [
+          0.1449171348940581,
+          0.12868056702427566,
+          0.13533345400355756
+        ],
+        "extra_traced_peak_bytes": 46405547,
+        "residual_m3": -3.122502256758253e-17
+      }
+    ]
+  },
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "executable": "/home/okin/MAPLE/.venv/bin/python",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "packages": {
+      "numba": "0.67.0",
+      "llvmlite": "0.49.0",
+      "numpy": "2.5.2",
+      "scipy": "1.18.1",
+      "pytest": "9.1.1"
+    },
+    "numba_path": "/tmp/syrup-numba/numba/__init__.py",
+    "llvmlite_path": "/tmp/syrup-numba/llvmlite/__init__.py",
+    "numpy_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy/__init__.py",
+    "numba_requires": [
+      "llvmlite<0.50,>=0.49.0dev0",
+      "numpy<2.6,>=1.22"
+    ],
+    "install_command": "/home/okin/MAPLE/.venv/bin/python -m pip install --target /tmp/syrup-numba --no-deps numba==0.67.0 llvmlite==0.49.0",
+    "upstream_environment_modified": false,
+    "cpu_model": "Intel(R) Core(TM) i9-7900X CPU @ 3.30GHz"
+  }
+}

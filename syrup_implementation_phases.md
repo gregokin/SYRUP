@@ -36,7 +36,21 @@ Use the existing prototype as numerical evidence, not as a complete solver. Orde
 
 Exit: conservative water-only storm with depth maps/outlet hydrograph, matched selected legacy hydrology where runnable, independent controlled tests, timestep refinement, and initial runtime/memory evidence.
 
+User refinement, 2026-09-29: include Numba compilation of the same MAHLERAN-derived ordered solver in Phase 4 and use it for direct comparisons with original Fortran routines. Preserve the selected equations and corrected bisection, without fast-math or changing the hydraulic method. Test compiled-versus-array parity and original-Fortran agreement separately; document root-bracket and conservation corrections rather than claiming literal identity. Record dependency versions and separate compilation/startup from steady-state cost. Numba CPU compilation does not establish GPU acceleration.
+
+## Phase 4R — Priority follow-up: alternative routing approaches
+
+Added by user direction, 2026-09-29. This important investigation follows acceptance of the Phase 4 water-only baseline; its suffix preserves existing phase numbers. It is distinct from Phase 4 implementation subtasks. See [the literature review](docs/phase4/solver_alternatives.md). Numba compilation of the baseline is now part of Phase 4, not deferred here.
+
+First investigate safeguarded Newton on the same scalar equation and improved dependency-level/GPU execution. Then compare explicit conservative kinematic routing and local-inertial face-flux methods as separately selectable experiments. Retain MAHLERAN's selected Darcy–Weisbach relationship where applicable and document changed hydraulic terms, time discretization, direction selection, boundaries and additional state. Explicit kinematic timestep limits must account for wave celerity, not only water velocity. Do not adopt the rejected sandpile formulation.
+
+Compare identical forcing, terrain, infiltration and boundary assumptions on Plot 1 and larger networks with varied width/depth, wetting/drying and recession. Set quantitative acceptance tolerances before evaluating candidates. Measure runoff volume, hydrograph peak/time, depth, velocity, constitutive residuals, conservation and timestep/grid sensitivity alongside whole-event runtime, startup, peak CPU/GPU memory and host/device transfers. Depth and velocity fidelity matter for subsequent erosion even when outlet volumes agree. Recheck detachment and sediment timing when sediment coupling becomes available before adopting a different hydraulic solver.
+
+Exit: reproducible comparative benchmarks and an evidence-based recommendation to retain or supplement the baseline, including accuracy/performance tradeoffs, hardware, backend agreement and unsupported cases. No solver is accepted merely because it is faster or conserves total water. Unavailable GPU execution remains unverified. The investigation may conclude that the compiled MAHLERAN approach is sufficient.
+
 ## Phase 5 — Conservative detachment, travel and deposition
+
+**CPU milestone accepted 2026-09-30:** actual MAPLE bed integration, wet laws, conservative transport, supply/depletion/sorting, terrain rerouting, controlled distance/timing checks and imported-case erosion/deposition/discharge verified. Full regression:446 passed,6 GPU skips. Original-Fortran equation tests and matched 1/0.5/0.25-second SYRUP storms completed. See [acceptance and limitations](docs/phase5/acceptance.md). GPU equivalence and full original-MAHLERAN sediment-storm fidelity remain carried-forward qualification work; CPU kernel scaling is measured, larger whole-event scaling remains pending. The implementation below was separately authorized by the user's Phase 5 request.
 
 Implement one complete sediment path before widening regime coverage: selected MAHLERAN wet detachment laws, class-specific transport distances and virtual speeds, actual withdrawal from MAPLE's bed, downstream mobile transport, deposition through MAPLE, and measured outlet export. Retain the applicable diffuse/concentrated/suspension distinctions for the case; unsupported classes/conditions must be explicit.
 
@@ -63,6 +77,8 @@ Assemble comparisons built during every preceding phase into a matched event ben
 Document each preserved equation and intentional numerical/physical departure. Do not require agreement with a demonstrated legacy bookkeeping error. If executable reference results are unavailable, label analytic/Python checks as such rather than claiming Fortran validation.
 
 Measure representative larger grids as well as the small import case, backend parity, startup versus steady state, CPU/GPU peak memory and transfers. A tiny case may be slower on GPU; require a measured scaling report, not universal GPU speedup. Profile actual bottlenecks and optimize without weakening physical tests. This phase consolidates performance validation, not defers GPU design until the end.
+
+Phase 5 CPU profiling identifies a concrete performance follow-up: the two actual MAPLE bed-exchange calls consume about 75% of a profiled 600-second event, versus about 10% for the wet laws and lateral transport together. Investigate a shared MAPLE transaction/validation optimization without copying bed physics, weakening checks, or introducing an unvalidated source lag. Measure complete events and preserve source/sink timing as well as conservation; see docs/phase5/acceptance.md. This complements, rather than replaces, Phase 4R's hydraulic/GPU investigation.
 
 Exit: evidence-backed scientific/compatibility/performance report with explicit limitations and an accepted baseline for the first water-only MAPLE-SYRUP experiment.
 

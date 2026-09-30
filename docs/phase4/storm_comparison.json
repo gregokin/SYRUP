@@ -1,0 +1,663 @@
+{
+  "scope": "Controlled water-only original-routine comparison; not full MAHLERAN application",
+  "runs": {
+    "numba_dt1": {
+      "budget": {
+        "drainage_m3": 0.014311738053525,
+        "export_m3": 0.16443308827374914,
+        "export_meaning": "time-integrated Crank-Nicolson face volume through outlet cells; the hydrograph's outlet_discharge_m3_s is the instantaneous end-of-step value (legacy q_plot dx)",
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.7311669117262536,
+        "net_infiltration_m3": 2.7311669117262536,
+        "rain_expected_m3": 2.8956,
+        "rain_m3": 2.8955999999999613,
+        "rainfall_integral_residual_m3": -3.863576125695545e-14,
+        "rainfall_tolerance_m3": 1.6973942251752305e-11,
+        "runoff_coefficient_export_over_rain": 0.05678722484934084,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.216855173672727,
+        "soil_initial_m3": 22.499999999999996,
+        "soil_residual_m3": 3.552713678800501e-15,
+        "surface_final_m3": 0.0,
+        "surface_initial_m3": 0.0,
+        "surface_residual_m3": 4.141131881851834e-14,
+        "tolerance_m3": 1.9911152989971694e-09,
+        "tolerance_rule": "(16 + 32) eps (n_steps + n_cells) (initial + rain + intake + drainage + return + export) depth sums; per-step column and routing FP64 tolerances combined",
+        "units": "m3",
+        "water_residual_m3": 4.263256414560601e-14
+      },
+      "final_state": {
+        "final_outlet_discharge_m3_s": 0.0,
+        "max_depth_m": 0.0,
+        "mean_depth_m": 0.0,
+        "peak_depth_m": 0.00567170211268615,
+        "peak_note": "true numerical peak of the instantaneous outlet discharge over every accepted step (tracked as device scalars); the hydrograph rows are samples at the reporting cadence",
+        "peak_outlet_discharge_m3_s": 0.00011507245463309877,
+        "peak_velocity_m_s": 0.025435773001524005,
+        "ponded_cells": 0,
+        "residual_water": "retained in MAPLE WaterState.depth_m; configured end is not event end",
+        "sampled_peak_outlet_discharge_m3_s": 0.00011507245463309877,
+        "sampled_time_of_peak_outlet_discharge_s": 1333.0,
+        "soil_water_range_m": [
+          0.08135666253043247,
+          0.08514355401202017
+        ],
+        "time_of_peak_outlet_discharge_s": 1333.0
+      },
+      "timings": {
+        "first_accepted_step": {
+          "cpu_s": 1.9421717829999996,
+          "note": "includes lazy import/JIT compilation for the numba implementation",
+          "wall_s": 0.4916690270183608
+        },
+        "note": "process CPU and wall seconds of one run; not a controlled benchmark",
+        "remaining_steps": {
+          "cpu_s": 7.348509747,
+          "n_steps": 5399,
+          "wall_s": 7.348583324928768
+        },
+        "reporting": {
+          "cpu_s": 0.18374243099999887,
+          "wall_s": 0.18502445402555168
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.3805149539999997,
+          "wall_s": 1.3909664489328861
+        },
+        "step_loop": {
+          "cpu_s": 9.292566063,
+          "wall_s": 7.8421391390729696
+        }
+      },
+      "time": {
+        "dt_max_accepted_s": 1.0,
+        "dt_min_accepted_s": 1.0,
+        "end_s": 5400.0,
+        "legacy_stormlength_s": 5400.0,
+        "max_dt_s": 1.0,
+        "min_dt_s": 0.0009765625,
+        "n_accepted_steps": 5400,
+        "n_boundaries": 5400,
+        "n_rejected_attempts": 0,
+        "policy": "boundaries = rainfall knots in (0, end) + reporting times + end (float-noise coincidences merged onto the exact forcing edge); dt <= max_dt_s; a forced slice to a boundary may be shorter than min_dt_s; Courant/negative-RHS rejection halves dt and recomputes the same state, refused below the retry floor min_dt_s; no other exception is retried; failed attempts accumulate nothing",
+        "rainfall_end_s": 1620.0,
+        "recession_included": true,
+        "rejections_recorded": [],
+        "report_every_s": 1.0,
+        "start_s": 0.0
+      },
+      "process_peak_rss_kib": 370792,
+      "outputs_sha256": {
+        "final_water.npz": "2eed821bd5f2471cf8b38f61cfa6e75460cd3ae6b893fc275970ad878b55794c",
+        "hydrograph.csv": "bfd1f5e208137200364cd3fbd75d09d3fdb1f5ece6013e2fa0dc5489e0a50877",
+        "hydrograph.npz": "32bdc142576bfb9f9fc7a81ec705112c7319f9dc1813a01e7bc5bd11c2cecfdf"
+      },
+      "export_difference_percent_of_fortran": -0.3777625792932948
+    },
+    "numba_dt0p5": {
+      "budget": {
+        "drainage_m3": 0.014311806611147327,
+        "export_m3": 0.16444584969954568,
+        "export_meaning": "time-integrated Crank-Nicolson face volume through outlet cells; the hydrograph's outlet_discharge_m3_s is the instantaneous end-of-step value (legacy q_plot dx)",
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.7311541503004584,
+        "net_infiltration_m3": 2.7311541503004584,
+        "rain_expected_m3": 2.8956,
+        "rain_m3": 2.895599999999849,
+        "rainfall_integral_residual_m3": -1.509903313490213e-13,
+        "rainfall_tolerance_m3": 3.086171318500419e-11,
+        "runoff_coefficient_export_over_rain": 0.05679163202775047,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.216842343689308,
+        "soil_initial_m3": 22.499999999999996,
+        "soil_residual_m3": 0.0,
+        "surface_final_m3": 0.0,
+        "surface_initial_m3": 0.0,
+        "surface_residual_m3": 1.5509815654013437e-13,
+        "tolerance_m3": 3.620209643308655e-09,
+        "tolerance_rule": "(16 + 32) eps (n_steps + n_cells) (initial + rain + intake + drainage + return + export) depth sums; per-step column and routing FP64 tolerances combined",
+        "units": "m3",
+        "water_residual_m3": 1.5631940186722204e-13
+      },
+      "final_state": {
+        "final_outlet_discharge_m3_s": 0.0,
+        "max_depth_m": 0.0,
+        "mean_depth_m": 0.0,
+        "peak_depth_m": 0.005671970610427835,
+        "peak_note": "true numerical peak of the instantaneous outlet discharge over every accepted step (tracked as device scalars); the hydrograph rows are samples at the reporting cadence",
+        "peak_outlet_discharge_m3_s": 0.00011507391734156815,
+        "peak_velocity_m_s": 0.02543598810588693,
+        "ponded_cells": 0,
+        "residual_water": "retained in MAPLE WaterState.depth_m; configured end is not event end",
+        "sampled_peak_outlet_discharge_m3_s": 0.00011507366047741464,
+        "sampled_time_of_peak_outlet_discharge_s": 1333.0,
+        "soil_water_range_m": [
+          0.08135661072132801,
+          0.08514352497493947
+        ],
+        "time_of_peak_outlet_discharge_s": 1333.5
+      },
+      "timings": {
+        "first_accepted_step": {
+          "cpu_s": 1.9534423469999997,
+          "note": "includes lazy import/JIT compilation for the numba implementation",
+          "wall_s": 0.4918857660377398
+        },
+        "note": "process CPU and wall seconds of one run; not a controlled benchmark",
+        "remaining_steps": {
+          "cpu_s": 14.484496572000001,
+          "n_steps": 10799,
+          "wall_s": 14.48482587293256
+        },
+        "reporting": {
+          "cpu_s": 0.17782688299999805,
+          "wall_s": 0.17892475007101893
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.4200037169999997,
+          "wall_s": 1.429223993094638
+        },
+        "step_loop": {
+          "cpu_s": 16.439844905,
+          "wall_s": 14.97861715592444
+        }
+      },
+      "time": {
+        "dt_max_accepted_s": 0.5,
+        "dt_min_accepted_s": 0.5,
+        "end_s": 5400.0,
+        "legacy_stormlength_s": 5400.0,
+        "max_dt_s": 0.5,
+        "min_dt_s": 0.0009765625,
+        "n_accepted_steps": 10800,
+        "n_boundaries": 5400,
+        "n_rejected_attempts": 0,
+        "policy": "boundaries = rainfall knots in (0, end) + reporting times + end (float-noise coincidences merged onto the exact forcing edge); dt <= max_dt_s; a forced slice to a boundary may be shorter than min_dt_s; Courant/negative-RHS rejection halves dt and recomputes the same state, refused below the retry floor min_dt_s; no other exception is retried; failed attempts accumulate nothing",
+        "rainfall_end_s": 1620.0,
+        "recession_included": true,
+        "rejections_recorded": [],
+        "report_every_s": 1.0,
+        "start_s": 0.0
+      },
+      "process_peak_rss_kib": 370952,
+      "outputs_sha256": {
+        "final_water.npz": "1fbb56038021d5f4d7d8ad87f0305ef639577a47bd86ef3fc29c18d68ea0c7fa",
+        "hydrograph.csv": "0198ad4c8d827e3569897deba85feb32dd554bf18cfed6513382f525cf9cb598",
+        "hydrograph.npz": "d6b9c825e9acd1e519a8b139617228b0bd51a63ff02695581195cf18de0dc854"
+      },
+      "export_difference_percent_of_fortran": -0.18888526625775448
+    },
+    "numba_dt0p25": {
+      "budget": {
+        "drainage_m3": 0.014311840887102169,
+        "export_m3": 0.1644522365007781,
+        "export_meaning": "time-integrated Crank-Nicolson face volume through outlet cells; the hydrograph's outlet_discharge_m3_s is the instantaneous end-of-step value (legacy q_plot dx)",
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.731147763499227,
+        "net_infiltration_m3": 2.731147763499227,
+        "rain_expected_m3": 2.8956,
+        "rain_m3": 2.895599999999819,
+        "rainfall_integral_residual_m3": -1.8074430840897548e-13,
+        "rainfall_tolerance_m3": 5.863725505150796e-11,
+        "runoff_coefficient_export_over_rain": 0.05679383771957051,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.216835922612127,
+        "soil_initial_m3": 22.499999999999996,
+        "soil_residual_m3": 7.105427357601002e-15,
+        "surface_final_m3": 0.0,
+        "surface_initial_m3": 0.0,
+        "surface_residual_m3": 1.8582357874663558e-13,
+        "tolerance_m3": 6.8783983306156874e-09,
+        "tolerance_rule": "(16 + 32) eps (n_steps + n_cells) (initial + rain + intake + drainage + return + export) depth sums; per-step column and routing FP64 tolerances combined",
+        "units": "m3",
+        "water_residual_m3": 1.9184653865522705e-13
+      },
+      "final_state": {
+        "final_outlet_discharge_m3_s": 0.0,
+        "max_depth_m": 0.0,
+        "mean_depth_m": 0.0,
+        "peak_depth_m": 0.005672101929159073,
+        "peak_note": "true numerical peak of the instantaneous outlet discharge over every accepted step (tracked as device scalars); the hydrograph rows are samples at the reporting cadence",
+        "peak_outlet_discharge_m3_s": 0.00011507459033994247,
+        "peak_velocity_m_s": 0.0254360903394534,
+        "ponded_cells": 0,
+        "residual_water": "retained in MAPLE WaterState.depth_m; configured end is not event end",
+        "sampled_peak_outlet_discharge_m3_s": 0.00011507435292601806,
+        "sampled_time_of_peak_outlet_discharge_s": 1334.0,
+        "soil_water_range_m": [
+          0.08135658482813857,
+          0.08514351046909743
+        ],
+        "time_of_peak_outlet_discharge_s": 1333.5
+      },
+      "timings": {
+        "first_accepted_step": {
+          "cpu_s": 1.948536152,
+          "note": "includes lazy import/JIT compilation for the numba implementation",
+          "wall_s": 0.4948717140359804
+        },
+        "note": "process CPU and wall seconds of one run; not a controlled benchmark",
+        "remaining_steps": {
+          "cpu_s": 28.315843888,
+          "n_steps": 21599,
+          "wall_s": 28.316109132021666
+        },
+        "reporting": {
+          "cpu_s": 0.21931810200000257,
+          "wall_s": 0.22037465195171535
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.435296332,
+          "wall_s": 1.4442238389747217
+        },
+        "step_loop": {
+          "cpu_s": 30.266232211,
+          "wall_s": 28.812831657007337
+        }
+      },
+      "time": {
+        "dt_max_accepted_s": 0.25,
+        "dt_min_accepted_s": 0.25,
+        "end_s": 5400.0,
+        "legacy_stormlength_s": 5400.0,
+        "max_dt_s": 0.25,
+        "min_dt_s": 0.0009765625,
+        "n_accepted_steps": 21600,
+        "n_boundaries": 5400,
+        "n_rejected_attempts": 0,
+        "policy": "boundaries = rainfall knots in (0, end) + reporting times + end (float-noise coincidences merged onto the exact forcing edge); dt <= max_dt_s; a forced slice to a boundary may be shorter than min_dt_s; Courant/negative-RHS rejection halves dt and recomputes the same state, refused below the retry floor min_dt_s; no other exception is retried; failed attempts accumulate nothing",
+        "rainfall_end_s": 1620.0,
+        "recession_included": true,
+        "rejections_recorded": [],
+        "report_every_s": 1.0,
+        "start_s": 0.0
+      },
+      "process_peak_rss_kib": 370856,
+      "outputs_sha256": {
+        "final_water.npz": "48f6d8d5d62e3960c1240ce0dddc9cd8e96b727774385b2f4e5d61c668b2ed70",
+        "hydrograph.csv": "616aeacde2ffd7aff5e6e50b54fcc767f1497477898fb3756ab12caae4682674",
+        "hydrograph.npz": "311b2c944054bcade5c9732183d8a11eb22165d0afabf78da9b0aa5a2289d9f1"
+      },
+      "export_difference_percent_of_fortran": -0.09445194263909551
+    },
+    "array_dt1": {
+      "budget": {
+        "drainage_m3": 0.014311738053525,
+        "export_m3": 0.16443308827374914,
+        "export_meaning": "time-integrated Crank-Nicolson face volume through outlet cells; the hydrograph's outlet_discharge_m3_s is the instantaneous end-of-step value (legacy q_plot dx)",
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.7311669117262536,
+        "net_infiltration_m3": 2.7311669117262536,
+        "rain_expected_m3": 2.8956,
+        "rain_m3": 2.8955999999999613,
+        "rainfall_integral_residual_m3": -3.863576125695545e-14,
+        "rainfall_tolerance_m3": 1.6973942251752305e-11,
+        "runoff_coefficient_export_over_rain": 0.05678722484934084,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.216855173672727,
+        "soil_initial_m3": 22.499999999999996,
+        "soil_residual_m3": 3.552713678800501e-15,
+        "surface_final_m3": 0.0,
+        "surface_initial_m3": 0.0,
+        "surface_residual_m3": 4.141131881851834e-14,
+        "tolerance_m3": 1.9911152989971694e-09,
+        "tolerance_rule": "(16 + 32) eps (n_steps + n_cells) (initial + rain + intake + drainage + return + export) depth sums; per-step column and routing FP64 tolerances combined",
+        "units": "m3",
+        "water_residual_m3": 4.263256414560601e-14
+      },
+      "final_state": {
+        "final_outlet_discharge_m3_s": 0.0,
+        "max_depth_m": 0.0,
+        "mean_depth_m": 0.0,
+        "peak_depth_m": 0.00567170211268615,
+        "peak_note": "true numerical peak of the instantaneous outlet discharge over every accepted step (tracked as device scalars); the hydrograph rows are samples at the reporting cadence",
+        "peak_outlet_discharge_m3_s": 0.00011507245463309877,
+        "peak_velocity_m_s": 0.025435773001524005,
+        "ponded_cells": 0,
+        "residual_water": "retained in MAPLE WaterState.depth_m; configured end is not event end",
+        "sampled_peak_outlet_discharge_m3_s": 0.00011507245463309877,
+        "sampled_time_of_peak_outlet_discharge_s": 1333.0,
+        "soil_water_range_m": [
+          0.08135666253043247,
+          0.08514355401202017
+        ],
+        "time_of_peak_outlet_discharge_s": 1333.0
+      },
+      "timings": {
+        "first_accepted_step": {
+          "cpu_s": 0.015091359999999998,
+          "note": "includes lazy import/JIT compilation for the numba implementation",
+          "wall_s": 0.015089849010109901
+        },
+        "note": "process CPU and wall seconds of one run; not a controlled benchmark",
+        "remaining_steps": {
+          "cpu_s": 75.936538239,
+          "n_steps": 5399,
+          "wall_s": 75.93661882099696
+        },
+        "reporting": {
+          "cpu_s": 0.2937932669999981,
+          "wall_s": 0.2950112980324775
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.502527283,
+          "wall_s": 1.5103028300218284
+        },
+        "step_loop": {
+          "cpu_s": 75.953482229,
+          "wall_s": 75.95356036897283
+        }
+      },
+      "time": {
+        "dt_max_accepted_s": 1.0,
+        "dt_min_accepted_s": 1.0,
+        "end_s": 5400.0,
+        "legacy_stormlength_s": 5400.0,
+        "max_dt_s": 1.0,
+        "min_dt_s": 0.0009765625,
+        "n_accepted_steps": 5400,
+        "n_boundaries": 5400,
+        "n_rejected_attempts": 0,
+        "policy": "boundaries = rainfall knots in (0, end) + reporting times + end (float-noise coincidences merged onto the exact forcing edge); dt <= max_dt_s; a forced slice to a boundary may be shorter than min_dt_s; Courant/negative-RHS rejection halves dt and recomputes the same state, refused below the retry floor min_dt_s; no other exception is retried; failed attempts accumulate nothing",
+        "rainfall_end_s": 1620.0,
+        "recession_included": true,
+        "rejections_recorded": [],
+        "report_every_s": 1.0,
+        "start_s": 0.0
+      },
+      "process_peak_rss_kib": 327016,
+      "outputs_sha256": {
+        "final_water.npz": "2eed821bd5f2471cf8b38f61cfa6e75460cd3ae6b893fc275970ad878b55794c",
+        "hydrograph.csv": "bfd1f5e208137200364cd3fbd75d09d3fdb1f5ece6013e2fa0dc5489e0a50877",
+        "hydrograph.npz": "32bdc142576bfb9f9fc7a81ec705112c7319f9dc1813a01e7bc5bd11c2cecfdf"
+      }
+    },
+    "numba_rain_end": {
+      "budget": {
+        "drainage_m3": 0.004130950219999996,
+        "export_m3": 0.07123610469906409,
+        "export_meaning": "time-integrated Crank-Nicolson face volume through outlet cells; the hydrograph's outlet_discharge_m3_s is the instantaneous end-of-step value (legacy q_plot dx)",
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.670895353946106,
+        "net_infiltration_m3": 2.670895353946106,
+        "rain_expected_m3": 2.8956,
+        "rain_m3": 2.8955999999999613,
+        "rainfall_integral_residual_m3": -3.863576125695545e-14,
+        "rainfall_tolerance_m3": 7.252502598475985e-12,
+        "runoff_coefficient_export_over_rain": 0.02460150044863415,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.166764403726106,
+        "soil_initial_m3": 22.499999999999996,
+        "soil_residual_m3": 3.552713678800501e-15,
+        "surface_final_m3": 0.15346854135483234,
+        "surface_initial_m3": 0.0,
+        "surface_residual_m3": 4.113376306236205e-14,
+        "tolerance_m3": 8.458306267975467e-10,
+        "tolerance_rule": "(16 + 32) eps (n_steps + n_cells) (initial + rain + intake + drainage + return + export) depth sums; per-step column and routing FP64 tolerances combined",
+        "units": "m3",
+        "water_residual_m3": 4.263256414560601e-14
+      },
+      "final_state": {
+        "final_outlet_discharge_m3_s": 0.00010175965348958903,
+        "max_depth_m": 0.004754593601256487,
+        "mean_depth_m": 0.0005115618045161078,
+        "peak_depth_m": 0.004795753187948786,
+        "peak_note": "true numerical peak of the instantaneous outlet discharge over every accepted step (tracked as device scalars); the hydrograph rows are samples at the reporting cadence",
+        "peak_outlet_discharge_m3_s": 0.00011507245463309877,
+        "peak_velocity_m_s": 0.02466317406668797,
+        "ponded_cells": 1103,
+        "residual_water": "retained in MAPLE WaterState.depth_m; configured end is not event end",
+        "sampled_peak_outlet_discharge_m3_s": 0.00011507245463309877,
+        "sampled_time_of_peak_outlet_discharge_s": 1333.0,
+        "soil_water_range_m": [
+          0.0811120283195978,
+          0.08447636196130044
+        ],
+        "time_of_peak_outlet_discharge_s": 1333.0
+      },
+      "timings": {
+        "first_accepted_step": {
+          "cpu_s": 1.9929154380000003,
+          "note": "includes lazy import/JIT compilation for the numba implementation",
+          "wall_s": 0.534186088014394
+        },
+        "note": "process CPU and wall seconds of one run; not a controlled benchmark",
+        "remaining_steps": {
+          "cpu_s": 2.4778393550000004,
+          "n_steps": 1619,
+          "wall_s": 2.477837480022572
+        },
+        "reporting": {
+          "cpu_s": 0.1258853680000005,
+          "wall_s": 0.12690773501526564
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.448786196,
+          "wall_s": 1.4568521659821272
+        },
+        "step_loop": {
+          "cpu_s": 4.471581033,
+          "wall_s": 3.012854967964813
+        }
+      },
+      "time": {
+        "dt_max_accepted_s": 1.0,
+        "dt_min_accepted_s": 1.0,
+        "end_s": 1620.0,
+        "legacy_stormlength_s": 5400.0,
+        "max_dt_s": 1.0,
+        "min_dt_s": 0.0009765625,
+        "n_accepted_steps": 1620,
+        "n_boundaries": 1620,
+        "n_rejected_attempts": 0,
+        "policy": "boundaries = rainfall knots in (0, end) + reporting times + end (float-noise coincidences merged onto the exact forcing edge); dt <= max_dt_s; a forced slice to a boundary may be shorter than min_dt_s; Courant/negative-RHS rejection halves dt and recomputes the same state, refused below the retry floor min_dt_s; no other exception is retried; failed attempts accumulate nothing",
+        "rainfall_end_s": 1620.0,
+        "recession_included": false,
+        "rejections_recorded": [],
+        "report_every_s": 1.0,
+        "start_s": 0.0
+      },
+      "process_peak_rss_kib": 368948,
+      "outputs_sha256": {
+        "final_water.npz": "40db18344e207efaf90f667847357ae75897d4a918b2632cc9ce2ff66b6880a2",
+        "hydrograph.csv": "f9b070fde5f746a4de12311666c9dee8c8f0a4a6c0cb85544884de26d5e4f3f4",
+        "hydrograph.npz": "b16df49f115378fb3dfa1d9c3df78d50f01f8068d45193a0ac9308e6ade6e02d"
+      }
+    },
+    "fortran_dt1": {
+      "final": {
+        "time_s": 5400.0,
+        "outlet_m3_s": 0.0,
+        "export_m3": 0.16505661038242386,
+        "surface_m3": 0.0,
+        "soil_m3": 25.21706330964615,
+        "drain_m3": 0.014311786895292989,
+        "rain_m3": 2.8956000000000657,
+        "residual_m3": 0.0008317069238010788,
+        "stale_gain_m3": 0.0008316891623376646,
+        "closure_sum_m3": 1.7761532788541574e-08,
+        "max_closure_m": 2.865686384011274e-09,
+        "bracket_end_count": 1.0
+      },
+      "peak_outlet_m3_s": 0.00011509476271057111,
+      "peak_time_s": 1334.0,
+      "budget_minus_stale_minus_closure_m3": -6.937435799223384e-14,
+      "output_sha256": {
+        "hydrograph.dat": "34684c317f8f27b009765ba907f8045cd9afadcc4669fed19846076d6dbf1e35",
+        "final.dat": "172356291fa285dbb15e689fe81c216e2245d9f75f750dc3ab67d28d6166bb30"
+      },
+      "input_sha256": "e06da3135302ec48cbc5e6ed01c0047d6a5d0ca8411681161134e3e959e599f7"
+    },
+    "fortran_dt0p5": {
+      "final": {
+        "time_s": 5400.0,
+        "outlet_m3_s": 0.0,
+        "export_m3": 0.16475705149494033,
+        "surface_m3": 0.0,
+        "soil_m3": 25.216946244127477,
+        "drain_m3": 0.014311831015888397,
+        "rain_m3": 2.89559999999999,
+        "residual_m3": 0.00041512663831699825,
+        "stale_gain_m3": 0.0004150929807796302,
+        "closure_sum_m3": 3.365751044411638e-08,
+        "max_closure_m": 5.053221840967126e-12,
+        "bracket_end_count": 0.0
+      },
+      "peak_outlet_m3_s": 0.00011508495397803589,
+      "peak_time_s": 1333.5,
+      "budget_minus_stale_minus_closure_m3": 2.6923948033780686e-14,
+      "output_sha256": {
+        "hydrograph.dat": "d6447a56e3093c2b3e6c43fa3074cb52e494a4651fdad8c4bf56335feae30daf",
+        "final.dat": "1556fd5c807416556f28242b01a712f98fa5b54a47bc7cf8e43714fb462f07f2"
+      },
+      "input_sha256": "d53886b52c8fa6bfcda5313eff433ea7c9f05596588916d471d3c6731a39751c"
+    },
+    "fortran_dt0p25": {
+      "final": {
+        "time_s": 5400.0,
+        "outlet_m3_s": 0.0,
+        "export_m3": 0.16460771168219568,
+        "surface_m3": 0.0,
+        "soil_m3": 25.216887866404,
+        "drain_m3": 0.01431185310014345,
+        "rain_m3": 2.8955999999998157,
+        "residual_m3": 0.00020743118652211123,
+        "stale_gain_m3": 0.0002073589858212362,
+        "closure_sum_m3": 7.220050225336978e-08,
+        "max_closure_m": 5.036114858469887e-12,
+        "bracket_end_count": 0.0
+      },
+      "peak_outlet_m3_s": 0.00011508012017820135,
+      "peak_time_s": 1333.5,
+      "budget_minus_stale_minus_closure_m3": 1.986216528624916e-13,
+      "output_sha256": {
+        "hydrograph.dat": "57171ff2847e731f15fb1f578a074a7957477ed641263d7f0c1b577fe721a934",
+        "final.dat": "6da252fff131b9f3363470832a43d24f8a697fdd59190ed55d3aa25a9eb6701d"
+      },
+      "input_sha256": "43de21b059cdb2d9b4cdea30c0ddc332114d17f8d65bfb9c37a2d7e4c472a4f0"
+    },
+    "fortran_rain_end": {
+      "final": {
+        "time_s": 1620.0,
+        "outlet_m3_s": 0.00010194369026542895,
+        "export_m3": 0.07128040315542457,
+        "surface_m3": 0.15366228296485332,
+        "soil_m3": 25.166767051068877,
+        "drain_m3": 0.004130950619087791,
+        "rain_m3": 2.8956000000000657,
+        "residual_m3": 0.00024068780817643187,
+        "stale_gain_m3": 0.0002406755550199599,
+        "closure_sum_m3": 1.2253227728873155e-08,
+        "max_closure_m": 2.865686384011274e-09,
+        "bracket_end_count": 1.0
+      },
+      "peak_outlet_m3_s": 0.00011509476271057111,
+      "peak_time_s": 1334.0,
+      "budget_minus_stale_minus_closure_m3": -7.12569057805882e-14,
+      "output_sha256": {
+        "hydrograph.dat": "9bd40e71d8a8f2232db9fcea124a29cf9d83b8ef6142df518a68f782ce72d538",
+        "final.dat": "c0e1f5d39c5380c163c4b1f6169c64144e642e105af0c778f005a29e5c86ce86"
+      },
+      "input_sha256": "7655dec8b8e79fcd50ea39525d30f8557b6f38dca94b515f1594257bf42fb9b7"
+    }
+  },
+  "source_files": {
+    "outputs/phase4_storm/numba_dt1/storm_summary.json": "cc95d7d593528615e87ff2636c502d092eba33c3693ce9580cf7f806a43242d1",
+    "outputs/phase4_storm/numba_dt0p5/storm_summary.json": "c1dd1074d933ddb0e5197bab317fa1c10e96e5430ec9c5096199bd5c2a9fe4d7",
+    "outputs/phase4_storm/numba_dt0p25/storm_summary.json": "82bdb96522ede94e981f19c27af5e2b242e26927083729f0b7cfa0fdb2522a7b",
+    "outputs/phase4_storm/array_dt1/storm_summary.json": "eb9fa5a129efe16cde49939c812d1b60392b69f17501662df98ce9f74efcea88",
+    "outputs/phase4_storm/numba_rain_end/storm_summary.json": "48e95839b486cae2621738d7b1bf6ca3ef19b41218cb24b76868fcd289eff425",
+    "outputs/phase4_reference_final/dt1/reference_summary.json": "29b0aff2dca6237fbd43a32ed1363eae8c96543a99f756f8a7a39b50d54c615f",
+    "outputs/phase4_reference_final/dt0p5/reference_summary.json": "f985aad37e887b6b73480890aa6e2830505bf24aa1dc315fbb82022ed3c7b32f",
+    "outputs/phase4_reference_final/dt0p25/reference_summary.json": "7380a8f7c1c92f4b1f00589fd95cebbea61e63ab9a681297c98124a65d427598",
+    "outputs/phase4_reference_final/rain_end/reference_summary.json": "efb5b05994ccf313ea9d162160c1ce773ff104be1205bc4961abbb6c5347574f"
+  },
+  "identity": {
+    "case_identity_sha256": "e1afad46a27b3b428c40f2c7ab17a4af7f0b9d42dc974759d45b0c4c4d64efab",
+    "graph_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+    "rainfall_sha256": "c7c19e7006af6c6054f1a1178e2ba5767135dd3970f63edb8f6f0742369f28d5",
+    "source_sha256": {
+      "src/Program_Control/shared_data.f90": "0d05a3b38bad24b40833c530900dc1e061cd90cef187b4e6bce2e1e1d233d36f",
+      "src/Subroutines_Water/route_water.for": "cd3c906ec35f181d108ed09fd3636be72578e759192a9f08a61b6f3395462188",
+      "src/Subroutines_Water/ff_type8.for": "0dc87ac00acc28a7b04b4e4a57e4251569a9dd127db06880f3df3fbe5b50b796",
+      "src/Subroutines_Water/infilt.for": "f67ae7a741be20d80ce041a4510cf65abe66993409e2b6974b857f713f279b8e",
+      "src/Subroutines_Water/accumulate_flow.for": "66f0ae6f0a9e4075c939caf17b8c6b613d69cc60399e10081336ef79dcf08d96",
+      "src/Subroutines_Water/update_water_flow.for": "fca3dd601611333865df996d7d73bd62da0592810726073ccd61945ae333ed92",
+      "src/Subroutines_In_out/topog_attrib.for": "bd44539b98ff213efd68b7c6b79df13f39867a9187ed377a7031a1f7d2ce57f5"
+    },
+    "driver_sha256": "be32e554a031e12a7d22830a4a58ee3e31c8acf78ffc0ec6a5b4854956f05b01",
+    "writer_sha256": "7d6f2bd2e9061a8e28826b58bf297bac563fdf42e78d3c9d3f1113bdb11bac24",
+    "helper_sha256": "20c4603d3a4faf21e43f83a74e3d58369094495992326a25fff7d2dcb63f7675",
+    "compiler_version": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "departures_from_application": [
+      "controlled exact rainfall intervals, not set_rain_xml switching",
+      "deterministic mean Ksat, no stochastic draw/XML setup",
+      "prescribed common parameters in FP64; legacy infilt lambda literals remain original precision",
+      "no sediment/chemistry; zero dummy sediment arrays for update_water_flow",
+      "accumulate_flow omitted: method5 does not use add/dup",
+      "literal stale qin and legacy root bracket retained; diagnostics do not correct them"
+    ],
+    "maple_digest": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+    "syrup_digest": "b3eb914994d91b77d39d6d4129774e0f09554923d40a8b3c449ef1da671684ef"
+  },
+  "bitwise_array_numba_parity": {
+    "final_water.npz": {
+      "depth_m": true,
+      "soil_water_m": true,
+      "discharge_m2_s": true,
+      "velocity_m_s": true,
+      "peak_depth_m": true,
+      "peak_velocity_m_s": true,
+      "cumulative_rain_m": true,
+      "cumulative_intake_m": true,
+      "cumulative_return_m": true,
+      "cumulative_drainage_m": true
+    },
+    "hydrograph.npz": {
+      "t_s": true,
+      "cumulative_rain_m3": true,
+      "cumulative_intake_m3": true,
+      "cumulative_saturation_return_m3": true,
+      "cumulative_drainage_m3": true,
+      "cumulative_export_m3": true,
+      "surface_storage_m3": true,
+      "soil_storage_m3": true,
+      "outlet_discharge_m3_s": true,
+      "max_depth_m": true,
+      "max_velocity_m_s": true,
+      "accepted_steps": true,
+      "rejected_attempts": true,
+      "min_accepted_dt_s": true,
+      "max_routing_cell_balance_residual_m": true,
+      "max_constitutive_residual_m": true,
+      "interval_rain_m3": true,
+      "interval_intake_m3": true,
+      "interval_saturation_return_m3": true,
+      "interval_drainage_m3": true,
+      "interval_export_m3": true,
+      "row_water_residual_m3": true
+    }
+  },
+  "rain_end_spatial_difference": {
+    "depth_m": {
+      "max_abs": 5.3972196513126305e-06,
+      "rmse": 9.115249691016842e-07,
+      "reference_max": 0.0047599908209078
+    },
+    "soil_water_m": {
+      "max_abs": 5.976245941174962e-08,
+      "rmse": 1.3283764273846936e-08,
+      "reference_max": 0.08447637210806148
+    },
+    "discharge_m2_s": {
+      "max_abs": 8.867310706268516e-08,
+      "rmse": 1.8069043804648056e-08,
+      "reference_max": 5.151369066875331e-05
+    },
+    "velocity_m_s": {
+      "max_abs": 1.6972664532028173e-05,
+      "rmse": 5.978505452747631e-06,
+      "reference_max": 0.024675622851601416
+    }
+  }
+}
