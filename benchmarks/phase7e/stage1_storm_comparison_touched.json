@@ -1,0 +1,676 @@
+{
+  "runs": [
+    {
+      "path": "outputs/phase7e/stage1/baseline_b32",
+      "summary_sha256": "1779185b9cfa216cbc0f4bb9affc16da62e2faf21968a9c315af351820c1ec62",
+      "provenance": {
+        "environment": {
+          "package_versions": {
+            "cupy-cuda12x": null,
+            "jax": "0.11.1",
+            "numpy": "2.5.2"
+          },
+          "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+          "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+          "python_version": "3.12.3",
+          "sys_prefix": "/home/okin/MAPLE/.venv"
+        },
+        "implementation": "numba",
+        "maple": {
+          "dependency": {
+            "direct_url": {
+              "dir_info": {
+                "editable": true
+              },
+              "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+            },
+            "distribution_name": "maple",
+            "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+            "distribution_version": "0.0.1",
+            "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+            "project_name": "maple",
+            "project_version": "0.0.1",
+            "source_kind": "editable_working_tree",
+            "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+          },
+          "git": {
+            "status": "not_a_git_repository"
+          },
+          "limitations": [
+            "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+            "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+            "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+          ],
+          "metadata_file_sha256": {
+            "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+          },
+          "package_source_digest": {
+            "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+            "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+            "file_count": 324,
+            "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+            "total_bytes": 7646372
+          },
+          "schema": "maple_syrup.maple_provenance.v1",
+          "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not"
+        },
+        "maple_matches_import_binding": false,
+        "maple_syrup": {
+          "git": {
+            "head_commit": "8ba42797faed52827dd2effd804042a89b85616b",
+            "head_describes_source": false,
+            "head_ref": "refs/heads/main",
+            "scoped_status": {
+              "command": [
+                "git",
+                "--no-optional-locks",
+                "-c",
+                "core.fsmonitor=false",
+                "-C",
+                "/home/okin/SYRUP",
+                "status",
+                "--porcelain=v1",
+                "-z",
+                "--untracked-files=all",
+                "--",
+                "src",
+                "tests",
+                "docs",
+                "cases",
+                "pyproject.toml"
+              ],
+              "entries": [
+                {
+                  "code": "??",
+                  "path": "docs/phase7e/bin_sweep.md"
+                },
+                {
+                  "code": "??",
+                  "path": "docs/phase7e/legacy_benchmark.md"
+                },
+                {
+                  "code": "??",
+                  "path": "docs/phase7e/selective_exchange.md"
+                },
+                {
+                  "code": "??",
+                  "path": "src/maple_syrup/legacy_transport.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/__init__.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/conftest.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/test_flow_distrib_fortran.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/test_legacy_transport.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/test_selective_exchange.py"
+                }
+              ],
+              "pathspecs": [
+                "src",
+                "tests",
+                "docs",
+                "cases",
+                "pyproject.toml"
+              ],
+              "status": "dirty"
+            },
+            "status": "ok"
+          },
+          "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+          "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+          "package_source_digest": {
+            "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+            "digest_sha256": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e",
+            "file_count": 25,
+            "root": "/home/okin/SYRUP/src/maple_syrup",
+            "total_bytes": 717699
+          },
+          "repository_root": "/home/okin/SYRUP",
+          "schema": "maple_syrup.syrup_provenance.v1",
+          "version": "0.0.1.dev0"
+        },
+        "numba": {
+          "llvmlite": "0.49.0",
+          "numba": "0.67.0"
+        },
+        "source_stability": {
+          "after": {
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+            "maple_syrup": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e"
+          },
+          "before": {
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+            "maple_syrup": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e"
+          },
+          "stable": true
+        }
+      },
+      "performance": {
+        "commits_wall_s": 0.0,
+        "first_accepted_step": {
+          "cpu_s": 4.9720124189999995,
+          "note": "includes lazy import and JIT compilation for the numba implementation",
+          "wall_s": 3.685510811046697
+        },
+        "note": "one observational run; not a controlled benchmark and not comparable with the whole-program MAHLERAN wall time",
+        "peak_rss_kib": {
+          "note": "ru_maxrss of this process; includes imports, verification and the case",
+          "process_end": 407072,
+          "process_start": 233208
+        },
+        "remaining_steps": {
+          "cpu_s": 308.251345881,
+          "mean_wall_s_per_step": 0.05709664709706485,
+          "n_steps": 5399,
+          "wall_s": 308.26479767705314
+        },
+        "reporting": {
+          "cpu_s": 0.4680456810000351,
+          "wall_s": 0.47105535899754614
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.9580594469999997,
+          "wall_s": 1.9609710719669238
+        },
+        "step_loop": {
+          "cpu_s": 313.239533409,
+          "wall_s": 311.9665181370219
+        }
+      },
+      "component_timers": {
+        "coupled_step": {
+          "calls": 5400,
+          "wall_s": 10.68717761489097
+        },
+        "sediment_physics_step": {
+          "calls": 5400,
+          "wall_s": 16.531310503021814
+        },
+        "with_water": {
+          "calls": 10800,
+          "wall_s": 1.8128132278798148
+        },
+        "apply_bed_demand": {
+          "calls": 10800,
+          "wall_s": 184.00971031631343
+        },
+        "maple_pickup": {
+          "calls": 5400,
+          "wall_s": 91.37220929120667
+        },
+        "characteristic_step": {
+          "calls": 5400,
+          "wall_s": 86.51045835041441
+        },
+        "maple_deposit_export": {
+          "calls": 5400,
+          "wall_s": 92.63750102510676
+        }
+      },
+      "sediment_closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.009594645007460779,
+          0.00416933263294966,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66122314593,
+          201910.0656642398,
+          11634.536515619666,
+          26356.842278859316,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009594644987373613,
+          -0.004169332591118291,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.656916316362703e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          1.0658141036401503e-14,
+          0.0,
+          0.0,
+          4.163336342344337e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          2.9103830456733704e-11,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "sediment_totals": {
+        "actual_pickup": 411.0634395566964,
+        "availability_shortfall": 42.01802775014119,
+        "deposit_numerical_residual": 0.0,
+        "deposition_actual": 411.0496755790561,
+        "deposition_requested": 411.0496755790561,
+        "deposition_unmet": -8.926731337223706e-15,
+        "export_actual": 0.01376397764041044,
+        "export_requested": 0.01376397764041044,
+        "export_unmet": 1.5984451637029855e-20,
+        "flow_pickup_requested": 0.0,
+        "holdings_shortfall": 0.0,
+        "pickup_numerical_residual": 0.0,
+        "raindrop_pickup_requested": 453.0814673068375,
+        "requested_pickup": 453.0814673068375,
+        "transport_budget_residual": -4.6494156858952265e-14,
+        "transport_budget_tolerance": 5.478392311835554e-08
+      },
+      "water_budget": {
+        "drainage_m3": 0.014312168708423518,
+        "export_definition": "conservative face-volume ledger of the routing step (NOT a sum of endpoint outlet discharge); the hydrograph also carries the instantaneous outlet discharge",
+        "export_m3": 0.16444993704263003,
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.732420062957372,
+        "rain_m3": 2.896869999999962,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.218107894248945,
+        "soil_initial_m3": 22.499999999999996,
+        "surface_final_m3": 0.0,
+        "surface_initial_m3": 0.0,
+        "tolerance_m3": 5.805609621007405e-07,
+        "tolerance_rule": "MAPLE summation coefficient (4 n eps) with n = 4 n_cells n_steps + 7 on the largest genuine volume operand",
+        "units": "m3",
+        "water_residual_m3": 3.774758283725532e-14
+      }
+    },
+    {
+      "path": "outputs/phase7e/stage1/candidate_touched_b32",
+      "summary_sha256": "cffa464d9ee4a4ddc3eb6f2f6233b2844dbddda1a7026ba36a4209befddc0bfd",
+      "provenance": {
+        "environment": {
+          "package_versions": {
+            "cupy-cuda12x": null,
+            "jax": "0.11.1",
+            "numpy": "2.5.2"
+          },
+          "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+          "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+          "python_version": "3.12.3",
+          "sys_prefix": "/home/okin/MAPLE/.venv"
+        },
+        "implementation": "numba",
+        "maple": {
+          "dependency": {
+            "direct_url": {
+              "dir_info": {
+                "editable": true
+              },
+              "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_phase7e_candidate/source"
+            },
+            "distribution_name": "maple",
+            "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+            "distribution_version": "0.0.1",
+            "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_phase7e_candidate/source/src/maple",
+            "project_name": "maple",
+            "project_version": "0.0.1",
+            "source_kind": "editable_working_tree",
+            "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_phase7e_candidate/source"
+          },
+          "git": {
+            "status": "not_a_git_repository"
+          },
+          "limitations": [
+            "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+            "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+            "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+          ],
+          "metadata_file_sha256": {
+            "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+          },
+          "package_source_digest": {
+            "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+            "digest_sha256": "1dc70bb4b82c62af70d311d053e7678d06c9d7cabd7f91e25da87ec7a546beab",
+            "file_count": 324,
+            "root": "/home/okin/SYRUP/outputs/dependencies/maple_phase7e_candidate/source/src/maple",
+            "total_bytes": 7688040
+          },
+          "schema": "maple_syrup.maple_provenance.v1",
+          "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not"
+        },
+        "maple_matches_import_binding": false,
+        "maple_syrup": {
+          "git": {
+            "head_commit": "8ba42797faed52827dd2effd804042a89b85616b",
+            "head_describes_source": false,
+            "head_ref": "refs/heads/main",
+            "scoped_status": {
+              "command": [
+                "git",
+                "--no-optional-locks",
+                "-c",
+                "core.fsmonitor=false",
+                "-C",
+                "/home/okin/SYRUP",
+                "status",
+                "--porcelain=v1",
+                "-z",
+                "--untracked-files=all",
+                "--",
+                "src",
+                "tests",
+                "docs",
+                "cases",
+                "pyproject.toml"
+              ],
+              "entries": [
+                {
+                  "code": "??",
+                  "path": "src/maple_syrup/legacy_transport.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/__init__.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/conftest.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/test_legacy_transport.py"
+                },
+                {
+                  "code": "??",
+                  "path": "tests/phase7e/test_selective_exchange.py"
+                }
+              ],
+              "pathspecs": [
+                "src",
+                "tests",
+                "docs",
+                "cases",
+                "pyproject.toml"
+              ],
+              "status": "dirty"
+            },
+            "status": "ok"
+          },
+          "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+          "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+          "package_source_digest": {
+            "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+            "digest_sha256": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e",
+            "file_count": 25,
+            "root": "/home/okin/SYRUP/src/maple_syrup",
+            "total_bytes": 717699
+          },
+          "repository_root": "/home/okin/SYRUP",
+          "schema": "maple_syrup.syrup_provenance.v1",
+          "version": "0.0.1.dev0"
+        },
+        "numba": {
+          "llvmlite": "0.49.0",
+          "numba": "0.67.0"
+        },
+        "source_stability": {
+          "after": {
+            "maple": "1dc70bb4b82c62af70d311d053e7678d06c9d7cabd7f91e25da87ec7a546beab",
+            "maple_syrup": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e"
+          },
+          "before": {
+            "maple": "1dc70bb4b82c62af70d311d053e7678d06c9d7cabd7f91e25da87ec7a546beab",
+            "maple_syrup": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e"
+          },
+          "stable": true
+        }
+      },
+      "performance": {
+        "commits_wall_s": 0.0,
+        "first_accepted_step": {
+          "cpu_s": 4.865184985999999,
+          "note": "includes lazy import and JIT compilation for the numba implementation",
+          "wall_s": 3.647080047056079
+        },
+        "note": "one observational run; not a controlled benchmark and not comparable with the whole-program MAHLERAN wall time",
+        "peak_rss_kib": {
+          "note": "ru_maxrss of this process; includes imports, verification and the case",
+          "process_end": 410232,
+          "process_start": 233700
+        },
+        "remaining_steps": {
+          "cpu_s": 213.473548658,
+          "mean_wall_s_per_step": 0.03954146747620268,
+          "n_steps": 5399,
+          "wall_s": 213.48438290401828
+        },
+        "reporting": {
+          "cpu_s": 0.37739189499998815,
+          "wall_s": 0.3784401189768687
+        },
+        "setup_and_verification": {
+          "cpu_s": 1.8640984110000005,
+          "wall_s": 1.8677368400385603
+        },
+        "step_loop": {
+          "cpu_s": 218.35461766900002,
+          "wall_s": 217.14735456800554
+        }
+      },
+      "component_timers": {
+        "coupled_step": {
+          "calls": 5400,
+          "wall_s": 9.766021890565753
+        },
+        "sediment_physics_step": {
+          "calls": 5400,
+          "wall_s": 14.80744363705162
+        },
+        "with_water": {
+          "calls": 10800,
+          "wall_s": 1.661839009146206
+        },
+        "apply_bed_demand": {
+          "calls": 10800,
+          "wall_s": 92.5870044180192
+        },
+        "maple_pickup": {
+          "calls": 5400,
+          "wall_s": 45.80847242672462
+        },
+        "characteristic_step": {
+          "calls": 5400,
+          "wall_s": 87.03530110046268
+        },
+        "maple_deposit_export": {
+          "calls": 5400,
+          "wall_s": 46.778531991294585
+        }
+      },
+      "sediment_closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.009594645007460779,
+          0.00416933263294966,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66122314593,
+          201910.0656642398,
+          11634.536515619666,
+          26356.842278859316,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009594644987373613,
+          -0.004169332591118291,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.656916316362703e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          1.0658141036401503e-14,
+          0.0,
+          0.0,
+          4.163336342344337e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          2.9103830456733704e-11,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "sediment_totals": {
+        "actual_pickup": 411.0634395566964,
+        "availability_shortfall": 42.01802775014119,
+        "deposit_numerical_residual": 0.0,
+        "deposition_actual": 411.0496755790561,
+        "deposition_requested": 411.0496755790561,
+        "deposition_unmet": -8.926731337223706e-15,
+        "export_actual": 0.01376397764041044,
+        "export_requested": 0.01376397764041044,
+        "export_unmet": 1.5984451637029855e-20,
+        "flow_pickup_requested": 0.0,
+        "holdings_shortfall": 0.0,
+        "pickup_numerical_residual": 0.0,
+        "raindrop_pickup_requested": 453.0814673068375,
+        "requested_pickup": 453.0814673068375,
+        "transport_budget_residual": -4.6494156858952265e-14,
+        "transport_budget_tolerance": 5.478392311835554e-08
+      },
+      "water_budget": {
+        "drainage_m3": 0.014312168708423518,
+        "export_definition": "conservative face-volume ledger of the routing step (NOT a sum of endpoint outlet discharge); the hydrograph also carries the instantaneous outlet discharge",
+        "export_m3": 0.16444993704263003,
+        "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+        "intake_m3": 2.732420062957372,
+        "rain_m3": 2.896869999999962,
+        "saturation_return_m3": 0.0,
+        "soil_final_m3": 25.218107894248945,
+        "soil_initial_m3": 22.499999999999996,
+        "surface_final_m3": 0.0,
+        "surface_initial_m3": 0.0,
+        "tolerance_m3": 5.805609621007405e-07,
+        "tolerance_rule": "MAPLE summation coefficient (4 n eps) with n = 4 n_cells n_steps + 7 on the largest genuine volume operand",
+        "units": "m3",
+        "water_residual_m3": 3.774758283725532e-14
+      }
+    }
+  ],
+  "numeric_fields_compared": 103,
+  "all_numeric_fields_exact": true,
+  "differences": [],
+  "loop_speedup": 1.4366581566588748,
+  "loop_time_reduction_fraction": 0.3039401924772257,
+  "note": "Sequential same-machine observations; compilation is reported separately. No numerical tolerance is relaxed by this reporting script."
+}

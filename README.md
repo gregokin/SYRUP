@@ -32,6 +32,16 @@ This uses the existing imported Plot1 fixture and records the dependency change
 explicitly. New case imports should bind this selected MAPLE snapshot directly.
 The runtime helper verifies source hashes before exposing the candidate modules.
 
+## Phase 7e: selective voxels and transport comparisons
+
+The new opt-in shared MAPLE candidate avoids most full-column kernel work and
+reuses surface metadata across trusted exchanges. A separate compiled legacy
+replay closely matches actual MAHLERAN, while the 1–128 bin study distinguishes
+final-yield convergence from peak-flux convergence. See
+[qualification](docs/phase7e/acceptance.md) and
+[setup/reproduction](benchmarks/phase7e/README.md). The older selected dependency
+above remains available; selecting Phase7e is explicit. No wind physics is copied.
+
 ## Earlier milestones: Phases 1–5
 
 

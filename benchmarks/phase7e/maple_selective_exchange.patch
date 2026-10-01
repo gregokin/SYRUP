@@ -1,0 +1,1129 @@
+--- a/src/maple/core/types/voxel.py
++++ b/src/maple/core/types/voxel.py
+@@ -5,9 +5,74 @@
+ 
+ from __future__ import annotations
+ 
+-from dataclasses import dataclass
++from dataclasses import dataclass, field
++from typing import Any
+ 
+ import numpy as np
++
++
++class ArrayBinding:
++    """Identity binding of derived metadata to ONE exact array object
++    (Phase 7e). Deliberately neither an array, a dataclass, a tuple, a list
++    nor a dict, so the backend tree walkers pass it through untouched.
++
++    It holds an ordinary (strong) reference: the binding only ever lives
++    inside the `VoxelColumnState` that owns that very array, so it retains
++    nothing the column does not already retain. It is never carried into
++    another column: `VoxelColumnState.surface_cache` is `init=False`, so
++    `dataclasses.replace`, `to_host_tree`/`to_device_tree`, snapshot
++    restore and every ordinary constructor produce a column WITHOUT a
++    cache. (CuPy arrays are not weak-referenceable, so a weak binding
++    could not be backend-neutral; dropping at construction is what keeps
++    an old bed from being retained.)
++    """
++
++    __slots__ = ("array",)
++
++    def __init__(self, array: Any) -> None:
++        self.array = array
++
++
++def _is_enforced_read_only(array: Any) -> bool:
++    """True only for a NumPy array whose writeable flag is cleared -- the
++    one backend where in-place mutation is genuinely refused by the
++    interpreter (same rule as `maple.core.backend.is_frozen`, restated
++    here to keep `core/types` free of backend imports)."""
++    return isinstance(array, np.ndarray) and not array.flags.writeable
++
++
++@dataclass(frozen=True)
++class VoxelSurfaceCache:
++    """Per-cell voxel totals of ONE exact `VoxelColumnState.mass_kg` array
++    (Phase 7e SYRUP candidate; see surface/voxels/transfer.py, "Selective
++    exchange").
++
++    `voxel_totals_kg` `(ny, nx, n_voxels)` FP64 is bit-identical to
++    `mass_kg.sum(axis=-1)` of the bound array: the surface-exchange kernels
++    maintain it by rewriting exactly the entries of the voxels they
++    touched, with the same per-voxel class-axis reduction. `binding` names
++    the array object.
++
++    TRUST BOUNDARY. Identity alone cannot detect an in-place write into a
++    writable array, so a cache is only USED when `describes(mass_kg)` holds
++    AND either the array is enforceably read-only (NumPy, frozen by the
++    exchange routine that built the cache) or the calling transaction
++    declares `trusted=True` because it owns the whole chain of states
++    between the exchange that built the cache and this one (the water step
++    does so for its internal erosion -> deposition hand-off; a scheduler
++    that keeps states immutable may do so across steps). An ordinary public
++    caller with a writable array therefore never has a cache trusted on its
++    behalf: the totals are rebuilt from the mass array. `validate_voxel_
++    surface_cache` (transfer.py) recomputes and compares bitwise for
++    trusted boundaries, full-state validation and tests. Derived data, never
++    persisted; a snapshot or checkpoint restores a column without it.
++    """
++
++    voxel_totals_kg: np.ndarray  # (ny, nx, n_voxels) fp64, read-only where enforceable
++    binding: ArrayBinding
++
++    def describes(self, mass_kg: Any) -> bool:
++        return self.binding.array is mass_kg
+ 
+ 
+ @dataclass(frozen=True)
+@@ -51,6 +116,23 @@
+     # codebase need no change either way, because CuPy reuses NumPy's own
+     # dtype objects.
+     mass_kg: np.ndarray  # (ny, nx, n_voxels, n_classes) fp64
++    # Optional derived surface metadata (Phase 7e). Not physical state:
++    # `init=False`, so every ordinary construction, `dataclasses.replace`,
++    # backend tree conversion and snapshot restore yields a column WITHOUT
++    # it; only `surface/voxels/transfer.py`'s exchange constructor attaches
++    # one, to a mass array it has just produced and (on NumPy) frozen.
++    surface_cache: VoxelSurfaceCache | None = field(default=None, init=False, compare=False, repr=False)
++
++    def valid_surface_cache(self, *, trusted: bool = False) -> VoxelSurfaceCache | None:
++        """The cache if it describes this exact `mass_kg` object AND may be
++        relied upon: the array is enforceably read-only, or the caller
++        owns the state chain and passes `trusted=True`. Otherwise None."""
++        cache = self.surface_cache
++        if cache is None or not cache.describes(self.mass_kg):
++            return None
++        if trusted or _is_enforced_read_only(self.mass_kg):
++            return cache
++        return None
+ 
+ 
+ def zeros_voxel_column_state(ny: int, nx: int, n_voxels: int, n_classes: int) -> VoxelColumnState:
+--- a/src/maple/coupling/sediment_ledger/accumulate.py
++++ b/src/maple/coupling/sediment_ledger/accumulate.py
+@@ -100,7 +100,7 @@
+ 
+ import numpy as np
+ 
+-from maple.core.backend import MapleArray, array_namespace, to_float
++from maple.core.backend import MapleArray, array_namespace, to_float, to_int
+ from maple.core.types.sediment_ledger import (
+     LEDGER_PROCESS_NAMES,
+     N_LEDGER_PROCESSES,
+@@ -110,6 +110,7 @@
+     sum_over_process_axis,
+ )
+ from maple.coupling.sediment_ledger.validation import (
++    _raise_sign_violation,
+     canonicalize_nonnegative_domain_class_array,
+     canonicalize_signed_domain_class_array,
+     validate_ledger_state,
+@@ -491,6 +492,30 @@
+         numerical_residual_by_cell_class_kg, expected_shape=domain_shape, name="numerical_residual_by_cell_class_kg"
+     )
+ 
++    # Phase 7e (SYRUP candidate): a single-process transfer leaves every
++    # OTHER process slice of the four directional channels with a zero
++    # increment. A zero Kahan increment is an exact identity on a slice
++    # whose compensation buffer is zero (y = 0, t = s, c' = 0), so when
++    # every other slice's compensation is exactly zero the padded
++    # whole-array pass below is provably redundant on those slices and the
++    # same result is produced by updating slice `process_idx` alone. The
++    # check is four count comparisons; a nonzero foreign compensation
++    # takes the original padded path unchanged.
++    foreign_compensation = 0
++    for compensation in (
++        ledger.numerical_residual_positive_compensation_kg,
++        ledger.numerical_residual_negative_compensation_kg,
++        ledger.actual_mass_positive_compensation_kg,
++        ledger.actual_mass_negative_compensation_kg,
++    ):
++        foreign_compensation = foreign_compensation + (
++            xp.count_nonzero(compensation) - xp.count_nonzero(compensation[process_idx])
++        )
++    if to_int(foreign_compensation) == 0:
++        return _accumulate_single_process_sparse_validated(
++            ledger, ny, nx, n_classes, process_idx, actual_kg, residual_kg, mass_resolution_kg
++        )
++
+     # Built in the LEDGER's own namespace and written with a single
+     # process-axis slice assignment -- no scatter primitive is needed
+     # here, because `process_idx` is one fixed host-side integer, not a
+@@ -506,6 +531,123 @@
+     # mutates nothing), so the step core takes it as already validated.
+     return _accumulate_step_validated(
+         ledger, ny, nx, n_classes, full_actual_kg, full_residual_kg, mass_resolution_kg
++    )
++
++
++def _accumulate_single_process_sparse_validated(
++    ledger: SedimentLedgerState,
++    ny: int,
++    nx: int,
++    n_classes: int,
++    process_idx: int,
++    actual_kg: MapleArray,
++    residual_kg: MapleArray,
++    mass_resolution_kg: float,
++) -> SedimentLedgerState:
++    """`_accumulate_step_validated` for a batch that is nonzero on ONE
++    process slice, computed without materialising the zero-padded batch
++    (Phase 7e SYRUP candidate). PRIVATE; the caller has already proven that
++    every other slice of the four directional compensation buffers is
++    exactly zero, which is what makes skipping those slices an identity.
++
++    Every check the padded path performs on this call's arguments still
++    runs here on the same values: mass-resolution validity, the process
++    sign rule for the actual and residual increments (the padded zero
++    slices can never violate theirs), and the numerical-residual contract.
++    The arithmetic is the padded path's arithmetic restricted to what it
++    could change: the pending fold is the same six-operand fixed-order
++    fold with explicit zero operands; the process totals are Kahan-added
++    over the full `(n_process, n_classes)` array with a zero increment on
++    the other rows exactly as before; the four directional channels are
++    copied and Kahan-updated on slice `process_idx` only; the running
++    largest residual and the per-cell touch counter reduce the same
++    nonzero slice. Inputs are never mutated; every returned array is new.
++    """
++    resolved_mass_resolution_kg = validate_mass_resolution_kg(mass_resolution_kg)
++    xp = array_namespace(ledger.pending_bed_mass_change_kg, actual_kg, residual_kg)
++    rule = PROCESS_SIGN_RULES[process_idx]
++    for name, array in (
++        ("actual_mass_by_process_cell_class_kg", actual_kg),
++        ("numerical_residual_by_process_cell_class_kg", residual_kg),
++    ):
++        if rule == "nonpositive":
++            violation = array > 0
++            if to_int(xp.count_nonzero(violation)):
++                _raise_sign_violation(process_idx, rule, to_float(array[violation].max()), name)
++        elif rule == "nonnegative":
++            violation = array < 0
++            if to_int(xp.count_nonzero(violation)):
++                _raise_sign_violation(process_idx, rule, to_float(array[violation].min()), name)
++    validate_numerical_residual_contract(residual_kg, resolved_mass_resolution_kg)
++
++    # Pending change: the padded path's `sum_over_process_axis` is the fixed
++    # fold a0 + a1 + ... + a5; with zeros on every other slice that is the
++    # same expression written out, evaluated in the same order.
++    zero_slice = xp.zeros((ny, nx, n_classes), dtype=np.float64)
++    operands = [zero_slice] * N_LEDGER_PROCESSES
++    operands[process_idx] = actual_kg
++    pending_increment_kg = operands[0]
++    for operand in operands[1:]:
++        pending_increment_kg = pending_increment_kg + operand
++    new_pending_kg, new_pending_comp_kg = _kahan_add(
++        ledger.pending_bed_mass_change_kg, ledger.pending_compensation_kg, pending_increment_kg
++    )
++
++    process_increment_kg = xp.zeros((N_LEDGER_PROCESSES, n_classes), dtype=np.float64)
++    process_increment_kg[process_idx] = actual_kg.sum(axis=(0, 1))
++    new_process_totals_kg, new_process_totals_comp_kg = _kahan_add(
++        ledger.process_totals_kg, ledger.process_totals_compensation_kg, process_increment_kg
++    )
++
++    def sparse_kahan(running_sum: MapleArray, compensation: MapleArray, increment_slice: MapleArray):
++        new_sum = running_sum.copy()
++        new_compensation = compensation.copy()
++        new_sum[process_idx], new_compensation[process_idx] = _kahan_add(
++            running_sum[process_idx], compensation[process_idx], increment_slice
++        )
++        return new_sum, new_compensation
++
++    positive_increment_kg = xp.where(residual_kg > 0, residual_kg, 0.0)
++    negative_increment_kg = xp.where(residual_kg < 0, -residual_kg, 0.0)
++    new_residual_positive_kg, new_residual_positive_comp_kg = sparse_kahan(
++        ledger.numerical_residual_positive_kg, ledger.numerical_residual_positive_compensation_kg,
++        positive_increment_kg,
++    )
++    new_residual_negative_kg, new_residual_negative_comp_kg = sparse_kahan(
++        ledger.numerical_residual_negative_kg, ledger.numerical_residual_negative_compensation_kg,
++        negative_increment_kg,
++    )
++    actual_positive_increment_kg = xp.where(actual_kg > 0, actual_kg, 0.0)
++    actual_negative_increment_kg = xp.where(actual_kg < 0, -actual_kg, 0.0)
++    new_actual_positive_kg, new_actual_positive_comp_kg = sparse_kahan(
++        ledger.actual_mass_positive_kg, ledger.actual_mass_positive_compensation_kg, actual_positive_increment_kg
++    )
++    new_actual_negative_kg, new_actual_negative_comp_kg = sparse_kahan(
++        ledger.actual_mass_negative_kg, ledger.actual_mass_negative_compensation_kg, actual_negative_increment_kg
++    )
++
++    gross_increment_kg = positive_increment_kg + negative_increment_kg
++    this_call_max = to_float(gross_increment_kg.max()) if gross_increment_kg.size else 0.0
++    new_largest_residual_kg = max(ledger.largest_residual_kg, this_call_max)
++
++    touch_increment = (actual_kg != 0.0).astype(ledger.n_physical_touches.dtype)
++    new_n_physical_touches = ledger.n_physical_touches + touch_increment
++
++    return SedimentLedgerState(
++        pending_bed_mass_change_kg=new_pending_kg,
++        pending_compensation_kg=new_pending_comp_kg,
++        process_totals_kg=new_process_totals_kg,
++        process_totals_compensation_kg=new_process_totals_comp_kg,
++        numerical_residual_positive_kg=new_residual_positive_kg,
++        numerical_residual_positive_compensation_kg=new_residual_positive_comp_kg,
++        numerical_residual_negative_kg=new_residual_negative_kg,
++        numerical_residual_negative_compensation_kg=new_residual_negative_comp_kg,
++        actual_mass_positive_kg=new_actual_positive_kg,
++        actual_mass_positive_compensation_kg=new_actual_positive_comp_kg,
++        actual_mass_negative_kg=new_actual_negative_kg,
++        actual_mass_negative_compensation_kg=new_actual_negative_comp_kg,
++        largest_residual_kg=new_largest_residual_kg,
++        n_physical_touches=new_n_physical_touches,
+     )
+ 
+ 
+--- a/src/maple/surface/active_layer/exchange.py
++++ b/src/maple/surface/active_layer/exchange.py
+@@ -82,8 +82,12 @@
+ )
+ from maple.surface.voxels._numerics import le_within_tolerance_array, make_proportional_mass_vector
+ from maple.surface.voxels.transfer import (
+-    _deposit_surface_mixture_batched_inplace,
+-    _extract_surface_mixture_batched_inplace,
++    _deposit_surface_mixture_selective_inplace,
++    _extract_surface_mixture_selective_inplace,
++    column_with_surface_cache,
++    record_selective_count,
++    validate_voxel_surface_cache,
++    voxel_totals_for_exchange,
+ )
+ 
+ 
+@@ -242,6 +246,9 @@
+     deficit_kg: MapleArray,
+     geometry: GeometrySpec,
+     mass_resolution_kg: float,
++    *,
++    voxel_totals_kg: MapleArray | None = None,
++    voxel_delta_by_class_kg: MapleArray | None = None,
+ ) -> tuple[MapleArray, MapleArray, MapleArray, MapleArray]:
+     """Internal kernel, not exported (spec.md Phase 3R Fix H): refill every
+     cell's active-layer deficit simultaneously by bulk, physically
+@@ -278,8 +285,16 @@
+     Section 14).
+     """
+     replenish_request = array_namespace(deficit_kg).maximum(deficit_kg, 0.0)  # (ny, nx)
+-    result = _extract_surface_mixture_batched_inplace(
+-        voxel_mass_kg, replenish_request, geometry, mass_resolution_kg
++    # Phase 7e: the selective entry runs the identical batched kernel on each
++    # cell's surface window (or its whole gathered column where the window
++    # is not provably exact, or not at all where provably without effect)
++    # and keeps `voxel_totals_kg` current at the touched voxels (transfer.py,
++    # "Selective exchange"). A caller without totals pays one full read here.
++    if voxel_totals_kg is None:
++        voxel_totals_kg = voxel_mass_kg.sum(axis=-1)
++    result = _extract_surface_mixture_selective_inplace(
++        voxel_mass_kg, replenish_request, geometry, mass_resolution_kg, voxel_totals_kg,
++        voxel_delta_by_class_kg=voxel_delta_by_class_kg,
+     )
+     new_active_layer_mass_kg = active_layer_mass_kg + result.actual_mass_by_class_kg
+     return (
+@@ -296,6 +311,9 @@
+     target_mass_kg: float,
+     geometry: GeometrySpec,
+     mass_resolution_kg: float,
++    *,
++    voxel_totals_kg: MapleArray | None = None,
++    voxel_delta_by_class_kg: MapleArray | None = None,
+ ) -> tuple[MapleArray, MapleArray, MapleArray]:
+     """Internal kernel, not exported (spec.md Phase 3R Fix H): bury every
+     cell's active-layer excess (whatever pushes it above target_mass_kg)
+@@ -358,8 +376,13 @@
+     total_kg = active_layer_mass_kg.sum(axis=-1)  # (ny, nx)
+     excess_kg = xp.maximum(total_kg - target_mass_kg, 0.0)  # (ny, nx)
+     intended_buried_mass_by_class_kg = make_proportional_mass_vector(excess_kg, active_layer_mass_kg)
+-    deposit_result = _deposit_surface_mixture_batched_inplace(
+-        voxel_mass_kg, intended_buried_mass_by_class_kg, geometry, mass_resolution_kg
++    # Phase 7e: selective surface-window entry with per-cell whole-column
++    # fallback and zero-request skipping; `voxel_totals_kg` stays current.
++    if voxel_totals_kg is None:
++        voxel_totals_kg = voxel_mass_kg.sum(axis=-1)
++    deposit_result = _deposit_surface_mixture_selective_inplace(
++        voxel_mass_kg, intended_buried_mass_by_class_kg, geometry, mass_resolution_kg, voxel_totals_kg,
++        voxel_delta_by_class_kg=voxel_delta_by_class_kg,
+     )
+     actual_buried_mass_by_class_kg = deposit_result.actual_mass_by_class_kg
+     new_active_layer_mass_kg = active_layer_mass_kg - actual_buried_mass_by_class_kg
+@@ -378,6 +401,8 @@
+     mass_resolution_kg: float,
+     *,
+     validate_full_state: bool = False,
++    trust_surface_cache: bool = False,
++    voxel_delta_by_class_kg: MapleArray | None = None,
+ ) -> tuple[VoxelColumnState, ActiveLayerState, ActiveLayerErosionResult]:
+     """One accounting operation: selective removal from the currently
+     exposed active layer, followed by one bulk replenishment from the
+@@ -433,10 +458,20 @@
+     has succeeded, so a failure partway through (e.g. invalid geometry
+     discovered mid-loop) never leaves the caller with a partially-updated
+     result.
++
++    Phase 7e: `trust_surface_cache` lets a transaction that OWNS the whole
++    chain of states since the exchange that attached `voxel_column.
++    surface_cache` rely on that cache even where the backend cannot enforce
++    read-only arrays (CuPy); the default relies on it only for an
++    enforceably read-only array (core/types/voxel.py). `voxel_delta_by_
++    class_kg`, if given, is accumulated in place with the per-class sum of
++    stored voxel-mass change over exactly the touched voxels. The returned
++    column carries a cache for its own (frozen) mass array.
+     """
+     with profile_section("active_layer.erosion"):
+         if validate_full_state:
+             check_active_layer_voxel_partition(active_layer, voxel_column, geometry, mass_resolution_kg)
++            validate_voxel_surface_cache(voxel_column, trusted=trust_surface_cache)
+         else:
+             check_active_layer_voxel_shape_compatibility(active_layer, voxel_column, geometry, mass_resolution_kg)
+         ny, nx, n_classes = active_layer.mass_kg.shape
+@@ -476,7 +511,12 @@
+         # working_voxel_mass_kg array is simply discarded (never wrapped into
+         # a VoxelColumnState), so the caller's own voxel_column.mass_kg --
+         # copied once, before any mutation -- is provably untouched.
+-        working_voxel_mass_kg = voxel_column.mass_kg.copy()
++        working_voxel_mass_kg = voxel_column.mass_kg.copy()  # pure state ownership: one whole-array copy
++        record_selective_count("whole_mass_copy_entries", working_voxel_mass_kg.size)
++        # Phase 7e: per-cell voxel totals from the column's cache when it may
++        # be relied upon (one small metadata copy), else rebuilt once from the
++        # mass array; the selective kernel keeps them current.
++        working_voxel_totals_kg = voxel_totals_for_exchange(voxel_column, trusted=trust_surface_cache)
+         deficit_kg = target_mass_kg - new_active_mass_kg.sum(axis=-1)  # (ny, nx)
+         (
+             new_active_mass_kg,
+@@ -484,7 +524,8 @@
+             replenishment_shortfall_kg,
+             replenishment_residual_kg,
+         ) = _replenish_active_layer_from_voxels_batched_inplace(
+-            working_voxel_mass_kg, new_active_mass_kg, deficit_kg, geometry, mass_resolution_kg
++            working_voxel_mass_kg, new_active_mass_kg, deficit_kg, geometry, mass_resolution_kg,
++            voxel_totals_kg=working_voxel_totals_kg, voxel_delta_by_class_kg=voxel_delta_by_class_kg,
+         )
+ 
+         # Underfilled iff the post-replenishment total is genuinely (not just
+@@ -505,9 +546,10 @@
+         underfilled_mask = underfilled_at_fp64_tolerance & underfilled_at_model_resolution
+ 
+         new_active_layer = ActiveLayerState(mass_kg=new_active_mass_kg)
+-        working_column = VoxelColumnState(mass_kg=working_voxel_mass_kg)
++        working_column = column_with_surface_cache(working_voxel_mass_kg, working_voxel_totals_kg)
+         if validate_full_state:
+             check_active_layer_voxel_partition(new_active_layer, working_column, geometry, mass_resolution_kg)
++            validate_voxel_surface_cache(working_column)
+         else:
+             check_active_layer_voxel_shape_compatibility(
+                 new_active_layer, working_column, geometry, mass_resolution_kg
+@@ -536,6 +578,8 @@
+     mass_resolution_kg: float,
+     *,
+     validate_full_state: bool = False,
++    trust_surface_cache: bool = False,
++    voxel_delta_by_class_kg: MapleArray | None = None,
+ ) -> tuple[VoxelColumnState, ActiveLayerState, ActiveLayerDepositionResult]:
+     """Add deposited mass into the (instantaneously well-mixed) active
+     layer, then bury the proportional excess into the voxel column if
+@@ -571,10 +615,14 @@
+     nothing is committed for any cell, not just the failing one -- results
+     are only wrapped into returned states once every cell's burial step
+     (if any) has succeeded.
++
++    Phase 7e: `trust_surface_cache` and `voxel_delta_by_class_kg` as in
++    `update_active_layer_after_erosion`.
+     """
+     with profile_section("active_layer.deposition"):
+         if validate_full_state:
+             check_active_layer_voxel_partition(active_layer, voxel_column, geometry, mass_resolution_kg)
++            validate_voxel_surface_cache(voxel_column, trusted=trust_surface_cache)
+         else:
+             check_active_layer_voxel_shape_compatibility(active_layer, voxel_column, geometry, mass_resolution_kg)
+         ny, nx, n_classes = active_layer.mass_kg.shape
+@@ -600,19 +648,23 @@
+         # above for why, and why atomicity is preserved (a failure partway
+         # through simply discards this local array before it is ever wrapped
+         # into a VoxelColumnState).
+-        working_voxel_mass_kg = voxel_column.mass_kg.copy()
++        working_voxel_mass_kg = voxel_column.mass_kg.copy()  # pure state ownership: one whole-array copy
++        record_selective_count("whole_mass_copy_entries", working_voxel_mass_kg.size)
++        working_voxel_totals_kg = voxel_totals_for_exchange(voxel_column, trusted=trust_surface_cache)
+         (
+             mixed_active_mass_kg,
+             buried_mass_by_class_kg,
+             burial_residual_kg,
+         ) = _bury_active_layer_excess_to_voxels_batched_inplace(
+-            working_voxel_mass_kg, mixed_active_mass_kg, target_mass_kg, geometry, mass_resolution_kg
++            working_voxel_mass_kg, mixed_active_mass_kg, target_mass_kg, geometry, mass_resolution_kg,
++            voxel_totals_kg=working_voxel_totals_kg, voxel_delta_by_class_kg=voxel_delta_by_class_kg,
+         )
+ 
+         new_active_layer = ActiveLayerState(mass_kg=mixed_active_mass_kg)
+-        working_column = VoxelColumnState(mass_kg=working_voxel_mass_kg)
++        working_column = column_with_surface_cache(working_voxel_mass_kg, working_voxel_totals_kg)
+         if validate_full_state:
+             check_active_layer_voxel_partition(new_active_layer, working_column, geometry, mass_resolution_kg)
++            validate_voxel_surface_cache(working_column)
+         else:
+             check_active_layer_voxel_shape_compatibility(
+                 new_active_layer, working_column, geometry, mass_resolution_kg
+--- a/src/maple/surface/voxels/transfer.py
++++ b/src/maple/surface/voxels/transfer.py
+@@ -29,12 +29,13 @@
+     any_negative,
+     array_namespace,
+     divide_where,
++    freeze,
+     to_bool,
+     to_float,
+     to_int,
+ )
+ from maple.core.parameters.geometry import GeometrySpec
+-from maple.core.types.voxel import VoxelColumnState
++from maple.core.types.voxel import ArrayBinding, VoxelColumnState, VoxelSurfaceCache
+ from maple.surface.voxels._numerics import make_proportional_mass_vector, summation_error_bound_kg
+ from maple.surface.voxels.capacity import max_voxel_mass_kg
+ from maple.surface.voxels.diagnostics import check_voxel_column_state
+@@ -385,6 +386,8 @@
+     request: MapleArray,
+     geometry: GeometrySpec,
+     mass_resolution_kg: float,
++    *,
++    n_voxels_for_bound: int | None = None,
+ ) -> BatchedMixtureTransferResult:
+     """Whole-domain batched deposition kernel (spec.md Phase 3R.1 Fix D,
+     result semantics rewritten under Phase 3R.3's model mass-resolution
+@@ -478,6 +481,13 @@
+     xp = array_namespace(mass, request)
+     ny, nx, n_voxels, _n_classes = mass.shape
+     capacity = max_voxel_mass_kg(geometry)
++    # `n_voxels_for_bound` (selective window support, Phase 7e): the
++    # summation-error bound describes the FULL column's n-term room sum.
++    # When this kernel runs on a top-aligned window of a longer column, the
++    # caller passes the full voxel count so the bound -- and every decision
++    # made with it -- is identical to the whole-column call. Default: the
++    # array's own voxel axis, i.e. the original behaviour.
++    n_bound_terms = n_voxels if n_voxels_for_bound is None else int(n_voxels_for_bound)
+ 
+     voxel_totals = mass.sum(axis=-1)  # (ny, nx, n_voxels)
+     room_by_voxel = xp.maximum(capacity - voxel_totals, 0.0)  # (ny, nx, n_voxels)
+@@ -488,7 +498,7 @@
+     # Category A (machine roundoff on total_room's own summation) then
+     # Category B (model mass resolution) -- see docstring above.
+     excess = total_mass_kg - total_room  # (ny, nx); may be negative (room to spare)
+-    room_error_bound = summation_error_bound_kg(n_voxels, capacity)
++    room_error_bound = summation_error_bound_kg(n_bound_terms, capacity)
+     exact_fit = excess <= room_error_bound
+     over_capacity = ~exact_fit  # excess is a genuine, non-roundoff positive difference
+     fits = excess <= mass_resolution_kg  # accept/reject gate: Category A or B, either accepted
+@@ -776,6 +786,8 @@
+     requested_total_mass_kg: MapleArray,
+     geometry: GeometrySpec,
+     mass_resolution_kg: float,
++    *,
++    n_voxels_for_bound: int | None = None,
+ ) -> BatchedMixtureTransferResult:
+     """Whole-domain batched extraction kernel (spec.md Phase 3R.1 Fix D,
+     result semantics rewritten under Phase 3R.3's model mass-resolution
+@@ -878,6 +890,9 @@
+     xp = array_namespace(mass, requested_total_mass_kg)
+     _ny, _nx, n_voxels, _n_classes = mass.shape
+     capacity = max_voxel_mass_kg(geometry)
++    # See the deposit kernel: the bound is the FULL column's term count even
++    # when this kernel is run on a top-aligned window of that column.
++    n_bound_terms = n_voxels if n_voxels_for_bound is None else int(n_voxels_for_bound)
+ 
+     voxel_totals = mass.sum(axis=-1)  # (ny, nx, n_voxels)
+     # Reverse basic slices preserve the top-down order without advanced-index copies.
+@@ -892,7 +907,7 @@
+     # capacity; applying it here let any positive request at or below it
+     # terminate the walk at an EMPTY voxel and remove nothing from a
+     # column that still held material.
+-    mass_error_bound = summation_error_bound_kg(n_voxels, capacity)
++    mass_error_bound = summation_error_bound_kg(n_bound_terms, capacity)
+     # Can this cell's column actually cover the request? Decides how much
+     # mass is *physically* removed: True removes exactly the request,
+     # False demand-limits by draining the whole column.
+@@ -1038,6 +1053,421 @@
+     )
+ 
+ 
++# ---------------------------------------------------------------------------
++# Selective (surface-window) exchange with cached voxel totals -- Phase 7e
++# SYRUP candidate.
++#
++# Ordinary surface exchange only touches the voxels at the top of each
++# column: extraction drains downward from the uppermost occupied voxel,
++# deposition fills upward from the first voxel with room. The batched
++# kernels above are nevertheless written over the WHOLE (ny, nx, n_voxels,
++# n_classes) array, so every call reads, compares and rewrites every voxel
++# of every column and allocates several full-size temporaries.
++#
++# The `_selective_inplace` entry points below instead work from the
++# per-cell VOXEL TOTALS `(ny, nx, n_voxels)` -- metadata the exchange
++# routines carry across calls in `VoxelColumnState.surface_cache`, bound
++# to the exact mass array it describes and trusted only under the rule in
++# core/types/voxel.py (enforceably read-only array, or a transaction that
++# owns the state chain). The totals are built from the mass array ONCE
++# when a column arrives without a usable cache (first exchange after a
++# case load, a topographic commit, a checkpoint restore, a backend
++# conversion, any `dataclasses.replace`, or a writable array) and are
++# thereafter rewritten only at the voxels an exchange touched, with the
++# same per-voxel class-axis reduction the full build uses, so they stay
++# bit-identical to `mass_kg.sum(axis=-1)` of the array they describe.
++#
++# From those totals each call: (1) SKIPS every cell on which the kernel
++# provably has no effect and reports zeros for it -- a zero extraction
++# request whose top window voxel is empty (the whole-column kernel's
++# terminal is then an empty voxel and it removes nothing; a zero request
++# at a NON-empty top allocated voxel is NOT skipped, so the established
++# sub-roundoff reconciliation of that case is preserved), or a zero
++# deposition request (the kernel places nothing); (2) gathers, for the
++# remaining cells, a top-aligned window of `SELECTIVE_WINDOW_VOXELS`
++# physically contiguous voxels (the uppermost occupied voxel, the one
++# below it, the empty one above it, clipped to the column) and runs the
++# UNCHANGED batched kernel on it with the full column's summation bound,
++# which is exact -- not approximately equal -- to the whole-column kernel
++# for every cell passing a per-cell validity test; (3) gathers the WHOLE
++# columns of the cells that fail the test and runs the same kernel on
++# them (per-cell independent arithmetic), so the combined result equals
++# the whole-domain call cell for cell. Nothing is netted or delayed; the
++# callers refresh the active layer and availability exactly as before.
++#
++# Validity tests:
++#   extraction: request == 0, OR the window's own cumulative mass covers
++#     the request (terminal and everything above it inside the window;
++#     cumulative sums over leading empties are bit-identical), OR the window
++#     starts at voxel 0 (both calls see the whole occupied column);
++#   deposition: no voxel BELOW the window has nonzero room -- INCLUDING the
++#     floating-point room a nominally full deep voxel can carry, which the
++#     whole-column kernel does fill and which therefore routes that cell to
++#     the exact whole-column path -- AND the request is an exact fit inside
++#     the window (`request - window_room <= bound`), AND a sub-bound request
++#     (whole-column terminal: voxel 0) either starts the window at voxel 0
++#     or meets a first window voxel with zero room exactly as voxel 0 has.
++#
++# Optional `voxel_delta_by_class_kg` accumulators receive the per-class sum
++# of (stored mass after - before) over exactly the touched voxels: an
++# independent measurement of the bed change from the stored arrays, for
++# the trusted transaction path that replaces full inventory scans.
++#
++# Both entry points run unchanged on NumPy and CuPy; each call makes two
++# counted host reads (active and fallback cell counts). `selective_
++# statistics` distinguishes metadata passes, kernel voxel-entry accesses,
++# whole-array copies, cache rebuilds (full mass reads) and inventory scans.
++# ---------------------------------------------------------------------------
++
++#: Voxels per cell gathered on the fast path: the top occupied voxel, one
++#: below (a take that empties the top voxel continues there) and one above
++#: (a fill that completes the top voxel continues there).
++SELECTIVE_WINDOW_VOXELS = 3
++
++#: Host-integer diagnostic counters; reset with `reset_selective_statistics`.
++selective_statistics: dict[str, int] = {}
++
++_DIRECTION_KEYS = ("calls", "cells_skipped", "cells_fast", "cells_fallback", "kernel_entries_fast",
++                   "kernel_entries_fallback", "metadata_entries")
++_GLOBAL_KEYS = ("cache_hits", "cache_rebuilds", "cache_rebuild_mass_entries", "metadata_copy_entries",
++                "whole_mass_copy_entries", "inventory_scans", "inventory_scan_entries",
++                "touched_delta_bed_changes", "window_voxels")
++
++
++def reset_selective_statistics() -> None:
++    for direction in ("extract", "deposit"):
++        for key in _DIRECTION_KEYS:
++            selective_statistics[f"{direction}_{key}"] = 0
++    for key in _GLOBAL_KEYS:
++        selective_statistics[key] = 0
++
++
++def record_selective_count(key: str, n: int) -> None:
++    selective_statistics[key] = selective_statistics.get(key, 0) + int(n)
++
++
++reset_selective_statistics()
++
++
++def voxel_totals_for_exchange(column: VoxelColumnState, *, trusted: bool = False) -> MapleArray:
++    """A WRITABLE copy of the per-cell voxel totals of `column.mass_kg`:
++    from the column's cache when it describes this exact array and may be
++    relied upon (`VoxelColumnState.valid_surface_cache`; one `(ny, nx,
++    n_voxels)` metadata copy), otherwise rebuilt from the mass array (one
++    full read of every voxel entry, counted as a rebuild)."""
++    cache = column.valid_surface_cache(trusted=trusted)
++    if cache is not None:
++        record_selective_count("cache_hits", 1)
++        record_selective_count("metadata_copy_entries", cache.voxel_totals_kg.size)
++        return cache.voxel_totals_kg.copy()
++    mass = column.mass_kg
++    record_selective_count("cache_rebuilds", 1)
++    record_selective_count("cache_rebuild_mass_entries", mass.size)
++    return mass.sum(axis=-1)
++
++
++def column_with_surface_cache(mass_kg: MapleArray, voxel_totals_kg: MapleArray) -> VoxelColumnState:
++    """Wrap a mass array an exchange routine has JUST produced with the
++    totals its kernels maintained for it. Both arrays are frozen (read-only
++    where the backend enforces it) so the identity binding cannot be
++    silently invalidated by an in-place write; `voxel_totals_kg` must be
++    bit-identical to `mass_kg.sum(axis=-1)` (true by construction for the
++    selective kernels; `validate_voxel_surface_cache` checks it).
++
++    Internal constructor for exchange routines. Attaching a cache to an
++    array that other code may still write, or with totals that were not
++    maintained by these kernels, is a contract violation this function
++    cannot detect."""
++    freeze(mass_kg)
++    freeze(voxel_totals_kg)
++    column = VoxelColumnState(mass_kg=mass_kg)
++    object.__setattr__(column, "surface_cache", VoxelSurfaceCache(voxel_totals_kg, ArrayBinding(mass_kg)))
++    return column
++
++
++def validate_voxel_surface_cache(column: VoxelColumnState, *, trusted: bool = True) -> bool:
++    """Recompute the totals from the mass array and require bitwise
++    agreement with a present, bound cache (trusted or not: this IS the
++    independent check). Returns False when no bound cache is attached;
++    raises ValueError on a mismatch. A full read, for trusted boundaries,
++    full-state validation, checkpoints and tests."""
++    cache = column.valid_surface_cache(trusted=trusted)
++    if cache is None:
++        return False
++    xp = array_namespace(column.mass_kg, cache.voxel_totals_kg)
++    recomputed = column.mass_kg.sum(axis=-1)
++    if cache.voxel_totals_kg.shape != recomputed.shape or not to_bool(
++        xp.all(cache.voxel_totals_kg == recomputed)
++    ):
++        raise ValueError(
++            "VoxelSurfaceCache totals disagree with mass_kg.sum(axis=-1) of the array they are bound to; "
++            "the bound array was mutated in place or the cache was not maintained by the exchange kernels"
++        )
++    return True
++
++
++def _record_selective(direction, n_skipped, n_fast, n_fallback, window, n_voxels, n_classes, metadata_entries):
++    record_selective_count(f"{direction}_calls", 1)
++    record_selective_count(f"{direction}_cells_skipped", n_skipped)
++    record_selective_count(f"{direction}_cells_fast", n_fast)
++    record_selective_count(f"{direction}_cells_fallback", n_fallback)
++    record_selective_count(f"{direction}_kernel_entries_fast", n_fast * window * n_classes)
++    record_selective_count(f"{direction}_kernel_entries_fallback", n_fallback * n_voxels * n_classes)
++    record_selective_count(f"{direction}_metadata_entries", metadata_entries)
++    selective_statistics["window_voxels"] = window
++
++
++def _surface_window(voxel_totals: MapleArray, window: int) -> tuple[MapleArray, MapleArray]:
++    """Per-cell top-aligned window of `window` ascending voxel indices.
++
++    `start` is `top + 2 - window` clipped into `[0, n_voxels - window]`
++    (`top` = uppermost occupied voxel, -1 for an empty column), so the
++    window holds the top voxel, the one below it and the empty one above
++    it wherever the column allows. Returns `(start (ny, nx), index (ny, nx,
++    window))`, integer arrays in the totals' own namespace."""
++    xp = array_namespace(voxel_totals)
++    n_voxels = voxel_totals.shape[-1]
++    occupied = voxel_totals > 0.0
++    any_occupied = xp.any(occupied, axis=-1)
++    top = xp.where(any_occupied, n_voxels - 1 - xp.argmax(occupied[..., ::-1], axis=-1), -1)
++    start = xp.clip(top + 2 - window, 0, n_voxels - window)
++    return start, start[..., None] + xp.arange(window)
++
++
++def _flat_voxel_index(index: MapleArray, nx: int, n_voxels: int) -> MapleArray:
++    """Flat (cell * n_voxels + voxel) indices of a `(ny, nx, window)` window
++    index into the contiguous `(ny * nx * n_voxels, ...)` view."""
++    xp = array_namespace(index)
++    ny, nx_, _window = index.shape
++    cell = (xp.arange(ny)[:, None] * nx_ + xp.arange(nx_)[None, :]) * n_voxels
++    return (cell[..., None] + index).reshape(-1)
++
++
++def _gather_window(per_voxel: MapleArray, index: MapleArray) -> MapleArray:
++    """`take_along_axis(per_voxel, index, -1)` for a `(ny, nx, n_voxels)` array,
++    through the flat index when the array is contiguous (cheaper on NumPy)."""
++    xp = array_namespace(per_voxel, index)
++    if per_voxel.flags["C_CONTIGUOUS"]:
++        flat = _flat_voxel_index(index, per_voxel.shape[1], per_voxel.shape[2])
++        return per_voxel.reshape(-1)[flat].reshape(index.shape)
++    return xp.take_along_axis(per_voxel, index, axis=-1)
++
++
++def _class_delta(after: MapleArray, before: MapleArray) -> MapleArray:
++    """Per-class sum of stored-mass change over every leading axis."""
++    return (after - before).sum(axis=tuple(range(after.ndim - 1)))
++
++
++def _assemble(xp, shape_cells, n_classes, groups):
++    """Scatter per-group `(k, 1, ...)` kernel results into whole-domain
++    result arrays; cells in no group (skipped) keep zeros / False."""
++    actual = xp.zeros((*shape_cells, n_classes), dtype=np.float64)
++    total = xp.zeros(shape_cells, dtype=np.float64)
++    shortfall = xp.zeros(shape_cells, dtype=np.float64)
++    residual = xp.zeros(shape_cells, dtype=np.float64)
++    limited = xp.zeros(shape_cells, dtype=bool)
++    for rows, cols, result in groups:
++        actual[rows, cols] = result.actual_mass_by_class_kg[:, 0]
++        total[rows, cols] = result.actual_total_mass_kg[:, 0]
++        shortfall[rows, cols] = result.shortfall_total_mass_kg[:, 0]
++        residual[rows, cols] = result.numerical_residual_total_mass_kg[:, 0]
++        limited[rows, cols] = result.limited[:, 0]
++    return actual, total, shortfall, residual, limited
++
++
++def _selective_exchange(direction, kernel, mass, request, cell_total_request, active, exact, index, geometry,
++                        mass_resolution_kg, voxel_totals_kg, metadata_entries, voxel_delta_by_class_kg):
++    """Shared skip / gather / kernel / scatter body of the two selective
++    entries. Fallback cells (whole columns) run FIRST on their gathered
++    copy, so a kernel refusal (the deposit capacity gate) raises before
++    `mass` or the totals are touched; fast cells (windows) follow; both
++    groups are scattered back and the totals rewritten at exactly the
++    touched voxels; skipped cells are never gathered."""
++    xp = array_namespace(mass)
++    ny, nx, n_voxels, n_classes = mass.shape
++    window = index.shape[-1]
++    fallback = active & ~exact
++    fast = active & exact
++    n_fallback = to_int(xp.count_nonzero(fallback))
++    n_active = to_int(xp.count_nonzero(active))
++    n_fast = n_active - n_fallback
++    n_skipped = ny * nx - n_active
++    contiguous = mass.flags["C_CONTIGUOUS"] and voxel_totals_kg.flags["C_CONTIGUOUS"]
++    if n_fallback == 0 and n_skipped == 0:
++        # Every cell is active and provably exact on its window: gather and
++        # scatter all windows through ONE flat index into the contiguous
++        # (cells * voxels, classes) view and run the kernel directly on the
++        # (ny, nx, window, n_classes) array -- no cell index arrays, no
++        # result assembly.
++        if contiguous:
++            flat = _flat_voxel_index(index, nx, n_voxels)
++            mass2d = mass.reshape(-1, n_classes)
++            sub = mass2d[flat].reshape(ny, nx, window, n_classes)
++            before = sub.copy() if voxel_delta_by_class_kg is not None else None
++            result = kernel(sub, request, geometry, mass_resolution_kg, n_voxels_for_bound=n_voxels)
++            mass2d[flat] = sub.reshape(-1, n_classes)
++            voxel_totals_kg.reshape(-1)[flat] = sub.sum(axis=-1).reshape(-1)
++        else:
++            index4 = index[..., None]
++            sub = xp.take_along_axis(mass, index4, axis=2)
++            before = sub.copy() if voxel_delta_by_class_kg is not None else None
++            result = kernel(sub, request, geometry, mass_resolution_kg, n_voxels_for_bound=n_voxels)
++            xp.put_along_axis(mass, index4, sub, axis=2)
++            xp.put_along_axis(voxel_totals_kg, index, sub.sum(axis=-1), axis=2)
++        if before is not None:
++            stored = (mass2d[flat].reshape(sub.shape) if contiguous else
++                      xp.take_along_axis(mass, index[..., None], axis=2))
++            voxel_delta_by_class_kg += _class_delta(stored, before)
++        _record_selective(direction, 0, n_fast, 0, window, n_voxels, n_classes, metadata_entries)
++        return result
++    classes = xp.arange(n_classes)
++    groups = []
++    deltas = []
++    # --- whole-column kernel on the active cells the window cannot prove exact ---
++    if n_fallback:
++        rows_b, cols_b = xp.nonzero(fallback)
++        sub_b = mass[rows_b, cols_b][:, None]  # (k, 1, n_voxels, n_classes) copy
++        before_b = sub_b.copy() if voxel_delta_by_class_kg is not None else None
++        result_b = kernel(sub_b, request[rows_b, cols_b][:, None], geometry, mass_resolution_kg)
++        groups.append((rows_b, cols_b, result_b))
++    # --- window kernel on the active, provably exact cells --------------------
++    if n_fast:
++        rows_g, cols_g = xp.nonzero(fast)
++        index_g = index[rows_g, cols_g]  # (k, window)
++        if contiguous:
++            flat_g = (((rows_g * nx + cols_g) * n_voxels)[:, None] + index_g).reshape(-1)
++            mass2d = mass.reshape(-1, n_classes)
++            sub_g = mass2d[flat_g].reshape(n_fast, 1, window, n_classes)
++        else:
++            where_g = (rows_g[:, None, None], cols_g[:, None, None], index_g[:, :, None], classes[None, None, :])
++            sub_g = mass[where_g][:, None]
++        before_g = sub_g.copy() if voxel_delta_by_class_kg is not None else None
++        result_g = kernel(sub_g, request[rows_g, cols_g][:, None], geometry, mass_resolution_kg,
++                          n_voxels_for_bound=n_voxels)
++        groups.append((rows_g, cols_g, result_g))
++    # --- publish: mass, then the totals at exactly the touched voxels ----------
++    if n_fallback:
++        mass[rows_b, cols_b] = sub_b[:, 0]
++        voxel_totals_kg[rows_b, cols_b] = sub_b[:, 0].sum(axis=-1)
++        if before_b is not None:
++            deltas.append(_class_delta(mass[rows_b, cols_b][:, None], before_b))
++    if n_fast:
++        if contiguous:
++            mass2d[flat_g] = sub_g.reshape(-1, n_classes)
++            voxel_totals_kg.reshape(-1)[flat_g] = sub_g.sum(axis=-1).reshape(-1)
++        else:
++            mass[where_g] = sub_g[:, 0]
++            voxel_totals_kg[rows_g[:, None], cols_g[:, None], index_g] = sub_g[:, 0].sum(axis=-1)
++        if before_g is not None:
++            stored_g = (mass2d[flat_g].reshape(sub_g.shape) if contiguous else mass[where_g][:, None])
++            deltas.append(_class_delta(stored_g, before_g))
++    for delta in deltas:
++        voxel_delta_by_class_kg += delta
++    actual, total, shortfall, residual, limited = _assemble(xp, (ny, nx), n_classes, groups)
++    _record_selective(direction, n_skipped, n_fast, n_fallback, window, n_voxels, n_classes, metadata_entries)
++    return BatchedMixtureTransferResult(
++        actual_mass_by_class_kg=actual,
++        actual_total_mass_kg=total,
++        requested_total_mass_kg=cell_total_request,
++        shortfall_total_mass_kg=shortfall,
++        numerical_residual_total_mass_kg=residual,
++        limited=limited,
++    )
++
++
++def _whole_column_with_totals(direction, kernel, mass, request, geometry, mass_resolution_kg, voxel_totals_kg,
++                              voxel_delta_by_class_kg):
++    """Columns too short for a window: the whole-column kernel, then the
++    totals rebuilt from the (small) mass array."""
++    ny, nx, n_voxels, n_classes = mass.shape
++    before = mass.copy() if voxel_delta_by_class_kg is not None else None
++    result = kernel(mass, request, geometry, mass_resolution_kg)
++    voxel_totals_kg[...] = mass.sum(axis=-1)
++    if before is not None:
++        voxel_delta_by_class_kg += _class_delta(mass, before)
++    _record_selective(direction, 0, 0, ny * nx, n_voxels, n_voxels, n_classes, 0)
++    return result
++
++
++def _extract_surface_mixture_selective_inplace(
++    mass: MapleArray,
++    requested_total_mass_kg: MapleArray,
++    geometry: GeometrySpec,
++    mass_resolution_kg: float,
++    voxel_totals_kg: MapleArray,
++    *,
++    voxel_delta_by_class_kg: MapleArray | None = None,
++) -> BatchedMixtureTransferResult:
++    """`_extract_surface_mixture_batched_inplace`, cell for cell, through
++    per-cell surface windows where provably identical, whole gathered
++    columns elsewhere, and nothing at all for provably no-effect cells (see
++    the section comment). Mutates `mass` AND `voxel_totals_kg` (equal to
++    `mass.sum(axis=-1)` on entry and again on exit) in place on success;
++    nothing is touched if a kernel raises."""
++    xp = array_namespace(mass, requested_total_mass_kg, voxel_totals_kg)
++    ny, nx, n_voxels, _n_classes = mass.shape
++    window = min(SELECTIVE_WINDOW_VOXELS, n_voxels)
++    if window == n_voxels:
++        return _whole_column_with_totals("extract", _extract_surface_mixture_batched_inplace, mass,
++                                         requested_total_mass_kg, geometry, mass_resolution_kg, voxel_totals_kg,
++                                         voxel_delta_by_class_kg)
++    start, index = _surface_window(voxel_totals_kg, window)
++    window_totals = _gather_window(voxel_totals_kg, index)  # (ny, nx, window), ascending voxels
++    # EXACTLY the kernel's own `total_column_mass_kg` for the window.
++    window_cumulative = xp.cumsum(window_totals[..., ::-1], axis=-1)[..., -1]
++    zero_request = requested_total_mass_kg == 0.0
++    # A zero request only acts (sub-roundoff reconciliation) when the top
++    # allocated voxel -- the kernel's terminal -- is itself non-empty; with
++    # an empty top window voxel the kernel provably removes nothing.
++    active = ~(zero_request & (window_totals[..., -1] == 0.0))
++    exact = zero_request | (window_cumulative >= requested_total_mass_kg) | (start == 0)
++    return _selective_exchange(
++        "extract", _extract_surface_mixture_batched_inplace, mass, requested_total_mass_kg,
++        requested_total_mass_kg, active, exact, index, geometry, mass_resolution_kg, voxel_totals_kg,
++        ny * nx * n_voxels, voxel_delta_by_class_kg,
++    )
++
++
++def _deposit_surface_mixture_selective_inplace(
++    mass: MapleArray,
++    request: MapleArray,
++    geometry: GeometrySpec,
++    mass_resolution_kg: float,
++    voxel_totals_kg: MapleArray,
++    *,
++    voxel_delta_by_class_kg: MapleArray | None = None,
++) -> BatchedMixtureTransferResult:
++    """`_deposit_surface_mixture_batched_inplace`, cell for cell, through
++    per-cell surface windows where provably identical, whole gathered
++    columns elsewhere (deep floating-point room included), and nothing for
++    zero requests. Same contract and atomicity as the whole-domain kernel:
++    a capacity refusal raises before `mass` or the totals are touched."""
++    xp = array_namespace(mass, request, voxel_totals_kg)
++    ny, nx, n_voxels, _n_classes = mass.shape
++    window = min(SELECTIVE_WINDOW_VOXELS, n_voxels)
++    if window == n_voxels:
++        return _whole_column_with_totals("deposit", _deposit_surface_mixture_batched_inplace, mass, request,
++                                         geometry, mass_resolution_kg, voxel_totals_kg, voxel_delta_by_class_kg)
++    capacity = max_voxel_mass_kg(geometry)
++    room_by_voxel = xp.maximum(capacity - voxel_totals_kg, 0.0)  # (ny, nx, n_voxels) metadata pass
++    start, index = _surface_window(voxel_totals_kg, window)
++    room_error_bound = summation_error_bound_kg(n_voxels, capacity)
++    total_mass_kg = request.sum(axis=-1)  # the kernel's own expression
++    window_room = _gather_window(room_by_voxel, index)
++    window_total_room = xp.cumsum(window_room, axis=-1)[..., -1]  # the kernel's `total_room` on the window
++    below_window = xp.arange(n_voxels)[None, None, :] < start[..., None]
++    deep_room = xp.any(below_window & (room_by_voxel > 0.0), axis=-1)
++    fits_window = (total_mass_kg - window_total_room) <= room_error_bound
++    sub_bound = (total_mass_kg > 0.0) & (total_mass_kg <= room_error_bound)
++    sub_bound_identical = (start == 0) | (window_room[..., 0] == 0.0)
++    exact = (~deep_room) & fits_window & ((~sub_bound) | sub_bound_identical)
++    active = total_mass_kg != 0.0  # a zero request places nothing anywhere
++    return _selective_exchange(
++        "deposit", _deposit_surface_mixture_batched_inplace, mass, request, total_mass_kg, active, exact, index,
++        geometry, mass_resolution_kg, voxel_totals_kg, ny * nx * n_voxels, voxel_delta_by_class_kg,
++    )
++
++
+ def add_mass(
+     column: VoxelColumnState,
+     cell: tuple[int, int],
+--- a/src/maple/water/step.py
++++ b/src/maple/water/step.py
+@@ -166,6 +166,8 @@
+     initial_available_fraction: np.ndarray | None = None,
+     adapter_name: str = "prescribed",
+     detachment_integration: str = "rate_times_dt",
++    trust_surface_cache: bool = False,
++    bed_change_from_touched_storage: bool = False,
+ ) -> WaterProcessResult:
+     """Apply one water-process demand conservatively and report ground
+     truth.
+@@ -181,6 +183,28 @@
+     when replenished material arrives at a cell/class that previously
+     held no active-layer mass, exactly as on the wind side. Required
+     whenever `sediment_availability` is supplied.
++
++    Phase 7e (SYRUP candidate), both opt-in and both default to the
++    original behaviour:
++
++    - `trust_surface_cache`: the caller owns the whole chain of states
++      since the exchange that attached `voxel_column.surface_cache` (no
++      in-place write happened), so the cached per-cell voxel totals may be
++      relied upon even where the backend cannot enforce read-only arrays.
++      The internal erosion -> deposition hand-off is always trusted: that
++      intermediate column is produced here and never exposed.
++    - `bed_change_from_touched_storage`: `bed_change_by_class_kg` is
++      measured from the STORED arrays as (active layer after - before)
++      plus the per-class voxel-mass change over exactly the touched
++      voxels, instead of as the difference of two whole-bed inventory
++      reductions. It is still independent of the transfer totals the
++      validator reconstructs it against (it reads stored mass, never the
++      request/actual arrays), and it is NOT bit-identical to the
++      whole-inventory difference (different summation); its disagreement
++      with `deposited - removed` is checked by the same validator bound.
++      The validator's inventory scale is then taken from the maintained
++      voxel totals rather than from a fresh full reduction. Full
++      inventories remain the caller's audit at trusted boundaries.
+     """
+     ny, nx = geometry.ny, geometry.nx
+     n_classes = len(grain_classes.classes)
+@@ -237,13 +261,24 @@
+         requested_removal, sediment_availability
+     )
+ 
+-    bed_before_by_class_kg = bed_inventory_by_class_kg(voxel_column, active_layer)
++    from maple.surface.voxels.transfer import record_selective_count
++
++    voxel_delta_by_class_kg = None
++    bed_before_by_class_kg = None
++    if bed_change_from_touched_storage:
++        voxel_delta_by_class_kg = xp.zeros((n_classes,), dtype=np.float64)
++        record_selective_count("touched_delta_bed_changes", 1)
++    else:
++        bed_before_by_class_kg = bed_inventory_by_class_kg(voxel_column, active_layer)
++        record_selective_count("inventory_scans", 1)
++        record_selective_count("inventory_scan_entries", voxel_column.mass_kg.size)
+     active_layer_mass_before = active_layer.mass_kg
+     mobile_before = water.mobile_mass_by_cell_class_kg
+ 
+-    # --- 2. shared erosion routine (unmodified) ----------------------
++    # --- 2. shared erosion routine (unmodified physics) ---------------
+     new_column, new_layer, erosion_result = update_active_layer_after_erosion(
+-        voxel_column, active_layer, capped_removal, geometry, mass_resolution_kg
++        voxel_column, active_layer, capped_removal, geometry, mass_resolution_kg,
++        trust_surface_cache=trust_surface_cache, voxel_delta_by_class_kg=voxel_delta_by_class_kg,
+     )
+     actual_removal = erosion_result.actual_removed_mass_by_class_kg
+ 
+@@ -278,8 +313,11 @@
+     # difference stays in the mobile pool, which is its source
+     # reservoir.
+     deposition = xp.minimum(requested_deposition, mobile_after_pickup)
++    # The erosion output column is produced above and never exposed: its
++    # cache is trusted for this internal hand-off on every backend.
+     new_column, new_layer, deposition_result = update_active_layer_after_deposition(
+-        new_column, new_layer, deposition, geometry, mass_resolution_kg
++        new_column, new_layer, deposition, geometry, mass_resolution_kg,
++        trust_surface_cache=True, voxel_delta_by_class_kg=voxel_delta_by_class_kg,
+     )
+     mobile_after_deposition = mobile_after_pickup - deposition
+ 
+@@ -323,7 +361,18 @@
+     )
+ 
+     # --- 9. ground-truth totals -------------------------------------
+-    bed_after_by_class_kg = bed_inventory_by_class_kg(new_column, new_layer)
++    bed_inventory_scale_kg = None
++    if bed_change_from_touched_storage:
++        # Stored-mass measurement: active layer after - before (every cell)
++        # plus the voxel change over exactly the touched voxels.
++        bed_change_by_class_kg = (new_layer.mass_kg - active_layer_mass_before).sum(axis=(0, 1)) + voxel_delta_by_class_kg
++        cache = new_column.valid_surface_cache(trusted=True)
++        bed_inventory_scale_kg = to_float(cache.voxel_totals_kg.sum() + new_layer.mass_kg.sum())
++    else:
++        bed_after_by_class_kg = bed_inventory_by_class_kg(new_column, new_layer)
++        record_selective_count("inventory_scans", 1)
++        record_selective_count("inventory_scan_entries", new_column.mass_kg.size)
++        bed_change_by_class_kg = bed_after_by_class_kg - bed_before_by_class_kg
+     new_water = WaterState(
+         depth_m=water.depth_m,
+         mobile_mass_by_cell_class_kg=mobile_after,
+@@ -354,7 +403,7 @@
+         # `deposited - removed` re-derived from the event totals. The
+         # validator independently reconstructs it the other way and
+         # compares, so the two paths cross-check each other.
+-        bed_change_by_class_kg=bed_after_by_class_kg - bed_before_by_class_kg,
++        bed_change_by_class_kg=bed_change_by_class_kg,
+         mobile_mass_before_by_class_kg=mobile_before.sum(axis=(0, 1)),
+         mobile_mass_after_by_class_kg=mobile_after.sum(axis=(0, 1)),
+         boundary_input_by_class_kg=boundary_input.sum(axis=(0, 1)),
+@@ -372,6 +421,7 @@
+     )
+ 
+     validate_water_process_result(
+-        result, ny=ny, nx=nx, n_classes=n_classes, mass_resolution_kg=mass_resolution_kg
++        result, ny=ny, nx=nx, n_classes=n_classes, mass_resolution_kg=mass_resolution_kg,
++        bed_inventory_scale_kg=bed_inventory_scale_kg,
+     )
+     return result
+--- a/src/maple/water/validation.py
++++ b/src/maple/water/validation.py
+@@ -141,9 +141,15 @@
+     nx: int,
+     n_classes: int,
+     mass_resolution_kg: float,
++    bed_inventory_scale_kg: float | None = None,
+ ) -> None:
+     """Independently reconstruct and check every identity a
+     `WaterProcessResult` claims.
++
++    `bed_inventory_scale_kg` (Phase 7e, optional): the whole-bed inventory
++    magnitude for the bed-change bound, supplied by a caller that already
++    holds it (from maintained voxel totals) so this validator need not
++    re-read every voxel; None recomputes it from the result's arrays.
+ 
+     Checked here, in order:
+ 
+@@ -176,6 +182,11 @@
+     Every tolerance is `summation_error_bound_kg(n_terms, scale)` with
+     `scale` taken as the largest genuine operand in that comparison.
+     """
++    if bed_inventory_scale_kg is not None:
++        bed_inventory_scale_kg = float(bed_inventory_scale_kg)
++        if not np.isfinite(bed_inventory_scale_kg) or bed_inventory_scale_kg < 0:
++            raise ValueError("bed_inventory_scale_kg must be finite and nonnegative")
++
+     violations: list[str] = []
+     domain_shape = (ny, nx, n_classes)
+     class_shape = (n_classes,)
+@@ -392,9 +403,12 @@
+             )
+             voxel_mass = result.new_voxel_column.mass_kg
+             n_voxels = voxel_mass.shape[2] if voxel_mass.ndim == 4 else 1
+-            bed_inventory_scale = to_float(
+-                voxel_mass.sum() + result.new_active_layer.mass_kg.sum()
+-            )
++            if bed_inventory_scale_kg is None:
++                bed_inventory_scale = to_float(
++                    voxel_mass.sum() + result.new_active_layer.mass_kg.sum()
++                )
++            else:
++                bed_inventory_scale = float(bed_inventory_scale_kg)
+             transfer_scale = max(
+                 max_abs(result.deposited_mass_by_class_kg),
+                 max_abs(result.actual_removal_by_class_kg),

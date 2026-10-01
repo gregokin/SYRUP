@@ -1,0 +1,486 @@
+{
+  "legacy_run": "outputs/phase7e/legacy/plot1_numba",
+  "legacy_status": "legacy benchmark-only replay; NOT conservative by construction (clipping source, ring deposition, unlimited supply, fixed composition); never a production path",
+  "fortran_ledger": "outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+  "depth_time_level": "previous",
+  "kernel_implementation": "numba",
+  "storm_totals_by_class": {
+    "pickup": {
+      "fortran_kg": [
+        25.887855722296376,
+        247.85882707463662,
+        26.763504993081103,
+        148.90274175498445,
+        3.3546642264718716,
+        0.08973312869961086
+      ],
+      "python_kg": [
+        25.887111999457016,
+        247.84940159623645,
+        26.762055819615362,
+        148.8945062779824,
+        3.354474002354244,
+        0.08972671982019013
+      ],
+      "ratio_python_over_fortran": [
+        0.9999712713618564,
+        0.9999619723916577,
+        0.9999458526278185,
+        0.9999446922406869,
+        0.9999432956311615,
+        0.99992857844685
+      ],
+      "total_fortran_kg": 452.85732690017,
+      "total_python_kg": 452.8372764154656,
+      "total_ratio": 0.9999557244997191
+    },
+    "deposition_active": {
+      "fortran_kg": [
+        25.86983023039834,
+        247.85173995478598,
+        26.763504655978455,
+        148.90274175498445,
+        3.3546642264718716,
+        0.08973312869961086
+      ],
+      "python_kg": [
+        25.86909159562396,
+        247.8423168559117,
+        26.762055482805767,
+        148.8945062779824,
+        3.354474002354244,
+        0.08972671982019013
+      ],
+      "ratio_python_over_fortran": [
+        0.9999714480239027,
+        0.999961980904891,
+        0.9999458526380862,
+        0.9999446922406869,
+        0.9999432956311615,
+        0.99992857844685
+      ],
+      "total_fortran_kg": 452.8322139513187,
+      "total_python_kg": 452.8121709344983,
+      "total_ratio": 0.9999557385358132
+    },
+    "deposition_outside_active": {
+      "fortran_kg": [
+        0.012618506012052683,
+        0.006620286997971481,
+        3.3704802643879494e-07,
+        8.101795555522546e-22,
+        7.523183007850651e-168,
+        0.0
+      ],
+      "python_kg": [
+        0.012615111932314611,
+        0.0066181451509183566,
+        3.367550925735556e-07,
+        8.075989526043887e-22,
+        7.342446145625036e-168,
+        0.0
+      ],
+      "ratio_python_over_fortran": [
+        0.9997310236461566,
+        0.999676472175031,
+        0.9991308839030021,
+        0.9968147765144397,
+        0.9759760114785176,
+        null
+      ],
+      "total_fortran_kg": 0.019239130058050606,
+      "total_python_kg": 0.019233593838325538,
+      "total_ratio": 0.9997122416809718
+    },
+    "effective_clip_source": {
+      "fortran_kg": [
+        0.13471329395629902,
+        0.15713335854770918,
+        0.00012190621911206684,
+        7.807096799826275e-12,
+        0.0,
+        0.0
+      ],
+      "python_kg": [
+        0.13470477861120644,
+        0.15710496216804118,
+        0.00012182644527084223,
+        7.788832599652689e-12,
+        0.0,
+        0.0
+      ],
+      "ratio_python_over_fortran": [
+        0.9999367891256868,
+        0.999819284842312,
+        0.9993456130310197,
+        0.9976605644016104,
+        null,
+        null
+      ],
+      "total_fortran_kg": 0.29196855873092736,
+      "total_python_kg": 0.2919315672323073,
+      "total_ratio": 0.9998733031433903
+    },
+    "cn_export": {
+      "fortran_kg": [
+        0.007463980042762044,
+        0.0017592552992005482,
+        2.1632565425561647e-08,
+        8.867769319379339e-20,
+        0.0,
+        0.0
+      ],
+      "python_kg": [
+        0.007458154402646094,
+        0.0017581633524277203,
+        2.1614186879270797e-08,
+        8.8408923004277e-20,
+        0.0,
+        0.0
+      ],
+      "ratio_python_over_fortran": [
+        0.9992194995052808,
+        0.9993793130688172,
+        0.999150422248619,
+        0.9969691341775319,
+        null,
+        null
+      ],
+      "total_fortran_kg": 0.009223256974528016,
+      "total_python_kg": 0.009216339369260694,
+      "total_ratio": 0.9992499823775455
+    },
+    "endpoint_export": {
+      "fortran_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "python_kg": [
+        0.007458154402646088,
+        0.001758163352427721,
+        2.1614186879270837e-08,
+        8.840892300427705e-20,
+        0.0,
+        0.0
+      ],
+      "ratio_python_over_fortran": [
+        0.9992194995052807,
+        0.9993793130688191,
+        0.999150422248619,
+        0.9969691341775327,
+        null,
+        null
+      ],
+      "total_fortran_kg": 0.00922325697452801,
+      "total_python_kg": 0.009216339369260688,
+      "total_ratio": 0.9992499823775457
+    }
+  },
+  "final_mobile": {
+    "fortran_kg": [
+      0.14527480581164634,
+      0.16246122309921746,
+      0.00012222168916537176,
+      7.807104163344489e-12,
+      0.0,
+      0.0
+    ],
+    "python_kg": [
+      0.1452670280416236,
+      0.16243153914056474,
+      0.00012214164067882654,
+      7.788844478125255e-12,
+      0.0,
+      0.0
+    ]
+  },
+  "series": {
+    "endpoint_export_total": {
+      "total_ref": 0.009223256974528015,
+      "total_test": 0.009216339369260694,
+      "ratio_test_over_ref": 0.9992499823775457,
+      "peak_ref": 6.917545415418456e-05,
+      "peak_test": 6.915866226633759e-05,
+      "peak_time_ref_s": 1261.0,
+      "peak_time_test_s": 1261.0,
+      "centroid_ref_s": 1315.94701874122,
+      "centroid_test_s": 1315.9083440427967,
+      "quantile_times_ref_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "rmse": 6.902857441392507e-09,
+      "max_abs_diff": 6.251848730663744e-08,
+      "cumulative_rmse": 5.888500276167448e-06,
+      "nash_sutcliffe": 0.9999991730059707
+    },
+    "cn_export_total": {
+      "total_ref": 0.009223256974528015,
+      "total_test": 0.009216339369260694,
+      "ratio_test_over_ref": 0.9992499823775457,
+      "peak_ref": 6.878726375520224e-05,
+      "peak_test": 6.877052185560156e-05,
+      "peak_time_ref_s": 1261.0,
+      "peak_time_test_s": 1261.0,
+      "centroid_ref_s": 1316.4470187412203,
+      "centroid_test_s": 1316.4083440427967,
+      "quantile_times_ref_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "rmse": 6.889527509566676e-09,
+      "max_abs_diff": 6.25175435077315e-08,
+      "cumulative_rmse": 5.88812302288085e-06,
+      "nash_sutcliffe": 0.9999991737124909
+    },
+    "pickup_total": {
+      "total_ref": 452.85732690017005,
+      "total_test": 452.83727641546534,
+      "ratio_test_over_ref": 0.9999557244997184,
+      "peak_ref": 0.8666939103704074,
+      "peak_test": 0.8667030014951194,
+      "peak_time_ref_s": 542.0,
+      "peak_time_test_s": 542.0,
+      "centroid_ref_s": 786.9897600563003,
+      "centroid_test_s": 787.0256718246189,
+      "quantile_times_ref_s": {
+        "0.1": 236.0,
+        "0.5": 833.0,
+        "0.9": 1200.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 236.0,
+        "0.5": 833.0,
+        "0.9": 1200.0
+      },
+      "rmse": 0.0003199947766456844,
+      "max_abs_diff": 0.023514293259005933,
+      "cumulative_rmse": 0.020400742069618026,
+      "nash_sutcliffe": 0.9999970925685546
+    },
+    "by_class_endpoint_export": {
+      "1": {
+        "total_ref": 0.007463980042762042,
+        "total_test": 0.007458154402646093,
+        "ratio_test_over_ref": 0.999219499505281,
+        "peak_ref": 4.9964792226496235e-05,
+        "peak_test": 4.995610245511242e-05,
+        "peak_time_ref_s": 1261.0,
+        "peak_time_test_s": 1261.0,
+        "centroid_ref_s": 1328.6975737653347,
+        "centroid_test_s": 1328.6613285547755,
+        "quantile_times_ref_s": {
+          "0.1": 1171.0,
+          "0.5": 1300.0,
+          "0.9": 1550.0
+        },
+        "quantile_times_test_s": {
+          "0.1": 1171.0,
+          "0.5": 1300.0,
+          "0.9": 1550.0
+        },
+        "rmse": 6.178078010316901e-09,
+        "max_abs_diff": 5.717642404308866e-08,
+        "cumulative_rmse": 4.953344510045377e-06,
+        "nash_sutcliffe": 0.9999990441317427
+      },
+      "2": {
+        "total_ref": 0.0017592552992005495,
+        "total_test": 0.0017581633524277223,
+        "ratio_test_over_ref": 0.9993793130688176,
+        "peak_ref": 1.9536720410381083e-05,
+        "peak_test": 1.952738628482562e-05,
+        "peak_time_ref_s": 1201.0,
+        "peak_time_test_s": 1201.0,
+        "centroid_ref_s": 1261.8512371477989,
+        "centroid_test_s": 1261.8109069640007,
+        "quantile_times_ref_s": {
+          "0.1": 1177.0,
+          "0.5": 1234.0,
+          "0.9": 1513.0
+        },
+        "quantile_times_test_s": {
+          "0.1": 1177.0,
+          "0.5": 1234.0,
+          "0.9": 1513.0
+        },
+        "rmse": 1.0314309463217093e-09,
+        "max_abs_diff": 9.33412555546311e-09,
+        "cumulative_rmse": 9.382556001493902e-07,
+        "nash_sutcliffe": 0.9999996904162287
+      },
+      "3": {
+        "total_ref": 2.163256542556167e-08,
+        "total_test": 2.1614186879270833e-08,
+        "ratio_test_over_ref": 0.9991504222486196,
+        "peak_ref": 3.002075831831775e-10,
+        "peak_test": 2.999775541914787e-10,
+        "peak_time_ref_s": 1201.0,
+        "peak_time_test_s": 1201.0,
+        "centroid_ref_s": 1242.0860837554992,
+        "centroid_test_s": 1242.0562624605577,
+        "quantile_times_ref_s": {
+          "0.1": 1170.0,
+          "0.5": 1216.0,
+          "0.9": 1316.0
+        },
+        "quantile_times_test_s": {
+          "0.1": 1170.0,
+          "0.5": 1216.0,
+          "0.9": 1316.0
+        },
+        "rmse": 1.9091101276073238e-14,
+        "max_abs_diff": 2.300289916987702e-13,
+        "cumulative_rmse": 1.5933632693902005e-11,
+        "nash_sutcliffe": 0.9999993757661013
+      },
+      "4": {
+        "total_ref": 8.867769319379335e-20,
+        "total_test": 8.840892300427709e-20,
+        "ratio_test_over_ref": 0.9969691341775332,
+        "peak_ref": 1.3819394112046781e-21,
+        "peak_test": 1.3778594708974497e-21,
+        "peak_time_ref_s": 1201.0,
+        "peak_time_test_s": 1201.0,
+        "centroid_ref_s": 1240.4913871713625,
+        "centroid_test_s": 1240.4668424186225,
+        "quantile_times_ref_s": {
+          "0.1": 1172.0,
+          "0.5": 1214.0,
+          "0.9": 1313.0
+        },
+        "quantile_times_test_s": {
+          "0.1": 1172.0,
+          "0.5": 1214.0,
+          "0.9": 1313.0
+        },
+        "rmse": 3.0448823184796264e-25,
+        "max_abs_diff": 4.079940307228362e-24,
+        "cumulative_rmse": 2.343331941335937e-22,
+        "nash_sutcliffe": 0.9999909835557401
+      },
+      "5": {
+        "total_ref": 0.0,
+        "total_test": 0.0,
+        "ratio_test_over_ref": null,
+        "peak_ref": 0.0,
+        "peak_test": 0.0,
+        "peak_time_ref_s": 1.0,
+        "peak_time_test_s": 1.0,
+        "centroid_ref_s": null,
+        "centroid_test_s": null,
+        "quantile_times_ref_s": {
+          "0.1": null,
+          "0.5": null,
+          "0.9": null
+        },
+        "quantile_times_test_s": {
+          "0.1": null,
+          "0.5": null,
+          "0.9": null
+        },
+        "rmse": 0.0,
+        "max_abs_diff": 0.0,
+        "cumulative_rmse": 0.0,
+        "nash_sutcliffe": null
+      },
+      "6": {
+        "total_ref": 0.0,
+        "total_test": 0.0,
+        "ratio_test_over_ref": null,
+        "peak_ref": 0.0,
+        "peak_test": 0.0,
+        "peak_time_ref_s": 1.0,
+        "peak_time_test_s": 1.0,
+        "centroid_ref_s": null,
+        "centroid_test_s": null,
+        "quantile_times_ref_s": {
+          "0.1": null,
+          "0.5": null,
+          "0.9": null
+        },
+        "quantile_times_test_s": {
+          "0.1": null,
+          "0.5": null,
+          "0.9": null
+        },
+        "rmse": 0.0,
+        "max_abs_diff": 0.0,
+        "cumulative_rmse": 0.0,
+        "nash_sutcliffe": null
+      }
+    }
+  },
+  "rounded_outputs": {
+    "sedtr_vs_python_outlet_flux": {
+      "total_ref": 0.009223247079118205,
+      "total_test": 0.009216339369260694,
+      "ratio_test_over_ref": 0.9992510544498855,
+      "peak_ref": 6.918e-05,
+      "peak_test": 6.915866226633759e-05,
+      "peak_time_ref_s": 1261.0,
+      "peak_time_test_s": 1261.0,
+      "centroid_ref_s": 1315.9468732820117,
+      "centroid_test_s": 1315.9083440427967,
+      "quantile_times_ref_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "rmse": 6.929373776449157e-09,
+      "max_abs_diff": 6.684597822190534e-08,
+      "cumulative_rmse": 5.880221463777748e-06,
+      "nash_sutcliffe": 0.999999166642164
+    },
+    "water_outlet_fortran_vs_syrup_hydrology": {
+      "total_ref": 0.16508977387059504,
+      "total_test": 0.1644659853185525,
+      "ratio_test_over_ref": 0.9962215191321815,
+      "peak_ref": 0.0001151,
+      "peak_test": 0.00011508089280551061,
+      "peak_time_ref_s": 1328.0,
+      "peak_time_test_s": 1334.0,
+      "centroid_ref_s": 1816.5472442136324,
+      "centroid_test_s": 1813.7913874431479,
+      "quantile_times_ref_s": {
+        "0.1": 1060.0,
+        "0.5": 1734.0,
+        "0.9": 2705.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1059.0,
+        "0.5": 1731.0,
+        "0.9": 2699.0
+      },
+      "rmse": 1.7138821057638924e-07,
+      "max_abs_diff": 3.635890137528345e-07,
+      "cumulative_rmse": 0.00042094184168334057,
+      "nash_sutcliffe": 0.9999784918863657
+    }
+  },
+  "syrup_runs": {},
+  "python_identity_max_abs_residual_kg": 1.6514567491299204e-15,
+  "note": "Fortran values are the actual reference program (no-splash, deterministic K); Python values replay the legacy operator on SYRUP's hydrology. Differences include hydrology (matched to -0.38% outlet integral), and documented law-convention departures (docs/phase5/physics.md). Clipping source is an artificial mass source in BOTH; neither is a conservation-correct target.",
+  "ring_accounting_note": "deposition_outside_active is the ring walk diagnostic, not an additional sink in the active-pool CN balance; do not add it to export."
+}

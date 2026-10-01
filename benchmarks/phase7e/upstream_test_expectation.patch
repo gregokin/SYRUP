@@ -1,0 +1,20 @@
+--- a/tests/unit/test_sediment_ledger_memory.py
++++ b/tests/unit/test_sediment_ledger_memory.py
+@@ -154,8 +154,15 @@
+         f"[_kahan_add instrumentation] ratio (separate / batched): {ratio:.2f}x"
+     )
+ 
+-    assert counter_separate.total_elements == N_LEDGER_PROCESSES * counter_batched.total_elements
+-    assert ratio == pytest.approx(float(N_LEDGER_PROCESSES))
++    # Phase 7e (SYRUP candidate): a single-process transfer whose other
++    # process slices carry zero compensation is Kahan-added on its own
++    # slice only (an exact identity on the untouched slices), so six
++    # separate calls now touch FEWER elements than six padded full-array
++    # passes would. The batched step remains the one-pass primary API; the
++    # separate path must never touch MORE than the padded design did.
++    assert counter_separate.total_elements <= N_LEDGER_PROCESSES * counter_batched.total_elements
++    assert counter_separate.total_elements >= counter_batched.total_elements
++    assert ratio <= float(N_LEDGER_PROCESSES) + 1e-12
+ 
+ 
+ def test_accumulate_step_does_not_scale_full_array_touches_with_active_process_count():

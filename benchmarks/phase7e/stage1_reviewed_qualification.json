@@ -1,0 +1,595 @@
+{
+  "candidate_digest": "9a4da48c397333eff8a7c8321894843bee7a3df60d7d337c1d16d2408966fb73",
+  "baseline_run": "outputs/phase7e/stage1/baseline_b32",
+  "candidate_run": "outputs/phase7e/stage1/reviewed_touched_b32",
+  "physical_comparison": [
+    {
+      "field": "forcing.edges_s",
+      "exact": true
+    },
+    {
+      "field": "forcing.intensity_mm_per_h",
+      "exact": true
+    },
+    {
+      "field": "forcing.original_edges_s",
+      "exact": true
+    },
+    {
+      "field": "forcing.original_intensity_mm_per_h",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.t_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.cumulative_rain_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.cumulative_intake_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.cumulative_saturation_return_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.cumulative_drainage_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.cumulative_export_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.surface_storage_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.soil_storage_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.outlet_discharge_m3_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.max_depth_m",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.max_velocity_m_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.accepted_steps",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.rejected_attempts",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.min_accepted_dt_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.max_routing_cell_balance_residual_m",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.max_constitutive_residual_m",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.interval_rain_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.interval_intake_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.interval_saturation_return_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.interval_drainage_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.interval_export_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.row_water_residual_m3",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_t_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_commit_count",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_graph_changes",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_max_transport_substeps",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_c1_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_c2_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_c3_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_c4_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_c5_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_mobile_c6_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_c1_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_c2_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_c3_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_c4_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_c5_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_export_rate_c6_kg_s",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_c1_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_c2_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_c3_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_c4_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_c5_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_pickup_c6_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_c1_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_c2_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_c3_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_c4_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_c5_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_deposition_c6_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_c1_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_c2_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_c3_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_c4_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_c5_kg",
+      "exact": true
+    },
+    {
+      "field": "hydrograph.sed_cumulative_export_c6_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.voxel_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.active_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.available_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.bound_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.initial_active_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.initial_available_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.initial_bed_by_cell_class_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.committed_elevation_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.initial_committed_elevation_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.pending_bed_mass_change_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.depth_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.mobile_mass_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.soil_water_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.discharge_m2_s",
+      "exact": true
+    },
+    {
+      "field": "final_state.velocity_m_s",
+      "exact": true
+    },
+    {
+      "field": "final_state.sediment_velocity_m_s",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_pickup_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_deposition_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_export_request_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.peak_depth_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.peak_velocity_m_s",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_rain_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_intake_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_return_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.cumulative_drainage_m",
+      "exact": true
+    },
+    {
+      "field": "final_state.aspect",
+      "exact": true
+    },
+    {
+      "field": "final_state.slope",
+      "exact": true
+    },
+    {
+      "field": "final_state.receiver",
+      "exact": true
+    },
+    {
+      "field": "final_state.outlet",
+      "exact": true
+    },
+    {
+      "field": "final_state.conveyance",
+      "exact": true
+    },
+    {
+      "field": "final_state.water_exchange_net_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.bed_change_kg",
+      "exact": true
+    },
+    {
+      "field": "final_state.phase_fraction",
+      "exact": true
+    },
+    {
+      "field": "final_state.phase_position_m",
+      "exact": true
+    },
+    {
+      "field": "peak_outlet_snapshot.outlet_discharge_m3_s",
+      "exact": true
+    },
+    {
+      "field": "peak_outlet_snapshot.t_s",
+      "exact": true
+    },
+    {
+      "field": "peak_outlet_snapshot.depth_m",
+      "exact": true
+    },
+    {
+      "field": "peak_outlet_snapshot.velocity_m_s",
+      "exact": true
+    }
+  ],
+  "all_exact": true,
+  "performance": {
+    "setup_and_verification": {
+      "cpu_s": 1.8221373009999997,
+      "wall_s": 1.8301727520301938
+    },
+    "first_accepted_step": {
+      "wall_s": 3.3650025910465047,
+      "cpu_s": 4.746152313,
+      "note": "includes lazy import and JIT compilation for the numba implementation"
+    },
+    "remaining_steps": {
+      "wall_s": 213.8695335650118,
+      "cpu_s": 213.867465119,
+      "n_steps": 5399,
+      "mean_wall_s_per_step": 0.03961280488331391
+    },
+    "commits_wall_s": 0.0,
+    "step_loop": {
+      "cpu_s": 218.625197957,
+      "wall_s": 217.24612871091813
+    },
+    "peak_rss_kib": {
+      "process_start": 233656,
+      "process_end": 410540,
+      "note": "ru_maxrss of this process; includes imports, verification and the case"
+    },
+    "note": "one observational run; not a controlled benchmark and not comparable with the whole-program MAHLERAN wall time",
+    "reporting": {
+      "cpu_s": 0.3762381939999955,
+      "wall_s": 0.3772576880874112
+    }
+  },
+  "component_timers": {
+    "coupled_step": {
+      "calls": 5400,
+      "wall_s": 9.379029357223772
+    },
+    "sediment_physics_step": {
+      "calls": 5400,
+      "wall_s": 14.428405310027301
+    },
+    "with_water": {
+      "calls": 10800,
+      "wall_s": 1.648778104572557
+    },
+    "apply_bed_demand": {
+      "calls": 10800,
+      "wall_s": 93.189713619533
+    },
+    "maple_pickup": {
+      "calls": 5400,
+      "wall_s": 45.85086584277451
+    },
+    "characteristic_step": {
+      "calls": 5400,
+      "wall_s": 86.86651307332795
+    },
+    "maple_deposit_export": {
+      "calls": 5400,
+      "wall_s": 47.338847776758485
+    }
+  },
+  "selective_exchange": {
+    "extract_calls": 10800,
+    "extract_cells_skipped": 11075602,
+    "extract_cells_fast": 1884398,
+    "extract_cells_fallback": 0,
+    "extract_kernel_entries_fast": 33919164,
+    "extract_kernel_entries_fallback": 0,
+    "extract_metadata_entries": 259200000,
+    "deposit_calls": 10800,
+    "deposit_cells_skipped": 7865785,
+    "deposit_cells_fast": 5093816,
+    "deposit_cells_fallback": 399,
+    "deposit_kernel_entries_fast": 91688688,
+    "deposit_kernel_entries_fallback": 47880,
+    "deposit_metadata_entries": 259200000,
+    "cache_hits": 21599,
+    "cache_rebuilds": 1,
+    "cache_rebuild_mass_entries": 144000,
+    "metadata_copy_entries": 518376000,
+    "whole_mass_copy_entries": 3110400000,
+    "inventory_scans": 0,
+    "inventory_scan_entries": 0,
+    "touched_delta_bed_changes": 10800,
+    "window_voxels": 3,
+    "final_cache_validated": true,
+    "mass_entries_per_call": 144000
+  },
+  "closure": {
+    "initial_bed_kg": [
+      100348.67081779092,
+      201910.0698335724,
+      11634.536515619662,
+      26356.84227885931,
+      36874.544728257184,
+      26918.773325900493
+    ],
+    "initial_mobile_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_bed_kg": [
+      100348.66122314593,
+      201910.0656642398,
+      11634.536515619666,
+      26356.842278859316,
+      36874.544728257184,
+      26918.773325900496
+    ],
+    "final_mobile_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "export_actual_kg": [
+      0.009594645007460779,
+      0.00416933263294966,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "net_bed_change_kg": [
+      -0.009594644987373613,
+      -0.004169332591118291,
+      3.637978807091713e-12,
+      7.275957614183426e-12,
+      0.0,
+      3.637978807091713e-12
+    ],
+    "residual_kg": [
+      1.4551915228366852e-11,
+      2.9103830456733704e-11,
+      3.637978807091713e-12,
+      7.275957614183426e-12,
+      0.0,
+      3.637978807091713e-12
+    ],
+    "tolerance_kg": [
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06
+    ],
+    "closed": true,
+    "request_reconciliation_residual_kg": [
+      0.0,
+      0.0,
+      1.0658141036401503e-14,
+      0.0,
+      0.0,
+      4.163336342344337e-17
+    ],
+    "request_reconciliation_tolerance_kg": [
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05
+    ],
+    "request_reconciled": true,
+    "numerical_residual_scalar_abs_kg": 4.656916316362703e-10,
+    "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+  }
+}

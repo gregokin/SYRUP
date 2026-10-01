@@ -1,0 +1,1844 @@
+{
+  "scope": "Frozen Plot1, accepted MAPLE 72310c49 and SYRUP source as recorded; characteristic bins 1..128.",
+  "thresholds": [
+    0.01,
+    0.05
+  ],
+  "reference_bins": 128,
+  "production_default_bins": 32,
+  "runs": {
+    "1": {
+      "bins": 1,
+      "export_kg": 0.008528913234601233,
+      "export_by_class_kg": [
+        0.008528913234601233,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.0633850578261,
+      "deposition_kg": 411.05485614459127,
+      "deposition_by_class_kg": [
+        25.88574186069881,
+        247.95788121072985,
+        26.77290224878617,
+        107.10084455506353,
+        3.2477028373121453,
+        0.0897834320007218
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.008528913234601233,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.6622888777,
+          201910.0698335725,
+          11634.536515619664,
+          26356.842278859313,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.008528913211193867,
+          8.731149137020111e-11,
+          1.8189894035458565e-12,
+          3.637978807091713e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.4020456513505684e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          3.552713678800501e-15,
+          5.684341886080802e-14,
+          4.440892098500626e-16,
+          4.163336342344337e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          2.9103830456733704e-11,
+          8.731149137020111e-11,
+          1.8189894035458565e-12,
+          3.637978807091713e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860303e-06,
+          1.936787400860303e-06,
+          1.936787400860303e-06,
+          1.936787400860303e-06,
+          1.936787400860303e-06,
+          1.936787400860303e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.0016803137732097145,
+      "raw_peak_time_s": 1190.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.0016803137732097143,
+          "center_s": 1190.0
+        },
+        "5": {
+          "peak_kg_s": 0.00045530979068769895,
+          "center_s": 1156.0
+        },
+        "10": {
+          "peak_kg_s": 0.0004435540685064864,
+          "center_s": 1153.5
+        },
+        "30": {
+          "peak_kg_s": 0.00014785135616882878,
+          "center_s": 1143.5
+        },
+        "60": {
+          "peak_kg_s": 0.00010970907845241254,
+          "center_s": 1173.5
+        }
+      },
+      "centroid_s": 1169.8722835923147,
+      "quantile_times_s": {
+        "0.1": 1123.0,
+        "0.5": 1158.0,
+        "0.9": 1215.0
+      },
+      "loop_wall_s": 179.30051895300858,
+      "characteristic_s": 13.61179520841688,
+      "maple_s": 139.9895146759227,
+      "peak_rss_end_kib": 383684,
+      "peak_rss_start_kib": 233020,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "2": {
+      "bins": 2,
+      "export_kg": 0.01384770670627462,
+      "export_by_class_kg": [
+        0.00936345310300262,
+        0.0044842536032720015,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.0634278080663,
+      "deposition_kg": 411.04958010135965,
+      "deposition_by_class_kg": [
+        25.88490732083039,
+        247.95339695712644,
+        26.77290215686815,
+        107.1008873437762,
+        3.2477028907868233,
+        0.08978343197169926
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.00936345310300262,
+          0.0044842536032720015,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66145433782,
+          201910.0653493189,
+          11634.536515619666,
+          26356.842278859316,
+          36874.54472825718,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.00936345309310127,
+          -0.004484253498958424,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          -7.275957614183426e-12,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.5550333333148406e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.3322676295501878e-15,
+          4.163336342344337e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          1.1641532182693481e-10,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          -7.275957614183426e-12,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.0010995010075283327,
+      "raw_peak_time_s": 1137.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.0010995010075283331,
+          "center_s": 1137.0
+        },
+        "5": {
+          "peak_kg_s": 0.0004310408982769281,
+          "center_s": 1130.0
+        },
+        "10": {
+          "peak_kg_s": 0.0003990279748322458,
+          "center_s": 1132.5
+        },
+        "30": {
+          "peak_kg_s": 0.00021143744923108235,
+          "center_s": 1137.5
+        },
+        "60": {
+          "peak_kg_s": 0.0001563407926513861,
+          "center_s": 1154.5
+        }
+      },
+      "centroid_s": 1138.027380511146,
+      "quantile_times_s": {
+        "0.1": 1093.0,
+        "0.5": 1137.0,
+        "0.9": 1191.0
+      },
+      "loop_wall_s": 181.6983269319171,
+      "characteristic_s": 17.579359445138834,
+      "maple_s": 138.03168136673048,
+      "peak_rss_end_kib": 384112,
+      "peak_rss_start_kib": 232920,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "4": {
+      "bins": 4,
+      "export_kg": 0.013672309138273178,
+      "export_by_class_kg": [
+        0.009509893336149376,
+        0.004162415802123803,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.0634400330102,
+      "deposition_kg": 411.04976772387204,
+      "deposition_by_class_kg": [
+        25.884760880597216,
+        247.9537187949278,
+        26.77290221014015,
+        107.10089985229905,
+        3.2477025540328945,
+        0.08978343187488057
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.009509893336149376,
+          0.004162415802123803,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.6613078976,
+          201910.06567115663,
+          11634.536515619664,
+          26356.842278859316,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009509893323411234,
+          -0.004162415774771944,
+          1.8189894035458565e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.452985142182678e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          1.0658141036401503e-14,
+          1.1368683772161603e-13,
+          5.773159728050814e-15,
+          -4.163336342344337e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          2.9103830456733704e-11,
+          1.8189894035458565e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.0007508135345816237,
+      "raw_peak_time_s": 1129.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.0007508135345816232,
+          "center_s": 1129.0
+        },
+        "5": {
+          "peak_kg_s": 0.00033280085918153463,
+          "center_s": 1128.0
+        },
+        "10": {
+          "peak_kg_s": 0.00028231584765003035,
+          "center_s": 1131.5
+        },
+        "30": {
+          "peak_kg_s": 0.0001804031028446071,
+          "center_s": 1140.5
+        },
+        "60": {
+          "peak_kg_s": 0.00013855392029931345,
+          "center_s": 1155.5
+        }
+      },
+      "centroid_s": 1136.2293191836661,
+      "quantile_times_s": {
+        "0.1": 1084.0,
+        "0.5": 1148.0,
+        "0.9": 1197.0
+      },
+      "loop_wall_s": 184.3664957609726,
+      "characteristic_s": 19.96874751301948,
+      "maple_s": 137.8083950469736,
+      "peak_rss_end_kib": 385300,
+      "peak_rss_start_kib": 233080,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "8": {
+      "bins": 8,
+      "export_kg": 0.013775413775970254,
+      "export_by_class_kg": [
+        0.009583504828411834,
+        0.00419190894755842,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.06343921736504,
+      "deposition_kg": 411.0496638035894,
+      "deposition_by_class_kg": [
+        25.884687269104962,
+        247.9536893017825,
+        26.772902179361925,
+        107.10089910016984,
+        3.2477025218805036,
+        0.08978343128959797
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.009583504828411834,
+          0.00419190894755842,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66123428612,
+          201910.06564166353,
+          11634.536515619664,
+          26356.842278859316,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009583504797774367,
+          -0.004191908868961036,
+          1.8189894035458565e-12,
+          7.275957614183426e-12,
+          0.0,
+          0.0
+        ],
+        "numerical_residual_scalar_abs_kg": 4.5770447121387973e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          1.0658141036401503e-14,
+          8.526512829121202e-14,
+          -2.220446049250313e-15,
+          1.1102230246251565e-16
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          2.9103830456733704e-11,
+          8.731149137020111e-11,
+          1.8189894035458565e-12,
+          7.275957614183426e-12,
+          0.0,
+          0.0
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.00041007978908182304,
+      "raw_peak_time_s": 1150.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.00041007978908182315,
+          "center_s": 1150.0
+        },
+        "5": {
+          "peak_kg_s": 0.0002453295153317006,
+          "center_s": 1141.0
+        },
+        "10": {
+          "peak_kg_s": 0.0002071043111166964,
+          "center_s": 1139.5
+        },
+        "30": {
+          "peak_kg_s": 0.00016019031280620888,
+          "center_s": 1138.5
+        },
+        "60": {
+          "peak_kg_s": 0.0001319832002776124,
+          "center_s": 1146.5
+        }
+      },
+      "centroid_s": 1133.8303555155733,
+      "quantile_times_s": {
+        "0.1": 1083.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "loop_wall_s": 191.4413566829171,
+      "characteristic_s": 24.822851280099712,
+      "maple_s": 139.34665564715397,
+      "peak_rss_end_kib": 387180,
+      "peak_rss_start_kib": 233280,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "16": {
+      "bins": 16,
+      "export_kg": 0.013773327978449448,
+      "export_by_class_kg": [
+        0.00959696410183579,
+        0.00417636387661366,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.06343954678164,
+      "deposition_kg": 411.0496662188032,
+      "deposition_by_class_kg": [
+        25.88467380983154,
+        247.9537048468535,
+        26.772902191391914,
+        107.10089942192337,
+        3.247702517227997,
+        0.08978343157494169
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.00959696410183579,
+          0.00417636387661366,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66122082683,
+          201910.06565720856,
+          11634.536515619666,
+          26356.842278859313,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009596964082447812,
+          -0.004176363843725994,
+          3.637978807091713e-12,
+          3.637978807091713e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.2088846667745266e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          1.4210854715202004e-13,
+          0.0,
+          -9.71445146547012e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          2.9103830456733704e-11,
+          3.637978807091713e-12,
+          3.637978807091713e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.00033465305500416444,
+      "raw_peak_time_s": 1138.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.00033465305500416515,
+          "center_s": 1138.0
+        },
+        "5": {
+          "peak_kg_s": 0.00020586912700851123,
+          "center_s": 1140.0
+        },
+        "10": {
+          "peak_kg_s": 0.00016875338965312292,
+          "center_s": 1137.5
+        },
+        "30": {
+          "peak_kg_s": 0.00015075615227611936,
+          "center_s": 1135.5
+        },
+        "60": {
+          "peak_kg_s": 0.00013104424082318456,
+          "center_s": 1144.5
+        }
+      },
+      "centroid_s": 1133.279333889767,
+      "quantile_times_s": {
+        "0.1": 1082.0,
+        "0.5": 1144.0,
+        "0.9": 1195.0
+      },
+      "loop_wall_s": 206.20788152806927,
+      "characteristic_s": 37.4797354391776,
+      "maple_s": 140.25529767468106,
+      "peak_rss_end_kib": 391572,
+      "peak_rss_start_kib": 233232,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "32": {
+      "bins": 32,
+      "export_kg": 0.01376397764041044,
+      "export_by_class_kg": [
+        0.009594645007460779,
+        0.00416933263294966,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.0634395566964,
+      "deposition_kg": 411.0496755790561,
+      "deposition_by_class_kg": [
+        25.884676128925868,
+        247.9537118780973,
+        26.772902192459078,
+        107.10089943129807,
+        3.2477025166673212,
+        0.08978343160841064
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.009594645007460779,
+          0.00416933263294966,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66122314593,
+          201910.0656642398,
+          11634.536515619666,
+          26356.842278859316,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009594644987373613,
+          -0.004169332591118291,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.656916316362703e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          1.0658141036401503e-14,
+          0.0,
+          0.0,
+          4.163336342344337e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          2.9103830456733704e-11,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.00021809087280581373,
+      "raw_peak_time_s": 1145.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.00021809087280581438,
+          "center_s": 1145.0
+        },
+        "5": {
+          "peak_kg_s": 0.00017731944728363575,
+          "center_s": 1139.0
+        },
+        "10": {
+          "peak_kg_s": 0.0001688762277831938,
+          "center_s": 1137.5
+        },
+        "30": {
+          "peak_kg_s": 0.00014990872119686167,
+          "center_s": 1138.5
+        },
+        "60": {
+          "peak_kg_s": 0.00013098717381817342,
+          "center_s": 1148.5
+        }
+      },
+      "centroid_s": 1133.3158418755145,
+      "quantile_times_s": {
+        "0.1": 1082.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "loop_wall_s": 247.09513202204835,
+      "characteristic_s": 70.6828896451043,
+      "maple_s": 144.78433205047622,
+      "peak_rss_end_kib": 406540,
+      "peak_rss_start_kib": 233456,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "64": {
+      "bins": 64,
+      "export_kg": 0.013763160353121095,
+      "export_by_class_kg": [
+        0.009594645297353831,
+        0.004168515055767263,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.0634396831352,
+      "deposition_kg": 411.04967652278157,
+      "deposition_by_class_kg": [
+        25.884676128636023,
+        247.95371269567377,
+        26.77290219195011,
+        107.10089955764182,
+        3.2477025172699685,
+        0.0897834316099433
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.009594645297353831,
+          0.004168515055767263,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66122314564,
+          201910.0656650574,
+          11634.536515619664,
+          26356.842278859313,
+          36874.544728257184,
+          26918.773325900496
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009594645278411917,
+          -0.0041685150063131005,
+          1.8189894035458565e-12,
+          3.637978807091713e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "numerical_residual_scalar_abs_kg": 4.6241391904192834e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          2.2737367544323206e-13,
+          8.881784197001252e-16,
+          -6.938893903907228e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          5.820766091346741e-11,
+          1.8189894035458565e-12,
+          3.637978807091713e-12,
+          0.0,
+          3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.00017673503252902523,
+      "raw_peak_time_s": 1132.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.0001767350325290254,
+          "center_s": 1132.0
+        },
+        "5": {
+          "peak_kg_s": 0.00016596548868854508,
+          "center_s": 1142.0
+        },
+        "10": {
+          "peak_kg_s": 0.00016085692379479478,
+          "center_s": 1139.5
+        },
+        "30": {
+          "peak_kg_s": 0.00014940925772741952,
+          "center_s": 1136.5
+        },
+        "60": {
+          "peak_kg_s": 0.00013104703206939734,
+          "center_s": 1146.5
+        }
+      },
+      "centroid_s": 1133.3349127267822,
+      "quantile_times_s": {
+        "0.1": 1082.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "loop_wall_s": 365.98133913695347,
+      "characteristic_s": 178.04708014777862,
+      "maple_s": 149.17183950170875,
+      "peak_rss_end_kib": 435004,
+      "peak_rss_start_kib": 233340,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    },
+    "128": {
+      "bins": 128,
+      "export_kg": 0.01376260171698024,
+      "export_by_class_kg": [
+        0.00959435009257777,
+        0.00416825162440247,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "actual_pickup_kg": 411.063439723081,
+      "deposition_kg": 411.0496771213639,
+      "deposition_by_class_kg": [
+        25.884676423840848,
+        247.9537129591055,
+        26.772902192041865,
+        107.10089959676894,
+        3.247702517999586,
+        0.08978343160717385
+      ],
+      "closed": true,
+      "closure": {
+        "closed": true,
+        "export_actual_kg": [
+          0.00959435009257777,
+          0.00416825162440247,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          100348.66122344084,
+          201910.06566532084,
+          11634.536515619666,
+          26356.842278859316,
+          36874.54472825718,
+          26918.773325900493
+        ],
+        "final_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "initial_bed_kg": [
+          100348.67081779092,
+          201910.0698335724,
+          11634.536515619662,
+          26356.84227885931,
+          36874.544728257184,
+          26918.773325900493
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "net_bed_change_kg": [
+          -0.009594350078259595,
+          -0.004168251558439806,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          -7.275957614183426e-12,
+          0.0
+        ],
+        "numerical_residual_scalar_abs_kg": 4.4415376409444535e-10,
+        "request_reconciled": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          1.0658141036401503e-14,
+          5.684341886080802e-14,
+          -1.7763568394002505e-15,
+          -8.326672684688674e-17
+        ],
+        "request_reconciliation_tolerance_kg": [
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05,
+          1.1416766698215006e-05
+        ],
+        "residual_kg": [
+          1.4551915228366852e-11,
+          5.820766091346741e-11,
+          3.637978807091713e-12,
+          7.275957614183426e-12,
+          -7.275957614183426e-12,
+          0.0
+        ],
+        "tolerance_kg": [
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06,
+          1.936787400860302e-06
+        ],
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "final_mobile_kg": 0.0,
+      "raw_peak_kg_s": 0.0001833241840980154,
+      "raw_peak_time_s": 1143.0,
+      "windowed_peaks": {
+        "1": {
+          "peak_kg_s": 0.00018332418409801494,
+          "center_s": 1143.0
+        },
+        "5": {
+          "peak_kg_s": 0.00016885629154203536,
+          "center_s": 1141.0
+        },
+        "10": {
+          "peak_kg_s": 0.00016146949752645452,
+          "center_s": 1138.5
+        },
+        "30": {
+          "peak_kg_s": 0.00014894171157936865,
+          "center_s": 1136.5
+        },
+        "60": {
+          "peak_kg_s": 0.0001309140221318445,
+          "center_s": 1146.5
+        }
+      },
+      "centroid_s": 1133.33891878566,
+      "quantile_times_s": {
+        "0.1": 1082.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "loop_wall_s": 514.7151826040354,
+      "characteristic_s": 319.1844571083784,
+      "maple_s": 150.24516718671657,
+      "peak_rss_end_kib": 492448,
+      "peak_rss_start_kib": 233096,
+      "n_rejected": 0,
+      "max_substeps": 1,
+      "provenance": {
+        "syrup": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+      }
+    }
+  },
+  "relative_to_128": {
+    "1": {
+      "export_total": 0.38028336429453624,
+      "export_by_class_max": 1.0,
+      "deposition_total": 1.2599506861617015e-05,
+      "deposition_map_rel_l2": 0.001430709808968563,
+      "net_bed_change_map_rel_l2": 0.30101427099997535,
+      "cumulative_curve_rel_l2": 0.3829298210927382,
+      "cumulative_curve_max_gap_over_final": 0.48805054841833706,
+      "cumulative_curve_by_class_max_gap_over_final": 1.0,
+      "vs_default32_cumulative_max_gap_over_final": 0.48495056318764035,
+      "vs_default32_cumulative_rel_l2": 0.38299313565337906,
+      "centroid_s_abs": 36.53336480665462,
+      "centroid_rel": 0.03223516302237204,
+      "quantile_time_abs_s_max": 41.0,
+      "raw_peak": 8.165805272649267,
+      "peak_10s_window": 1.7469836427391883,
+      "peak_60s_window": 0.16197610717419023,
+      "vs_default32_export_total": 0.38034531460144816
+    },
+    "2": {
+      "export_total": 0.0061837863976967125,
+      "export_by_class_max": 0.07581163695097964,
+      "deposition_total": 2.360298758559754e-07,
+      "deposition_map_rel_l2": 0.000503619351126284,
+      "net_bed_change_map_rel_l2": 0.1059711828178139,
+      "cumulative_curve_rel_l2": 0.009849943922932758,
+      "cumulative_curve_max_gap_over_final": 0.10850567086428795,
+      "cumulative_curve_by_class_max_gap_over_final": 0.2994104476536549,
+      "vs_default32_cumulative_max_gap_over_final": 0.1100898943966822,
+      "vs_default32_cumulative_rel_l2": 0.009796888714281303,
+      "centroid_s_abs": 4.688461725485922,
+      "centroid_rel": 0.004136857605233811,
+      "quantile_time_abs_s_max": 11.0,
+      "raw_peak": 4.997577531508215,
+      "peak_10s_window": 1.4712281944574122,
+      "peak_60s_window": 0.19422495852991303,
+      "vs_default32_export_total": 0.006083202694136536
+    },
+    "4": {
+      "export_total": 0.006560720172237443,
+      "export_by_class_max": 0.008802759500482487,
+      "deposition_total": 2.2041741708213947e-07,
+      "deposition_map_rel_l2": 0.00010889312521130368,
+      "net_bed_change_map_rel_l2": 0.02291780237029417,
+      "cumulative_curve_rel_l2": 0.0074484450153601426,
+      "cumulative_curve_max_gap_over_final": 0.0602967275987976,
+      "cumulative_curve_by_class_max_gap_over_final": 0.1168794180104953,
+      "vs_default32_cumulative_max_gap_over_final": 0.061632345657696416,
+      "vs_default32_cumulative_rel_l2": 0.007541602455680572,
+      "centroid_s_abs": 2.8904003980060224,
+      "centroid_rel": 0.002550340723411319,
+      "quantile_time_abs_s_max": 5.0,
+      "raw_peak": 3.0955509404050945,
+      "peak_10s_window": 0.7484159669461834,
+      "peak_60s_window": 0.058358134927477524,
+      "vs_default32_export_total": 0.0066600298643414825
+    },
+    "8": {
+      "export_total": 0.0009309329190429159,
+      "export_by_class_max": 0.005675598617283836,
+      "deposition_total": 3.239942823998651e-08,
+      "deposition_map_rel_l2": 2.2810987537420016e-05,
+      "net_bed_change_map_rel_l2": 0.0048049065050692905,
+      "cumulative_curve_rel_l2": 0.0014518529041420577,
+      "cumulative_curve_max_gap_over_final": 0.023788564360495184,
+      "cumulative_curve_by_class_max_gap_over_final": 0.03968760985206739,
+      "vs_default32_cumulative_max_gap_over_final": 0.02568220644457277,
+      "vs_default32_cumulative_rel_l2": 0.0013724261663061428,
+      "centroid_s_abs": 0.49143672991317544,
+      "centroid_rel": 0.00043361850702147925,
+      "quantile_time_abs_s_max": 1.0,
+      "raw_peak": 1.2369104823756987,
+      "peak_10s_window": 0.2826218839429116,
+      "peak_60s_window": 0.008167025413756938,
+      "vs_default32_export_total": 0.0008308743198069039
+    },
+    "16": {
+      "export_total": 0.0007793774527365863,
+      "export_by_class_max": 0.001946200215864504,
+      "deposition_total": 2.65237057605084e-08,
+      "deposition_map_rel_l2": 7.2014891607900345e-06,
+      "net_bed_change_map_rel_l2": 0.0015172534800716357,
+      "cumulative_curve_rel_l2": 0.0008969391114230301,
+      "cumulative_curve_max_gap_over_final": 0.008469221532594521,
+      "cumulative_curve_by_class_max_gap_over_final": 0.014213511510845251,
+      "vs_default32_cumulative_max_gap_over_final": 0.011293225049093634,
+      "vs_default32_cumulative_rel_l2": 0.0008512739302980941,
+      "centroid_s_abs": 0.05958489589306737,
+      "centroid_rel": 5.257464903518081e-05,
+      "quantile_time_abs_s_max": 1.0,
+      "raw_peak": 0.8254714000267424,
+      "peak_10s_window": 0.045110019156869165,
+      "peak_60s_window": 0.0009946886454142985,
+      "vs_default32_export_total": 0.0006793340038243045
+    },
+    "32": {
+      "export_total": 9.997553213375296e-05,
+      "export_by_class_max": 0.000259343399726937,
+      "deposition_total": 3.752120241785633e-09,
+      "deposition_map_rel_l2": 2.3674241023564014e-06,
+      "net_bed_change_map_rel_l2": 0.0004989292064126123,
+      "cumulative_curve_rel_l2": 0.000284255135880422,
+      "cumulative_curve_max_gap_over_final": 0.005148954256127672,
+      "cumulative_curve_by_class_max_gap_over_final": 0.012015081019981444,
+      "vs_default32_cumulative_max_gap_over_final": 0.0,
+      "vs_default32_cumulative_rel_l2": 0.0,
+      "centroid_s_abs": 0.023076910145618967,
+      "centroid_rel": 2.036187918998247e-05,
+      "quantile_time_abs_s_max": 0.0,
+      "raw_peak": 0.18964594812657176,
+      "peak_10s_window": 0.04587077045635687,
+      "peak_60s_window": 0.0005587765553124302,
+      "vs_default32_export_total": 0.0
+    },
+    "64": {
+      "export_total": 4.05908818944814e-05,
+      "export_by_class_max": 6.319948710632036e-05,
+      "deposition_total": 1.4562287228835141e-09,
+      "deposition_map_rel_l2": 5.82499476299805e-07,
+      "net_bed_change_map_rel_l2": 0.00012274008166164824,
+      "cumulative_curve_rel_l2": 9.113963924739876e-05,
+      "cumulative_curve_max_gap_over_final": 0.0014888488728902448,
+      "cumulative_curve_by_class_max_gap_over_final": 0.0035491731876619768,
+      "vs_default32_cumulative_max_gap_over_final": 0.005582100605442714,
+      "vs_default32_cumulative_rel_l2": 0.0002934921437673095,
+      "centroid_s_abs": 0.004006058877848773,
+      "centroid_rel": 3.5347404129923896e-06,
+      "quantile_time_abs_s_max": 0.0,
+      "raw_peak": 0.03594262045354171,
+      "peak_10s_window": 0.0037937427256772185,
+      "peak_60s_window": 0.0010160098619450709,
+      "vs_default32_export_total": 5.937871382075991e-05
+    },
+    "128": {
+      "export_total": 0.0,
+      "export_by_class_max": 0.0,
+      "deposition_total": 0.0,
+      "deposition_map_rel_l2": 0.0,
+      "net_bed_change_map_rel_l2": 0.0,
+      "cumulative_curve_rel_l2": 0.0,
+      "cumulative_curve_max_gap_over_final": 0.0,
+      "cumulative_curve_by_class_max_gap_over_final": 0.0,
+      "vs_default32_cumulative_max_gap_over_final": 0.005148439538145187,
+      "vs_default32_cumulative_rel_l2": 0.0002842264865266222,
+      "centroid_s_abs": 0.0,
+      "centroid_rel": 0.0,
+      "quantile_time_abs_s_max": 0.0,
+      "raw_peak": 0.0,
+      "peak_10s_window": 0.0,
+      "peak_60s_window": 0.0,
+      "vs_default32_export_total": 9.996553802589378e-05
+    }
+  },
+  "smallest_bins_meeting_threshold": {
+    "0.01": {
+      "export_total": 2,
+      "export_by_class_max": 4,
+      "deposition_total": 1,
+      "deposition_map_rel_l2": 1,
+      "net_bed_change_map_rel_l2": 8,
+      "cumulative_curve_rel_l2": 2,
+      "cumulative_curve_max_gap_over_final": 16,
+      "cumulative_curve_by_class_max_gap_over_final": 64,
+      "centroid_rel": 2,
+      "raw_peak": null,
+      "peak_10s_window": 64,
+      "peak_60s_window": 8
+    },
+    "0.05": {
+      "export_total": 2,
+      "export_by_class_max": 4,
+      "deposition_total": 1,
+      "deposition_map_rel_l2": 1,
+      "net_bed_change_map_rel_l2": 4,
+      "cumulative_curve_rel_l2": 2,
+      "cumulative_curve_max_gap_over_final": 8,
+      "cumulative_curve_by_class_max_gap_over_final": 8,
+      "centroid_rel": 1,
+      "raw_peak": 64,
+      "peak_10s_window": 16,
+      "peak_60s_window": 8
+    }
+  },
+  "all_class_budgets_closed": true,
+  "legacy_fortran_endpoint_export_by_class_kg": [
+    0.007463980042762039,
+    0.0017592552992005456,
+    2.1632565425561687e-08,
+    8.867769319379335e-20,
+    0.0,
+    0.0
+  ],
+  "legacy_fortran_endpoint_export_kg": 0.00922325697452801,
+  "every_bin_vs_fortran_legacy": {
+    "1": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.008528913234601233,
+      "ratio_test_over_legacy": 0.9247181617248268,
+      "by_class_ratio": [
+        1.142676318229425,
+        0.0,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.008528913234601233,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1169.872283592315,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1123.0,
+        "0.5": 1158.0,
+        "0.9": 1215.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.0016803137732097143,
+        "10": 0.0004435540685064864,
+        "60": 0.00010970907845241254
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 0.6818861482003968
+    },
+    "2": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.01384770670627462,
+      "ratio_test_over_legacy": 1.5013900994538054,
+      "by_class_ratio": [
+        1.2544852812250664,
+        2.5489498910759405,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.00936345310300262,
+        0.0044842536032720015,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1138.0273805111458,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1093.0,
+        "0.5": 1137.0,
+        "0.9": 1191.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.0010995010075283331,
+        "10": 0.0003990279748322458,
+        "60": 0.0001563407926513861
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2877018790017276
+    },
+    "4": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.013672309138273176,
+      "ratio_test_over_legacy": 1.4823732197890793,
+      "by_class_ratio": [
+        1.2741048718868557,
+        2.3660100975766967,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.009509893336149376,
+        0.004162415802123803,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1136.2293191836663,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1084.0,
+        "0.5": 1148.0,
+        "0.9": 1197.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.0007508135345816232,
+        "10": 0.00028231584765003035,
+        "60": 0.00013855392029931345
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2654292410691312
+    },
+    "8": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.013775413775970254,
+      "ratio_test_over_legacy": 1.4935519864635658,
+      "by_class_ratio": [
+        1.2839671024717085,
+        2.382774660086765,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.009583504828411834,
+        0.00419190894755842,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1133.8303555155735,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1083.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.00041007978908182315,
+        "10": 0.0002071043111166964,
+        "60": 0.0001319832002776124
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2766054889478728
+    },
+    "16": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.013773327978449448,
+      "ratio_test_over_legacy": 1.4933258410220405,
+      "by_class_ratio": [
+        1.2857703325643461,
+        2.3739384946070734,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.00959696410183579,
+        0.00417636387661366,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1133.2793338897666,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1082.0,
+        "0.5": 1144.0,
+        "0.9": 1195.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.00033465305500416515,
+        "10": 0.00016875338965312292,
+        "60": 0.00013104424082318456
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2740914357286892
+    },
+    "32": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.01376397764041044,
+      "ratio_test_over_legacy": 1.4923120626935356,
+      "by_class_ratio": [
+        1.2854596277712298,
+        2.3699417786857433,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.009594645007460779,
+        0.00416933263294966,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1133.315841875515,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1082.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.00021809087280581438,
+        "10": 0.0001688762277831938,
+        "60": 0.00013098717381817342
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2725280606597225
+    },
+    "64": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.013763160353121093,
+      "ratio_test_over_legacy": 1.4922234511226335,
+      "by_class_ratio": [
+        1.2854596666101672,
+        2.369477049557021,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.009594645297353831,
+        0.004168515055767263,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1133.3349127267825,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1082.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.0001767350325290254,
+        "10": 0.00016085692379479478,
+        "60": 0.00013104703206939734
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2722189710303584
+    },
+    "128": {
+      "legacy_total_kg": 0.009223256974528015,
+      "test_total_kg": 0.013762601716980238,
+      "ratio_test_over_legacy": 1.4921628829152858,
+      "by_class_ratio": [
+        1.285420116025309,
+        2.369327309286287,
+        0.0,
+        null,
+        null,
+        null
+      ],
+      "legacy_by_class_kg": [
+        0.007463980042762039,
+        0.0017592552992005456,
+        2.1632565425561687e-08,
+        8.867769319379335e-20,
+        0.0,
+        0.0
+      ],
+      "test_by_class_kg": [
+        0.00959435009257777,
+        0.00416825162440247,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "centroid_legacy_s": 1315.947018741221,
+      "centroid_test_s": 1133.3389187856599,
+      "quantile_times_legacy_s": {
+        "0.1": 1176.0,
+        "0.5": 1285.0,
+        "0.9": 1548.0
+      },
+      "quantile_times_test_s": {
+        "0.1": 1082.0,
+        "0.5": 1143.0,
+        "0.9": 1195.0
+      },
+      "peak_windows_legacy_kg_s": {
+        "1": 6.917545415418456e-05,
+        "10": 6.557669560991254e-05,
+        "60": 4.494802974390781e-05
+      },
+      "peak_windows_test_kg_s": {
+        "1": 0.00018332418409801494,
+        "10": 0.00016146949752645452,
+        "60": 0.0001309140221318445
+      },
+      "max_abs_cumulative_gap_over_legacy_final": 1.2721751158352668
+    }
+  },
+  "legacy_python_replay": {
+    "python_endpoint_export_kg": 0.009216339369260692,
+    "python_by_class_kg": [
+      0.007458154402646088,
+      0.001758163352427721,
+      2.1614186879270837e-08,
+      8.840892300427705e-20,
+      0.0,
+      0.0
+    ]
+  },
+  "timing_note": "b1..b32 overlapped short profiling and unit tests of the Stage 1 candidate (seconds to tens of seconds); b64/b128 ran alone. All timings are single sequential same-machine observations.",
+  "method_note": "Bin convergence (vs 128) and legacy disagreement are different comparisons; no bin count is chosen to match legacy."
+}

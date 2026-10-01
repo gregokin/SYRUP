@@ -215,3 +215,14 @@ Keep rain-assisted wet detachment and water-depth attenuation for the selected s
 The flow-cessation dry reset is a deliberate new inter-event policy, not reproduction of MAHLERAN's fixed-duration storm run. MAPLE's evolving surface composition also intentionally differs from legacy fixed proportions. Compare these effects separately from equation or solver errors.
 
 Profile MAPLE validation/reduction synchronization and exchange allocation overhead on GPU. Larger exchange cadence or batching is only a candidate optimization: it can change depletion, composition feedback and physical transport, so it needs its own numerical/conservation tests. Do not prescribe batching as a correctness-neutral shortcut or assume a universal CPU/GPU speedup. Existing backend implementation details and compiler availability must be rechecked during implementation.
+
+## Phase 7e — selective voxel exchange and transport benchmarks
+
+Shared MAPLE surface metadata, skipped zero-effect cells and per-cell surface
+windows reduce repeated column processing while preserving gross exchanges and
+MAPLE tolerances. A benchmark-only compiled legacy transport reproduces the
+MAHLERAN source-based deposition/Crank–Nicolson pool with explicit clipping-source
+accounting. A frozen Plot1 sweep evaluates 1, 2, 4, 8, 16, 32, 64 and 128 bins;
+32 stays the default because timing/peak convergence needs more resolution than
+final export. See [qualification](docs/phase7e/acceptance.md), including actual GPU
+kernel evidence and limitations.

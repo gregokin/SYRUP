@@ -1,0 +1,136 @@
+{
+  "accepted_syrup_commit": "8ba4279",
+  "syrup_package_digest_during_storms": "301648ad5f869d1efb5bfb99f164dee047aff8a1032ba91d2af2d6dc4d83eb7e",
+  "syrup_package_note": "includes src/maple_syrup/legacy_transport.py (pre-validation version archived as agent_handoffs/tasks/phase7e_sparse_legacy_bins/legacy_before_validation.py); production modules unchanged from 8ba4279; later validation hardening recorded in legacy_validation_delta.patch",
+  "baseline_maple_digest": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+  "candidate_maple_digest": "1dc70bb4b82c62af70d311d053e7678d06c9d7cabd7f91e25da87ec7a546beab",
+  "storms": {
+    "baseline_b32": {
+      "loop_wall_s": 311.9665181370219,
+      "component_timers_s": {
+        "coupled_step": 10.68717761489097,
+        "sediment_physics_step": 16.531310503021814,
+        "with_water": 1.8128132278798148,
+        "apply_bed_demand": 184.00971031631343,
+        "maple_pickup": 91.37220929120667,
+        "characteristic_step": 86.51045835041441,
+        "maple_deposit_export": 92.63750102510676
+      },
+      "peak_rss_kib_end": 407072,
+      "export_kg": 0.01376397764041044,
+      "closed": true,
+      "water_residual_m3": 3.774758283725532e-14,
+      "selective_exchange_per_call": null,
+      "touched_inventory_opt_in": false
+    },
+    "candidate_b32": {
+      "loop_wall_s": 231.54540093697142,
+      "component_timers_s": {
+        "coupled_step": 10.18777138297446,
+        "sediment_physics_step": 15.475441422895528,
+        "with_water": 1.7682636458193883,
+        "apply_bed_demand": 101.51924924028572,
+        "maple_pickup": 50.50705593021121,
+        "characteristic_step": 90.47313112195116,
+        "maple_deposit_export": 51.01219331007451
+      },
+      "peak_rss_kib_end": 409540,
+      "export_kg": 0.01376397764041044,
+      "closed": true,
+      "water_residual_m3": 3.774758283725532e-14,
+      "selective_exchange_per_call": {
+        "extract_calls": 1.0,
+        "extract_cells_skipped": 1025.5187037037037,
+        "extract_cells_fast": 174.4812962962963,
+        "extract_cells_fallback": 0.0,
+        "extract_kernel_entries_fast": 3140.6633333333334,
+        "extract_kernel_entries_fallback": 0.0,
+        "extract_metadata_entries": 24000.0,
+        "deposit_calls": 1.0,
+        "deposit_cells_skipped": 728.3134259259259,
+        "deposit_cells_fast": 471.64962962962966,
+        "deposit_cells_fallback": 0.036944444444444446,
+        "deposit_kernel_entries_fast": 8489.693333333333,
+        "deposit_kernel_entries_fallback": 4.433333333333334,
+        "deposit_metadata_entries": 24000.0,
+        "cache_hits": 1.9999074074074075,
+        "metadata_copy_entries": 47997.77777777778,
+        "whole_mass_copy_entries": 288000.0,
+        "inventory_scans": 2.0,
+        "inventory_scan_entries": 288000.0,
+        "touched_delta_bed_changes": 0.0,
+        "final_cache_validated": 9.259259259259259e-05,
+        "cache_rebuilds_total": 1,
+        "cache_rebuild_mass_entries_total": 144000
+      },
+      "touched_inventory_opt_in": false
+    },
+    "candidate_touched_b32": {
+      "loop_wall_s": 217.14735456800554,
+      "component_timers_s": {
+        "coupled_step": 9.766021890565753,
+        "sediment_physics_step": 14.80744363705162,
+        "with_water": 1.661839009146206,
+        "apply_bed_demand": 92.5870044180192,
+        "maple_pickup": 45.80847242672462,
+        "characteristic_step": 87.03530110046268,
+        "maple_deposit_export": 46.778531991294585
+      },
+      "peak_rss_kib_end": 410232,
+      "export_kg": 0.01376397764041044,
+      "closed": true,
+      "water_residual_m3": 3.774758283725532e-14,
+      "selective_exchange_per_call": {
+        "extract_calls": 1.0,
+        "extract_cells_skipped": 1025.5187037037037,
+        "extract_cells_fast": 174.4812962962963,
+        "extract_cells_fallback": 0.0,
+        "extract_kernel_entries_fast": 3140.6633333333334,
+        "extract_kernel_entries_fallback": 0.0,
+        "extract_metadata_entries": 24000.0,
+        "deposit_calls": 1.0,
+        "deposit_cells_skipped": 728.3134259259259,
+        "deposit_cells_fast": 471.64962962962966,
+        "deposit_cells_fallback": 0.036944444444444446,
+        "deposit_kernel_entries_fast": 8489.693333333333,
+        "deposit_kernel_entries_fallback": 4.433333333333334,
+        "deposit_metadata_entries": 24000.0,
+        "cache_hits": 1.9999074074074075,
+        "metadata_copy_entries": 47997.77777777778,
+        "whole_mass_copy_entries": 288000.0,
+        "inventory_scans": 0.0,
+        "inventory_scan_entries": 0.0,
+        "touched_delta_bed_changes": 1.0,
+        "final_cache_validated": 9.259259259259259e-05,
+        "cache_rebuilds_total": 1,
+        "cache_rebuild_mass_entries_total": 144000
+      },
+      "touched_inventory_opt_in": true
+    }
+  },
+  "candidate_vs_baseline": {
+    "numeric_fields_exact": true,
+    "fields": 103,
+    "loop_speedup": 1.3473233192048664,
+    "maple_time_reduction_fraction": 0.448294065211158
+  },
+  "candidate_touched_vs_baseline": {
+    "numeric_fields_exact": true,
+    "fields": 103,
+    "loop_speedup": 1.4366581566588748,
+    "maple_time_reduction_fraction": 0.4968363122855757
+  },
+  "remaining_full_passes_per_call": {
+    "whole_mass_copies": 2,
+    "inventory_scans_default": 2,
+    "inventory_scans_touched_opt_in": 0,
+    "metadata_passes_over_voxel_totals": "two to three (ny*nx*n_voxels entries each) plus one metadata copy per routine"
+  },
+  "limitations": [
+    "single sequential same-machine runs (baseline rerun after a source-guard failure caused by writing legacy_transport.py during the first attempt)",
+    "CPU runs only; GPU execution of the candidate not verified in this sandbox (left to Codex)",
+    "touched-storage bed change is an opt-in at the runner level; SYRUP production call site unchanged",
+    "pure-state whole-array copies retained (2 per call)"
+  ],
+  "status": "Historical measured candidate1dc; final reviewed9a4 results are in stage1_reviewed_qualification.json. Do not relabel this timing as the final candidate."
+}

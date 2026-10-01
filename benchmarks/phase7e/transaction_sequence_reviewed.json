@@ -1,0 +1,195 @@
+{
+  "physical_fields": 1543,
+  "physical_fields_exact": true,
+  "error_categories_match": true,
+  "baseline": "outputs/phase7e/evidence/transaction_sequence_accepted.npz",
+  "candidate": "outputs/phase7e/evidence/transaction_sequence_reviewed.npz",
+  "fields": 1675,
+  "all_exact": false,
+  "differences": [
+    {
+      "field": "deep_room.step11.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step14.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step15.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step20.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step21.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step26.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step5.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step8.error",
+      "exact": false
+    },
+    {
+      "field": "deep_room.step9.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step11.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step14.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step15.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step17.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step20.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step21.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step26.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step27.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step32.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step33.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step38.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step39.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step44.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step5.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step8.error",
+      "exact": false
+    },
+    {
+      "field": "multilayer.step9.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step11.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step14.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step15.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step17.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step20.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step21.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step23.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step26.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step27.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step32.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step33.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step38.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step39.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step44.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step45.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step5.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step8.error",
+      "exact": false
+    },
+    {
+      "field": "sparse_empty.step9.error",
+      "exact": false
+    }
+  ],
+  "provenance": {
+    "baseline": {
+      "maple_digest": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+      "steps": 48,
+      "fields": 1675
+    },
+    "candidate": {
+      "maple_digest": "9a4da48c397333eff8a7c8321894843bee7a3df60d7d337c1d16d2408966fb73",
+      "steps": 48,
+      "fields": 1675
+    }
+  }
+}

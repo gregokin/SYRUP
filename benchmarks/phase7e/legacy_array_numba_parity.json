@@ -1,0 +1,12 @@
+{
+  "t_s": true,
+  "ledger": true,
+  "columns": true,
+  "water_outlet_m3_s": true,
+  "water_export_m3": true,
+  "cumulative_detachment_kg": true,
+  "cumulative_deposition_kg": true,
+  "cumulative_clipping_source_kg": true,
+  "final_mobile_kg": true,
+  "identity_residual_kg": true
+}
