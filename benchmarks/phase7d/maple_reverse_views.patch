@@ -1,0 +1,31 @@
+--- a/src/maple/surface/voxels/transfer.py
++++ b/src/maple/surface/voxels/transfer.py
+@@ -880,8 +880,8 @@
+     capacity = max_voxel_mass_kg(geometry)
+ 
+     voxel_totals = mass.sum(axis=-1)  # (ny, nx, n_voxels)
+-    order = xp.arange(n_voxels - 1, -1, -1)  # physically-contiguous top-down visiting order
+-    totals_topdown = voxel_totals[..., order]  # (ny, nx, n_voxels)
++    # Reverse basic slices preserve the top-down order without advanced-index copies.
++    totals_topdown = voxel_totals[..., ::-1]  # (ny, nx, n_voxels)
+     cum_topdown = xp.cumsum(totals_topdown, axis=-1)  # (ny, nx, n_voxels)
+     total_column_mass_kg = cum_topdown[..., -1]  # (ny, nx)
+ 
+@@ -947,7 +947,7 @@
+     )
+ 
+     fully_drained = (take_total_topdown >= totals_topdown) & (totals_topdown > 0)
+-    voxel_vecs_topdown = mass[..., order, :]  # (ny, nx, n_voxels, n_classes)
++    voxel_vecs_topdown = mass[..., ::-1, :]  # (ny, nx, n_voxels, n_classes)
+     take_by_class_topdown = xp.where(
+         fully_drained[..., None],
+         voxel_vecs_topdown,  # exact copy: cancels this voxel to exactly zero
+@@ -1000,7 +1000,7 @@
+     take_by_class_topdown = xp.where(
+         override_terminal[..., None], terminal_take_by_class[..., None, :], take_by_class_topdown
+     )
+-    mass[..., order, :] -= take_by_class_topdown
++    mass[..., ::-1, :] -= take_by_class_topdown
+     removed_by_class = take_by_class_topdown.sum(axis=-2)  # (ny, nx, n_classes), physically derived
+ 
+     # actual_total_mass_kg is derived directly from removed_by_class (what

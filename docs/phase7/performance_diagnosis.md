@@ -132,3 +132,15 @@ fields match exactly. The unchanged MAPLE transactions still take most of the
 time (181 s in the optimized run). Do not treat the old 84% profile as current.
 See [Phase 7c evidence](../phase7c/optimization.md) for source identities,
 allocation reductions, variability and final validation status.
+
+
+## Shared MAPLE allocation follow-up
+
+Phase 7d uses an isolated actual-MAPLE snapshot with a two-file upstream-ready
+patch. Reverse extraction views, removal of overwritten provisional work and
+Kahan temporary reuse reduce matched-storm bed exchanges from 160.7 to 137.0 s
+and the full loop from 256.8 to 233.6 s. All 103 saved numeric fields remain
+exactly equal. Actual GPU extraction also improves (3.72 to 3.31 ms) with less
+allocation-pool growth. See [Phase 7d evidence](../phase7d/optimization.md).
+These are separate same-session comparisons; do not add percentages across
+phases or infer a full-GPU storm result.

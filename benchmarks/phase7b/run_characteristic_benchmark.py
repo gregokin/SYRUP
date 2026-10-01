@@ -21,6 +21,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--bins", type=int, default=32)
 parser.add_argument("--dt", type=float, default=1.0)
 parser.add_argument("--output", type=Path, required=True)
+parser.add_argument("--allow-maple-source-change", action="store_true",
+                    help="explicitly record an isolated MAPLE candidate differing from case import")
 args = parser.parse_args()
 if args.output.exists():
     raise SystemExit("new output directory required")
@@ -75,6 +77,7 @@ try:
         applied_rainfall_csv="outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
         reference_run_dir="outputs/phase7/mahleran_deterministic_ksat_run",
         max_dt_s=args.dt, implementation="numba", transport_scheme="characteristic", phase_bins=args.bins,
+        allow_maple_source_change=args.allow_maple_source_change,
     )
 finally:
     for name, fn in originals.items():

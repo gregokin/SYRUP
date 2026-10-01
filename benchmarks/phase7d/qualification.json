@@ -1,0 +1,33 @@
+{
+  "accepted_syrup_commit": "a66bc69",
+  "syrup_package_digest": "cb816a5e2a7554779d9fe4122933d8744c61f1a4387e324a431f0a64695bf7db",
+  "baseline_maple_digest": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "candidate_maple_digest": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+  "numerical_fields_exact": true,
+  "numerical_field_count": 103,
+  "full_loop_speedup": 1.0994711972405626,
+  "bed_transaction_time_reduction_fraction": 0.14757619075488093,
+  "cpu_kernel_speedup": 1.6603987984587363,
+  "gpu_kernel_speedup": 1.1250546281438392,
+  "gpu_pool_growth_reduction_fraction": 0.49026230686309735,
+  "checks": {
+    "upstream_cpu_passed": 306,
+    "syrup_cpu_passed": 578,
+    "syrup_cpu_device_skips": 9,
+    "direct_cpu_gpu_passed": 44,
+    "upstream_cpu_gpu_passed": 126
+  },
+  "limitations": [
+    "Single sequential full-event measurements, not statistical speed guarantees.",
+    "GPU results are resident extraction kernel checks, not full GPU storms.",
+    "CPU process peak RSS is essentially unchanged.",
+    "Existing Phase7b scientific limitations remain.",
+    "Live MAPLE untouched; new upstream patch and selected snapshot are separate from commit a66bc69."
+  ],
+  "evidence_sha256": {
+    "benchmarks/phase7d/storm_comparison.json": "6e2f6d768b1a2de472a6e2585fe87f71741039b189a2c6fdefb533d888ca9c44",
+    "benchmarks/phase7d/gpu_probe.json": "71e583a7b16e4530eea696adc5a724e6a0dd2e60ee64c1ca5355913f1f148a05",
+    "benchmarks/phase7d/transaction_probe_v3.json": "bd412ce629f08d6b8d08197c2b5def2f1eb28cd9133d1b29e02e54c76759d55f",
+    "benchmarks/phase7d/maple_bed_optimization.patch": "998a03f741f4a85b4a2c313cbe30b249348554369832f79fdadd2333d404e355"
+  }
+}

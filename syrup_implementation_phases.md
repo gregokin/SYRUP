@@ -158,6 +158,18 @@ Shared MAPLE transactions remain the largest optimization target and must be
 changed through a versioned upstream candidate, not copied into SYRUP. Full
 coupled GPU execution and scaling remain open.
 
+## Phase 7d — Shared MAPLE bed-transaction allocation optimization
+
+Implement shared optimizations in an isolated, versioned MAPLE dependency and
+retain a small upstream-ready patch. The current patch replaces voxel reverse
+index copies with views, removes overwritten provisional extraction work, and
+reuses a fresh Kahan scratch buffer. It preserves the actual shared algorithms,
+validation and ledger accounting. Matched Plot1 has exact equality across all
+103 saved numerical fields; the measured loop is 9% shorter and MAPLE
+transactions 15% shorter. See [results and dependency selection](docs/phase7d/optimization.md).
+Further transaction fusion/compiled voxel work and coupled GPU qualification
+remain separate follow-ups; do not skip zero-demand exchanges or copy bed physics.
+
 ## Phase 8 — Actual MAPLE wind/water invocation smoke test
 
 After the water-only target is accepted, invoke real MAPLE wind events around MAPLE-SYRUP water events on the shared state. Verify wind-water-wind inheritance of composition, availability and topography, mutual exclusion, budgets and restart. Wind evolves exclusively through MAPLE code; MAPLE-SYRUP does not carry copied wind equations. Dependency changes must pass this compatibility test.

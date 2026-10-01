@@ -4,7 +4,36 @@
 
 Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.md`.
 
-## Current status: Phases 1–5 accepted as bounded CPU milestones
+## Current water workflow
+
+Storm completion/restart, matched MAHLERAN benchmarking, characteristic sediment
+transport and CPU optimizations are implemented. The benchmark retains fixed
+terrain/routing and excludes splash. Water/class budgets pass; remaining legacy
+sediment timing/composition and raw-peak limitations are documented in
+[Phase 7b acceptance](docs/phase7b/acceptance.md). Full coupled GPU storms and
+wind–water event integration remain open; individual kernels have actual-GPU
+verification.
+
+The selected optimized MAPLE dependency is the isolated package `72310c49…`,
+built from accepted `d3d007024…` plus the small shared allocation patch. Live
+MAPLE is unchanged. See [Phase 7d setup and results](docs/phase7d/optimization.md)
+for reconstruction, exact hashes and validation. After preparing that snapshot:
+
+```bash
+cd /home/okin/SYRUP
+export PYTHONDONTWRITEBYTECODE=1 GIT_OPTIONAL_LOCKS=0
+export PYTHONPATH=/tmp/syrup-numba
+source benchmarks/phase7d/candidate_env.sh
+/home/okin/MAPLE/.venv/bin/python benchmarks/phase7b/run_characteristic_benchmark.py \
+  --bins 32 --dt 1 --allow-maple-source-change --output NEW_OUTPUT_DIRECTORY
+```
+
+This uses the existing imported Plot1 fixture and records the dependency change
+explicitly. New case imports should bind this selected MAPLE snapshot directly.
+The runtime helper verifies source hashes before exposing the candidate modules.
+
+## Earlier milestones: Phases 1–5
+
 
 Implemented:
 
@@ -20,7 +49,7 @@ Phase 3 adds exact rainfall integration and conservative, independent soil-water
 
 Phase 5 runs use a fixed, read-only installation of actual MAPLE (distribution `maple` 0.0.1), with MAPLE’s existing interpreter and dependencies. See [dependency reconstruction and environment](docs/phase5/dependency.md). The complete package hash matches the imported case; new live upstream changes are adopted only after compatibility checks. It is intentionally not listed in `pyproject.toml`, because the PyPI name `maple` belongs to an unrelated project. Its identity, source root and required API surface are checked at runtime; see interface contract section 1.
 
-## Development commands
+## Historical Phase 1–5 development commands
 
 Use MAPLE's interpreter with the prepared fixed dependency below. If it is
 missing, follow [reconstruction instructions](docs/phase5/dependency.md).

@@ -1,0 +1,14 @@
+{
+  "baseline_package_digest": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "candidate_package_digest": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+  "changed_package_files": [
+    "coupling/sediment_ledger/accumulate.py",
+    "surface/voxels/transfer.py"
+  ],
+  "baseline": "/home/okin/SYRUP/outputs/dependencies/maple_d3d007024",
+  "candidate": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49",
+  "baseline_manifest_sha256": "36f0c472dfefdde9d10487f07618cc679d72084823e59e2ffdab0009670b179f",
+  "patch": "/home/okin/SYRUP/benchmarks/phase7d/maple_bed_optimization.patch",
+  "patch_sha256": "998a03f741f4a85b4a2c313cbe30b249348554369832f79fdadd2333d404e355",
+  "note": "Isolated candidate, not adopted upstream; exact source digest must be verified before use."
+}
