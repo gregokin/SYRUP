@@ -1,0 +1,47 @@
+{
+  "command": "python -m maple_syrup.benchmark_experiment --output-dir outputs/phase7f/default_legacy_run --allow-maple-source-change",
+  "baseline": "outputs/phase7e/legacy/plot1_numba",
+  "run": "outputs/phase7f/default_legacy_run",
+  "arrays_exact": {
+    "t_s": true,
+    "ledger": true,
+    "columns": true,
+    "water_outlet_m3_s": true,
+    "water_export_m3": true,
+    "cumulative_detachment_kg": true,
+    "cumulative_deposition_kg": true,
+    "cumulative_clipping_source_kg": true,
+    "final_mobile_kg": true,
+    "identity_residual_kg": true
+  },
+  "kernel_implementation": "numba",
+  "water_implementation": "numba",
+  "source_stable": true,
+  "source_digests": {
+    "maple_syrup": "a598f32099721d67655d1d4007187e91b375d781c79eb3640f2aef320da19e08",
+    "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+  },
+  "performance": {
+    "loop_wall_s": 26.34335323108826,
+    "hydrology_s": 8.61028561659623,
+    "physics_s": 13.1760538284434,
+    "legacy_walk_plus_cn_s": 3.09062448667828,
+    "whole_process_wall_s": 28.645387313095853,
+    "first_step_including_warmup_s": {
+      "hydrology_s": 0.5147197679616511,
+      "physics_s": 0.004844099981710315,
+      "legacy_walk_plus_cn_s": 0.6623240358894691,
+      "total_s": 1.1821745110210031
+    },
+    "steady_state_excluding_first_step_s": {
+      "hydrology_s": 8.095565848634578,
+      "physics_s": 13.17120972846169,
+      "legacy_walk_plus_cn_s": 2.428300450788811,
+      "steps": 5399
+    },
+    "water_implementation": "numba",
+    "peak_rss_kib": 343232,
+    "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+  },
+  "note": "Default CLI parity verification, no physics optimization; observational timing."
+}

@@ -872,11 +872,32 @@ def run_plot1_matched_benchmark(
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # Phase 7f: the default model is the Python/Numba MAHLERAN legacy replay. Decide before the conservative
+    # parser (whose --applied-rainfall is required) sees the arguments; characteristic/upwind stay explicit.
+    scheme_probe = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    scheme_probe.add_argument("--transport-scheme", default="legacy")
+    known, _ = scheme_probe.parse_known_args(argv)
+    if known.transport_scheme == "legacy" and not {"-h", "--help"} & set(argv):
+        # local import: no circular execution
+        from maple_syrup.legacy_experiment import main as legacy_main
+
+        return legacy_main(argv)
     parser = argparse.ArgumentParser(
         prog="python -m maple_syrup.benchmark_experiment",
-        description="MAPLE-SYRUP Phase 7: matched fixed-terrain wet benchmark of Plot 1 (frozen hydraulic geometry, "
-                    "actual MAPLE sediment exchange, reference applied rainfall, deterministic conductivity). "
-                    "No completion, dry reset, restart, wind or GPU.")
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="MAPLE-SYRUP matched fixed-terrain wet benchmark of Plot 1.\n\n"
+                    "DEFAULT (--transport-scheme legacy): Python/Numba replay of the MAHLERAN legacy sediment "
+                    "transport (dt = 1 s, frozen terrain, no splash). Fixed composition, UNLIMITED supply, explicit "
+                    "clipping source, NO evolving MAPLE bed; not a conservative complete-event, restart or "
+                    "wind-handoff model. Run it with only --case-dir/--output-dir (see "
+                    "`python -m maple_syrup.legacy_experiment --help`); controls it cannot honour (dt != 1, "
+                    "--backend cupy, --phase-bins, Courant/substep options) are refused, not ignored.\n\n"
+                    "EXPLICIT (--transport-scheme characteristic | upwind): the conservative model with actual MAPLE "
+                    "sediment exchange and reference applied rainfall (frozen hydraulic geometry, deterministic "
+                    "conductivity). Multi-bin characteristic convergence/performance is deferred (Phase 7g). "
+                    "No completion, dry reset, restart, wind or GPU. The options below apply to this model and "
+                    "--applied-rainfall is required for it.")
     parser.add_argument("--case-dir", required=True, help="Verified Phase 2 case, e.g. outputs/plot1")
     parser.add_argument("--output-dir", required=True, help="NEW directory for summary, grids and hydrographs.")
     parser.add_argument("--applied-rainfall", required=True,
@@ -897,8 +918,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sediment-courant-max", type=float, default=CHARACTERISTIC_COURANT_MAX,
                         help="Sediment Courant cap per substep (<= 0.5 for characteristic, <= 1 for upwind).")
     parser.add_argument("--max-transport-substeps", type=int, default=64)
-    parser.add_argument("--transport-scheme", default="characteristic", choices=TRANSPORT_SCHEMES,
-                        help="Lateral transport: characteristic (Phase 7b phase bins, default) or the Phase 5 upwind "
+    parser.add_argument("--transport-scheme", default="legacy", choices=("legacy",) + tuple(TRANSPORT_SCHEMES),
+                        help="legacy (DEFAULT): MAHLERAN legacy replay, dispatched to maple_syrup.legacy_experiment. "
+                             "characteristic: Phase 7b conservative phase-bin model (explicit). upwind: Phase 5 "
                              "operator kept as an explicit comparison.")
     parser.add_argument("--phase-bins", type=int, default=DEFAULT_N_BINS,
                         help=f"Position bins per cell/class for the characteristic scheme (1..{MAX_N_BINS}; "
@@ -911,6 +933,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-maple-source-change", action="store_true",
                         help="Run even if MAPLE's source digest differs from the import's (recorded).")
     args = parser.parse_args(argv)
+    if args.transport_scheme == "legacy":  # unreachable after dispatch; guards direct parser edits
+        parser.error("legacy is dispatched before parsing")
     try:
         run = run_plot1_matched_benchmark(
             args.case_dir, args.output_dir, applied_rainfall_csv=args.applied_rainfall,

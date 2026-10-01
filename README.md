@@ -4,7 +4,35 @@
 
 Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.md`.
 
+## Default run workflow (Phase 7f)
+
+Runs default to the Python/Numba replay of the MAHLERAN **legacy** sediment
+transport on frozen Plot1 terrain (dt = 1 s, no splash). It has fixed
+composition, unlimited supply, explicit clipping-source accounting and no
+evolving MAPLE bed; it is not a conservative complete-event, restart or
+wind-handoff model. With the existing verified dependency and Numba environment:
+
+```bash
+cd /home/okin/SYRUP
+export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/tmp/syrup-numba
+source benchmarks/phase7d/candidate_env.sh
+/home/okin/MAPLE/.venv/bin/python -m maple_syrup.benchmark_experiment \
+  --case-dir outputs/plot1 --output-dir NEW_OUTPUT_DIRECTORY --allow-maple-source-change
+# After installing this package, maple-syrup-legacy invokes the same legacy module.
+```
+
+Unsupported controls (dt other than 1, GPU, bins, Courant/substep options) are
+refused, and the numba path requires compiled water and sediment kernels. The
+multi-bin conservative model remains available with
+`--transport-scheme characteristic` (needs `--applied-rainfall`); its
+convergence/performance work is deferred to Phase 7g. Details:
+[default workflow](docs/phase7f/default_workflow.md),
+[performance diagnosis](docs/phase7f/performance.md).
+
 ## Current water workflow
+
+The commands in this and the following historical sections that name
+`run_characteristic_benchmark.py` select the explicit multi-bin model.
 
 Storm completion/restart, matched MAHLERAN benchmarking, characteristic sediment
 transport and CPU optimizations are implemented. The benchmark retains fixed

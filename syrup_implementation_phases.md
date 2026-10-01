@@ -226,3 +226,35 @@ accounting. A frozen Plot1 sweep evaluates 1, 2, 4, 8, 16, 32, 64 and 128 bins;
 32 stays the default because timing/peak convergence needs more resolution than
 final export. See [qualification](docs/phase7e/acceptance.md), including actual GPU
 kernel evidence and limitations.
+
+## Phase 7f — legacy-default run workflow and replay optimization investigation (current)
+
+All upcoming runs default to the Python/Numba MAHLERAN legacy replay
+(`maple_syrup.legacy_experiment`; `maple-syrup-benchmark` defaults to
+`--transport-scheme legacy`). Deliverables: the reusable module with a
+compatibility wrapper, explicit refusal of unsupported controls and of a
+non-compiled numba path, and a diagnosis of why the replay is slower than
+actual MAHLERAN with ranked optimization opportunities (docs/phase7f/performance.md).
+The replay keeps fixed composition, unlimited supply and explicit clipping
+source; it is not a conservative complete-event, restart or wind-handoff
+model. The initial workflow change preserved the numerical implementation;
+subsequent user-authorized optimization adds a prepared, fused CPU Numba wet-law
+kernel for frozen legacy replay. The array reference remains selectable with
+`--physics-implementation array`. See docs/phase7f/compiled_physics.md and
+compiled_performance.md for scope and measured validation. Hydrology/driver
+optimization remains follow-up work; no wind integration is claimed.
+
+## Phase 7g — deferred multi-bin convergence and performance optimization
+
+Reactivation of the characteristic multi-bin model as a default candidate needs
+first: yield, per-class, spatial and timing (peak flux) fidelity versus the
+legacy replay and actual MAHLERAN; water and per-class sediment conservation;
+restart equivalence; CPU/GPU equivalence; and peak-memory/wall-time
+measurements. Until then it is selected explicitly only.
+
+Work will profile per-bin CPU/GPU cost and memory, reduce empty-bin work and
+intermediate allocations, and determine the lowest bin count meeting declared
+yield, sorting, spatial and timing tolerances across representative storms.
+Separate convergence within the conservative model from differences caused by
+legacy supply, composition, deposition timing and clipping; retain the legacy
+replay as the default comparison workflow while this phase is deferred.

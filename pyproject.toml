@@ -40,6 +40,7 @@ maple-syrup-storm = "maple_syrup.storm_experiment:main"
 maple-syrup-sediment = "maple_syrup.sediment_experiment:main"
 maple-syrup-event = "maple_syrup.event_experiment:main"
 maple-syrup-benchmark = "maple_syrup.benchmark_experiment:main"
+maple-syrup-legacy = "maple_syrup.legacy_experiment:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -47,5 +48,5 @@ where = ["src"]
 [tool.pytest.ini_options]
 # Phase suites are collected by default; the older port_feasibility/
 # experiment keeps its own invocation.
-testpaths = ["tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5", "tests/phase6", "tests/phase7", "tests/phase7b"]
+testpaths = ["tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5", "tests/phase6", "tests/phase7", "tests/phase7b", "tests/phase7f"]
 pythonpath = ["src"]

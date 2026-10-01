@@ -115,3 +115,17 @@ normal evolving-terrain SYRUP. See docs/phase7/fixed_terrain_benchmark.md.
 Subsequent user instructions authorized full benchmarking and optimization.
 See docs/phase7b/acceptance.md and docs/phase7c/optimization.md for executed
 results and remaining scientific/performance limitations.
+
+## Default run workflow — Phase 7f, 2026-10-01
+
+User direction: ALL upcoming runs default to the Python/Numba MAHLERAN LEGACY
+replay (`maple_syrup.legacy_experiment`, `maple-syrup-legacy`; the generic
+`maple-syrup-benchmark` now defaults to `--transport-scheme legacy`). The
+multi-bin characteristic model and upwind remain implemented and are selected
+explicitly with `--transport-scheme`; their convergence/performance work is
+deferred to Phase 7g. This supersedes the earlier default-32-bin selection as a
+workflow choice only. Scientific status of the legacy replay is unchanged: fixed
+composition, unlimited supply, explicit clipping source, no evolving MAPLE bed.
+It is not a conservative complete-event, restart or wind-handoff model, and its
+legacy behaviour is not MAPLE authority. No wind integration is claimed. See
+docs/phase7f/default_workflow.md and docs/phase7f/performance.md.

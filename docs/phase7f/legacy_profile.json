@@ -1,0 +1,97 @@
+{
+  "baseline_commit": "b350d36",
+  "profile_path": "outputs/phase7f/legacy_profile.pstats",
+  "scope": "cProfile diagnostic; timings inflated, cumulative rows overlap, not a speed benchmark",
+  "total_function_calls": 24189954,
+  "profiled_total_s": 38.06579504100003,
+  "selected_functions": [
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/sediment_physics.py",
+      "line": 648,
+      "name": "sediment_physics_step",
+      "calls": 5400,
+      "self_s": 8.509503436000001,
+      "cumulative_s": 15.543249922000001
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/storm.py",
+      "line": 276,
+      "name": "coupled_step",
+      "calls": 5400,
+      "self_s": 0.37307026800000004,
+      "cumulative_s": 11.360275377
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/routing.py",
+      "line": 656,
+      "name": "_route",
+      "calls": 5400,
+      "self_s": 1.5882970230000002,
+      "cumulative_s": 8.169877507
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/routing_numba.py",
+      "line": 132,
+      "name": "run_sweep",
+      "calls": 5400,
+      "self_s": 2.863032211,
+      "cumulative_s": 3.893638616
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/legacy_transport.py",
+      "line": 276,
+      "name": "legacy_transport_step",
+      "calls": 5400,
+      "self_s": 1.722944008,
+      "cumulative_s": 3.7686435580000004
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple/core/backend/arrays.py",
+      "line": 420,
+      "name": "finite_flag",
+      "calls": 313223,
+      "self_s": 1.253322807,
+      "cumulative_s": 2.567269737
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/infiltration.py",
+      "line": 308,
+      "name": "column_step",
+      "calls": 5400,
+      "self_s": 0.5859008680000001,
+      "cumulative_s": 2.5371086910000002
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/phase7f/profile_snapshot/maple_syrup/sediment_physics.py",
+      "line": 508,
+      "name": "median_diameter_m",
+      "calls": 5400,
+      "self_s": 0.5987235430000001,
+      "cumulative_s": 2.0016044060000002
+    },
+    {
+      "file": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple/core/backend/arrays.py",
+      "line": 436,
+      "name": "negative_flag",
+      "calls": 172813,
+      "self_s": 0.6817822880000001,
+      "cumulative_s": 1.309049643
+    }
+  ],
+  "numerical_parity_with_unprofiled_legacy": {
+    "t_s": true,
+    "ledger": true,
+    "columns": true,
+    "water_outlet_m3_s": true,
+    "water_export_m3": true,
+    "cumulative_detachment_kg": true,
+    "cumulative_deposition_kg": true,
+    "cumulative_clipping_source_kg": true,
+    "final_mobile_kg": true,
+    "identity_residual_kg": true
+  },
+  "profile_source_provenance": {
+    "maple_syrup": "04189b1439b4f99c1115faf28d2f5366ce8cdf52bea25628c3d449449f51a112",
+    "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+  }
+}

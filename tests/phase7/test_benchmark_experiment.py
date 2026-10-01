@@ -294,7 +294,8 @@ def test_plot1_runner_refusals_write_nothing(short_benchmark, plot1_case, applie
 def test_cli_short_window(plot1_case, applied_csv, tmp_path, capsys):
     out = tmp_path / "cli"
     code = main(["--case-dir", str(plot1_case), "--output-dir", str(out), "--applied-rainfall", str(applied_csv),
-                 "--end-s", "60", "--implementation", "array"])
+                 "--end-s", "60", "--implementation", "array",
+                 "--transport-scheme", "characteristic"])
     assert code == 0
     text = capsys.readouterr().out
     printed = json.loads(text[text.index("{"):])
@@ -302,11 +303,13 @@ def test_cli_short_window(plot1_case, applied_csv, tmp_path, capsys):
     assert printed["time"]["n_accepted_steps"] == 60 and "FROZEN" in printed["status"]
     assert (out / SUMMARY_NAME).is_file()
     assert main(["--case-dir", str(plot1_case), "--output-dir", str(out), "--applied-rainfall", str(applied_csv),
-                 "--end-s", "10", "--implementation", "array"]) == 1
+                 "--end-s", "10", "--implementation", "array",
+                 "--transport-scheme", "characteristic"]) == 1
     assert main(["--case-dir", str(plot1_case), "--output-dir", str(tmp_path / "gpu"), "--applied-rainfall",
-                 str(applied_csv), "--end-s", "10", "--implementation", "array", "--backend", "cupy"]) == 1
+                 str(applied_csv), "--end-s", "10", "--implementation", "array", "--backend", "cupy",
+                 "--transport-scheme", "characteristic"]) == 1
     assert not (tmp_path / "gpu").exists()
     with pytest.raises(SystemExit):  # restart is not a feature of this benchmark: no --resume option exists
         main(["--case-dir", str(plot1_case), "--output-dir", str(tmp_path / "x"), "--applied-rainfall",
-              str(applied_csv), "--resume", "anything"])
+              str(applied_csv), "--resume", "anything", "--transport-scheme", "characteristic"])
     assert not (tmp_path / "x").exists()

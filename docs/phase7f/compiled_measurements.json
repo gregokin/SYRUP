@@ -1,0 +1,335 @@
+{
+  "case": "plot1, frozen topography/routing, no splash, 5400 one-second steps, 60x20 cells, six classes",
+  "maple_digest": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+  "method": "three alternating fresh-process pairs; baseline immutable pre-optimization snapshot; candidate unchanged live source; no concurrent task tests; unrelated user workloads not stopped",
+  "runs": [
+    {
+      "label": "baseline2",
+      "external_process_wall_s": 29.460617127944715,
+      "loop_wall_s": 25.940709471004084,
+      "loop_less_first_components_s": 24.72679094003979,
+      "physics_steady_s": 12.957711198017932,
+      "hydrology_steady_s": 7.954584318213165,
+      "sediment_steady_s": 2.3658195784082636,
+      "physics_first_call_s": 0.0027598810847848654,
+      "physics_preparation_s": 0,
+      "peak_rss_mib": 334.83203125,
+      "source_stable": true
+    },
+    {
+      "label": "candidate1",
+      "external_process_wall_s": 21.494307628949173,
+      "loop_wall_s": 18.06267052597832,
+      "loop_less_first_components_s": 14.764513345900923,
+      "physics_steady_s": 3.86586532543879,
+      "hydrology_steady_s": 7.385806788573973,
+      "sediment_steady_s": 2.173281986732036,
+      "physics_first_call_s": 2.2873319908976555,
+      "physics_preparation_s": 0.0009940649615600705,
+      "peak_rss_mib": 354.93359375,
+      "source_stable": true
+    },
+    {
+      "label": "baseline3",
+      "external_process_wall_s": 28.954953685984947,
+      "loop_wall_s": 25.367832125979476,
+      "loop_less_first_components_s": 24.03370506700594,
+      "physics_steady_s": 12.595567399286665,
+      "hydrology_steady_s": 7.774624178535305,
+      "sediment_steady_s": 2.273304763715714,
+      "physics_first_call_s": 0.004082223051227629,
+      "physics_preparation_s": 0,
+      "peak_rss_mib": 335.0546875,
+      "source_stable": true
+    },
+    {
+      "label": "candidate2",
+      "external_process_wall_s": 23.703774260007776,
+      "loop_wall_s": 20.201095663011074,
+      "loop_less_first_components_s": 16.803810796001926,
+      "physics_steady_s": 4.317913631210104,
+      "hydrology_steady_s": 8.366564792813733,
+      "sediment_steady_s": 2.5614399164915085,
+      "physics_first_call_s": 2.3190175188938156,
+      "physics_preparation_s": 0.000809071003459394,
+      "peak_rss_mib": 366.51953125,
+      "source_stable": true
+    },
+    {
+      "label": "baseline4",
+      "external_process_wall_s": 29.549442917923443,
+      "loop_wall_s": 25.939753544982523,
+      "loop_less_first_components_s": 24.718079856946133,
+      "physics_steady_s": 12.928898176876828,
+      "hydrology_steady_s": 7.958283101790585,
+      "sediment_steady_s": 2.3967723172390833,
+      "physics_first_call_s": 0.002916206023655832,
+      "physics_preparation_s": 0,
+      "peak_rss_mib": 335.21484375,
+      "source_stable": true
+    },
+    {
+      "label": "candidate3",
+      "external_process_wall_s": 23.137920852052048,
+      "loop_wall_s": 19.570915724965744,
+      "loop_less_first_components_s": 16.070357294054702,
+      "physics_steady_s": 4.137002879171632,
+      "hydrology_steady_s": 8.03322431689594,
+      "sediment_steady_s": 2.406022843788378,
+      "physics_first_call_s": 2.428773012943566,
+      "physics_preparation_s": 0.0008143149316310883,
+      "peak_rss_mib": 366.91015625,
+      "source_stable": true
+    }
+  ],
+  "medians": {
+    "baseline": {
+      "external_process_wall_s": 29.460617127944715,
+      "loop_wall_s": 25.939753544982523,
+      "loop_less_first_components_s": 24.718079856946133,
+      "physics_steady_s": 12.928898176876828,
+      "hydrology_steady_s": 7.954584318213165,
+      "sediment_steady_s": 2.3658195784082636,
+      "physics_first_call_s": 0.002916206023655832,
+      "physics_preparation_s": 0,
+      "peak_rss_mib": 335.0546875
+    },
+    "candidate": {
+      "external_process_wall_s": 23.137920852052048,
+      "loop_wall_s": 19.570915724965744,
+      "loop_less_first_components_s": 16.070357294054702,
+      "physics_steady_s": 4.137002879171632,
+      "hydrology_steady_s": 8.03322431689594,
+      "sediment_steady_s": 2.406022843788378,
+      "physics_first_call_s": 2.3190175188938156,
+      "physics_preparation_s": 0.0008143149316310883,
+      "peak_rss_mib": 366.51953125
+    }
+  },
+  "comparisons": [
+    {
+      "baseline": "outputs/phase7f_optimization/baseline2",
+      "candidate": "outputs/phase7f_optimization/candidate1",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "note": "Floating-point implementation comparison only; does not change model accounting/conservation tolerances. Water must match bitwise.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.6653345369377348e-16
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "water_export_m3": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_detachment_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "cumulative_deposition_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.3010426069826053e-18
+        },
+        "final_mobile_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.0842021724855044e-18
+        },
+        "identity_residual_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.6826860068622392e-16
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6514567491299204e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": 4.440892098500626e-16,
+      "peak_time_exact": true,
+      "passed": true
+    },
+    {
+      "baseline": "outputs/phase7f_optimization/baseline3",
+      "candidate": "outputs/phase7f_optimization/candidate2",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "note": "Floating-point implementation comparison only; does not change model accounting/conservation tolerances. Water must match bitwise.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.6653345369377348e-16
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "water_export_m3": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_detachment_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "cumulative_deposition_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.3010426069826053e-18
+        },
+        "final_mobile_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.0842021724855044e-18
+        },
+        "identity_residual_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.6826860068622392e-16
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6514567491299204e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": 4.440892098500626e-16,
+      "peak_time_exact": true,
+      "passed": true
+    },
+    {
+      "baseline": "outputs/phase7f_optimization/baseline4",
+      "candidate": "outputs/phase7f_optimization/candidate3",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "note": "Floating-point implementation comparison only; does not change model accounting/conservation tolerances. Water must match bitwise.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.6653345369377348e-16
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "water_export_m3": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_detachment_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "cumulative_deposition_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.3010426069826053e-18
+        },
+        "final_mobile_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.0842021724855044e-18
+        },
+        "identity_residual_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.6826860068622392e-16
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6514567491299204e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": 4.440892098500626e-16,
+      "peak_time_exact": true,
+      "passed": true
+    }
+  ],
+  "candidate_source_manifest": {
+    "src/maple_syrup/conservation.py": "1072cdade368a76290c8a41162dfeb7a5b60ffaf970a7ede4707635bb3cf1bb1",
+    "src/maple_syrup/infiltration.py": "89c8f31c481cf4535d1006599f896383606d986b7922b8676aa37115a5a6d60a",
+    "src/maple_syrup/__init__.py": "039be50eaa7bd7e21c5cb5a88a604dc2041c9fe60f723af4b63f7dca1366adbc",
+    "src/maple_syrup/legacy_experiment.py": "7c1276882c3e25c4926d64548128f6e6085eaf31c5da0db71254102cfa7744f5",
+    "src/maple_syrup/sediment_experiment.py": "626fd563e5da9911d771f971c0326abb87867886683e138d11250ccb5afe4515",
+    "src/maple_syrup/routing.py": "ac4eef69e78a0cb44cff21f7e52c5a1b7972aa24b5bda7362d6154559641d3b7",
+    "src/maple_syrup/event_experiment.py": "8c3d3e77cf3e7b952bba4c375af6960354224935ee4b1243521a30d800401682",
+    "src/maple_syrup/sediment_bed.py": "bcf214d7d3b7d3d41496d3e1185caceb51a60dcd60dd9bdc8c41246e4711b4f2",
+    "src/maple_syrup/complete_event.py": "3e64d727768e84f93dd3543e620b6a809623d73f34fb441b5eb3844840180335",
+    "src/maple_syrup/routing_numba.py": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+    "src/maple_syrup/rainfall.py": "9680256608b2ca372bb88115ff5135f3bca6e350e7067968ebebb4f0b42c04b5",
+    "src/maple_syrup/benchmark_experiment.py": "37c9bce3e47fe4b82b505d6c337163d466317f748c1dcf073b80024242848020",
+    "src/maple_syrup/sediment_event.py": "2e864fd5ae7781ff8a1512e0649e5458ad0857b5fa69d49a2bb711276a16f4be",
+    "src/maple_syrup/storm.py": "ac1a5fda28ac03e68776ce24ea8f4f65eff471515e6f09cf97f52bff527f5a19",
+    "src/maple_syrup/column_experiment.py": "a533573442f5e8beb7451b11265e05b7823160fa3063aa670fcd9fef59e50dd9",
+    "src/maple_syrup/dependency.py": "b0c1875a0fa7ef1e67844da82b49f6cae0159bf177414cbdef9bac73d7698159",
+    "src/maple_syrup/legacy_transport.py": "69f2fef5ce2a6562b48edfb3f732998b390f3a942788664bbcdc3fe775db2172",
+    "src/maple_syrup/storm_experiment.py": "46c91e891495eb4abdd3ca11b6b73bad4449c9d4e497583248fec6a9b086a969",
+    "src/maple_syrup/sediment_transport.py": "9fa27d7701768a54205755428a2dba48c829a1bd75c3b5a2f166d28ba5507a10",
+    "src/maple_syrup/sediment_physics.py": "e582356773ee14c301188bc70347a96e8294af878f61ab85a284eaf3ba02ffdb",
+    "src/maple_syrup/characteristic_numba.py": "07eaac65ec4d8f01737ffcee36ef4deeaa6a064dd7f77dd7445009553ade4852",
+    "src/maple_syrup/checkpoint.py": "340dca782885cd5883d7f5886c7bc545cf4f0fa64bcb4d2b31ef502c6d662d0c",
+    "src/maple_syrup/legacy_physics_numba.py": "abf0c4e5044352830a8d2cbe0750afdb126abe78b849f029023a5a09149e13da",
+    "src/maple_syrup/probe.py": "af859fd93960d88f0ce205834b74dc906b0f5513d1a29d98c65649ee53750ef1",
+    "src/maple_syrup/characteristic_transport.py": "5f1a9928e8de2b6f3e41b1b9f41db994908565c2104986a9d52903a3b0f6dd77",
+    "src/maple_syrup/case_import.py": "21a87b9380296bd88b122a2ecb59f12d307bc43f39b279b2e25d0cdcaeaec056",
+    "src/maple_syrup/provenance.py": "30945a037ded51402471a2f59192144b3b44f69cf7df7088472684d60bdfcaaa"
+  }
+}
