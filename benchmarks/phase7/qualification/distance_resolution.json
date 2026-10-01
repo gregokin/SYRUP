@@ -1,0 +1,79 @@
+{
+  "scope": "Measure first-cell survival of the actual operator against an exponential walk.\n\nControlled constant-law impulse, not a Plot1 simulation or a legacy execution.\nA unit impulse starts in the outlet cell of a three-cell chain; export is the probability of crossing its downstream\nface before deposition. The legacy flow_distrib convention assigns distance dx\ninside the pickup cell, with exact survival exp(-dx/L). Upwind cell mixing has\nthe different continuous-time limit L/(L+dx). Run with the pinned MAPLE env.\n",
+  "source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+  "script_sha256": "e6023f22883ddcd049d8fb1ecfaec1099ba96c9ff53637c0458cabaa9afcac96",
+  "rows": [
+    {
+      "dx_m": 0.5,
+      "mean_distance_m": 0.01,
+      "dt_s": 1.0,
+      "steps": 32,
+      "actual_export_fraction": 0.01896955077948066,
+      "actual_deposited_fraction": 0.9810304492205126,
+      "remaining_fraction": 6.634542817580414e-15,
+      "geometric_series_export_fraction": 0.018969550779480784,
+      "legacy_distance_convention_survival": 1.9287498479639178e-22,
+      "upwind_dt_to_zero_survival": 0.0196078431372549
+    },
+    {
+      "dx_m": 0.5,
+      "mean_distance_m": 0.01,
+      "dt_s": 0.25,
+      "steps": 127,
+      "actual_export_fraction": 0.019602920498356248,
+      "actual_deposited_fraction": 0.9803970795016349,
+      "remaining_fraction": 8.603624632145545e-15,
+      "geometric_series_export_fraction": 0.019602920498356408,
+      "legacy_distance_convention_survival": 1.9287498479639178e-22,
+      "upwind_dt_to_zero_survival": 0.0196078431372549
+    },
+    {
+      "dx_m": 0.5,
+      "mean_distance_m": 0.05,
+      "dt_s": 1.0,
+      "steps": 147,
+      "actual_export_fraction": 0.09156241018110989,
+      "actual_deposited_fraction": 0.9084375898188819,
+      "remaining_fraction": 8.749341314869215e-15,
+      "geometric_series_export_fraction": 0.09156241018111066,
+      "legacy_distance_convention_survival": 4.5399929762484854e-05,
+      "upwind_dt_to_zero_survival": 0.09090909090909091
+    },
+    {
+      "dx_m": 0.5,
+      "mean_distance_m": 0.05,
+      "dt_s": 0.25,
+      "steps": 586,
+      "actual_export_fraction": 0.09110495321371427,
+      "actual_deposited_fraction": 0.9088950467862752,
+      "remaining_fraction": 9.988424637821093e-15,
+      "geometric_series_export_fraction": 0.09110495321371523,
+      "legacy_distance_convention_survival": 4.5399929762484854e-05,
+      "upwind_dt_to_zero_survival": 0.09090909090909091
+    },
+    {
+      "dx_m": 0.5,
+      "mean_distance_m": 0.1,
+      "dt_s": 1.0,
+      "steps": 269,
+      "actual_export_fraction": 0.16797369749108554,
+      "actual_deposited_fraction": 0.8320263025089049,
+      "remaining_fraction": 9.063434449172278e-15,
+      "geometric_series_export_fraction": 0.16797369749108723,
+      "legacy_distance_convention_survival": 0.006737946999085467,
+      "upwind_dt_to_zero_survival": 0.16666666666666669
+    },
+    {
+      "dx_m": 0.5,
+      "mean_distance_m": 0.1,
+      "dt_s": 0.25,
+      "steps": 1075,
+      "actual_export_fraction": 0.1670088117783763,
+      "actual_deposited_fraction": 0.8329911882216141,
+      "remaining_fraction": 9.730778804824948e-15,
+      "geometric_series_export_fraction": 0.16700881177837776,
+      "legacy_distance_convention_survival": 0.006737946999085467,
+      "upwind_dt_to_zero_survival": 0.16666666666666669
+    }
+  ]
+}

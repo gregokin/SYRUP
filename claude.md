@@ -122,3 +122,14 @@ The hardest remaining scientific/implementation issue is a complete, conservativ
 Codex and Claude are collaborating on assessment and review. Distinguish agreed requirements, candidate designs, implemented behavior, and verified results. Do not describe proposals as completed code or source inspection as empirical validation. The user has explicitly authorized sharing relevant project findings and source excerpts with Claude for requested reviews.
 
 The user considered and rejected adopting the sandpile approach in *Modeling soil-erosion connectivity in drylands using a sandpile framework*, DOI `10.22541/essoar.177013829.90321302/v1`. Keep it in mind for connectivity analysis or future benchmarking, while retaining the process-based direction described above.
+
+## Fixed-terrain benchmark requirement — 2026-09-30
+
+User selected the initial MAHLERAN/SYRUP comparison with direct dry-cell splash
+disabled in an isolated MAHLERAN copy, and elevation AND routing fixed in both
+models. Continue conservative MAPLE sediment-inventory/availability changes;
+retain rain-assisted wet detachment. This is benchmark-only, not a change to
+normal evolving-terrain SYRUP. See docs/phase7/fixed_terrain_benchmark.md.
+Subsequent user instructions authorized full benchmarking and optimization.
+See docs/phase7b/acceptance.md and docs/phase7c/optimization.md for executed
+results and remaining scientific/performance limitations.

@@ -72,6 +72,22 @@ Exit: repeatable complete water event with justified tolerances, explicit reset 
 
 ## Phase 7 — MAHLERAN and performance qualification
 
+**Diagnostic benchmark milestone completed and Claude-reviewed 2026-09-30.**
+Matched full storms, conservation, CPU parity, actual GPU kernels and larger
+CPU domains are measured. Hydrological targets pass. Whole-storm sediment
+fidelity remains open: export is about24times the reference, with sorting and
+timing differences. This is not accepted as scientific equivalence. Phase7b
+below records the next investigation; full coupled GPU and Plot1 spatial-grid
+qualification also remain open. See [report](docs/phase7/acceptance.md).
+
+User-selected initial comparison, 2026-09-30: disable direct dry-cell splash
+in an isolated MAHLERAN benchmark copy and hold elevation AND routing fixed
+in both models. Preserve rain-assisted wet detachment and SYRUP's conservative
+updates to actual MAPLE sediment holdings. This is a benchmark-only condition,
+not a change to the normal evolving-terrain model. The prepared reference and
+verification are documented in docs/phase7/fixed_terrain_benchmark.md. The user subsequently authorized full Phase 7 execution. The matched frozen
+benchmark is implemented; see [qualification report](docs/phase7/acceptance.md).
+
 Assemble comparisons built during every preceding phase into a matched event benchmark: forcing, infiltration/runoff, water depth/discharge, sediment export by class, bed change, distance/timing and timestep/grid sensitivity. Build/run the reference in an isolated location if possible, without modifying legacy source. Establish selectable process parity (especially splash) before asserting like-for-like sediment comparison; if legacy cannot isolate it, use controlled kernel references and clearly label full-case differences.
 
 Document each preserved equation and intentional numerical/physical departure. Do not require agreement with a demonstrated legacy bookkeeping error. If executable reference results are unavailable, label analytic/Python checks as such rather than claiming Fortran validation.
@@ -80,7 +96,67 @@ Measure representative larger grids as well as the small import case, backend pa
 
 Phase 5 CPU profiling identifies a concrete performance follow-up: the two actual MAPLE bed-exchange calls consume about 75% of a profiled 600-second event, versus about 10% for the wet laws and lateral transport together. Investigate a shared MAPLE transaction/validation optimization without copying bed physics, weakening checks, or introducing an unvalidated source lag. Measure complete events and preserve source/sink timing as well as conservation; see docs/phase5/acceptance.md. This complements, rather than replaces, Phase 4R's hydraulic/GPU investigation.
 
+The full 5,400-second Plot1 Numba profile now confirms this priority: actual
+MAPLE transactions take 161.48 of 192.93 loop seconds (83.7%); rainfall,
+infiltration and compiled routing take 7.97 seconds (4.1%). The profiled result
+matches all 97 saved baseline arrays exactly. Investigate redundant exchange
+directions, repeated column processing and ledger work in shared MAPLE before
+expecting large whole-model gains from hydraulic acceleration. Preserve atomic
+transactions, availability and gross transfer accounting. See
+[performance diagnosis](docs/phase7/performance_diagnosis.md). This measurement
+predates the Phase7b transport correction and must be repeated on its accepted
+implementation.
+
 Exit: evidence-backed scientific/compatibility/performance report with explicit limitations and an accepted baseline for the first water-only MAPLE-SYRUP experiment.
+
+## Phase 7b — Resolve coarse-grid sediment-distance fidelity
+
+**Primary transmission defect corrected and independently reviewed, 2026-09-30.**
+Characteristic transport is now the event default; explicit `upwind` remains
+available for comparison. Actual MAPLE owns all mass exchanges. Full Plot1
+export falls from 218 g to about 13.8 g (MAHLERAN: 9.2 g), with unchanged water
+outputs and closed class budgets. Totals differ by 0.01% across 32–128 bins and
+0.23% when dt is halved at 32 bins. Raw default-bin peaks, residual reference
+timing/composition differences, full GPU events and performance qualification
+remain open. The new phase operator adds material runtime cost, particularly
+at larger bin counts. See [bounded acceptance](docs/phase7b/acceptance.md).
+
+Priority follow-up identified by the executed Phase 7 benchmark. The original
+conservative upwind mobile-pool method exports about 24 times the legacy Plot1
+load, despite closely matched hydrology and total detachment demand. Controlled
+impulse measurements demonstrate excessive cell-exit probability when mean
+travel distance is much shorter than cell width; reducing dt alone cannot
+remove that spatial effect. Grain sorting and export timing also differ.
+
+Investigate a conservative treatment of subcell transport distance that retains
+finite travel speed, active-layer supply limits, class conservation and GPU-
+compatible bounded memory. Compare exact distance-bin survival, a subcell or
+characteristic treatment, and spatial refinement on controlled graphs before
+selecting an implementation. Quantify separate effects of source-assigned
+versus local distances and legacy ring-deposition/mobile-pool bookkeeping.
+Do not reproduce negative-load clipping, erase mass, or tune parameters to
+force agreement. Rebenchmark Plot1 magnitude, composition, timing and maps;
+state any defensible remaining physical differences explicitly. Shared MAPLE
+transaction/refill optimizations are a separate measured upstream change.
+
+The remaining investigations above are not completed work or authorization to
+silently change physics during benchmarking. Phase 4R remains the
+separate priority hydraulic/GPU algorithm investigation. Full coupled GPU
+execution/peak-memory/transfer qualification and full-event spatial convergence
+remain open; passing isolated kernels does not close those requirements.
+
+## Phase 7c — Optimize the accepted water implementation
+
+User authorized optimization following the Phase 7b performance diagnosis.
+The first bounded change compacts CPU characteristic candidates, reduces scratch
+allocation and eliminates redundant logarithmic work without changing physics,
+resolution or tolerances. Final Plot1 results match all 103 saved numerical
+fields exactly; the measured loop is 8% shorter and the characteristic stage
+37% shorter. Synthetic sparse kernel array allocation is about halved. See
+[optimization evidence](docs/phase7c/optimization.md) for measurement limits.
+Shared MAPLE transactions remain the largest optimization target and must be
+changed through a versioned upstream candidate, not copied into SYRUP. Full
+coupled GPU execution and scaling remain open.
 
 ## Phase 8 — Actual MAPLE wind/water invocation smoke test
 

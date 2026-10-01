@@ -1,0 +1,14 @@
+--- a/src/Subroutines_In_out/read_spatial_data.f90
++++ b/src/Subroutines_In_out/read_spatial_data.f90
+@@ -93,7 +93,10 @@
+ !          write (6, *) ' Error with variable allocated for data ',
+ !     &                 'from file: ', filename
+ !       endif
+-write (6, *) 'data_array size: ', size (data_array, 1), size (data_array, 2)
++! Linux checked-build fix: SIZE is undefined before first allocation.
++if (allocated (data_array)) then
++    write (6, *) 'data_array size: ', size (data_array, 1), size (data_array, 2)
++endif
+ if (.not.allocated (data_array)) then
+     write (6, *) ' Allocating new space for data '
+     allocate (data_array (n_rows, n_cols))

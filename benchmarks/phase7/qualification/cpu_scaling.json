@@ -1,0 +1,433 @@
+{
+  "scope": "sequential standalone processes after all storms; three voxels, six classes, initially wet synthetic plane; fixed relief and dx, increasing domain; NOT Plot1 spatial refinement; first use/JIT separate; RSS process peak including imports; full Plot1 has20voxels",
+  "cases": [
+    {
+      "scope": "synthetic initially wet plane, fixed-K infiltration, actual MAPLE 3-voxel/6-class exchanges; finite coupled window, NOT full Plot1 storm or resolution-convergence test",
+      "ny": 60,
+      "nx": 20,
+      "cells": 1200,
+      "requested_steps": 20,
+      "setup_s": 0.04182506096549332,
+      "first_step_including_JIT_s": 0.8984196640085429,
+      "warm_window_s": 0.4561414059717208,
+      "peak_process_rss_kib": 340012,
+      "closure": {
+        "initial_bed_kg": [
+          6343.75,
+          9515.625,
+          15859.375,
+          15859.375,
+          9515.625,
+          6343.75
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          6343.713569378308,
+          9514.704028721468,
+          15859.13425668694,
+          15859.256468722162,
+          9515.588848779167,
+          6343.748856729938
+        ],
+        "final_mobile_kg": [
+          0.036297458889129657,
+          0.9204923294661401,
+          0.24073702169098504,
+          0.11853119621518587,
+          0.03615122068931413,
+          0.0011432700625219436
+        ],
+        "export_actual_kg": [
+          0.00013316280211875356,
+          0.00047894906616967315,
+          6.291365856546235e-06,
+          8.162035809586875e-08,
+          1.412565394326676e-10,
+          1.107421132400541e-13
+        ],
+        "net_bed_change_kg": [
+          -0.03643062169157929,
+          -0.9209712785323063,
+          -0.24074331305928354,
+          -0.1185312778379739,
+          -0.03615122083283495,
+          -0.0011432700621298864
+        ],
+        "residual_kg": [
+          -9.094947017729282e-13,
+          0.0,
+          -1.8189894035458565e-12,
+          -3.637978807091713e-12,
+          -1.8189894035458565e-12,
+          0.0
+        ],
+        "tolerance_kg": [
+          5.634381849972669e-10,
+          5.634381849972669e-10,
+          5.634381849972669e-10,
+          5.634381849972669e-10,
+          5.634381849972669e-10,
+          5.634381849972669e-10
+        ],
+        "closed": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "request_reconciliation_tolerance_kg": [
+          2.3347387183841847e-10,
+          2.3347387183841847e-10,
+          2.3347387183841847e-10,
+          2.3347387183841847e-10,
+          2.3347387183841847e-10,
+          2.3347387183841847e-10
+        ],
+        "request_reconciled": true,
+        "numerical_residual_scalar_abs_kg": 5.97306221410826e-13,
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+      "maple_source_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+      "python": "3.12.3",
+      "numpy": "2.5.2",
+      "script_sha256": "b5221495a7d2502ca509ba752c20895c1a1bb6d7b320d84c2492d1c8191b85e2",
+      "test_fixture_sha256": "5dcd6833c51c40598b8b6b0b19354b80769f45878ec73e61e17e7d2464eccfe6",
+      "n_accepted_steps": 20,
+      "n_rejected_attempts": 0,
+      "commit_wall_s": 0.0,
+      "n_maple_water_calls": 40
+    },
+    {
+      "scope": "synthetic initially wet plane, fixed-K infiltration, actual MAPLE 3-voxel/6-class exchanges; finite coupled window, NOT full Plot1 storm or resolution-convergence test",
+      "ny": 120,
+      "nx": 40,
+      "cells": 4800,
+      "requested_steps": 20,
+      "setup_s": 0.058786486042663455,
+      "first_step_including_JIT_s": 0.95185146399308,
+      "warm_window_s": 1.5720819920534268,
+      "peak_process_rss_kib": 418148,
+      "closure": {
+        "initial_bed_kg": [
+          25437.5,
+          38156.25,
+          63593.75,
+          63593.75,
+          38156.25,
+          25437.5
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          25437.388821442135,
+          38152.54163797868,
+          63592.82951579592,
+          63593.52184666687,
+          38156.11514471884,
+          25437.49573422661
+        ],
+        "final_mobile_kg": [
+          0.1110290520765517,
+          3.7080319108539372,
+          0.9204799110042237,
+          0.2281533048309598,
+          0.1348552810569322,
+          0.00426577338785574
+        ],
+        "export_actual_kg": [
+          0.00014950578740583644,
+          0.00033011046111447055,
+          4.293076120204253e-06,
+          2.8309275610573483e-08,
+          9.50669027457173e-11,
+          7.45214426652643e-14
+        ],
+        "net_bed_change_kg": [
+          -0.1111785578650597,
+          -3.70836202132341,
+          -0.9204842040780932,
+          -0.2281533331333776,
+          -0.13485528116143541,
+          -0.004265773390216054
+        ],
+        "residual_kg": [
+          0.0,
+          -7.275957614183426e-12,
+          0.0,
+          7.275957614183426e-12,
+          -7.275957614183426e-12,
+          -3.637978807091713e-12
+        ],
+        "tolerance_kg": [
+          2.2593038551121936e-09,
+          2.2593038551121936e-09,
+          2.2593038551121936e-09,
+          2.2593038551121936e-09,
+          2.2593038551121936e-09,
+          2.2593038551121936e-09
+        ],
+        "closed": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "request_reconciliation_tolerance_kg": [
+          3.224538845080691e-09,
+          3.224538845080691e-09,
+          3.224538845080691e-09,
+          3.224538845080691e-09,
+          3.224538845080691e-09,
+          3.224538845080691e-09
+        ],
+        "request_reconciled": true,
+        "numerical_residual_scalar_abs_kg": 1.9229068207518574e-12,
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+      "maple_source_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+      "python": "3.12.3",
+      "numpy": "2.5.2",
+      "script_sha256": "b5221495a7d2502ca509ba752c20895c1a1bb6d7b320d84c2492d1c8191b85e2",
+      "test_fixture_sha256": "5dcd6833c51c40598b8b6b0b19354b80769f45878ec73e61e17e7d2464eccfe6",
+      "n_accepted_steps": 20,
+      "n_rejected_attempts": 0,
+      "commit_wall_s": 0.0,
+      "n_maple_water_calls": 40
+    },
+    {
+      "scope": "synthetic initially wet plane, fixed-K infiltration, actual MAPLE 3-voxel/6-class exchanges; finite coupled window, NOT full Plot1 storm or resolution-convergence test",
+      "ny": 240,
+      "nx": 80,
+      "cells": 19200,
+      "requested_steps": 20,
+      "setup_s": 0.13944503595121205,
+      "first_step_including_JIT_s": 1.2844403519993648,
+      "warm_window_s": 6.3986448579235,
+      "peak_process_rss_kib": 730860,
+      "closure": {
+        "initial_bed_kg": [
+          101875.0,
+          152812.5,
+          254687.49999999997,
+          254687.49999999997,
+          152812.5,
+          101875.0
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          101874.47968115739,
+          152798.3911590968,
+          254684.02310603994,
+          254687.06133579533,
+          152811.99676259488,
+          101874.98408086985
+        ],
+        "final_mobile_kg": [
+          0.5202043514228479,
+          14.108621845152507,
+          3.4768910549687573,
+          0.4386641948294175,
+          0.5032374050519751,
+          0.015919130164501586
+        ],
+        "export_actual_kg": [
+          0.00011449120569894739,
+          0.00021905806879582744,
+          2.905091656089987e-06,
+          9.808224887293548e-09,
+          6.397731926607878e-11,
+          5.0147215929369455e-14
+        ],
+        "net_bed_change_kg": [
+          -0.520318842609413,
+          -14.108840903209057,
+          -3.476893960032612,
+          -0.43866420464473777,
+          -0.5032374051224906,
+          -0.015919130149995908
+        ],
+        "residual_kg": [
+          2.9103830456733704e-11,
+          0.0,
+          2.9103830456733704e-11,
+          0.0,
+          0.0,
+          1.4551915228366852e-11
+        ],
+        "tolerance_kg": [
+          9.048317650695024e-09,
+          9.048317650695024e-09,
+          9.048317650695024e-09,
+          9.048317650695024e-09,
+          9.048317650695024e-09,
+          9.048317650695024e-09
+        ],
+        "closed": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "request_reconciliation_tolerance_kg": [
+          4.457965892387428e-08,
+          4.457965892387428e-08,
+          4.457965892387428e-08,
+          4.457965892387428e-08,
+          4.457965892387428e-08,
+          4.457965892387428e-08
+        ],
+        "request_reconciled": true,
+        "numerical_residual_scalar_abs_kg": 8.873144731989802e-12,
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+      "maple_source_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+      "python": "3.12.3",
+      "numpy": "2.5.2",
+      "script_sha256": "b5221495a7d2502ca509ba752c20895c1a1bb6d7b320d84c2492d1c8191b85e2",
+      "test_fixture_sha256": "5dcd6833c51c40598b8b6b0b19354b80769f45878ec73e61e17e7d2464eccfe6",
+      "n_accepted_steps": 20,
+      "n_rejected_attempts": 0,
+      "commit_wall_s": 0.0,
+      "n_maple_water_calls": 40
+    },
+    {
+      "scope": "synthetic initially wet plane, fixed-K infiltration, actual MAPLE 3-voxel/6-class exchanges; finite coupled window, NOT full Plot1 storm or resolution-convergence test",
+      "ny": 480,
+      "nx": 160,
+      "cells": 76800,
+      "requested_steps": 20,
+      "setup_s": 0.44744540110696107,
+      "first_step_including_JIT_s": 2.612069164053537,
+      "warm_window_s": 26.60147901601158,
+      "peak_process_rss_kib": 2012352,
+      "closure": {
+        "initial_bed_kg": [
+          407750.00000000006,
+          611625.0,
+          1019374.9999999999,
+          1019374.9999999999,
+          611625.0,
+          407750.00000000006
+        ],
+        "initial_mobile_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "final_bed_kg": [
+          407747.7922333125,
+          611573.2718296052,
+          1019361.965534673,
+          1019374.1572702206,
+          611623.1218733856,
+          407749.9405892005
+        ],
+        "final_mobile_kg": [
+          2.2076855868184144,
+          51.72802851482998,
+          13.034463371050522,
+          0.8427297760613709,
+          1.8781266142940498,
+          0.05941079959290504
+        ],
+        "export_actual_kg": [
+          8.11007164836697e-05,
+          0.00014188003435112762,
+          1.955968544140337e-06,
+          3.3960413723160903e-09,
+          4.305349454266001e-11,
+          3.374509778563905e-14
+        ],
+        "net_bed_change_kg": [
+          -2.2077666875557043,
+          -51.728170394781046,
+          -13.034465326927602,
+          -0.8427297793095931,
+          -1.878126614377834,
+          -0.059410799585748464
+        ],
+        "residual_kg": [
+          0.0,
+          1.1641532182693481e-10,
+          1.1641532182693481e-10,
+          1.1641532182693481e-10,
+          -1.1641532182693481e-10,
+          0.0
+        ],
+        "tolerance_kg": [
+          3.62154750632726e-08,
+          3.62154750632726e-08,
+          3.62154750632726e-08,
+          3.62154750632726e-08,
+          3.62154750632726e-08,
+          3.62154750632726e-08
+        ],
+        "closed": true,
+        "request_reconciliation_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "request_reconciliation_tolerance_kg": [
+          6.16536273011394e-07,
+          6.16536273011394e-07,
+          6.16536273011394e-07,
+          6.16536273011394e-07,
+          6.16536273011394e-07,
+          6.16536273011394e-07
+        ],
+        "request_reconciled": true,
+        "numerical_residual_scalar_abs_kg": 3.6078543581494205e-11,
+        "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+      },
+      "source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+      "maple_source_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+      "python": "3.12.3",
+      "numpy": "2.5.2",
+      "script_sha256": "b5221495a7d2502ca509ba752c20895c1a1bb6d7b320d84c2492d1c8191b85e2",
+      "test_fixture_sha256": "5dcd6833c51c40598b8b6b0b19354b80769f45878ec73e61e17e7d2464eccfe6",
+      "n_accepted_steps": 20,
+      "n_rejected_attempts": 0,
+      "commit_wall_s": 0.0,
+      "n_maple_water_calls": 40
+    }
+  ]
+}

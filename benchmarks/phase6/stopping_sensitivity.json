@@ -1,0 +1,106 @@
+{
+  "schema": "maple-syrup-stopping-sensitivity/1",
+  "source_sha256": "582b9ed320d8d259e42e7a0d019a96b5208f0906a6d06a2f9db0f639ab4045a5",
+  "baseline_policy": {
+    "max_depth_m": 1e-08,
+    "surface_volume_m3": 1e-06,
+    "max_unit_discharge_m2_s": 1e-10,
+    "outlet_discharge_m3_s": 1e-09,
+    "hold_s": 60.0,
+    "mobile_per_cell_class_kg": null
+  },
+  "strict_policy": {
+    "max_depth_m": 1e-10,
+    "surface_volume_m3": 1e-08,
+    "max_unit_discharge_m2_s": 1e-12,
+    "outlet_discharge_m3_s": 1e-11,
+    "hold_s": 120.0,
+    "mobile_per_cell_class_kg": 1e-12
+  },
+  "baseline_time_s": 4747.0,
+  "strict_time_s": 4807.0,
+  "baseline_quiet": {
+    "since_s": 4687.0,
+    "last_t_s": 4747.0,
+    "ready": true
+  },
+  "strict_quiet": {
+    "since_s": 4687.0,
+    "last_t_s": 4807.0,
+    "ready": true
+  },
+  "final_array_comparisons": {
+    "voxel_mass_kg": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "active_mass_kg": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "available_mass_kg": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "bound_mass_kg": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "committed_elevation_m": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "depth_m": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "soil_water_m": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "discharge_m2_s": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "mobile_mass_kg": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "sediment_velocity_m_s": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    },
+    "terminal_deposition_kg": {
+      "bitwise_equal": true,
+      "max_abs_difference": 0.0
+    }
+  },
+  "export_by_class_bitwise_equal": true,
+  "baseline_water_budget": {
+    "rain_m3": 2.8955999999999613,
+    "surface_initial_m3": 0.0,
+    "soil_initial_m3": 22.499999999999996,
+    "surface_final_m3": 0.0,
+    "soil_final_m3": 25.220366348005598,
+    "drainage_m3": 0.012552832716826057,
+    "export_m3": 0.16268081927757855,
+    "residual_m3": 4.39648317751562e-14,
+    "tolerance_m3": 5.104018150363039e-07,
+    "closed": true
+  },
+  "strict_water_budget": {
+    "rain_m3": 2.8955999999999613,
+    "surface_initial_m3": 0.0,
+    "soil_initial_m3": 22.499999999999996,
+    "surface_final_m3": 0.0,
+    "soil_final_m3": 25.22020467949415,
+    "drainage_m3": 0.012714501228274618,
+    "export_m3": 0.16268081927757855,
+    "residual_m3": 4.39648317751562e-14,
+    "tolerance_m3": 5.168497552025721e-07,
+    "closed": true
+  },
+  "baseline_soil_removed_m3": 25.220366348005598,
+  "strict_soil_removed_m3": 25.22020467949415,
+  "interpretation": "Case-specific stopping robustness only. Additional recession time permits more physical drainage before the explicit dry reset; no general grid/backend qualification."
+}

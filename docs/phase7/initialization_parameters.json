@@ -1,0 +1,64 @@
+{
+  "SYRUP_parameter_record": {
+    "model": "pavement_hawkins (legacy infiltration_model 2, infiltration-parameter_type 2)",
+    "ksat_m_per_s": {
+      "value": 2.5e-07,
+      "xml_mean_mm_per_s": 0.00025,
+      "xml_std_dev_mm_per_s": "0.001",
+      "xml_distribution": "normal",
+      "decision": "deterministic XML mean; the configured normal draw (std > mean) could be negative and is not sampled. Not a reproduction of a legacy realization.",
+      "used_for": "K when local rain is zero; drainage demand"
+    },
+    "suction_m": {
+      "value": 0.0466,
+      "xml_mean_mm": 46.6,
+      "psi_mod": 1.0
+    },
+    "drainage_parameter": {
+      "value": 0.05
+    },
+    "initial_theta": {
+      "value": 0.25,
+      "retained_soil_water_m": 0.075
+    },
+    "soil_thickness_m": {
+      "value": 0.3,
+      "note": "soil-water depth only; unrelated to the MAPLE sediment column depth"
+    },
+    "theta_sat": {
+      "source": "sidecar plot1_fields.npz: saturated_soil_moisture (legacy map)",
+      "range": [
+        0.389999985694885,
+        0.389999985694885
+      ]
+    },
+    "pavement_cover_fraction": {
+      "source": "sidecar plot1_fields.npz: pavement_cover_fraction",
+      "range": [
+        0.0,
+        0.9
+      ],
+      "legacy_pave": "fraction * 1e-2 (percent * 1e-4)"
+    },
+    "rainfall_scale": {
+      "source": "sidecar plot1_fields.npz: rainfall_scaling (legacy rmask interior)",
+      "unique": [
+        1.0
+      ]
+    },
+    "calibration": "ksat_mod = psi_mod = 1 (no calib.dat; checked)"
+  },
+  "routing_matches": true,
+  "theta_sat_input_matches": true,
+  "rainfall_scale_input_matches": true,
+  "pavement_output_max_difference_legacy_units": 3.814697299361902e-10,
+  "initial_theta_SYRUP": [
+    0.25
+  ],
+  "soil_thickness_SYRUP_m": [
+    0.3
+  ],
+  "suction_SYRUP_m": [
+    0.0466
+  ]
+}

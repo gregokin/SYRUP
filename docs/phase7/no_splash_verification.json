@@ -1,0 +1,67 @@
+{
+  "status": "passed",
+  "scope": "actual route routine with stubbed physics; branch selection, stale rates and retained existing dry-cell load; NOT a full model or physics benchmark",
+  "columns": [
+    "wet",
+    "rain_calls",
+    "splash_calls",
+    "diffuse_calls",
+    "detach",
+    "deposit",
+    "mobile_after"
+  ],
+  "results": {
+    "original": [
+      [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        2.0,
+        2.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        0.0,
+        6.0,
+        2.0,
+        0.5,
+        2.5
+      ]
+    ],
+    "no_splash": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        0.0,
+        6.0,
+        2.0,
+        0.5,
+        2.5
+      ]
+    ]
+  },
+  "driver_sha256": "d279df3972989fa333b7aeff515c31f4c7546d51ac8fb0aeae10c6b559325a2b",
+  "reference_unchanged": true,
+  "prepared_unchanged": true,
+  "compiler": "/tmp/syrup-fortran/root/usr/bin/gfortran-13",
+  "flags": [
+    "-B/tmp/syrup-fortran/root/usr/libexec/gcc/x86_64-linux-gnu/13/",
+    "-B/usr/lib/gcc/x86_64-linux-gnu/13/",
+    "-std=legacy",
+    "-ffree-line-length-none",
+    "-fcheck=all",
+    "-O0"
+  ]
+}

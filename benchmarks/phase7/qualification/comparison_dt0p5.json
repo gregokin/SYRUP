@@ -1,0 +1,389 @@
+{
+  "schema": "maple-syrup-phase7-matched-comparison/1",
+  "syrup_dir": "/home/okin/SYRUP/outputs/phase7/syrup_matched_dt0p5",
+  "mahleran_dir": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+  "syrup_summary_sha256": "8670a4f063ccf18051d01ac14bc23d1d2a8293f00dcf5518e970ddd7b425a39a",
+  "syrup_outputs_sha256": {
+    "final_state.npz": "43fc5abc4d90a6efdc6964d07bd8a3eda6aa359e1bda90f26ef3f6dec20e26c5",
+    "forcing.npz": "07a0ec1591f8cee0ca3ac9618bda4834f996e499dc9de52a79ca2e1996607c72",
+    "hydrograph.csv": "89a60c891876e105b22463da5924b4dc0932d2a126d229ac97e0b1c75c59b496",
+    "hydrograph.npz": "92b76a3f369976c9ab35a816b63336fa2cda98f38e44a1e3d730cc3f51c80a81"
+  },
+  "mahleran_outputs_sha256": {
+    "Output/SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+    "Output/aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+    "Output/depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+    "Output/detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+    "Output/dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+    "Output/hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+    "Output/ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+    "Output/neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+    "Output/param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+    "Output/pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+    "Output/seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+    "Output/sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+    "Output/sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+    "Output/theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+    "Output/veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+  },
+  "syrup_source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+  "maple_source_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "mahleran_executable_sha256": "49c064f44740f54360839fcaafdc9e1ea7beeb025157a23279ab8ac24bb350cb",
+  "matched_configuration": {
+    "forcing_identical_per_second": true,
+    "conductivity_mm_s": 0.00025,
+    "reference_conductivity_uniform": true,
+    "reference_distribution": "deterministic",
+    "syrup_max_dt_s": 0.5,
+    "syrup_implementation": "numba",
+    "window_s": [
+      0.0,
+      5400.0
+    ],
+    "rows": 5400,
+    "frozen_geometry_checks": {
+      "active_equal": true,
+      "aspect_equal": true,
+      "commit_count_unchanged": true,
+      "commit_log_empty": true,
+      "committed_elevation_equal": true,
+      "committed_offset_equal": true,
+      "conveyance_equal": true,
+      "friction_equal": true,
+      "graph_input_sha256_equal": true,
+      "graph_same_object": true,
+      "grid_same_object": true,
+      "grid_slope_equal": true,
+      "last_commit_time_unchanged": true,
+      "n_commits_zero": true,
+      "n_graph_changes_zero": true,
+      "network_bound_to_graph": true,
+      "network_same_object": true,
+      "outlet_equal": true,
+      "receiver_equal": true,
+      "slope_equal": true,
+      "terrain_reference_same_object": true
+    }
+  },
+  "water": {
+    "reference_endpoint_integral_m3": 0.16508977387059504,
+    "test_endpoint_integral_m3": 0.1644707209182321,
+    "test_rounded_endpoint_integral_m3": 0.164471435147525,
+    "integrated_relative_difference": -0.0037497958707496293,
+    "reference_peak_m3_s": 0.0001151,
+    "test_peak_m3_s": 0.00011508209689199019,
+    "peak_relative_difference": -0.00015554394448143356,
+    "reference_peak_plateau_s": [
+      1328.0,
+      1342.0
+    ],
+    "test_peak_time_s": 1334.0,
+    "test_rounded_peak_plateau_s": [
+      1329.0,
+      1340.0
+    ],
+    "peak_time_offset_from_plateau_s": 0.0,
+    "rmse_m3_s": 1.699735920716867e-07,
+    "max_abs_difference_m3_s": 3.59491595222484e-07,
+    "time_of_max_abs_difference_s": 2086.0,
+    "rounding_floor_m3_s": 4.980265634741928e-08,
+    "nash_sutcliffe": 0.9999788454720648,
+    "syrup_conservative_export_ledger_m3": 0.1644626907595587,
+    "syrup_ledger_minus_endpoint_integral_m3": -8.030158673399956e-06,
+    "reference_integral_through_1620s_m3": 0.07124472425694,
+    "test_integral_through_1620s_m3": 0.07120171848700096,
+    "accounting": "reference: stock endpoint outlet discharge summed with dt = 1 s; test: SYRUP instantaneous outlet discharge on the same rows; the conservative face ledger is reported beside it and is not the same quantity"
+  },
+  "targets": {
+    "integrated_outlet_relative_difference": {
+      "target": 0.01,
+      "value": -0.0037497958707496293,
+      "pass": true
+    },
+    "peak_outlet_relative_difference": {
+      "target": 0.01,
+      "value": -0.00015554394448143356,
+      "pass": true
+    },
+    "peak_time_within_rounded_plateau": {
+      "target_s": 10.0,
+      "offset_s": 0.0,
+      "pass": true
+    },
+    "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+  },
+  "sediment": {
+    "reference_total_export_kg_endpoint_sum": 0.009223247079118205,
+    "reference_total_export_kg_class_sum": 0.009223254069631242,
+    "reference_class_export_kg": [
+      0.0074639936743365,
+      0.0017592387627582314,
+      2.1632536510849743e-08,
+      8.867638720843601e-20,
+      0.0,
+      0.0
+    ],
+    "test_total_export_kg_ledger": 0.2184541385429994,
+    "test_class_export_kg_ledger": [
+      0.05286547295287793,
+      0.15973345008958392,
+      0.004577261135608714,
+      0.0012774222267740976,
+      5.317685843605321e-07,
+      3.695703589101549e-10
+    ],
+    "total_ratio_test_over_reference": 23.685166045002543,
+    "class_ratio_test_over_reference": [
+      7.082732818309539,
+      90.7969136827937,
+      211591.51324270276,
+      1.440543832453938e+16,
+      null,
+      null
+    ],
+    "reference_exported_fraction": [
+      0.809258166151214,
+      0.19073948841447974,
+      2.345434306323369e-06,
+      9.614436134901075e-18,
+      0.0,
+      0.0
+    ],
+    "test_exported_fraction": [
+      0.24199803814873558,
+      0.7311990111743423,
+      0.02095296141394799,
+      0.005847553336796393,
+      2.4342344251622472e-06,
+      1.6917526093808041e-09
+    ],
+    "reference_peak_rate_kg_s": 6.918e-05,
+    "reference_peak_plateau_s": [
+      1261.0,
+      1261.0
+    ],
+    "test_peak_rate_kg_s": 0.0014479598896521403,
+    "test_peak_time_s": 1141.0,
+    "test_true_peak_rate_kg_s": 0.0014479598896521403,
+    "test_true_peak_time_s": 1141.0,
+    "cumulative_rmse_kg": 0.18681866031248615,
+    "reference_cumulative_at_1620s_kg": 0.009222531297538831,
+    "test_cumulative_at_1620s_kg": 0.21845395337558857,
+    "test_pickup_total_kg": 411.1104873854925,
+    "test_deposition_total_kg": 410.8920332469491,
+    "accounting": "reference rates are instantaneous outlet sediment fluxes (kg/s, four digits) summed with dt = 1 s; SYRUP class exports are the conservative MAPLE export ledger; equation-level agreement (docs/phase5/physics.md) does not imply whole-storm agreement, which is measured here: no pass mark"
+  },
+  "spatial": {
+    "peak_outlet_snapshot_depth_velocity": {
+      "comparable": false,
+      "reference_definition": "depth001.asc (mm) and veloc001.asc (mm/s) are the whole-domain d(2) and v copied by output_hydro_data_xml.f90 489-505 ONLY when the outlet discharge q_plot exceeds its running maximum: a synchronous snapshot at the step of the full-precision peak outlet discharge, not per-cell storm maxima",
+      "reference_snapshot_time_s": "within the rounded peak-outlet plateau [1328.0, 1342.0] (the exact step is not recoverable from the rounded stock output)",
+      "test_definition": "SYRUP peak_depth_m / peak_velocity_m_s are per-cell maxima over every accepted step",
+      "matching_quantity": "a synchronous SYRUP snapshot of routed depth and velocity at its own peak-outlet step (read-only observer sidecar); compared separately, not here",
+      "reference_snapshot_stats": {
+        "depth_mm": {
+          "sum": 791.2071599999999,
+          "max": 4.707,
+          "mean": 0.6593393,
+          "n_positive": 1200
+        },
+        "velocity_mm_s": {
+          "sum": 10719.242,
+          "max": 22.67,
+          "mean": 8.932701666666667,
+          "n_positive": 1200
+        }
+      },
+      "test_storm_maxima_stats": {
+        "depth_mm": {
+          "sum": 916.5342522142325,
+          "max": 5.672161786515843,
+          "mean": 0.7637785435118605,
+          "n_positive": 1200
+        },
+        "velocity_mm_s": {
+          "sum": 11806.841720448214,
+          "max": 25.43609587843063,
+          "mean": 9.839034767040179,
+          "n_positive": 1200
+        }
+      },
+      "note": "the two statistics blocks describe different quantities and carry no error metric"
+    },
+    "detachment_kg_per_cell": {
+      "reference_sum": 452.8581,
+      "test_sum": 411.1104873854922,
+      "sum_ratio_test_over_reference": 0.9078130376501872,
+      "reference_max": 0.7334,
+      "test_max": 0.5258748929825628,
+      "rmse": 0.051816783714061135,
+      "max_abs_difference": 0.25408291691992524,
+      "relative_l2": 0.13339106381047786,
+      "pearson_r": 0.932939178696368,
+      "cell_of_max_abs_difference_maple_row_col": [
+        31,
+        8
+      ],
+      "meaning": "reference: accumulated legacy detachment DEMAND (detach_tot * dx^2 rho dt); test: actual MAPLE removal (supply-limited); not the same quantity"
+    },
+    "net_erosion_kg_per_cell_water_exchange": {
+      "reference_sum": 0.025118079186,
+      "test_sum": 0.21845413854300244,
+      "sum_ratio_test_over_reference": 8.697087740083312,
+      "reference_max": 0.008744,
+      "test_max": 0.02686771763204182,
+      "rmse": 0.008642021878950171,
+      "max_abs_difference": 0.04449261592207338,
+      "relative_l2": 5.100997090470715,
+      "pearson_r": 0.8551551931994668,
+      "cell_of_max_abs_difference_maple_row_col": [
+        37,
+        18
+      ],
+      "meaning": "reference: (detach_tot - depos_tot) legacy rates; test: actual MAPLE pickup minus deposition (water class exchange only)"
+    },
+    "net_erosion_kg_per_cell_actual_bed": {
+      "reference_sum": 0.025118079186,
+      "test_sum": 0.21845413845990524,
+      "sum_ratio_test_over_reference": 8.69708773677505,
+      "reference_max": 0.008744,
+      "test_max": 0.026867717631993138,
+      "rmse": 0.008642021878946136,
+      "max_abs_difference": 0.044492615922134195,
+      "relative_l2": 5.100997090468333,
+      "pearson_r": 0.8551551931994872,
+      "cell_of_max_abs_difference_maple_row_col": [
+        37,
+        18
+      ],
+      "meaning": "test: minus the actual MAPLE bed inventory change (voxel + active), which the frozen elevation does not reflect"
+    },
+    "cumulative_cell_discharge_m3": {
+      "reference_sum": 5.31115108,
+      "test": null,
+      "meaning": "SYRUP records no per-cell cumulative throughflow; not compared"
+    },
+    "orientation": "MAHLERAN ASCII cropped of its ring and row-reversed to MAPLE south-first order"
+  },
+  "spatial_panels": [
+    "detachment demand vs actual pickup (kg/cell)",
+    "net erosion (kg/cell)"
+  ],
+  "syrup_budgets": {
+    "water": {
+      "drainage_m3": 0.014312237305182655,
+      "export_definition": "conservative face-volume ledger of the routing step (NOT a sum of endpoint outlet discharge); the hydrograph also carries the instantaneous outlet discharge",
+      "export_m3": 0.1644626907595587,
+      "identity": "surface_final + soil_final + drainage + export = surface_initial + soil_initial + rain",
+      "intake_m3": 2.732407309240445,
+      "rain_m3": 2.8968699999998497,
+      "saturation_return_m3": 0.0,
+      "soil_final_m3": 25.218095071935267,
+      "soil_initial_m3": 22.499999999999996,
+      "surface_final_m3": 0.0,
+      "surface_initial_m3": 0.0,
+      "tolerance_m3": 1.1611211770341876e-06,
+      "tolerance_rule": "MAPLE summation coefficient (4 n eps) with n = 4 n_cells n_steps + 7 on the largest genuine volume operand",
+      "units": "m3",
+      "water_residual_m3": 1.6431300764452317e-13
+    },
+    "sediment_closure": {
+      "closed": true,
+      "export_actual_kg": [
+        0.05286547295287793,
+        0.15973345008958392,
+        0.004577261135608714,
+        0.0012774222267740976,
+        5.317685843605321e-07,
+        3.695703589101549e-10
+      ],
+      "final_bed_kg": [
+        100348.61795231797,
+        201909.9101001224,
+        11634.53193835853,
+        26356.84100143709,
+        36874.54472772542,
+        26918.77332590013
+      ],
+      "final_mobile_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_bed_kg": [
+        100348.67081779092,
+        201910.0698335724,
+        11634.536515619662,
+        26356.84227885931,
+        36874.544728257184,
+        26918.773325900493
+      ],
+      "initial_mobile_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "net_bed_change_kg": [
+        -0.05286547294235788,
+        -0.15973345001111738,
+        -0.0045772611319989664,
+        -0.0012774222195730545,
+        -5.317633622325957e-07,
+        -3.637978807091713e-10
+      ],
+      "numerical_residual_scalar_abs_kg": 8.979651933509316e-10,
+      "request_reconciled": true,
+      "request_reconciliation_residual_kg": [
+        0.0,
+        0.0,
+        -7.105427357601002e-15,
+        -2.5579538487363607e-13,
+        -3.1086244689504383e-15,
+        2.7755575615628914e-17
+      ],
+      "request_reconciliation_tolerance_kg": [
+        2.283442792445996e-05,
+        2.283442792445996e-05,
+        2.283442792445996e-05,
+        2.283442792445996e-05,
+        2.283442792445996e-05,
+        2.283442792445996e-05
+      ],
+      "residual_kg": [
+        1.4551915228366852e-11,
+        8.731149137020111e-11,
+        3.637978807091713e-12,
+        7.275957614183426e-12,
+        7.275957614183426e-12,
+        7.275957614183426e-12
+      ],
+      "tolerance_kg": [
+        3.873574801720604e-06,
+        3.873574801720604e-06,
+        3.873574801720604e-06,
+        3.873574801720604e-06,
+        3.873574801720604e-06,
+        3.873574801720604e-06
+      ],
+      "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+    }
+  },
+  "limitations": [
+    "MAHLERAN files print four significant digits; no bitwise or conservation comparison is possible from them",
+    "endpoint-sum integrals and the SYRUP conservative export ledger are different quantities",
+    "legacy detachment/net erosion maps are demand-based rates; MAPLE pickup and bed change are actual supply-limited inventories",
+    "depth001/veloc001 are synchronous peak-outlet snapshots (output_hydro_data_xml.f90 489-505), not per-cell maxima; they are not compared with SYRUP's per-cell peak depth/velocity",
+    "reference splash disabled by patch; SYRUP has no splash; other legacy bookkeeping unchanged",
+    "SYRUP hydraulic geometry frozen for the comparison; its normal mode evolves terrain"
+  ],
+  "plots": [
+    "series.png",
+    "spatial.png"
+  ]
+}

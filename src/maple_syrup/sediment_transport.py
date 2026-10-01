@@ -115,7 +115,10 @@ _EPS = float(np.finfo(np.float64).eps)
 # Per cell and substep: settle, two reaction half-steps (2 ops each), cross,
 # stay, in, sum -> about ten roundings of quantities no larger than the
 # local scale.
-CELL_BALANCE_RTOL = 32.0 * _EPS
+# Retained compatibility name for callers/tests; sourced from actual MAPLE.
+from maple.surface.voxels._numerics import summation_error_bound_kg
+
+CELL_BALANCE_RTOL = summation_error_bound_kg(8, 1.0)
 DEFAULT_COURANT_MAX = 1.0
 MAX_SUBSTEPS = 1_000_000
 
@@ -440,8 +443,10 @@ def transport_step(
         T = (W + deposition) + export
         divergence = in_internal - out_internal
         cell_balance = (T - M) - divergence
-        cell_scale = M + in_internal + out_internal
-        cell_tol = CELL_BALANCE_RTOL * (n_sub + 1) * cell_scale
+        cell_scale = xp.maximum(xp.maximum(M, T), xp.maximum(in_internal, out_internal))
+        # Actual MAPLE summation policy; ten operations per split substep
+        # plus four endpoint/divergence operations. No physical-mass floor.
+        cell_tol = summation_error_bound_kg(10 * n_sub + 4, cell_scale)
 
         # Per-class budgets with pairwise sums and a declared bound.
         before = pairwise_sum_over_leading_axes(M)
@@ -452,7 +457,8 @@ def transport_step(
         out_total = pairwise_sum_over_leading_axes(out_internal)
         residual = after - before
         pairwise = pairwise_bound_scale_factor(n)
-        tolerance = CELL_BALANCE_RTOL * (n_sub + 1) * (before + in_total + out_total) \
+        tolerance = summation_error_bound_kg(
+            10 * n_sub + 4, xp.maximum(xp.maximum(before, after), xp.maximum(in_total, out_total))) \
             + 2.0 * pairwise * (before + after)
 
         # Face crossings (internal + export) in MAPLE layout: x faces indexed
@@ -462,12 +468,26 @@ def transport_step(
         y_gross = xp.zeros((ny + 1, nx, nc), dtype=np.float64)
         x_net = xp.zeros((ny, nx + 1, nc), dtype=np.float64)
         y_net = xp.zeros((ny + 1, nx, nc), dtype=np.float64)
-        vx = crossing[network.cells_x]
-        vy = crossing[network.cells_y]
-        scatter_add(x_gross, (network.rows_x, network.faces_x), vx)
-        scatter_add(x_net, (network.rows_x, network.faces_x), vx * network.sign_x[:, None])
-        scatter_add(y_gross, (network.faces_y, network.cols_y), vy)
-        scatter_add(y_net, (network.faces_y, network.cols_y), vy * network.sign_y[:, None])
+        # A topology may have NO face of one orientation (a pure north/south
+        # chain or plane has no x faces; a pure east/west one has no y faces).
+        # The face tables are then empty and every crossing already belongs to
+        # the other orientation, so skipping the scatter omits nothing: the
+        # zero-initialised arrays ARE the correct diagnostics. The guard reads
+        # the static host `size` of the index table (no device reduction).
+        # Why it is needed: the pinned MAPLE scatter (`core/backend/scatter.py`
+        # `_flatten_destination`, 375-379) reshapes the block contributions
+        # with `reshape(0, -1)` for an empty index over trailing class axes;
+        # MAPLE's NumPy branch uses add.at without this reshape; the CuPy branch
+        # raises for shape (0, -1). An upstream fix makes the guard redundant, not
+        # wrong; nothing in MAPLE is changed here.
+        if network.cells_x.size:
+            vx = crossing[network.cells_x]
+            scatter_add(x_gross, (network.rows_x, network.faces_x), vx)
+            scatter_add(x_net, (network.rows_x, network.faces_x), vx * network.sign_x[:, None])
+        if network.cells_y.size:
+            vy = crossing[network.cells_y]
+            scatter_add(y_gross, (network.faces_y, network.cols_y), vy)
+            scatter_add(y_net, (network.faces_y, network.cols_y), vy * network.sign_y[:, None])
 
     for name, array in (("mobile_after_transfer", T), ("deposition_request", deposition),
                         ("export_request", export), ("internal_transfer_in", in_internal),

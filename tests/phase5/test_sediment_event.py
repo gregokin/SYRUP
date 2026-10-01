@@ -160,10 +160,10 @@ def column_for(graph, ksat, *, theta0=0.25, theta_sat=0.4, thickness=0.3):
     return params, initial_soil_water_m(params, full(theta0))
 
 
-def setup(bed, ctx, *, ff=1.0, ksat=1e-7, south_ring=None):
+def setup(bed, ctx, *, ff=1.0, ksat=1e-7, south_ring=None, control=None):
     graph, terrain = graph_for(bed, ff=ff, south_ring=south_ring)
     column, soil0 = column_for(graph, ksat)
-    state0 = initial_event_state(graph, terrain, bed, ctx, soil0)
+    state0 = initial_event_state(graph, terrain, bed, ctx, soil0, control=control)
     return {"state0": state0, "column": column, "field": rainfall_field(*graph.shape),
             "vegetation": np.zeros(graph.shape), "sediment": plot1_sediment_parameters(), "ctx": ctx}
 
@@ -183,12 +183,14 @@ def valley_case(ny=4, nx=5, **kwargs):
     return inputs
 
 
-def drying_chain_case():
+def drying_chain_case(scheme="characteristic"):
     """Codex-verified fixture (fixture_probe.log): 6-cell chain, ksat 1e-5
     m/s, 60 s of 72 mm/h, end 180 s -> every cell drains naturally, final
-    mobile mass 0, phi2 export/pickup ~0.054, phi6 ~4e-8."""
+    mobile mass 0; with the Phase 5 upwind scheme phi2 export/pickup ~0.054,
+    phi6 ~4e-8."""
     bed, ctx = make_bed(chain_elevation(6))
-    return setup(bed, ctx, ksat=1e-5), constant_rainfall(0.0, 60.0, 72.0), 180.0
+    control = SedimentEventControl(transport_scheme=scheme, sediment_courant_max=1.0 if scheme == "upwind" else 0.5)
+    return setup(bed, ctx, ksat=1e-5, control=control), constant_rainfall(0.0, 60.0, 72.0), 180.0
 
 
 def within(values, tolerance):
@@ -330,18 +332,27 @@ def test_active_layer_is_refilled_from_the_voxel_column():
     np.testing.assert_array_equal(change, np.asarray(r.bed_change_by_cell_class_kg()))
 
 
-def test_sorting_fines_export_and_coarse_classes_settle_locally_when_cells_dry():
-    inputs, schedule, end = drying_chain_case()
+@pytest.mark.parametrize("scheme", ["characteristic", "upwind"])
+def test_sorting_fines_export_and_coarse_classes_settle_locally_when_cells_dry(scheme):
+    inputs, schedule, end = drying_chain_case(scheme)
     state0 = inputs["state0"]
-    r = run(inputs, schedule, end, cadence=60.0)
+    control = SedimentEventControl(transport_scheme=scheme, sediment_courant_max=1.0 if scheme == "upwind" else 0.5)
+    r = run(inputs, schedule, end, control=control, cadence=60.0)
     closure, bc = assert_closed(r, state0)
     # the chain drained naturally: every cell is dry, every pool settled into the MAPLE bed
     assert np.all(r.state.storm.depth_m == 0.0) and not np.any(r.state.bed.water.mobile_mass_by_cell_class_kg)
     assert r.regime_cell_steps["dry"] > 0 and r.regime_cell_steps["diffuse"] > 0
     ratio = bc["export_actual"] / np.where(bc["actual_pickup"] > 0.0, bc["actual_pickup"], 1.0)
     assert np.all(bc["actual_pickup"] > 0.0)
-    # export fraction decreases monotonically with grain size: fines leave, coarse grains stay
-    assert np.all(np.diff(ratio) < 0.0) and ratio[1] > 0.03 and ratio[5] < 1e-3 * ratio[1]
+    # export fraction decreases with grain size: fines leave, coarse grains stay
+    if scheme == "upwind":
+        # Phase 5 well-mixed operator: every class leaks a little (documented magnitudes of this fixture)
+        assert np.all(np.diff(ratio) < 0.0) and ratio[1] > 0.03 and ratio[5] < 1e-3 * ratio[1]
+    else:
+        # characteristic kernel, upstream-face pickup: exp(-dx/L) transmission, so the coarse classes
+        # (L of micrometres) never reach a face; the fine classes still leave in decreasing proportion
+        assert np.all(np.diff(ratio) <= 0.0) and ratio[0] > ratio[1] > 0.0 and ratio[5] == 0.0
+        assert r.state.phase is not None and r.n_phase_canonicalized >= 0
     exported = np.asarray(closure["export_actual_kg"])
     picked = bc["actual_pickup"]
     assert exported[:2].sum() / exported.sum() > picked[:2].sum() / picked.sum()  # exported load is finer
@@ -552,8 +563,17 @@ def test_failed_commit_graph_or_maple_call_publishes_nothing_and_propagates(monk
                               inputs["vegetation"], inputs["sediment"], 10.0, SedimentEventControl(), report_every_s=10.0)
     with pytest.raises(SedimentEventError, match="sediment_courant_max"):
         SedimentEventControl(sediment_courant_max=1.5).validated()
+    with pytest.raises(SedimentEventError, match="sediment_courant_max"):
+        SedimentEventControl(sediment_courant_max=1.0).validated()  # characteristic: one face per substep
+    assert SedimentEventControl(sediment_courant_max=1.0, transport_scheme="upwind").validated().sediment_courant_max == 1.0
     with pytest.raises(SedimentEventError, match="max_transport_substeps"):
         SedimentEventControl(max_transport_substeps=0).validated()
+    with pytest.raises(SedimentEventError, match="transport_scheme"):
+        SedimentEventControl(transport_scheme="lagrangian").validated()
+    with pytest.raises(SedimentEventError, match="phase_bins"):
+        SedimentEventControl(phase_bins=0).validated()
+    with pytest.raises(SedimentEventError, match="transport_implementation"):
+        SedimentEventControl(transport_implementation="cuda").validated()
     assert SedimentEventControl().storm is not SedimentEventControl().storm  # per-instance default
     compare(state0, saved)
 
@@ -633,30 +653,41 @@ def test_continuous_injection_matches_the_discrete_recursion_and_converges_to_th
     assert errors[0] / analytic == pytest.approx(0.05, abs=0.01)
 
 
-def test_sediment_courant_uses_substeps_then_halves_dt_and_guards_refuse_without_mutation(monkeypatch):
+@pytest.mark.parametrize("scheme", ["upwind", "characteristic"])
+def test_sediment_courant_uses_substeps_then_halves_dt_and_guards_refuse_without_mutation(monkeypatch, scheme):
     n, v = 12, 2.0  # a = v dt / dx = 4 at dt = 1 s, dx = 0.5 m
+    cr = 1.0 if scheme == "upwind" else 0.5  # the characteristic kernel needs one face per packet per substep
+    expected_substeps = 4 if scheme == "upwind" else 8
+
+    def control(**kwargs):
+        return SedimentEventControl(transport_scheme=scheme, sediment_courant_max=cr, **kwargs)
+
     bed, ctx = make_bed(chain_elevation(n))
-    inputs = setup(bed, ctx)
+    inputs = setup(bed, ctx, control=control())
     state0 = inputs["state0"]
     saved = snapshot(state0)
     monkeypatch.setattr(sediment_event, "sediment_physics_step", constant_law(rate_kg_s=1e-4, cell=(n - 1, 0), cls=2, v=v, L=2.0))
     schedule = constant_rainfall(0.0, 4.0, 0.0)
-    substeps = run(inputs, schedule, 4.0, control=SedimentEventControl(), cadence=4.0)
-    assert substeps.n_rejected_attempts == 0 and substeps.max_transport_substeps_used == 4
-    assert substeps.n_accepted_steps == 4 and float(substeps.max_sediment_courant) == pytest.approx(1.0)
+    substeps = run(inputs, schedule, 4.0, control=control(), cadence=4.0)
+    assert substeps.n_rejected_attempts == 0 and substeps.max_transport_substeps_used == expected_substeps
+    assert substeps.n_accepted_steps == 4 and float(substeps.max_sediment_courant) == pytest.approx(cr)
     assert_closed(substeps, state0, check_dry_settling=False)
-    halved = run(inputs, schedule, 4.0, control=SedimentEventControl(max_transport_substeps=2), cadence=4.0)
+    halved = run(inputs, schedule, 4.0, control=control(max_transport_substeps=expected_substeps // 2), cadence=4.0)
     assert halved.n_rejected_attempts > 0 and halved.rejections[0]["kind"] == "TransportStepRejected"
-    assert halved.state.t_s == 4.0 and halved.min_accepted_dt_s == 0.5 and halved.max_transport_substeps_used == 2
+    assert halved.state.t_s == 4.0 and halved.min_accepted_dt_s == 0.5
+    assert halved.max_transport_substeps_used == expected_substeps // 2
     assert_closed(halved, state0, check_dry_settling=False)
     with pytest.raises(SedimentEventError, match="max_retries") as info:
-        run(inputs, schedule, 4.0, control=SedimentEventControl(max_transport_substeps=1,
-                                                                storm=StormControl(max_retries=1)), cadence=4.0)
+        run(inputs, schedule, 4.0, control=control(max_transport_substeps=1, storm=StormControl(max_retries=1)),
+            cadence=4.0)
     assert isinstance(info.value.__cause__, TransportStepRejected)
     with pytest.raises(SedimentEventError, match="retry floor"):
-        run(inputs, schedule, 4.0, control=SedimentEventControl(max_transport_substeps=1,
-                                                                storm=StormControl(min_dt_s=0.5)), cadence=4.0)
+        run(inputs, schedule, 4.0, control=control(max_transport_substeps=1, storm=StormControl(min_dt_s=0.5)),
+            cadence=4.0)
     compare(state0, saved)
+    if scheme == "characteristic":  # the phase of the caller's state is untouched by every rejected attempt
+        np.testing.assert_array_equal(state0.phase.fraction[..., 0], 1.0)
+        assert not np.any(state0.phase.position_m)
 
 
 def test_hydraulic_rejection_halves_the_whole_step_from_the_same_state():

@@ -67,6 +67,10 @@ from maple_syrup.case_import import (
     parse_mahleran_xml,
     verify_plot1_case,
 )
+from maple_syrup.characteristic_transport import (
+    DEFAULT_COURANT_MAX as CHARACTERISTIC_COURANT_MAX,
+)
+from maple_syrup.characteristic_transport import DEFAULT_N_BINS, MAX_N_BINS
 from maple_syrup.column_experiment import (
     _Clock,
     _source_digests,
@@ -100,6 +104,8 @@ from maple_syrup.sediment_bed import (
     terrain_reference,
 )
 from maple_syrup.sediment_event import (
+    TRANSPORT_IMPLEMENTATIONS,
+    TRANSPORT_SCHEMES,
     SedimentEventControl,
     SedimentEventError,
     SedimentEventResult,
@@ -236,91 +242,48 @@ def _ensure_absent(path: Path) -> None:
         raise SedimentEventError(f"refusing to write into existing path {path}")
 
 
+def phase_summary(result: SedimentEventResult) -> dict[str, Any]:
+    """Host record of the transport scheme's phase bookkeeping for a summary."""
+    from maple.core.backend import to_float
+
+    phase = result.state.phase
+    return {
+        "scheme": "characteristic" if phase is not None else "upwind",
+        "phase_bins": None if phase is None else int(phase.n_bins),
+        "final_mobile_mass_partitioned_by_phase": phase is not None,
+        "max_phase_reconciliation_residual_kg": to_float(result.max_phase_reconciliation_residual_kg),
+        "reconciliation_rule": ("kernel remaining pool versus ACTUAL MAPLE pool after the deposit/export call within "
+                                "summation_error_bound_kg(16, largest operand) per cell and class; cells whose actual "
+                                "pool is exactly 0 are canonicalised; actual mass with a zero predicted pool keeps the "
+                                "canonical upstream-face partition and is counted"),
+        "n_phase_canonicalized": int(result.n_phase_canonicalized),
+        "n_phase_rounding_remnants": int(result.n_phase_rounding_remnants),
+        "phase_steered_cells_total": int(result.phase_steered_cells_total),
+        "reroute_rule": ("rerouted cells keep their fractions and positions along the new outflow direction "
+                         "(documented steering approximation); mass is never reset to the upstream face"),
+    }
+
+
 def _jsonable(value: Any) -> Any:
     """Plain JSON data: `_json_safe` for NumPy/Path values, then enums (by
     value), tuples and any remaining object (by `str`)."""
     return json.loads(json.dumps(_json_safe(value), default=lambda o: getattr(o, "value", str(o))))
 
 
-def run_plot1_sediment_event(
-    case_dir: str | Path,
-    output_dir: str | Path,
-    *,
-    max_dt_s: float = 1.0,
-    end_s: float | None = None,
-    implementation: str = "numba",
-    backend: str = "numpy",
-    report_every_s: float = 60.0,
-    min_dt_s: float = 1.0 / 1024.0,
-    max_retries: int = 10,
-    max_steps: int = 10_000_000,
-    max_report_rows: int = 100_000,
-    sediment_courant_max: float = 1.0,
-    max_transport_substeps: int = 64,
-    commit: bool = True,
-    force_final_commit: bool = True,
-    mahleran_root: str | Path | None = None,
-    expected_maple_root: str | Path | None = None,
-    allow_maple_source_change: bool = False,
-) -> SedimentRun:
-    from maple.core.backend import (
-        read_transfer_counters,
-        resolve_backend,
-        synchronize,
-        to_device,
-        to_host,
-        to_host_tree,
-    )
-    from maple.core.parameters import config_to_dict
+def prepare_verified_sediment_case(verified, *, backend="numpy", mahleran_root=None, end_s=None, control=None):
+    """Shared actual-MAPLE case/physics setup for fixed and complete events.
+
+    Input must come from verify_plot1_case. No simulation, mutation, output,
+    or wind configuration is created here. Returned fields are the same
+    objects the Phase5 runner previously constructed inline. `control`
+    (a `SedimentEventControl`) selects the transport scheme and phase-bin
+    count the initial event state is built for; None means the default
+    control (characteristic scheme, default bins).
+    """
+    from maple.core.backend import resolve_backend, to_device, to_host
     from maple.core.types.topographic_commit import committed_elevation_m
-    from maple.io.outputs.snapshot import save_state_snapshot
-    from maple.water import validate_water_state
 
-    from maple_syrup import routing_numba
-
-    max_dt = _positive(max_dt_s, "max_dt_s")
-    cadence = _positive(report_every_s, "report_every_s")
-    if end_s is not None:
-        _positive(end_s, "end_s")
-    storm_control = StormControl(max_dt_s=max_dt_s, min_dt_s=min_dt_s, max_retries=max_retries, max_steps=max_steps,
-                                 implementation=implementation).validated()
-    control = SedimentEventControl(storm=storm_control, sediment_courant_max=sediment_courant_max,
-                                   max_transport_substeps=max_transport_substeps, commit=commit,
-                                   force_final_commit=force_final_commit).validated()
-    if isinstance(max_report_rows, bool) or not isinstance(max_report_rows, int) or max_report_rows < 1:
-        raise SedimentEventError(f"max_report_rows must be a positive int, got {max_report_rows!r}")
-    if implementation not in IMPLEMENTATIONS:
-        raise SedimentEventError(f"implementation must be one of {IMPLEMENTATIONS}, got {implementation!r}")
-    if backend != "numpy":
-        raise SedimentEventError(
-            f"backend {backend!r} is refused: the Phase 5b event commits terrain through a host-only path "
-            "(routing graph rebuilt on the host from the committed elevation at every commit) and no GPU "
-            "event has been executed; there is no hidden device-to-host fallback")
-    if implementation == "numba" and not routing_numba.numba_available():
-        raise SedimentEventError("implementation 'numba' requested but Numba is not importable (optional extra "
-                                 "maple-syrup[numba]); there is no fallback -- pass --implementation array explicitly")
-    output_dir = Path(output_dir).resolve()
-    _ensure_absent(output_dir)
-    if output_dir.is_relative_to(Path(case_dir).resolve()):
-        raise SedimentEventError("refusing to write inside the bound case directory")
-
-    clock = _Clock()
-    syrup_provenance = _syrup_provenance()
-    verified = verify_plot1_case(case_dir, mahleran_root=mahleran_root, expected_maple_root=expected_maple_root,
-                                 allow_maple_source_change=allow_maple_source_change)
-    dependency = verified.maple_dependency
     recipe_record = verified.report["recipe"]
-    _refuse_output(output_dir, {
-        "MAPLE source": dependency.source_root,
-        "MAPLE package": dependency.package_dir,
-        "MAHLERAN": Path(mahleran_root or recipe_record["mahleran_root"]).resolve(),
-        "recorded MAHLERAN": Path(recipe_record["mahleran_root"]).resolve(),
-        "recipe": Path(recipe_record["recipe_path"]).resolve().parent,
-    })
-    digests_before = {
-        "maple_syrup": syrup_provenance["package_source_digest"]["digest_sha256"],
-        "maple": verified.maple_provenance["package_source_digest"]["digest_sha256"],
-    }
     case = verified.case
     settings = verified.report["legacy_options"]["settings"]
     schedule = parse_legacy_rainfall_file(verified.rainfall_path)
@@ -367,10 +330,156 @@ def run_plot1_sediment_event(
     full_z = np.asarray(verified.fields["legacy_full_elevation_m"], dtype=np.float64)
     full_rm = np.asarray(verified.fields["legacy_full_rainfall_scaling"], dtype=np.float64)
     terrain = terrain_reference(full_z, full_rm < 0.0, bed0, graph)
-    state0 = initial_event_state(graph, terrain, bed0, context, soil0, t_s=0.0)
+    state0 = initial_event_state(graph, terrain, bed0, context, soil0, t_s=0.0, control=control)
     initial_elevation = to_host(committed_elevation_m(bed0.committed_topography)).copy()
     initial_active = to_host(bed0.active_layer.mass_kg).copy()
     initial_available = to_host(bed0.sediment_availability.available_mass_kg).copy()
+
+    return {
+        "area": area,
+        "case": case,
+        "column": column,
+        "context": context,
+        "end": end,
+        "field": field,
+        "g": g,
+        "graph": graph,
+        "host": host,
+        "initial_active": initial_active,
+        "initial_available": initial_available,
+        "initial_elevation": initial_elevation,
+        "n_classes": n_classes,
+        "nx": nx,
+        "ny": ny,
+        "parameter_record": parameter_record,
+        "resolved": resolved,
+        "schedule": schedule,
+        "sediment": sediment,
+        "sediment_record": sediment_record,
+        "settings": settings,
+        "soil0": soil0,
+        "state0": state0,
+        "vegetation": vegetation,
+        "water_case": water_case,
+        "xml_path": xml_path,
+        "xml_sha_before": xml_sha_before,
+        "xp": xp,
+    }
+
+
+def run_plot1_sediment_event(
+    case_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    max_dt_s: float = 1.0,
+    end_s: float | None = None,
+    implementation: str = "numba",
+    backend: str = "numpy",
+    report_every_s: float = 60.0,
+    min_dt_s: float = 1.0 / 1024.0,
+    max_retries: int = 10,
+    max_steps: int = 10_000_000,
+    max_report_rows: int = 100_000,
+    sediment_courant_max: float = CHARACTERISTIC_COURANT_MAX,
+    max_transport_substeps: int = 64,
+    commit: bool = True,
+    force_final_commit: bool = True,
+    transport_scheme: str = "characteristic",
+    phase_bins: int = DEFAULT_N_BINS,
+    transport_implementation: str = "auto",
+    mahleran_root: str | Path | None = None,
+    expected_maple_root: str | Path | None = None,
+    allow_maple_source_change: bool = False,
+) -> SedimentRun:
+    from maple.core.backend import (
+        read_transfer_counters,
+        synchronize,
+        to_host,
+        to_host_tree,
+    )
+    from maple.core.parameters import config_to_dict
+    from maple.core.types.topographic_commit import committed_elevation_m
+    from maple.io.outputs.snapshot import save_state_snapshot
+    from maple.water import validate_water_state
+
+    from maple_syrup import routing_numba
+
+    max_dt = _positive(max_dt_s, "max_dt_s")
+    cadence = _positive(report_every_s, "report_every_s")
+    if end_s is not None:
+        _positive(end_s, "end_s")
+    storm_control = StormControl(max_dt_s=max_dt_s, min_dt_s=min_dt_s, max_retries=max_retries, max_steps=max_steps,
+                                 implementation=implementation).validated()
+    control = SedimentEventControl(storm=storm_control, sediment_courant_max=sediment_courant_max,
+                                   max_transport_substeps=max_transport_substeps, commit=commit,
+                                   force_final_commit=force_final_commit, transport_scheme=transport_scheme,
+                                   phase_bins=phase_bins, transport_implementation=transport_implementation).validated()
+    if isinstance(max_report_rows, bool) or not isinstance(max_report_rows, int) or max_report_rows < 1:
+        raise SedimentEventError(f"max_report_rows must be a positive int, got {max_report_rows!r}")
+    if implementation not in IMPLEMENTATIONS:
+        raise SedimentEventError(f"implementation must be one of {IMPLEMENTATIONS}, got {implementation!r}")
+    if backend != "numpy":
+        raise SedimentEventError(
+            f"backend {backend!r} is refused: the Phase 5b event commits terrain through a host-only path "
+            "(routing graph rebuilt on the host from the committed elevation at every commit) and no GPU "
+            "event has been executed; there is no hidden device-to-host fallback")
+    needs_numba = implementation == "numba" or (control.characteristic
+                                                and control.resolved_transport_implementation() == "numba")
+    if needs_numba and not routing_numba.numba_available():
+        raise SedimentEventError("implementation 'numba' requested but Numba is not importable (optional extra "
+                                 "maple-syrup[numba]); there is no fallback -- pass --implementation array explicitly")
+    output_dir = Path(output_dir).resolve()
+    _ensure_absent(output_dir)
+    if output_dir.is_relative_to(Path(case_dir).resolve()):
+        raise SedimentEventError("refusing to write inside the bound case directory")
+
+    clock = _Clock()
+    syrup_provenance = _syrup_provenance()
+    verified = verify_plot1_case(case_dir, mahleran_root=mahleran_root, expected_maple_root=expected_maple_root,
+                                 allow_maple_source_change=allow_maple_source_change)
+    dependency = verified.maple_dependency
+    recipe_record = verified.report["recipe"]
+    _refuse_output(output_dir, {
+        "MAPLE source": dependency.source_root,
+        "MAPLE package": dependency.package_dir,
+        "MAHLERAN": Path(mahleran_root or recipe_record["mahleran_root"]).resolve(),
+        "recorded MAHLERAN": Path(recipe_record["mahleran_root"]).resolve(),
+        "recipe": Path(recipe_record["recipe_path"]).resolve().parent,
+    })
+    digests_before = {
+        "maple_syrup": syrup_provenance["package_source_digest"]["digest_sha256"],
+        "maple": verified.maple_provenance["package_source_digest"]["digest_sha256"],
+    }
+    prepared = prepare_verified_sediment_case(verified, backend=backend, mahleran_root=mahleran_root, end_s=end_s,
+                                              control=control)
+    area = prepared["area"]
+    case = prepared["case"]
+    column = prepared["column"]
+    context = prepared["context"]
+    end = prepared["end"]
+    field = prepared["field"]
+    g = prepared["g"]
+    graph = prepared["graph"]
+    host = prepared["host"]
+    initial_active = prepared["initial_active"]
+    initial_available = prepared["initial_available"]
+    initial_elevation = prepared["initial_elevation"]
+    n_classes = prepared["n_classes"]
+    nx = prepared["nx"]
+    ny = prepared["ny"]
+    parameter_record = prepared["parameter_record"]
+    resolved = prepared["resolved"]
+    schedule = prepared["schedule"]
+    sediment = prepared["sediment"]
+    sediment_record = prepared["sediment_record"]
+    settings = prepared["settings"]
+    soil0 = prepared["soil0"]
+    state0 = prepared["state0"]
+    vegetation = prepared["vegetation"]
+    water_case = prepared["water_case"]
+    xml_path = prepared["xml_path"]
+    xml_sha_before = prepared["xml_sha_before"]
+    xp = prepared["xp"]
 
     override = {
         "case_water_coupling": _jsonable(dataclasses.asdict(water_case)),
@@ -397,6 +506,7 @@ def run_plot1_sediment_event(
             "reference_pickup_interval_s": sediment.reference_interval_s,
             "transaction": "two MAPLE water calls per accepted step: pickup, then transport, then deposit/export",
             "storm_control": dataclasses.asdict(storm_control),
+            "transport": control.transport_record(),
             "sediment_courant_max": control.sediment_courant_max,
             "max_transport_substeps": control.max_transport_substeps,
             "commit": control.commit,
@@ -491,6 +601,9 @@ def run_plot1_sediment_event(
     # what avalanching inside commits and sub-resolution placement did to the bed.
     grids_out["water_exchange_net_kg"] = grids_out["cumulative_deposition_kg"] - grids_out["cumulative_pickup_kg"]
     grids_out["bed_change_kg"] = to_host(result.bed_change_by_cell_class_kg()).copy()
+    if final.phase is not None:
+        grids_out["phase_fraction"] = to_host(final.phase.fraction).copy()
+        grids_out["phase_position_m"] = to_host(final.phase.position_m).copy()
     for name, value in grids_out.items():
         if value.dtype.kind == "f" and not np.all(np.isfinite(value)):
             raise SedimentEventError(f"non-finite final grid {name}; no output written")
@@ -500,6 +613,7 @@ def run_plot1_sediment_event(
         if np.any(grids_out[name] < 0.0):
             raise SedimentEventError(f"negative final inventory in {name}; no output written")
     validate_water_state(host_bed.water, ny, nx, n_classes)
+    phase_record = phase_summary(result)
 
     # --- water budget (as the Phase 4 runner) ----------------------------------------------------------
     n_steps, n_cells = result.n_accepted_steps, ny * nx
@@ -534,13 +648,19 @@ def run_plot1_sediment_event(
     if not closure["request_reconciled"]:
         raise SedimentEventError("pickup request reconciliation failed; no output written")
     mres = context.mass_resolution_kg
-    unmet_tolerance = 2.0 * n_steps * n_cells * mres + 64.0 * _EPS * n_steps * np.maximum(
-        by_class["deposition_requested"] + by_class["export_requested"], 1.0)
+    from maple.surface.voxels._numerics import summation_error_bound_kg
+
+    # Match MAPLE water.validation's accumulated transfer-identity policy;
+    # mass_resolution is physical significance, never a reconciliation floor.
+    transfer_scale = max(float(np.max(np.abs(by_class[k]))) for k in
+                         ("deposition_requested", "deposition_actual", "export_requested", "export_actual"))
+    unmet_tolerance = np.full(n_classes, summation_error_bound_kg(
+        4 * n_cells * max(result.n_maple_water_calls, 1), max(transfer_scale, 1.0)))
     if np.any(np.abs(by_class["deposition_unmet"]) > unmet_tolerance) or np.any(
             np.abs(by_class["export_unmet"]) > unmet_tolerance):
         raise SedimentEventError("MAPLE refused deposition or export beyond the sub-resolution allowance; "
                                  "no output written")
-    if np.any(np.abs(by_class["transport_budget_residual"]) > by_class["transport_budget_tolerance"] + 1e-300):
+    if np.any(np.abs(by_class["transport_budget_residual"]) > by_class["transport_budget_tolerance"]):
         raise SedimentEventError("accumulated transport budget residual exceeds its declared bound; no output written")
     if control.force_final_commit and np.any(grids_out["pending_bed_mass_change_kg"] != 0.0):
         raise SedimentEventError("final terrain is not committed (pending ledger mass remains); no output written")
@@ -668,6 +788,7 @@ def run_plot1_sediment_event(
             "max_transport_cell_balance_residual_kg": max_cell_residual,
             "max_sediment_courant": max_sed_courant, "max_decay_exponent_v_r_dt": max_decay,
             "regime_cell_class_steps": regime,
+            "transport": phase_record,
             "peak_mobile_kg": peak_mobile, "time_of_peak_mobile_s": peak_mobile_t,
             "final_mobile_kg": sum(closure["final_mobile_kg"]),
             "peak_export_rate_kg_s": peak_export_rate, "time_of_peak_export_s": peak_export_t,
@@ -833,8 +954,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--min-dt-s", type=float, default=1.0 / 1024.0)
     parser.add_argument("--max-retries", type=int, default=10)
     parser.add_argument("--max-steps", type=int, default=10_000_000)
-    parser.add_argument("--sediment-courant-max", type=float, default=1.0)
+    parser.add_argument("--sediment-courant-max", type=float, default=CHARACTERISTIC_COURANT_MAX,
+                        help="Sediment Courant cap per substep (<= 0.5 for characteristic, <= 1 for upwind).")
     parser.add_argument("--max-transport-substeps", type=int, default=64)
+    parser.add_argument("--transport-scheme", default="characteristic", choices=TRANSPORT_SCHEMES,
+                        help="Lateral transport: characteristic (Phase 7b phase bins, default) or the Phase 5 upwind "
+                             "operator kept as an explicit comparison.")
+    parser.add_argument("--phase-bins", type=int, default=DEFAULT_N_BINS,
+                        help=f"Position bins per cell/class for the characteristic scheme (1..{MAX_N_BINS}; "
+                             f"{DEFAULT_N_BINS} is a candidate default, not an accepted convergence).")
+    parser.add_argument("--transport-implementation", default="auto", choices=TRANSPORT_IMPLEMENTATIONS,
+                        help="Characteristic kernel: auto (follow --implementation), array or numba; no fallback.")
     parser.add_argument("--no-commit", action="store_true", help="Do not evaluate MAPLE commit triggers per step.")
     parser.add_argument("--no-final-commit", action="store_true", help="Do not force a final commit at end_s.")
     parser.add_argument("--mahleran-root", help="Override the recipe's MAHLERAN root (read-only).")
@@ -849,6 +979,8 @@ def main(argv: list[str] | None = None) -> int:
             min_dt_s=args.min_dt_s, max_retries=args.max_retries, max_steps=args.max_steps,
             sediment_courant_max=args.sediment_courant_max, max_transport_substeps=args.max_transport_substeps,
             commit=not args.no_commit, force_final_commit=not args.no_final_commit,
+            transport_scheme=args.transport_scheme, phase_bins=args.phase_bins,
+            transport_implementation=args.transport_implementation,
             mahleran_root=args.mahleran_root, expected_maple_root=args.expected_maple_root,
             allow_maple_source_change=args.allow_maple_source_change,
         )

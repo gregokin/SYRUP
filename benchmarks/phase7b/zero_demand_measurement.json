@@ -1,0 +1,35 @@
+{
+  "scope": "Measure an unchanged shared MAPLE transaction with a zero demand.\n\nAn isolated API probe on the imported initial bed, not a storm speedup claim.\n",
+  "calls": 100,
+  "median_s": 0.014919552952051163,
+  "mean_s": 0.015027227634564043,
+  "min_s": 0.013632710906676948,
+  "max_s": 0.0171375049976632,
+  "bed_arrays_compared": 23,
+  "changed_array_paths": [
+    ".voxel_column.mass_kg",
+    ".active_layer.mass_kg",
+    ".sediment_availability.available_mass_kg"
+  ],
+  "changed_array_deltas": {
+    ".voxel_column.mass_kg": {
+      "max_abs_kg": 1.1102230246251565e-16,
+      "signed_sum_kg": -3.209238430557093e-16,
+      "absolute_sum_kg": 3.209238430557093e-16
+    },
+    ".active_layer.mass_kg": {
+      "max_abs_kg": 5.551115123125783e-17,
+      "signed_sum_kg": 5.222059763776432e-15,
+      "absolute_sum_kg": 9.007876909661316e-15
+    },
+    ".sediment_availability.available_mass_kg": {
+      "max_abs_kg": 5.551115123125783e-17,
+      "signed_sum_kg": 5.222059763776432e-15,
+      "absolute_sum_kg": 9.007876909661316e-15
+    }
+  },
+  "input_arrays_unchanged": true,
+  "maple_package_digest": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "qualification": "Only initial Plot1 bed; not proof a zero demand is a no-op on arbitrary states or that safely skipping it achieves this saving.",
+  "dependency_identity_note": "Taken from the case binding that verify_plot1_case checked against the imported source before this measurement; no source change override was enabled."
+}

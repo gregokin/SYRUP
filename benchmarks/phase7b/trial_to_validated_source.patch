@@ -1,0 +1,88 @@
+--- a/src/maple_syrup/characteristic_transport.py
++++ b/src/maple_syrup/characteristic_transport.py
+@@ -21,7 +21,9 @@
+ Mobile mass in a cell is a set of PACKETS with a distance `x` in `[0, dx)`
+ from the cell's upstream face along its D4 outflow. Actual MAPLE pickup is
+ injected as a new packet at `x = 0` (the legacy upstream-face distance
+-origin, chosen by the user for this MAHLERAN-inspired model). Over a
++origin of `flow_distrib.for`; Codex selected this convention to follow the
++user's preference for MAHLERAN-like physics, the user did not themselves
++specify the coordinate convention). Over a
+ substep `dt` a packet at `x` moves along its characteristic:
+ 
+     reaches the downstream face after tau = (dx - x) / v   (if v dt >= dx - x)
+--- a/src/maple_syrup/sediment_event.py
++++ b/src/maple_syrup/sediment_event.py
+@@ -335,6 +335,33 @@
+     return empty_phase_state(phase.shape, phase.n_classes, phase.n_bins, phase.dx_m, xp=phase.xp)
+ 
+ 
++def _bind_phase_to_control(state: SedimentEventState, control: SedimentEventControl) -> SedimentEventControl:
++    """Cheap binding checks every public entry runs BEFORE any work: the
++    control validates (scheme, bins, implementation, Courant), the phase is
++    present exactly for the characteristic scheme, its bin count and cell
++    size are the control's and the network's. No phase-array validation
++    here (the kernel validates the arrays before returning any result; the
++    drivers validate the partition separately)."""
++    if not isinstance(control, SedimentEventControl):
++        raise SedimentEventError("control must be a SedimentEventControl")
++    control = control.validated()
++    phase = state.phase
++    if control.characteristic:
++        if phase is None:
++            raise SedimentEventError("the characteristic transport scheme needs a phase state on the event state "
++                                     "(build it with initial_event_state(..., control=control))")
++        if not isinstance(phase, PhaseState):
++            raise SedimentEventError("event state phase must be a PhaseState")
++        if phase.n_bins != int(control.phase_bins):
++            raise SedimentEventError(f"phase state has {phase.n_bins} bins but the control asks for "
++                                     f"{control.phase_bins}; refusing to reinterpret the partition")
++        if phase.dx_m != state.network.dx_m or phase.xp is not state.graph.xp:
++            raise SedimentEventError("event state phase does not belong to the event's network (cell size or namespace)")
++    elif phase is not None:
++        raise SedimentEventError("the upwind transport scheme carries no phase state; the event state has one")
++    return control
++
++
+ def _check_phase_against_control(state: SedimentEventState, control: SedimentEventControl | None) -> None:
+     """The phase state must match the control's scheme and bin count, and
+     partition the actual MAPLE mobile mass. Raises before any mutation."""
+@@ -343,16 +370,9 @@
+         if phase is not None:
+             validate_phase_state(phase, state.bed.water.mobile_mass_by_cell_class_kg, state.network)
+         return
++    control = _bind_phase_to_control(state, control)
+     if control.characteristic:
+-        if phase is None:
+-            raise SedimentEventError("the characteristic transport scheme needs a phase state on the event state "
+-                                     "(build it with initial_event_state(..., control=control))")
+-        if phase.n_bins != int(control.phase_bins):
+-            raise SedimentEventError(f"phase state has {phase.n_bins} bins but the control asks for "
+-                                     f"{control.phase_bins}; refusing to reinterpret the partition")
+         validate_phase_state(phase, state.bed.water.mobile_mass_by_cell_class_kg, state.network)
+-    elif phase is not None:
+-        raise SedimentEventError("the upwind transport scheme carries no phase state; the event state has one")
+ 
+ 
+ def _check_event_inputs(state: SedimentEventState, context: BedContext, column: ColumnParameters,
+@@ -530,14 +550,16 @@
+     from maple.core.backend import to_float
+     from maple.water import WaterProcessDemand
+ 
++    if not isinstance(state, SedimentEventState):
++        raise SedimentEventError("state must be a SedimentEventState")
++    # Public entry: validate the control and its binding to the state's phase
++    # (scheme, presence, bin count, cell size) BEFORE any hydraulic or MAPLE
++    # work; a direct caller cannot run with a mismatched or invalid control.
++    control = _bind_phase_to_control(state, control)
+     xp = state.graph.xp
+     nc = sediment.n_classes
+     dt = float(dt_s)
+     zeros = xp.zeros((*state.graph.shape, nc), dtype=np.float64) if zero_demand is None else zero_demand
+-    if control.characteristic and state.phase is None:
+-        raise SedimentEventError("characteristic transport scheme without a phase state on the event state")
+-    if not control.characteristic and state.phase is not None:
+-        raise SedimentEventError("upwind transport scheme with a phase state on the event state")
+ 
+     # 1. water: column + routing (accepted Phase 4 kernels).
+     storm = coupled_step(state.graph, column, rain_rate_m_per_s, state.storm, dt, control.storm)

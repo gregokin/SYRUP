@@ -1,0 +1,30 @@
+{
+  "scope": "Read-only early full-storm physics trial of an immutable candidate snapshot, while Claude finishes integration tests. Concurrent-run timing is NOT a qualified performance measurement.",
+  "source_root": "/tmp/syrup_phase7b_trial1/src/maple_syrup",
+  "sha256": {
+    "__init__.py": "039be50eaa7bd7e21c5cb5a88a604dc2041c9fe60f723af4b63f7dca1366adbc",
+    "benchmark_experiment.py": "35711ec3e71a6708ca73961f732932b12177ebf4a27513051c489d65b651bd28",
+    "case_import.py": "21a87b9380296bd88b122a2ecb59f12d307bc43f39b279b2e25d0cdcaeaec056",
+    "characteristic_numba.py": "433ad523c51fb52f22b8357d8683f6f70ae534b29d603c8a7d02b6a516ce7403",
+    "characteristic_transport.py": "f8138a3cb1b0550b768198ad7d9b8b45bd291c84726d6ae5049aa94a9ed7f3af",
+    "checkpoint.py": "340dca782885cd5883d7f5886c7bc545cf4f0fa64bcb4d2b31ef502c6d662d0c",
+    "column_experiment.py": "a533573442f5e8beb7451b11265e05b7823160fa3063aa670fcd9fef59e50dd9",
+    "complete_event.py": "3e64d727768e84f93dd3543e620b6a809623d73f34fb441b5eb3844840180335",
+    "conservation.py": "1072cdade368a76290c8a41162dfeb7a5b60ffaf970a7ede4707635bb3cf1bb1",
+    "dependency.py": "b0c1875a0fa7ef1e67844da82b49f6cae0159bf177414cbdef9bac73d7698159",
+    "event_experiment.py": "8c3d3e77cf3e7b952bba4c375af6960354224935ee4b1243521a30d800401682",
+    "infiltration.py": "89c8f31c481cf4535d1006599f896383606d986b7922b8676aa37115a5a6d60a",
+    "probe.py": "af859fd93960d88f0ce205834b74dc906b0f5513d1a29d98c65649ee53750ef1",
+    "provenance.py": "30945a037ded51402471a2f59192144b3b44f69cf7df7088472684d60bdfcaaa",
+    "rainfall.py": "9680256608b2ca372bb88115ff5135f3bca6e350e7067968ebebb4f0b42c04b5",
+    "routing.py": "ac4eef69e78a0cb44cff21f7e52c5a1b7972aa24b5bda7362d6154559641d3b7",
+    "routing_numba.py": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+    "sediment_bed.py": "bcf214d7d3b7d3d41496d3e1185caceb51a60dcd60dd9bdc8c41246e4711b4f2",
+    "sediment_event.py": "896e5765262c3c47cb4fc7bc995ff1ac6d62c154b034bb57b96f7329cb24fcd6",
+    "sediment_experiment.py": "626fd563e5da9911d771f971c0326abb87867886683e138d11250ccb5afe4515",
+    "sediment_physics.py": "e582356773ee14c301188bc70347a96e8294af878f61ab85a284eaf3ba02ffdb",
+    "sediment_transport.py": "9fa27d7701768a54205755428a2dba48c829a1bd75c3b5a2f166d28ba5507a10",
+    "storm.py": "ac1a5fda28ac03e68776ce24ea8f4f65eff471515e6f09cf97f52bff527f5a19",
+    "storm_experiment.py": "46c91e891495eb4abdd3ca11b6b73bad4449c9d4e497583248fec6a9b086a969"
+  }
+}

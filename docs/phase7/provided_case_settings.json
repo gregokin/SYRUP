@@ -1,0 +1,91 @@
+[
+  {
+    "path": "Input/RFID_2014/mahleran_input (2).xml",
+    "sha256": "80a6ea706994f47cd9b504dd9651aafba2f87d6e270490ef8f1196a016ae5ae9",
+    "format": "XML",
+    "version": "1.2.1",
+    "runtype": "event",
+    "xml_parse_error": "not well-formed (invalid token): line 79, column 11",
+    "update_topography": "n",
+    "topography_update_interval_steps": "1",
+    "flow_routing_solution_method": "2"
+  },
+  {
+    "path": "Input/RFID_2014/mahleran_input.xml",
+    "sha256": "64581e92c5960d70d23eda98ce43caea1837ef1d83851dcc7862771d1248eb23",
+    "format": "XML",
+    "version": "1.2.0",
+    "runtype": "event",
+    "xml_parse_error": null,
+    "update_topography": "n",
+    "topography_update_interval_steps": "1",
+    "flow_routing_solution_method": "2"
+  },
+  {
+    "path": "mahleran_input.xml",
+    "sha256": "6f298fe123b7c957acd4583c8baec13c1c788236427933757afd83558e56e1e3",
+    "format": "XML",
+    "version": "1.2.3",
+    "runtype": "event",
+    "xml_parse_error": null,
+    "update_topography": "n",
+    "topography_update_interval_steps": "1",
+    "flow_routing_solution_method": "5"
+  },
+  {
+    "path": "Input/Plot3/mahleran_input.dat",
+    "sha256": "6fb2b4010a3d4ae1d931ef05d59e32009fffa624a19942cbba9472f5de825735",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  },
+  {
+    "path": "Input/Test2_Abbott_300700/mahleran_input.dat",
+    "sha256": "ff7c40e2a0559e470fc03ab66f7b77d9a99806cae2e593087cfdb48ed29e7673",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  },
+  {
+    "path": "Input/Test3_Wise_110801/mahleran_input.dat",
+    "sha256": "1409c34e75c5527cb2c653929a70ad7abb32596339d48feb2e765a7fbdb7e9e6",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  },
+  {
+    "path": "Input/input_p1/mahleran_input.dat",
+    "sha256": "c562963524b341ca000b43b21b28a678f38f0b69b137bea2ff5bbc91ad8d187e",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  },
+  {
+    "path": "Input/input_p2/mahleran_input.dat",
+    "sha256": "ee0db7b4202a18b2a5f810ab4e40bff29bde90df31e3f966f10f2bff1fbaae4f",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  },
+  {
+    "path": "Input/input_p3/mahleran_input.dat",
+    "sha256": "223c8ab73389251e588112a429410214b77e0739bb8d91541a009d47ccdd5a46",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  },
+  {
+    "path": "Input/input_p4/mahleran_input.dat",
+    "sha256": "091eb79ded62175e6296009cf833403c25a05f11fa50ee066a58ff2506f80c6d",
+    "format": "legacy DAT",
+    "header": "Parameter specification for Mahleran Version 1.01.4",
+    "update_topography": null,
+    "interpretation": "No explicit topographic-update setting identified; not an executable XML configuration of the current application."
+  }
+]

@@ -269,8 +269,12 @@ def test_numba_run_matches_the_array_short_run_with_actual_coupling(short_run, p
     (which already carries nonzero pickup, deposition and commits): the
     compiled hydraulic sweep must reproduce the whole coupled state."""
     a, _ = short_run
+    # Same (array) transport kernel on both sides: this compares the hydraulic sweep implementations
+    # bitwise. The numba transport kernel agrees with the array kernel to round-off only, which through
+    # terrain commits perturbs conveyance at the 1e-14 level; that pairing is tested in tests/phase7b.
     b = run_plot1_sediment_event(plot1_case, tmp_path / "numba", max_dt_s=1.0, end_s=SHORT_END_S,
-                                 implementation="numba", report_every_s=SHORT_CADENCE_S)
+                                 implementation="numba", report_every_s=SHORT_CADENCE_S,
+                                 transport_implementation="array")
     totals = a.summary["sediment"]["totals"]
     assert totals["actual_pickup"] > 0.0 and totals["deposition_actual"] > 0.0 and a.summary["commits"]["n_commits"] >= 1
     for name in ("depth_m", "soil_water_m", "discharge_m2_s"):

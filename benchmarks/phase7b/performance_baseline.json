@@ -1,0 +1,426 @@
+{
+  "scope": "Full frozen Numba benchmark with low-overhead component wall timers.",
+  "component_timers": {
+    "coupled_step": {
+      "calls": 5400,
+      "wall_s": 7.972984477994032
+    },
+    "sediment_physics_step": {
+      "calls": 5400,
+      "wall_s": 11.49385672295466
+    },
+    "with_water": {
+      "calls": 10800,
+      "wall_s": 1.092392361490056
+    },
+    "apply_bed_demand": {
+      "calls": 10800,
+      "wall_s": 161.4789339955896
+    },
+    "maple_pickup": {
+      "calls": 5400,
+      "wall_s": 80.52340897358954
+    },
+    "transport_step": {
+      "calls": 5400,
+      "wall_s": 7.63021089672111
+    },
+    "maple_deposit_export": {
+      "calls": 5400,
+      "wall_s": 80.95552502200007
+    }
+  },
+  "summary_performance": {
+    "setup_and_verification": {
+      "cpu_s": 1.497875402,
+      "wall_s": 1.5692989219678566
+    },
+    "first_accepted_step": {
+      "wall_s": 0.6968982160324231,
+      "cpu_s": 2.1224309229999996,
+      "note": "includes lazy import and JIT compilation for the numba implementation"
+    },
+    "remaining_steps": {
+      "wall_s": 192.22827671992127,
+      "cpu_s": 192.156341993,
+      "n_steps": 5399,
+      "mean_wall_s_per_step": 0.035604422433769455
+    },
+    "commits_wall_s": 0.0,
+    "step_loop": {
+      "cpu_s": 194.284700343,
+      "wall_s": 192.93111677700654
+    },
+    "peak_rss_kib": {
+      "process_start": 231152,
+      "process_end": 351344,
+      "note": "ru_maxrss of this process; includes imports, verification and the case"
+    },
+    "note": "one observational run; not a controlled benchmark and not comparable with the whole-program MAHLERAN wall time",
+    "reporting": {
+      "cpu_s": 0.391342920999989,
+      "wall_s": 0.39286409004125744
+    }
+  },
+  "source": {
+    "maple_syrup": {
+      "schema": "maple_syrup.syrup_provenance.v1",
+      "version": "0.0.1.dev0",
+      "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+      "package_source_digest": {
+        "root": "/home/okin/SYRUP/src/maple_syrup",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+        "digest_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+        "file_count": 22,
+        "total_bytes": 632245
+      },
+      "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+      "repository_root": "/home/okin/SYRUP",
+      "git": {
+        "status": "ok",
+        "head_commit": "a9e4d5fe54d005d932176c1a7f51f9f7fae3edb5",
+        "head_ref": "refs/heads/main",
+        "scoped_status": {
+          "pathspecs": [
+            "src",
+            "tests",
+            "docs",
+            "cases",
+            "pyproject.toml"
+          ],
+          "command": [
+            "git",
+            "--no-optional-locks",
+            "-c",
+            "core.fsmonitor=false",
+            "-C",
+            "/home/okin/SYRUP",
+            "status",
+            "--porcelain=v1",
+            "-z",
+            "--untracked-files=all",
+            "--",
+            "src",
+            "tests",
+            "docs",
+            "cases",
+            "pyproject.toml"
+          ],
+          "status": "dirty",
+          "entries": [
+            {
+              "code": " M",
+              "path": "pyproject.toml"
+            },
+            {
+              "code": " M",
+              "path": "src/maple_syrup/sediment_event.py"
+            },
+            {
+              "code": " M",
+              "path": "src/maple_syrup/sediment_experiment.py"
+            },
+            {
+              "code": " M",
+              "path": "src/maple_syrup/sediment_transport.py"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase6/acceptance.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase6/design.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/acceptance.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/figures/matched_series.png"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/figures/peak_outlet_fields.png"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/figures/sediment_maps.png"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/fixed_terrain_benchmark.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/initialization_audit.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/initialization_comparison.json"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/initialization_comparison.png"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/initialization_parameters.json"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/mahleran_reference_run.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/mahleran_run_summary.json"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/matched_benchmark.md"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/no_splash_verification.json"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/provided_case_settings.json"
+            },
+            {
+              "code": "??",
+              "path": "docs/phase7/review.md"
+            },
+            {
+              "code": "??",
+              "path": "src/maple_syrup/benchmark_experiment.py"
+            },
+            {
+              "code": "??",
+              "path": "src/maple_syrup/checkpoint.py"
+            },
+            {
+              "code": "??",
+              "path": "src/maple_syrup/complete_event.py"
+            },
+            {
+              "code": "??",
+              "path": "src/maple_syrup/conservation.py"
+            },
+            {
+              "code": "??",
+              "path": "src/maple_syrup/event_experiment.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase6/__init__.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase6/conftest.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase6/test_checkpoint.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase6/test_complete_event.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase6/test_conservation.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase6/test_event_experiment.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase7/__init__.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase7/conftest.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase7/test_benchmark_experiment.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase7/test_compare_matched.py"
+            },
+            {
+              "code": "??",
+              "path": "tests/phase7/test_face_topology_backends.py"
+            }
+          ]
+        },
+        "head_describes_source": false
+      }
+    },
+    "maple": {
+      "schema": "maple_syrup.maple_provenance.v1",
+      "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+      "dependency": {
+        "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple",
+        "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source",
+        "source_kind": "editable_working_tree",
+        "distribution_name": "maple",
+        "distribution_version": "0.0.1",
+        "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+        "direct_url": {
+          "dir_info": {
+            "editable": true
+          },
+          "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source"
+        },
+        "project_name": "maple",
+        "project_version": "0.0.1"
+      },
+      "package_source_digest": {
+        "root": "/home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+        "digest_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+        "file_count": 324,
+        "total_bytes": 7646286
+      },
+      "metadata_file_sha256": {
+        "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+      },
+      "git": {
+        "status": "not_a_git_repository"
+      },
+      "limitations": [
+        "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+        "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+        "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+      ]
+    },
+    "maple_matches_import_binding": true,
+    "source_stability": {
+      "before": {
+        "maple_syrup": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+        "maple": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264"
+      },
+      "after": {
+        "maple_syrup": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+        "maple": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264"
+      },
+      "stable": true
+    },
+    "environment": {
+      "python_version": "3.12.3",
+      "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+      "sys_prefix": "/home/okin/MAPLE/.venv",
+      "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "package_versions": {
+        "numpy": "2.5.2",
+        "jax": "0.11.1",
+        "cupy-cuda12x": null
+      }
+    },
+    "numba": {
+      "numba": "0.67.0",
+      "llvmlite": "0.49.0"
+    },
+    "implementation": "numba"
+  },
+  "accepted_steps": 5400,
+  "closed": {
+    "initial_bed_kg": [
+      100348.67081779092,
+      201910.0698335724,
+      11634.536515619662,
+      26356.84227885931,
+      36874.544728257184,
+      26918.773325900493
+    ],
+    "initial_mobile_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_bed_kg": [
+      100348.61805308005,
+      201909.91034885982,
+      11634.531934369343,
+      26356.841000241657,
+      36874.54472772478,
+      26918.773325900125
+    ],
+    "final_mobile_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "export_actual_kg": [
+      0.05276471089849002,
+      0.15948471267839903,
+      0.004581250322339793,
+      0.0012786176570409838,
+      5.323996319603938e-07,
+      3.70002200233825e-10
+    ],
+    "net_bed_change_kg": [
+      -0.05276471086835954,
+      -0.1594847125816159,
+      -0.004581250319461105,
+      -0.0012786176521331072,
+      -5.324036465026438e-07,
+      -3.67435859516263e-10
+    ],
+    "residual_kg": [
+      2.9103830456733704e-11,
+      8.731149137020111e-11,
+      3.637978807091713e-12,
+      3.637978807091713e-12,
+      -7.275957614183426e-12,
+      3.637978807091713e-12
+    ],
+    "tolerance_kg": [
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06,
+      1.936787400860302e-06
+    ],
+    "closed": true,
+    "request_reconciliation_residual_kg": [
+      0.0,
+      0.0,
+      -7.105427357601002e-15,
+      8.526512829121202e-14,
+      -1.3322676295501878e-15,
+      5.551115123125783e-17
+    ],
+    "request_reconciliation_tolerance_kg": [
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05,
+      1.1416766698215006e-05
+    ],
+    "request_reconciled": true,
+    "numerical_residual_scalar_abs_kg": 4.411517222894677e-10,
+    "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+  },
+  "note": "pickup and deposit/export alternate in this fixed benchmark; subrows overlap apply_bed_demand total. No cProfile overhead, wrappers around five phase boundaries only.",
+  "instrumented_process_wall_s": 197.24,
+  "peak_process_rss_kib": 351344,
+  "num_arrays_equal_to_phase7_uninstrumented": 97,
+  "measurement_script": {
+    "sha256": "e83207d440bf2327d3a2eb6547eef1ab0b259dd5767776b60a46cd74e2f674b1",
+    "text": "\"\"\"Full frozen Numba benchmark with low-overhead component wall timers.\"\"\"\nimport functools\nimport json\nimport time\nfrom pathlib import Path\nimport maple_syrup.sediment_event as event\nfrom maple_syrup.benchmark_experiment import run_plot1_matched_benchmark\n\nstats={}\noriginals={}\nfor name in ['coupled_step','sediment_physics_step','transport_step','apply_bed_demand','with_water']:\n fn=getattr(event,name);originals[name]=fn\n def wrap(fn=fn,name=name):\n  @functools.wraps(fn)\n  def measured(*args,**kwargs):\n   row=stats.setdefault(name,{'calls':0,'wall_s':0.0})\n   label=name\n   if name=='apply_bed_demand':\n    label='maple_pickup' if row['calls']%2==0 else 'maple_deposit_export'\n   start=time.perf_counter()\n   try:return fn(*args,**kwargs)\n   finally:\n    elapsed=time.perf_counter()-start\n    row['calls']+=1;row['wall_s']+=elapsed\n    if label!=name:\n     sub=stats.setdefault(label,{'calls':0,'wall_s':0.0});sub['calls']+=1;sub['wall_s']+=elapsed\n  return measured\n setattr(event,name,wrap())\ntry:\n r=run_plot1_matched_benchmark('outputs/plot1','outputs/phase7b/performance_numba',applied_rainfall_csv='outputs/phase7/mahleran_reference_audit/applied_rainfall.csv',reference_run_dir='outputs/phase7/mahleran_deterministic_ksat_run',max_dt_s=1,implementation='numba')\nfinally:\n for name,fn in originals.items():setattr(event,name,fn)\nassert r.result.n_rejected_attempts==0\nassert stats['apply_bed_demand']['calls']==2*r.result.n_accepted_steps\nreport={'scope':__doc__,'component_timers':stats,'summary_performance':r.summary['performance'],'source':r.summary['provenance'],'accepted_steps':r.result.n_accepted_steps,'closed':r.result.closure(),'note':'pickup and deposit/export alternate in this fixed benchmark; subrows overlap apply_bed_demand total. No cProfile overhead, wrappers around five phase boundaries only.'}\nPath('agent_handoffs/tasks/phase7b_performance/component_times.json').write_text(json.dumps(report,indent=2,default=lambda x:x.tolist() if hasattr(x,'tolist') else str(x))+'\\n')\nprint(json.dumps(stats,indent=2))\n"
+  }
+}

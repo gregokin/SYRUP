@@ -1,0 +1,293 @@
+{
+  "scope": "fixed-input wet-law and lateral-transport kernels, excludes actual MAPLE bed, rainfall/routing, commits and coupled GPU event",
+  "cupy": "14.2.0",
+  "numpy": "2.5.2",
+  "device": "NVIDIA GeForce GTX 1080 Ti",
+  "source_before": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+  "source_after": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+  "parity_tolerance": {
+    "rtol": 1e-10,
+    "atol": 1e-18
+  },
+  "timing": "synchronized five samples, first call includes first-use setup/JIT; host-device setup excluded; validation synchronization included",
+  "memory": "CuPy pool reserved after calls; not whole-process GPU peak or driver allocations",
+  "script_sha256": "46947eff182580ddcb322370f5ea41343c0676b0404dfc27c82a00c8eea107ce",
+  "cases": [
+    {
+      "ny": 60,
+      "nx": 20,
+      "cells": 1200,
+      "times": {
+        "cpu": {
+          "physics": {
+            "first_call_s": 0.0024981440510600805,
+            "median_s": 0.0017942910781130195,
+            "samples_s": [
+              0.002351915929466486,
+              0.0018371050246059895,
+              0.0016586949350312352,
+              0.0017942910781130195,
+              0.0016768809873610735
+            ]
+          },
+          "transport": {
+            "first_call_s": 0.001850706059485674,
+            "median_s": 0.0012807700550183654,
+            "samples_s": [
+              0.002149000996723771,
+              0.0013262530555948615,
+              0.0011697110021486878,
+              0.00121885200496763,
+              0.0012807700550183654
+            ]
+          }
+        },
+        "gpu": {
+          "physics": {
+            "first_call_s": 0.5572291479911655,
+            "median_s": 0.010946459020487964,
+            "samples_s": [
+              0.012251375941559672,
+              0.010917028062976897,
+              0.011038176016882062,
+              0.010946459020487964,
+              0.01066482299938798
+            ]
+          },
+          "transport": {
+            "first_call_s": 0.11297801590990275,
+            "median_s": 0.018680177978239954,
+            "samples_s": [
+              0.019414810929447412,
+              0.018791717942804098,
+              0.018680177978239954,
+              0.018351977108977735,
+              0.018518207012675703
+            ]
+          },
+          "cupy_pool_reserved_bytes": 3644416
+        }
+      },
+      "max_absolute_differences": {
+        "physics.requested_pickup_kg": 4.0657581468206416e-20,
+        "physics.raindrop_pickup_kg": 4.0657581468206416e-20,
+        "physics.flow_pickup_kg": 0.0,
+        "physics.sediment_velocity_m_s": 1.3552527156068805e-20,
+        "physics.deposition_rate_per_m": 1.8189894035458565e-12,
+        "physics.law_applies": 0.0,
+        "physics.settle_mask": 0.0,
+        "physics.regime": 0.0,
+        "physics.d50_m": 0.0,
+        "physics.shear_velocity_m_s": 0.0,
+        "physics.reynolds_number": 0.0,
+        "physics.stream_power_w_m2": 0.0,
+        "physics.rain_energy_j_m2_mm": 0.0,
+        "physics.rain_energy_flux_j_m2_s": 0.0,
+        "physics.pickup_probability": 5.551115123125783e-17,
+        "physics.legacy_cap_applied": 0.0,
+        "transport.mobile_after_transfer_kg": 0.0,
+        "transport.deposition_request_kg": 2.710505431213761e-20,
+        "transport.export_request_kg": 0.0,
+        "transport.decay_deposition_kg": 2.710505431213761e-20,
+        "transport.settled_kg": 0.0,
+        "transport.internal_transfer_in_kg": 1.6940658945086007e-21,
+        "transport.internal_transfer_out_kg": 8.470329472543003e-22,
+        "transport.divergence_kg": 1.6940658945086007e-21,
+        "transport.x_face_gross_kg": 8.470329472543003e-22,
+        "transport.y_face_gross_kg": 8.470329472543003e-22,
+        "transport.x_face_net_kg": 8.470329472543003e-22,
+        "transport.y_face_net_kg": 8.470329472543003e-22,
+        "transport.mobile_before_by_class_kg": 0.0,
+        "transport.mobile_after_by_class_kg": 0.0,
+        "transport.deposition_request_by_class_kg": 2.927345865710862e-17,
+        "transport.export_request_by_class_kg": 0.0,
+        "transport.budget_residual_by_class_kg": 0.0,
+        "transport.budget_tolerance_by_class_kg": 0.0
+      }
+    },
+    {
+      "ny": 240,
+      "nx": 80,
+      "cells": 19200,
+      "times": {
+        "cpu": {
+          "physics": {
+            "first_call_s": 0.04127717297524214,
+            "median_s": 0.02128880296368152,
+            "samples_s": [
+              0.02510391501709819,
+              0.02016341802664101,
+              0.01958948897663504,
+              0.02421413199044764,
+              0.02128880296368152
+            ]
+          },
+          "transport": {
+            "first_call_s": 0.020494793076068163,
+            "median_s": 0.022681930917315185,
+            "samples_s": [
+              0.029351699980907142,
+              0.01759547204710543,
+              0.022759738960303366,
+              0.017342392937280238,
+              0.022681930917315185
+            ]
+          }
+        },
+        "gpu": {
+          "physics": {
+            "first_call_s": 0.01961624203249812,
+            "median_s": 0.011394797009415925,
+            "samples_s": [
+              0.014100453001447022,
+              0.01215287100058049,
+              0.011394797009415925,
+              0.010634585050866008,
+              0.011377532035112381
+            ]
+          },
+          "transport": {
+            "first_call_s": 0.052556190988980234,
+            "median_s": 0.01950283907353878,
+            "samples_s": [
+              0.023652530973777175,
+              0.01925310504157096,
+              0.01929709000978619,
+              0.019512612954713404,
+              0.01950283907353878
+            ]
+          },
+          "cupy_pool_reserved_bytes": 57895424
+        }
+      },
+      "max_absolute_differences": {
+        "physics.requested_pickup_kg": 4.0657581468206416e-20,
+        "physics.raindrop_pickup_kg": 4.0657581468206416e-20,
+        "physics.flow_pickup_kg": 0.0,
+        "physics.sediment_velocity_m_s": 8.673617379884035e-19,
+        "physics.deposition_rate_per_m": 1.8189894035458565e-12,
+        "physics.law_applies": 0.0,
+        "physics.settle_mask": 0.0,
+        "physics.regime": 0.0,
+        "physics.d50_m": 0.0,
+        "physics.shear_velocity_m_s": 0.0,
+        "physics.reynolds_number": 0.0,
+        "physics.stream_power_w_m2": 0.0,
+        "physics.rain_energy_j_m2_mm": 0.0,
+        "physics.rain_energy_flux_j_m2_s": 0.0,
+        "physics.pickup_probability": 1.1102230246251565e-16,
+        "physics.legacy_cap_applied": 0.0,
+        "transport.mobile_after_transfer_kg": 1.3552527156068805e-20,
+        "transport.deposition_request_kg": 2.710505431213761e-20,
+        "transport.export_request_kg": 0.0,
+        "transport.decay_deposition_kg": 2.710505431213761e-20,
+        "transport.settled_kg": 0.0,
+        "transport.internal_transfer_in_kg": 1.6940658945086007e-21,
+        "transport.internal_transfer_out_kg": 8.470329472543003e-22,
+        "transport.divergence_kg": 1.6940658945086007e-21,
+        "transport.x_face_gross_kg": 8.470329472543003e-22,
+        "transport.y_face_gross_kg": 8.470329472543003e-22,
+        "transport.x_face_net_kg": 8.470329472543003e-22,
+        "transport.y_face_net_kg": 8.470329472543003e-22,
+        "transport.mobile_before_by_class_kg": 0.0,
+        "transport.mobile_after_by_class_kg": 0.0,
+        "transport.deposition_request_by_class_kg": 5.074066167232161e-16,
+        "transport.export_request_by_class_kg": 0.0,
+        "transport.budget_residual_by_class_kg": 0.0,
+        "transport.budget_tolerance_by_class_kg": 0.0
+      }
+    },
+    {
+      "ny": 480,
+      "nx": 160,
+      "cells": 76800,
+      "times": {
+        "cpu": {
+          "physics": {
+            "first_call_s": 0.1689982230309397,
+            "median_s": 0.09518199600279331,
+            "samples_s": [
+              0.10522022598888725,
+              0.08480382501147687,
+              0.09518199600279331,
+              0.08223800698760897,
+              0.09573031205218285
+            ]
+          },
+          "transport": {
+            "first_call_s": 0.09044482698664069,
+            "median_s": 0.09330048190895468,
+            "samples_s": [
+              0.12129293300677091,
+              0.09484283998608589,
+              0.09148457797709852,
+              0.0796489369822666,
+              0.09330048190895468
+            ]
+          }
+        },
+        "gpu": {
+          "physics": {
+            "first_call_s": 0.026530810981057584,
+            "median_s": 0.010713303927332163,
+            "samples_s": [
+              0.014807731960900128,
+              0.011457085027359426,
+              0.010588553035631776,
+              0.010351366945542395,
+              0.010713303927332163
+            ]
+          },
+          "transport": {
+            "first_call_s": 0.053758442983962595,
+            "median_s": 0.027017590939067304,
+            "samples_s": [
+              0.027017590939067304,
+              0.01982498203869909,
+              0.02075854199938476,
+              0.03197793895378709,
+              0.05438170302659273
+            ]
+          },
+          "cupy_pool_reserved_bytes": 230817792
+        }
+      },
+      "max_absolute_differences": {
+        "physics.requested_pickup_kg": 4.0657581468206416e-20,
+        "physics.raindrop_pickup_kg": 4.0657581468206416e-20,
+        "physics.flow_pickup_kg": 0.0,
+        "physics.sediment_velocity_m_s": 8.673617379884035e-19,
+        "physics.deposition_rate_per_m": 1.8189894035458565e-12,
+        "physics.law_applies": 0.0,
+        "physics.settle_mask": 0.0,
+        "physics.regime": 0.0,
+        "physics.d50_m": 0.0,
+        "physics.shear_velocity_m_s": 0.0,
+        "physics.reynolds_number": 0.0,
+        "physics.stream_power_w_m2": 0.0,
+        "physics.rain_energy_j_m2_mm": 0.0,
+        "physics.rain_energy_flux_j_m2_s": 0.0,
+        "physics.pickup_probability": 1.1102230246251565e-16,
+        "physics.legacy_cap_applied": 0.0,
+        "transport.mobile_after_transfer_kg": 1.3552527156068805e-20,
+        "transport.deposition_request_kg": 2.710505431213761e-20,
+        "transport.export_request_kg": 0.0,
+        "transport.decay_deposition_kg": 2.710505431213761e-20,
+        "transport.settled_kg": 0.0,
+        "transport.internal_transfer_in_kg": 1.6940658945086007e-21,
+        "transport.internal_transfer_out_kg": 8.470329472543003e-22,
+        "transport.divergence_kg": 1.6940658945086007e-21,
+        "transport.x_face_gross_kg": 8.470329472543003e-22,
+        "transport.y_face_gross_kg": 8.470329472543003e-22,
+        "transport.x_face_net_kg": 8.470329472543003e-22,
+        "transport.y_face_net_kg": 8.470329472543003e-22,
+        "transport.mobile_before_by_class_kg": 0.0,
+        "transport.mobile_after_by_class_kg": 0.0,
+        "transport.deposition_request_by_class_kg": 2.0556473190325164e-15,
+        "transport.export_request_by_class_kg": 0.0,
+        "transport.budget_residual_by_class_kg": 0.0,
+        "transport.budget_tolerance_by_class_kg": 0.0
+      }
+    }
+  ]
+}

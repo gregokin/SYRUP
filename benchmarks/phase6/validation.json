@@ -1,0 +1,297 @@
+{
+  "schema": "maple-syrup-phase6-validation/1",
+  "full_path": "outputs/phase6_validation/full",
+  "resumed_path": "outputs/phase6_validation/resumed",
+  "source_sha256": "582b9ed320d8d259e42e7a0d019a96b5208f0906a6d06a2f9db0f639ab4045a5",
+  "maple_source_sha256": "d3d007024ff65abc2a0ff179f0f03bcd1c3b27f091493136cce849c34f7a4264",
+  "bitwise_equal_array_counts": {
+    "final_state.npz": 13,
+    "hydrograph.npz": 55,
+    "handoff/continuation.npz": 99
+  },
+  "checkpoint": {
+    "time_s": 1200.0,
+    "mobile_kg": 79.40666317652855,
+    "max_depth_m": 0.003447801232851693,
+    "pending_bed_abs_kg": 0.136388645255959,
+    "bytes": 5138277
+  },
+  "time_s": 4747.0,
+  "steps": 4747,
+  "commits": 819,
+  "quiet_progress": {
+    "since_s": 4687.0,
+    "last_t_s": 4747.0,
+    "ready": true
+  },
+  "water_budget": {
+    "rain_m3": 2.8955999999999613,
+    "surface_initial_m3": 0.0,
+    "soil_initial_m3": 22.499999999999996,
+    "surface_final_m3": 0.0,
+    "soil_final_m3": 25.220366348005598,
+    "drainage_m3": 0.012552832716826057,
+    "export_m3": 0.16268081927757855,
+    "residual_m3": 4.39648317751562e-14,
+    "tolerance_m3": 5.104018150363039e-07,
+    "closed": true
+  },
+  "sediment_closure": {
+    "initial_bed_kg": [
+      100348.67081779092,
+      201910.0698335724,
+      11634.536515619662,
+      26356.84227885931,
+      36874.544728257184,
+      26918.773325900493
+    ],
+    "initial_mobile_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_bed_kg": [
+      100348.61825905109,
+      201909.91107370786,
+      11634.531950859839,
+      26356.841012988556,
+      36874.544727726825,
+      26918.773325900125
+    ],
+    "final_mobile_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "export_actual_kg": [
+      0.05255873984146375,
+      0.15875986460134336,
+      0.004564759827966771,
+      0.0012658707580105847,
+      5.303554980773396e-07,
+      3.6857651483851973e-10
+    ],
+    "net_bed_change_kg": [
+      -0.05255873982969206,
+      -0.1587598645419348,
+      -0.004564759823551867,
+      -0.0012658707528316882,
+      -5.303591024130583e-07,
+      -3.67435859516263e-10
+    ],
+    "residual_kg": [
+      1.4551915228366852e-11,
+      5.820766091346741e-11,
+      3.637978807091713e-12,
+      3.637978807091713e-12,
+      0.0,
+      0.0
+    ],
+    "tolerance_kg": [
+      1.7025795910896025e-06,
+      1.7025795910896025e-06,
+      1.7025795910896025e-06,
+      1.7025795910896025e-06,
+      1.7025795910896025e-06,
+      1.7025795910896025e-06
+    ],
+    "closed": true,
+    "request_reconciliation_residual_kg": [
+      0.0,
+      0.0,
+      1.4210854715202004e-14,
+      -1.7053025658242404e-13,
+      1.3322676295501878e-15,
+      5.551115123125783e-17
+    ],
+    "request_reconciliation_tolerance_kg": [
+      1.0031672003896224e-05,
+      1.0031672003896224e-05,
+      1.0031672003896224e-05,
+      1.0031672003896224e-05,
+      1.0031672003896224e-05,
+      1.0031672003896224e-05
+    ],
+    "request_reconciled": true,
+    "numerical_residual_scalar_abs_kg": 3.902379055443735e-10,
+    "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+  },
+  "reset_accounting": {
+    "policy": "external dry-again removal; no evapotranspiration simulated",
+    "storm_water_budget": {
+      "rain_m3": 2.8955999999999613,
+      "surface_initial_m3": 0.0,
+      "soil_initial_m3": 22.499999999999996,
+      "surface_final_m3": 0.0,
+      "soil_final_m3": 25.220366348005598,
+      "drainage_m3": 0.012552832716826057,
+      "export_m3": 0.16268081927757855,
+      "residual_m3": 4.39648317751562e-14,
+      "tolerance_m3": 5.104018150363039e-07,
+      "closed": true
+    },
+    "completion_before_terminal": {
+      "max_depth_m": 0.0,
+      "surface_volume_m3": 0.0,
+      "max_unit_discharge_m2_s": 0.0,
+      "outlet_discharge_m3_s": 0.0,
+      "max_mobile_cell_class_kg": 0.0,
+      "mobile_by_class_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mobile_per_element_limit_kg": 1e-10,
+      "rainfall_finished": true
+    },
+    "completion_after_terminal": {
+      "max_depth_m": 0.0,
+      "surface_volume_m3": 0.0,
+      "max_unit_discharge_m2_s": 0.0,
+      "outlet_discharge_m3_s": 0.0,
+      "max_mobile_cell_class_kg": 0.0,
+      "mobile_by_class_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mobile_per_element_limit_kg": 1e-10,
+      "rainfall_finished": true
+    },
+    "surface_removed_m3": 0.0,
+    "soil_removed_m3": 25.220366348005598,
+    "water_added_m3": 0.0,
+    "target_soil_water_m": 0.0,
+    "combined_water_residual_m3": 4.39648317751562e-14,
+    "terminal_sediment_residual_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "terminal_sediment_tolerance_kg": 1.7933202573923866e-10,
+    "terminal_deposition_by_class_kg": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "sediment_closure": {
+      "initial_bed_kg": [
+        100348.67081779092,
+        201910.0698335724,
+        11634.536515619662,
+        26356.84227885931,
+        36874.544728257184,
+        26918.773325900493
+      ],
+      "initial_mobile_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_bed_kg": [
+        100348.61825905109,
+        201909.91107370786,
+        11634.531950859839,
+        26356.841012988556,
+        36874.544727726825,
+        26918.773325900125
+      ],
+      "final_mobile_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "export_actual_kg": [
+        0.05255873984146375,
+        0.15875986460134336,
+        0.004564759827966771,
+        0.0012658707580105847,
+        5.303554980773396e-07,
+        3.6857651483851973e-10
+      ],
+      "net_bed_change_kg": [
+        -0.05255873982969206,
+        -0.1587598645419348,
+        -0.004564759823551867,
+        -0.0012658707528316882,
+        -5.303591024130583e-07,
+        -3.67435859516263e-10
+      ],
+      "residual_kg": [
+        1.4551915228366852e-11,
+        5.820766091346741e-11,
+        3.637978807091713e-12,
+        3.637978807091713e-12,
+        0.0,
+        0.0
+      ],
+      "tolerance_kg": [
+        1.7025795910896025e-06,
+        1.7025795910896025e-06,
+        1.7025795910896025e-06,
+        1.7025795910896025e-06,
+        1.7025795910896025e-06,
+        1.7025795910896025e-06
+      ],
+      "closed": true,
+      "request_reconciliation_residual_kg": [
+        0.0,
+        0.0,
+        1.4210854715202004e-14,
+        -1.7053025658242404e-13,
+        1.3322676295501878e-15,
+        5.551115123125783e-17
+      ],
+      "request_reconciliation_tolerance_kg": [
+        1.0031672003896224e-05,
+        1.0031672003896224e-05,
+        1.0031672003896224e-05,
+        1.0031672003896224e-05,
+        1.0031672003896224e-05,
+        1.0031672003896224e-05
+      ],
+      "request_reconciled": true,
+      "numerical_residual_scalar_abs_kg": 3.902379055443735e-10,
+      "tolerance_rule": "MAPLE summation_error_bound_kg(max(n_accounting_calls,1), largest genuine bed/mobile/boundary operand); no physical-resolution floor or numerical-residual allowance"
+    }
+  },
+  "observational_timings_full": {
+    "invocation_step_loop_and_checkpoints_wall_s": 206.61258295597509,
+    "setup_wall_s": 1.666082342970185,
+    "jit_note": "first invocation includes lazy compilation; timings are observational",
+    "invocation_before_summary_wall_s": 208.42889002803713
+  },
+  "observational_timings_resumed": {
+    "invocation_step_loop_and_checkpoints_wall_s": 159.939405246987,
+    "setup_wall_s": 1.7786169779719785,
+    "jit_note": "first invocation includes lazy compilation; timings are observational",
+    "invocation_before_summary_wall_s": 161.8629218969727
+  },
+  "performance_note": "Runs overlap with regression/each other; no controlled speed comparison.",
+  "gpu": "not exercised",
+  "claude_review": "pending usage-limit reset"
+}

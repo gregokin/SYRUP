@@ -1,0 +1,16 @@
+--- a/src/Subroutines_Sediment/route_sediment_xml.f90
++++ b/src/Subroutines_Sediment/route_sediment_xml.f90
+@@ -178,8 +178,11 @@
+ !                  else no flow in current cell 
+ !                  Check if there is rainfall and if so calculate splash 
+          elseif (r2 (im, jm).gt.0.0d0) then
+-            call raindrop_detachment
+-            call splash_transport   
++! SYRUP BENCHMARK ONLY: no dry-cell splash or its associated pickup.
++! Wet-cell raindrop detachment above is retained without modification.
++! Clear rate outputs explicitly; never clear d_soil/q_soil mobile inventory.
++            detach_soil (:, im, jm) = 0.0d0
++            depos_soil (:, im, jm) = 0.0d0
+          endif  !   end of if statement for overland flow in current cell, i.e. d(1,im,jm)>0
+ !                   
+       endif	!   end of if statement for rmask not blank

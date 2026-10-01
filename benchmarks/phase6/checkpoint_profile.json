@@ -1,0 +1,25 @@
+{
+  "checkpoint": "outputs/phase6_validation/full_checkpoints/step_000001200",
+  "source_sha256": "582b9ed320d8d259e42e7a0d019a96b5208f0906a6d06a2f9db0f639ab4045a5",
+  "bundle_bytes": 5138277,
+  "setup_and_first_load_wall_s": 1.793672831961885,
+  "save_wall_s": [
+    0.03376245393883437,
+    0.033086059032939374,
+    0.03295681905001402,
+    0.0341418469324708,
+    0.0341244499431923
+  ],
+  "load_wall_s": [
+    0.03576737595722079,
+    0.03326764202211052,
+    0.03255729703232646,
+    0.03444538894109428,
+    0.03557949303649366
+  ],
+  "median_save_wall_s": 0.03376245393883437,
+  "median_load_wall_s": 0.03444538894109428,
+  "process_peak_rss_kib": 213556,
+  "scope": "Plot1 CPU only; peak RSS includes imports, prepared case and simultaneous source/restored state; warm filesystem cache; no fsync/power-loss persistence claim",
+  "gpu": "not exercised"
+}

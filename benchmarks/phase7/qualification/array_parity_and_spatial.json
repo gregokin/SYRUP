@@ -1,0 +1,768 @@
+{
+  "scope": "CPU numerical artifact comparison and fields at each model own outlet peak; legacy exact unrounded peak time not saved, rounded peak plateau1328\u20131342s",
+  "source_sha256": "01709bb52720923aa9b7211409d7ffd19155c4a9bfc87c36d9e1f0180a58d532",
+  "script_sha256": "6b98b4d791d1860e1f3d7abcf63fc7b8cca4beba8a4c9c6a616a5812f793cb64",
+  "all_values_bitwise_equal": true,
+  "n_arrays": 97,
+  "comparisons": {
+    "hydrograph.npz:t_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:cumulative_rain_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:cumulative_intake_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:cumulative_saturation_return_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:cumulative_drainage_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:cumulative_export_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:surface_storage_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:soil_storage_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:outlet_discharge_m3_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:max_depth_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:max_velocity_m_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:accepted_steps": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:rejected_attempts": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:min_accepted_dt_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:max_routing_cell_balance_residual_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:max_constitutive_residual_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:interval_rain_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:interval_intake_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:interval_saturation_return_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:interval_drainage_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:interval_export_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:row_water_residual_m3": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_t_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_commit_count": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_graph_changes": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_max_transport_substeps": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_c1_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_c2_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_c3_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_c4_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_c5_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_mobile_c6_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_c1_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_c2_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_c3_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_c4_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_c5_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_export_rate_c6_kg_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_c1_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_c2_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_c3_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_c4_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_c5_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_pickup_c6_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_c1_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_c2_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_c3_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_c4_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_c5_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_deposition_c6_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_c1_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_c2_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_c3_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_c4_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_c5_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "hydrograph.npz:sed_cumulative_export_c6_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        5400
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:voxel_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:active_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:available_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:bound_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:initial_active_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:initial_available_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:initial_bed_by_cell_class_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:committed_elevation_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:initial_committed_elevation_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:pending_bed_mass_change_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:depth_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:mobile_mass_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:soil_water_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:discharge_m2_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:velocity_m_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:sediment_velocity_m_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_pickup_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_deposition_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_export_request_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:peak_depth_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:peak_velocity_m_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_rain_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_intake_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_return_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:cumulative_drainage_m": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:aspect": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:slope": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:receiver": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:outlet": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ]
+    },
+    "final_state.npz:conveyance": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:water_exchange_net_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "final_state.npz:bed_change_kg": {
+      "bitwise_equal_values": true,
+      "shape": [
+        60,
+        20,
+        6
+      ],
+      "max_abs_difference": 0.0
+    },
+    "forcing.npz:edges_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        19
+      ],
+      "max_abs_difference": 0.0
+    },
+    "forcing.npz:intensity_mm_per_h": {
+      "bitwise_equal_values": true,
+      "shape": [
+        18
+      ],
+      "max_abs_difference": 0.0
+    },
+    "forcing.npz:original_edges_s": {
+      "bitwise_equal_values": true,
+      "shape": [
+        28
+      ],
+      "max_abs_difference": 0.0
+    },
+    "forcing.npz:original_intensity_mm_per_h": {
+      "bitwise_equal_values": true,
+      "shape": [
+        27
+      ],
+      "max_abs_difference": 0.0
+    }
+  },
+  "syrup_snapshot_time_s": 1334.0,
+  "synchronous_spatial_metrics": {
+    "depth": {
+      "reference_sum": 791.2071599999999,
+      "test_sum": 791.8622065605555,
+      "sum_ratio_test_over_reference": 1.0008279077764608,
+      "reference_max": 4.707,
+      "test_max": 4.703281552849319,
+      "rmse": 0.0012253745332966599,
+      "max_abs_difference": 0.0046472175650995595,
+      "relative_l2": 0.0013617298111806711,
+      "pearson_r": 0.999998840199961,
+      "cell_of_max_abs_difference_maple_row_col": [
+        16,
+        5
+      ]
+    },
+    "veloc": {
+      "reference_sum": 10719.242,
+      "test_sum": 10728.540153167942,
+      "sum_ratio_test_over_reference": 1.0008674263691353,
+      "reference_max": 22.67,
+      "test_max": 22.65479604909357,
+      "rmse": 0.011877607471481304,
+      "max_abs_difference": 0.02991700042117973,
+      "relative_l2": 0.001212155018243057,
+      "pearson_r": 0.9999985921387496,
+      "cell_of_max_abs_difference_maple_row_col": [
+        7,
+        16
+      ]
+    }
+  }
+}

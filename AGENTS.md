@@ -104,3 +104,14 @@ Route Claude questions through Codex first. Ask the user only for material unres
 Claude's report is context, not proof. Confirm defects using concrete triggering paths, expected/actual behavior, requirements, locations, severity, and preferably reproducers. Inspect units, shapes, boundaries, failure/mutation behavior, conservation, restart, CPU/GPU equivalence, memory scaling, and upstream compatibility as relevant.
 
 Run meaningful checks proportional to the change; documentation setup does not require a full model test run. Report exact commands, outcomes, and unverified requirements. Never present proposals or historical test results as newly verified behavior.
+
+## Fixed-terrain benchmark requirement — 2026-09-30
+
+User selected the initial MAHLERAN/SYRUP comparison with direct dry-cell splash
+disabled in an isolated MAHLERAN copy, and elevation AND routing fixed in both
+models. Continue conservative MAPLE sediment-inventory/availability changes;
+retain rain-assisted wet detachment. This is benchmark-only, not a change to
+normal evolving-terrain SYRUP. See docs/phase7/fixed_terrain_benchmark.md.
+Subsequent user instructions authorized full benchmarking and optimization.
+See docs/phase7b/acceptance.md and docs/phase7c/optimization.md for executed
+results and remaining scientific/performance limitations.

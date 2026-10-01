@@ -1,0 +1,172 @@
+{
+  "schema": "maple-syrup-phase7-refinement/1",
+  "reference_rule": "finest timestep is the numerical reference, not ground truth",
+  "shared_identity": {
+    "maple_case_identity_sha256": "e1afad46a27b3b428c40f2c7ab17a4af7f0b9d42dc974759d45b0c4c4d64efab"
+  },
+  "runs": [
+    {
+      "path": "/home/okin/SYRUP/outputs/phase7/syrup_matched_dt1",
+      "max_dt_s": 1.0,
+      "implementation": "numba",
+      "n_accepted_steps": 5400,
+      "n_rejected_attempts": 0,
+      "max_transport_substeps_used": 1,
+      "water_export_ledger_m3": 0.16444993704263003,
+      "water_export_ledger_relative_difference_vs_finest": -0.00011635425781183944,
+      "outlet_rmse_vs_finest_m3_s": 2.811132515029486e-09,
+      "peak_outlet_m3_s": 0.00011508089280551061,
+      "time_of_peak_outlet_s": 1334.0,
+      "sediment_export_kg_total_and_classes": [
+        0.218109824325904,
+        0.05276471089849002,
+        0.15948471267839903,
+        0.004581250322339793,
+        0.0012786176570409838,
+        5.323996319603938e-07,
+        3.70002200233825e-10
+      ],
+      "sediment_export_relative_difference_vs_finest": [
+        -0.0023399645779441716,
+        -0.0028395899282907698,
+        -0.002308932771268671,
+        0.0013090279990801842,
+        0.0014035553394327058,
+        0.0017797149161544808,
+        0.0017523489313246224
+      ],
+      "peak_export_rate_kg_s": 0.0014419005826666477,
+      "time_of_peak_export_s": 1141.0,
+      "net_bed_mass_change_kg": [
+        -0.05276471086835954,
+        -0.1594847125816159,
+        -0.004581250319461105,
+        -0.0012786176521331072,
+        -5.324036465026438e-07,
+        -3.67435859516263e-10
+      ],
+      "max_abs_bed_change_difference_vs_finest_kg": 0.0003203051200704188,
+      "max_sediment_courant": 0.04837580537628217,
+      "closure_residual_max_kg": 8.731149137020111e-11,
+      "closure_tolerance_kg": 1.936787400860302e-06,
+      "water_residual_m3": 3.774758283725532e-14,
+      "water_tolerance_m3": 5.805609621007405e-07,
+      "timing": {
+        "setup_wall_s": 1.4957146799424663,
+        "first_step_wall_s_incl_jit": 0.5593202640302479,
+        "remaining_steps_wall_s": 191.6645320089301,
+        "mean_wall_s_per_step": 0.03550000592867755,
+        "peak_rss_kib_end": 352872
+      }
+    },
+    {
+      "path": "/home/okin/SYRUP/outputs/phase7/syrup_matched_dt0p5",
+      "max_dt_s": 0.5,
+      "implementation": "numba",
+      "n_accepted_steps": 10800,
+      "n_rejected_attempts": 0,
+      "max_transport_substeps_used": 1,
+      "water_export_ledger_m3": 0.1644626907595587,
+      "water_export_ledger_relative_difference_vs_finest": -3.880948516722449e-05,
+      "outlet_rmse_vs_finest_m3_s": 9.387398394657562e-10,
+      "peak_outlet_m3_s": 0.0001150823489903443,
+      "time_of_peak_outlet_s": 1334.5,
+      "sediment_export_kg_total_and_classes": [
+        0.2184541385429994,
+        0.05286547295287793,
+        0.15973345008958392,
+        0.004577261135608714,
+        0.0012774222267740976,
+        5.317685843605321e-07,
+        3.695703589101549e-10
+      ],
+      "sediment_export_relative_difference_vs_finest": [
+        -0.0007650307798662882,
+        -0.000935363983294706,
+        -0.0007529021708613067,
+        0.00043712439042445096,
+        0.00046730351088327847,
+        0.0005923161150691648,
+        0.0005831719370291078
+      ],
+      "peak_export_rate_kg_s": 0.0014479598896521403,
+      "time_of_peak_export_s": 1141.0,
+      "net_bed_mass_change_kg": [
+        -0.05286547294235788,
+        -0.15973345001111738,
+        -0.0045772611319989664,
+        -0.0012774222195730545,
+        -5.317633622325957e-07,
+        -3.637978807091713e-10
+      ],
+      "max_abs_bed_change_difference_vs_finest_kg": 0.00010858890098397467,
+      "max_sediment_courant": 0.02418807412207898,
+      "closure_residual_max_kg": 8.731149137020111e-11,
+      "closure_tolerance_kg": 3.873574801720604e-06,
+      "water_residual_m3": 1.6431300764452317e-13,
+      "water_tolerance_m3": 1.1611211770341876e-06,
+      "timing": {
+        "setup_wall_s": 1.565760780009441,
+        "first_step_wall_s_incl_jit": 0.5690809799125418,
+        "remaining_steps_wall_s": 424.1947773830034,
+        "mean_wall_s_per_step": 0.039280931325400816,
+        "peak_rss_kib_end": 353164
+      }
+    },
+    {
+      "path": "/home/okin/SYRUP/outputs/phase7/syrup_matched_dt0p25",
+      "max_dt_s": 0.25,
+      "implementation": "numba",
+      "n_accepted_steps": 21600,
+      "n_rejected_attempts": 0,
+      "max_transport_substeps_used": 1,
+      "water_export_ledger_m3": 0.16446907371963568,
+      "water_export_ledger_relative_difference_vs_finest": 0.0,
+      "outlet_rmse_vs_finest_m3_s": 0.0,
+      "peak_outlet_m3_s": 0.00011508302116091926,
+      "time_of_peak_outlet_s": 1334.5,
+      "sediment_export_kg_total_and_classes": [
+        0.21862139063597308,
+        0.05291496770784906,
+        0.15985380436591146,
+        0.00457526117735553,
+        0.0012768255617063267,
+        5.314537957129166e-07,
+        3.693549614618279e-10
+      ],
+      "sediment_export_relative_difference_vs_finest": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "peak_export_rate_kg_s": 0.0014509679274080727,
+      "time_of_peak_export_s": 1141.0,
+      "net_bed_mass_change_kg": [
+        -0.05291496765858028,
+        -0.15985380424535833,
+        -0.004575261171339662,
+        -0.0012768255510309245,
+        -5.314432200975716e-07,
+        -3.637978807091713e-10
+      ],
+      "max_abs_bed_change_difference_vs_finest_kg": 0.0,
+      "max_sediment_courant": 0.012094082041149135,
+      "closure_residual_max_kg": 1.1641532182693481e-10,
+      "closure_tolerance_kg": 7.747149603441208e-06,
+      "water_residual_m3": 2.0516921495072893e-13,
+      "water_tolerance_m3": 2.322241606339589e-06,
+      "timing": {
+        "setup_wall_s": 1.5488016849849373,
+        "first_step_wall_s_incl_jit": 0.5874222369166091,
+        "remaining_steps_wall_s": 805.301409056061,
+        "mean_wall_s_per_step": 0.03728419876179735,
+        "peak_rss_kib_end": 352664
+      }
+    }
+  ],
+  "note": "observational timings; not a controlled benchmark; GPU not exercised"
+}

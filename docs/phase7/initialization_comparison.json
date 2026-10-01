@@ -1,0 +1,115 @@
+{
+  "scope": "Saved-output comparison and MAHLERAN-only experiments; no new SYRUP run.",
+  "input_sha256": {
+    "outputs/phase7/mahleran_fixed_no_splash/Output/hydro001.dat": "1f3e35e57d30c39ce323515b2ae1f826f9173d1186e52a50c303e3d51258b7bb",
+    "outputs/phase7/mahleran_deterministic_ksat_run/Output/hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+    "outputs/phase4_reference_final/dt1/hydrograph.dat": "34684c317f8f27b009765ba907f8045cd9afadcc4669fed19846076d6dbf1e35",
+    "outputs/phase7/controlled_fortran_applied_rain/hydrograph.dat": "5e6494f677ded0100972d40f978270c6974c388453cdfd76ad87d9057b2bd7cf",
+    "outputs/phase4_storm/numba_dt1/hydrograph.npz": "32bdc142576bfb9f9fc7a81ec705112c7319f9dc1813a01e7bc5bd11c2cecfdf",
+    "outputs/phase5_storm/dt1/hydrograph.npz": "7e1fe73b114490085308e3d6cbe5b868dbc1445a8155b0b7cbcdec54c4555538",
+    "outputs/phase7/mahleran_fixed_no_splash/Output/ksat_001.asc": "f726be40ac7f12655cc2bba8b798bea7dea0d01970e27ce8f4860ac4d9f866a2",
+    "outputs/phase7/mahleran_deterministic_ksat_run/Output/ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2"
+  },
+  "curves": {
+    "Full MAHLERAN: sampled K": {
+      "sum_endpoint_Q_dt_m3": 0.1057948743254811,
+      "saved_output_interval_s": [
+        1.0
+      ],
+      "conservative_or_CN_ledger_export_m3": null,
+      "endpoint_Q_integral_through_1620s_m3": 0.06325249713894,
+      "endpoint_Q_integral_after_1620s_m3": 0.042542377186541094,
+      "peak_Q_m3_s": 0.00010980000000000001,
+      "first_printed_peak_s": 1321.0
+    },
+    "Full MAHLERAN: constant K": {
+      "sum_endpoint_Q_dt_m3": 0.16508977387059504,
+      "saved_output_interval_s": [
+        1.0
+      ],
+      "conservative_or_CN_ledger_export_m3": null,
+      "endpoint_Q_integral_through_1620s_m3": 0.07124472425694,
+      "endpoint_Q_integral_after_1620s_m3": 0.093845049613655,
+      "peak_Q_m3_s": 0.0001151,
+      "first_printed_peak_s": 1328.0
+    },
+    "Controlled Fortran: original rain": {
+      "sum_endpoint_Q_dt_m3": 0.16507272225927572,
+      "saved_output_interval_s": [
+        1.0
+      ],
+      "conservative_or_CN_ledger_export_m3": 0.16505661038242386,
+      "endpoint_Q_integral_through_1620s_m3": 0.07133402200877277,
+      "endpoint_Q_integral_after_1620s_m3": 0.09373870025050293,
+      "peak_Q_m3_s": 0.00011509476271057111,
+      "first_printed_peak_s": 1334.0
+    },
+    "Controlled Fortran: applied rain": {
+      "sum_endpoint_Q_dt_m3": 0.1650896315962874,
+      "saved_output_interval_s": [
+        1.0
+      ],
+      "conservative_or_CN_ledger_export_m3": 0.1650735190115298,
+      "endpoint_Q_integral_through_1620s_m3": 0.07124491386140538,
+      "endpoint_Q_integral_after_1620s_m3": 0.09384471773488202,
+      "peak_Q_m3_s": 0.00011510321873298317,
+      "first_printed_peak_s": 1335.0
+    },
+    "SYRUP: fixed-terrain water only": {
+      "sum_endpoint_Q_dt_m3": 0.1644491358431583,
+      "saved_output_interval_s": [
+        1.0
+      ],
+      "conservative_or_CN_ledger_export_m3": 0.16443308827374914,
+      "endpoint_Q_integral_through_1620s_m3": 0.07128963062557347,
+      "endpoint_Q_integral_after_1620s_m3": 0.09315950521758481,
+      "peak_Q_m3_s": 0.00011507245463309877,
+      "first_printed_peak_s": 1333.0
+    },
+    "SYRUP: evolving terrain/sediment": {
+      "sum_endpoint_Q_dt_m3": null,
+      "saved_output_interval_s": [
+        60.0
+      ],
+      "conservative_or_CN_ledger_export_m3": 0.16268081927757855,
+      "endpoint_Q_integral_through_1620s_m3": null,
+      "endpoint_Q_integral_after_1620s_m3": null,
+      "peak_Q_m3_s": 0.0001145394297744284,
+      "first_printed_peak_s": 1320.0
+    }
+  },
+  "sampled_K_mm_s": {
+    "min": 1.627e-06,
+    "mean": 0.0008790301975,
+    "max": 0.003009
+  },
+  "constant_K_mm_s": 0.00025,
+  "full_constant_vs_controlled_applied_rain": {
+    "max_absolute_Q_difference_m3_s": 5.0000422601814785e-08,
+    "Q_rmse_m3_s": 8.340392637757308e-09,
+    "endpoint_integral_relative_difference": 8.618003824044393e-07,
+    "full_printed_peak_times_s": [
+      1328.0,
+      1329.0,
+      1330.0,
+      1331.0,
+      1332.0,
+      1333.0,
+      1334.0,
+      1335.0,
+      1336.0,
+      1337.0,
+      1338.0,
+      1339.0,
+      1340.0,
+      1341.0,
+      1342.0
+    ]
+  },
+  "limitations": [
+    "MAHLERAN prints four significant figures; comparisons are not bitwise.",
+    "Endpoint discharge integrals and CN/conservative export ledgers are distinct.",
+    "SYRUP curves use original interval rainfall, not legacy applied rainfall.",
+    "No full sediment-storm equivalence or GPU evidence from these experiments."
+  ]
+}

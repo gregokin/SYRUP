@@ -1,0 +1,117 @@
+{
+  "reference": "outputs/phase7/mahleran_deterministic_ksat_run/Output",
+  "run": "outputs/phase7b/mahleran_ledger_run_v3/Output",
+  "identical_numeric_files": [
+    "SedChange.dat",
+    "aspct001.asc",
+    "depth001.asc",
+    "detac001.asc",
+    "dschg001.asc",
+    "hydro001.dat",
+    "ksat_001.asc",
+    "neter001.asc",
+    "pave.asc",
+    "seddisch001.dat",
+    "sedtr001.asc",
+    "sedtr001.dat",
+    "theta001.asc",
+    "veloc001.asc"
+  ],
+  "param_only_execution_clock_differs": true,
+  "diagnostic_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+  "diagnostic_source_manifest": "outputs/phase7b/mahleran_ledger_source_v3/benchmark_manifest.json",
+  "execution": "outputs/phase7b/mahleran_ledger_run_v3/execution.json",
+  "sums_by_class_kg": {
+    "pickup": [
+      25.887855722296376,
+      247.85882707463662,
+      26.763504993081103,
+      148.90274175498445,
+      3.3546642264718716,
+      0.08973312869961086
+    ],
+    "deposition_active": [
+      25.86983023039834,
+      247.85173995478598,
+      26.763504655978455,
+      148.90274175498445,
+      3.3546642264718716,
+      0.08973312869961086
+    ],
+    "deposition_outside_active": [
+      0.012618506012052683,
+      0.006620286997971481,
+      3.3704802643879494e-07,
+      8.101795555522546e-22,
+      7.523183007850651e-168,
+      0.0
+    ],
+    "effective_clip_source": [
+      0.13471329395629902,
+      0.15713335854770918,
+      0.00012190621911206684,
+      7.807096799826275e-12,
+      0.0,
+      0.0
+    ],
+    "cn_export": [
+      0.007463980042762044,
+      0.0017592552992005482,
+      2.1632565425561647e-08,
+      8.867769319379339e-20,
+      0.0,
+      0.0
+    ],
+    "endpoint_export": [
+      0.007463980042762039,
+      0.0017592552992005456,
+      2.1632565425561687e-08,
+      8.867769319379335e-20,
+      0.0,
+      0.0
+    ],
+    "net_cell_flux": [
+      -0.00746398004276204,
+      -0.001759255299200547,
+      -2.1632565425562028e-08,
+      -8.867769319397554e-20,
+      0.0,
+      0.0
+    ],
+    "algebra_residual": [
+      -1.818410597026483e-15,
+      1.386001714522807e-14,
+      -4.669262107981798e-16,
+      -3.533702870979199e-16,
+      0.0,
+      0.0
+    ],
+    "internal_flux_residual": [
+      -3.230027148184196e-19,
+      2.4837791409696974e-19,
+      -3.442104933503965e-22,
+      -1.821400157918724e-31,
+      0.0,
+      0.0
+    ]
+  },
+  "initial_mobile_by_class_kg": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "final_mobile_by_class_kg": [
+    0.14527480581164634,
+    0.16246122309921746,
+    0.00012222168916537176,
+    7.807104163344489e-12,
+    0.0,
+    0.0
+  ],
+  "max_abs_step_algebra_residual_kg": 1.6202927129345401e-15,
+  "max_abs_step_internal_flux_residual_kg": 4.042133868526127e-19,
+  "meaning": "CN identity includes effective clipping source (-negative trial depth)*(1+dt*v/(2*dx)); outside-active deposition is a separate legacy diagnostic, not an additional CN sink."
+}

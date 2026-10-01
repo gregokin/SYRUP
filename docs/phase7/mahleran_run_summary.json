@@ -1,0 +1,57 @@
+{
+  "status": "completed_repeatable_reference; independent_review_pending",
+  "run": "/home/okin/SYRUP/outputs/phase7/mahleran_fixed_no_splash",
+  "repeat": "/home/okin/SYRUP/outputs/phase7/mahleran_fixed_no_splash_repeat",
+  "executable_sha256": "49c064f44740f54360839fcaafdc9e1ea7beeb025157a23279ab8ac24bb350cb",
+  "duration_s": 5400,
+  "steps": 5400,
+  "dt_s": 1,
+  "wall_s": [
+    9.047744069015607,
+    9.089293665019795
+  ],
+  "peak_child_rss_kib": [
+    21460,
+    21468
+  ],
+  "identical_numeric_files": [
+    "SedChange.dat",
+    "aspct001.asc",
+    "depth001.asc",
+    "detac001.asc",
+    "dschg001.asc",
+    "hydro001.dat",
+    "ksat_001.asc",
+    "neter001.asc",
+    "pave.asc",
+    "seddisch001.dat",
+    "sedtr001.asc",
+    "sedtr001.dat",
+    "theta001.asc",
+    "veloc001.asc"
+  ],
+  "routing_matches_imported_syrup_cells": 1200,
+  "routing_conversion": "crop exterior ring, reverse north-first rows to MAPLE south-first",
+  "input_schedule_depth_mm": 9.652,
+  "logged_applied_depth_mm": 9.656233333333336,
+  "water_export_m3_from_rounded_output": 0.10579487432548111,
+  "peak_outlet_m3_s": 0.00010980000000000001,
+  "peak_outlet_time_s": 1321.0,
+  "sediment_export_kg_from_rounded_output": 0.007835865334644523,
+  "class_export_kg_from_rounded_output": [
+    0.006363065810183317,
+    0.001472796947303701,
+    1.6168923866087542e-08,
+    2.928011139607835e-20,
+    0.0,
+    0.0
+  ],
+  "limitations": [
+    "Stock outputs are rounded, not a full-precision conservation ledger.",
+    "Logged rainfall is printed to two decimals mm/h; save original forcing too.",
+    "Legacy end-of-rain-file read warnings persist; logged subsequent rainfall is zero.",
+    "Full-program timing includes initialization, output and sediment; no speed ratio to SYRUP.",
+    "SYRUP frozen elevation/routing runner not yet implemented or executed.",
+    "depth001 and veloc001 are synchronous fields at the maximum outlet discharge, not per-cell storm maxima or final fields."
+  ]
+}

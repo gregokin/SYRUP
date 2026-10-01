@@ -1,0 +1,53 @@
+         79841758 function calls (78558737 primitive calls) in 335.998 seconds
+
+   Ordered by: cumulative time
+   List reduced from 4065 to 45 due to restriction <45>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.118    0.118  337.027  337.027 /home/okin/SYRUP/src/maple_syrup/benchmark_experiment.py:384(run_plot1_matched_benchmark)
+        1    0.000    0.000  332.354  332.354 /home/okin/SYRUP/src/maple_syrup/benchmark_experiment.py:317(run_frozen_event)
+        1    1.526    1.526  332.350  332.350 /home/okin/SYRUP/src/maple_syrup/sediment_event.py:669(evolve_sediment_event)
+     5400    0.041    0.000  328.989    0.061 /home/okin/SYRUP/agent_handoffs/tasks/phase7_matched_benchmark/observed_array_run.py:11(observed_coupled)
+     5400    0.326    0.000  328.937    0.061 /home/okin/SYRUP/src/maple_syrup/sediment_event.py:346(sediment_coupled_step)
+    10800    0.294    0.000  199.485    0.018 /home/okin/SYRUP/src/maple_syrup/sediment_bed.py:109(apply_bed_demand)
+    10800    1.809    0.000  198.586    0.018 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/water/step.py:155(apply_water_process_demand)
+     5400    0.391    0.000   98.262    0.018 /home/okin/SYRUP/src/maple_syrup/storm.py:276(coupled_step)
+     5400    0.068    0.000   95.128    0.018 /home/okin/SYRUP/src/maple_syrup/routing.py:817(route_step)
+     5400    1.616    0.000   95.060    0.018 /home/okin/SYRUP/src/maple_syrup/routing.py:656(_route)
+     5400    2.992    0.001   90.654    0.017 /home/okin/SYRUP/src/maple_syrup/routing.py:608(_sweep_array)
+   356400   81.434    0.000   82.946    0.000 /home/okin/SYRUP/src/maple_syrup/routing.py:587(_bisect)
+    10800    0.845    0.000   76.548    0.007 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/active_layer/exchange.py:373(update_active_layer_after_erosion)
+    10800    0.439    0.000   69.392    0.006 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/active_layer/exchange.py:239(_replenish_active_layer_from_voxels_batched_inplace)
+    10800   38.671    0.004   68.933    0.006 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/voxels/transfer.py:774(_extract_surface_mixture_batched_inplace)
+    21600    0.122    0.000   54.434    0.003 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/coupling/sediment_ledger/accumulate.py:411(accumulate_process_transfer)
+  3516816   43.598    0.000   43.598    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    10800    0.369    0.000   41.043    0.004 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/active_layer/exchange.py:531(update_active_layer_after_deposition)
+   804899    0.731    0.000   39.095    0.000 {method 'sum' of 'numpy.ndarray' objects}
+   804899    0.385    0.000   38.364    0.000 /home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy/_core/_methods.py:47(_sum)
+    21600    0.515    0.000   37.124    0.002 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/coupling/sediment_ledger/accumulate.py:461(_accumulate_process_transfer_validated)
+    10800    0.424    0.000   35.607    0.003 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/active_layer/exchange.py:293(_bury_active_layer_excess_to_voxels_batched_inplace)
+    21600    9.463    0.000   34.885    0.002 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/coupling/sediment_ledger/accumulate.py:248(_accumulate_step_validated)
+    10800   16.465    0.002   31.644    0.003 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/voxels/transfer.py:383(_deposit_surface_mixture_batched_inplace)
+     5400    0.981    0.000   18.141    0.003 /home/okin/SYRUP/agent_handoffs/tasks/phase7_matched_benchmark/observed_array_run.py:24(observed)
+    21600    0.086    0.000   17.188    0.001 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/coupling/sediment_ledger/accumulate.py:218(_validated_ledger_context)
+    21602    2.270    0.000   17.103    0.001 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/coupling/sediment_ledger/validation.py:271(validate_ledger_state)
+   129600   17.103    0.000   17.103    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/coupling/sediment_ledger/accumulate.py:123(_kahan_add)
+     5400    7.996    0.001   15.006    0.003 /home/okin/SYRUP/src/maple_syrup/sediment_physics.py:648(sediment_physics_step)
+    54001   11.235    0.000   11.378    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/core/backend/transforms.py:99(divide_where)
+   669642    8.442    0.000   11.275    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/core/backend/arrays.py:420(finite_flag)
+     5400    3.015    0.001    9.896    0.002 /home/okin/SYRUP/src/maple_syrup/sediment_transport.py:326(transport_step)
+    10800    0.921    0.000    9.545    0.001 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/water/validation.py:137(validate_water_process_result)
+  2365591    3.325    0.000    8.273    0.000 /home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:86(_wrapreduction_any_all)
+    21601    2.555    0.000    6.160    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/voxels/_numerics.py:304(make_proportional_mass_vector)
+  1236810    1.159    0.000    5.842    0.000 /home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2586(all)
+   480662    3.397    0.000    5.560    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/core/backend/arrays.py:328(all_finite)
+   118801    2.892    0.000    5.354    0.000 /home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy/lib/_shape_base_impl.py:60(take_along_axis)
+    43203    0.158    0.000    5.022    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/active_layer/validation.py:164(check_active_layer_voxel_shape_compatibility)
+   351025    3.558    0.000    4.919    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/core/backend/arrays.py:436(negative_flag)
+    43203    0.955    0.000    4.815    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/surface/active_layer/validation.py:74(check_active_layer_state)
+    21602    0.052    0.000    4.804    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/aeolian/flux/step.py:307(bed_inventory_by_class_kg)
+    21602    0.095    0.000    4.752    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/aeolian/flux/step.py:368(_bed_inventory_from_arrays)
+   356400    4.540    0.000    4.683    0.000 /home/okin/SYRUP/src/maple_syrup/routing.py:577(_donor_sum)
+    43204    0.724    0.000    4.657    0.000 /home/okin/SYRUP/outputs/dependencies/maple_d3d007024/source/src/maple/aeolian/flux/step.py:197(_staged_class_totals_kg)
+
+
