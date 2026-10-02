@@ -1,5 +1,8 @@
 # Phase 7f default run workflow
 
+Subsequent hydrology optimization is documented in [Phase7h](../phase7h/performance.md).
+Measurements below refer to the wet-law/default-workflow stage before that change.
+
 The default now also compiles the wet physical laws; see
 [compiled wet physics](compiled_physics.md) and [measurements](compiled_performance.md).
 `--physics-implementation array` retains the original NumPy wet laws while water

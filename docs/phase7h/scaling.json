@@ -1,0 +1,661 @@
+{
+  "method": "fixed state, warm kernels; alternating order per pair in same process; case creation, context preparation and JIT excluded from call timing; all returned fields checked against reference; not fullstorm, GPU or convergence evidence",
+  "records": [
+    {
+      "shape": [
+        60,
+        21
+      ],
+      "n_cells": 1260,
+      "n_levels": 70,
+      "max_level_width": 120,
+      "repetitions": 50,
+      "static_bytes": 139168,
+      "preparation_s": 0.12762752990238369,
+      "median_call_s": {
+        "reference": 0.001241422025486827,
+        "prepared": 0.000744807010050863
+      },
+      "samples_s": {
+        "reference": [
+          0.001423498964868486,
+          0.0011919660028070211,
+          0.0012226910330355167,
+          0.00124412402510643,
+          0.0011585010215640068,
+          0.0011861519888043404,
+          0.0012387200258672237,
+          0.0013402859913185239,
+          0.0013180519454181194,
+          0.0014937560772523284,
+          0.0014318940229713917,
+          0.0012182820355519652,
+          0.0012123819906264544,
+          0.0012224279344081879,
+          0.001135081984102726,
+          0.0012666269904002547,
+          0.0013242369750514627,
+          0.0012078429572284222,
+          0.0011718559544533491,
+          0.001176235033199191,
+          0.0011074889916926622,
+          0.0011315490119159222,
+          0.0011579239508137107,
+          0.0013921710196882486,
+          0.0013557379133999348,
+          0.0012013320811092854,
+          0.0011134790256619453,
+          0.001353073981590569,
+          0.001147050061263144,
+          0.0012362039415165782,
+          0.0011028290027752519,
+          0.0011729210382327437,
+          0.0014656099956482649,
+          0.0013497869949787855,
+          0.001374035025946796,
+          0.0012822870630770922,
+          0.001302490010857582,
+          0.0013380059972405434,
+          0.0012549769598990679,
+          0.0013763519236817956,
+          0.001342237927019596,
+          0.0013460380723699927,
+          0.0012742220424115658,
+          0.001360696041956544,
+          0.0013384510530158877,
+          0.001125783077441156,
+          0.0011602590093389153,
+          0.0012566220248118043,
+          0.001235082047060132,
+          0.0011371299624443054
+        ],
+        "prepared": [
+          0.0008672240655869246,
+          0.000709792017005384,
+          0.0007571759633719921,
+          0.000658601988106966,
+          0.000753507949411869,
+          0.0006595919840037823,
+          0.0007886179955676198,
+          0.0007108809659257531,
+          0.0008409000001847744,
+          0.0006814660737290978,
+          0.0008347679395228624,
+          0.0006843130104243755,
+          0.0008330909768119454,
+          0.0006859400309622288,
+          0.0007786130299791694,
+          0.0006865030154585838,
+          0.0008742810459807515,
+          0.0006639959756284952,
+          0.0007817429723218083,
+          0.0006975990254431963,
+          0.0007405900396406651,
+          0.0006546929944306612,
+          0.000749023980461061,
+          0.0006987159140408039,
+          0.0008299859473481774,
+          0.0007531860610470176,
+          0.000736802932806313,
+          0.0007518630009144545,
+          0.0007945229299366474,
+          0.0008015839848667383,
+          0.000725597026757896,
+          0.0007111619925126433,
+          0.0008380539948120713,
+          0.0006966970395296812,
+          0.0007605130085721612,
+          0.0006868860218673944,
+          0.0008568490156903863,
+          0.0007141079986467957,
+          0.0009023860329762101,
+          0.0007395260035991669,
+          0.0008455179631710052,
+          0.0007042859215289354,
+          0.0008579280693084002,
+          0.0007234079530462623,
+          0.0007504279492422938,
+          0.0007223949069157243,
+          0.0009163810173049569,
+          0.0006866400362923741,
+          0.0007716510444879532,
+          0.0006839869311079383
+        ]
+      },
+      "comparison": {
+        "step.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.t_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.soil_water_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.soil_water_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.rain_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.intake_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.saturation_return_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.drainage_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.flow_depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.velocity_m_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.inflow_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.old_discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.old_inflow_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.face_volume_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.export_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.outlet_discharge_m3_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.storage_change_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.budget_residual_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_courant_old": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_courant_new": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_constitutive_residual_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_cell_balance_residual_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        }
+      },
+      "peak_process_rss_kib": 324908
+    },
+    {
+      "shape": [
+        128,
+        129
+      ],
+      "n_cells": 16512,
+      "n_levels": 192,
+      "max_level_width": 256,
+      "repetitions": 15,
+      "static_bytes": 1817864,
+      "preparation_s": 0.006284061004407704,
+      "median_call_s": {
+        "reference": 0.009279593941755593,
+        "prepared": 0.008548369049094617
+      },
+      "samples_s": {
+        "reference": [
+          0.011701896088197827,
+          0.010042604990303516,
+          0.008696699049323797,
+          0.009249515947885811,
+          0.008821784984320402,
+          0.010389584000222385,
+          0.009498351020738482,
+          0.009666468016803265,
+          0.008728794986382127,
+          0.009104158962145448,
+          0.008969694026745856,
+          0.009318078984506428,
+          0.009183948975987732,
+          0.009683275013230741,
+          0.009279593941755593
+        ],
+        "prepared": [
+          0.009015014045871794,
+          0.008298359927721322,
+          0.008352933917194605,
+          0.008149649016559124,
+          0.009343552053906024,
+          0.008835173910483718,
+          0.008548369049094617,
+          0.008208191022276878,
+          0.00828180299140513,
+          0.008230346953496337,
+          0.00857302697841078,
+          0.008403965970501304,
+          0.009308196022175252,
+          0.008641098043881357,
+          0.008670295006595552
+        ]
+      },
+      "comparison": {
+        "step.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.t_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.soil_water_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.soil_water_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.rain_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.intake_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.saturation_return_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.drainage_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.flow_depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.velocity_m_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.inflow_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.old_discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.old_inflow_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.face_volume_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.export_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.outlet_discharge_m3_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.storage_change_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.budget_residual_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_courant_old": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_courant_new": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_constitutive_residual_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_cell_balance_residual_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        }
+      },
+      "peak_process_rss_kib": 338840
+    },
+    {
+      "shape": [
+        256,
+        257
+      ],
+      "n_cells": 65792,
+      "n_levels": 384,
+      "max_level_width": 512,
+      "repetitions": 8,
+      "static_bytes": 7240200,
+      "preparation_s": 0.03497434710152447,
+      "median_call_s": {
+        "reference": 0.040327960974536836,
+        "prepared": 0.0354858300415799
+      },
+      "samples_s": {
+        "reference": [
+          0.04544029093813151,
+          0.04257456096820533,
+          0.03616770403459668,
+          0.04106103302910924,
+          0.036026472924277186,
+          0.04174683406017721,
+          0.037127838004380465,
+          0.03959488891996443
+        ],
+        "prepared": [
+          0.0360739630414173,
+          0.03650612500496209,
+          0.03429366089403629,
+          0.034897697041742504,
+          0.03478114597965032,
+          0.03632116690278053,
+          0.03348327300045639,
+          0.03622177802026272
+        ]
+      },
+      "comparison": {
+        "step.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.t_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.soil_water_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.state.discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.soil_water_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.rain_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.intake_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.saturation_return_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.column.drainage_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.dt_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.flow_depth_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.velocity_m_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.inflow_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.old_discharge_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.old_inflow_m2_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.face_volume_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.export_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.outlet_discharge_m3_s": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.storage_change_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.budget_residual_m3": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_courant_old": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_courant_new": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_constitutive_residual_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        },
+        "step.route.max_cell_balance_residual_m": {
+          "exact": true,
+          "passed": true,
+          "max_abs_difference": 0.0
+        }
+      },
+      "peak_process_rss_kib": 385564
+    }
+  ]
+}

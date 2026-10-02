@@ -1,5 +1,8 @@
 # Compiled legacy wet-law optimization: measured result
 
+Subsequent hydrology optimization is documented in [Phase7h](../phase7h/performance.md).
+Measurements below refer to the wet-law/default-workflow stage before that change.
+
 The default legacy replay now uses one serial CPU Numba wet-law kernel and prepares
 fixed grain/composition properties once. The original NumPy/CuPy wet-law implementation
 remains available; `--physics-implementation array` selects it in the legacy CPU driver.

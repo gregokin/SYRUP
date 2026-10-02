@@ -4,6 +4,12 @@
 
 Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.md`.
 
+The CPU legacy replay also prepares fixed hydrology data and compiles infiltration,
+runoff branches, and routing setup/checks around the existing ordered sweep.
+`--hydrology-implementation reference` selects the original hydrology for comparison.
+See [hydrology qualification](docs/phase7h/performance.md). Actual GPU hydrology
+kernels and complete-event GPU qualification remain pending.
+
 ## Default run workflow (Phase 7f)
 
 Runs default to the Python/Numba replay of the MAHLERAN **legacy** sediment

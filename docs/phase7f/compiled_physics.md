@@ -1,5 +1,8 @@
 # Compiled wet physical laws for the frozen legacy replay (design and reproduction)
 
+Subsequent hydrology optimization is documented in [Phase7h](../phase7h/performance.md).
+Measurements below refer to the wet-law/default-workflow stage before that change.
+
 Status: Claude-authored implementation independently reviewed and executed by Codex.
 The scoped regression suite passed (138 tests, one device-dependent skip); three
 direct original-Fortran equation checks also passed. Measurements and full-storm

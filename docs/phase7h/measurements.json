@@ -1,0 +1,448 @@
+{
+  "case": "plot1, frozen topography/routing, no splash, 5400 one-second steps, 60x20 cells, six classes",
+  "maple_digest": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+  "method": "three alternating fresh-process pairs; baseline immutable pre-optimization snapshot; candidate unchanged live source; no concurrent task tests; unrelated user workloads not stopped",
+  "runs": [
+    {
+      "label": "baseline3",
+      "external_process_wall_s": 19.58465247391723,
+      "loop_wall_s": 16.41539828898385,
+      "loop_less_first_components_s": 13.348848549998365,
+      "physics_steady_s": 3.5371387312188745,
+      "hydrology_steady_s": 6.626499652047642,
+      "sediment_steady_s": 1.9718644295353442,
+      "physics_first_call_s": 2.084325436037034,
+      "physics_preparation_s": 0.0007572919130325317,
+      "hydrology_first_call_s": 0.4890947819221765,
+      "hydrology_preparation_s": 0,
+      "peak_rss_mib": 366.2421875,
+      "source_stable": true
+    },
+    {
+      "label": "candidate1",
+      "external_process_wall_s": 18.266027160105295,
+      "loop_wall_s": 15.141339738969691,
+      "loop_less_first_components_s": 10.253137752995826,
+      "physics_steady_s": 3.39711298502516,
+      "hydrology_steady_s": 3.7724422853207216,
+      "sediment_steady_s": 1.8938052443554625,
+      "physics_first_call_s": 1.9934368570102379,
+      "physics_preparation_s": 0.0006959170568734407,
+      "hydrology_first_call_s": 2.3080255310051143,
+      "hydrology_preparation_s": 0.0009648969862610102,
+      "peak_rss_mib": 376.78125,
+      "source_stable": true
+    },
+    {
+      "label": "baseline4",
+      "external_process_wall_s": 19.752737659029663,
+      "loop_wall_s": 16.5447100980673,
+      "loop_less_first_components_s": 13.488710570964031,
+      "physics_steady_s": 3.561278242850676,
+      "hydrology_steady_s": 6.696314895292744,
+      "sediment_steady_s": 2.0070069616194814,
+      "physics_first_call_s": 2.0622806769097224,
+      "physics_preparation_s": 0.0007340230513364077,
+      "hydrology_first_call_s": 0.5007027349201962,
+      "hydrology_preparation_s": 0,
+      "peak_rss_mib": 366.578125,
+      "source_stable": true
+    },
+    {
+      "label": "candidate2",
+      "external_process_wall_s": 18.48604514298495,
+      "loop_wall_s": 15.340063717914745,
+      "loop_less_first_components_s": 10.372950699995272,
+      "physics_steady_s": 3.424342803657055,
+      "hydrology_steady_s": 3.8097483731107786,
+      "sediment_steady_s": 1.9336134816985577,
+      "physics_first_call_s": 2.0232690030243248,
+      "physics_preparation_s": 0.0008416799828410149,
+      "hydrology_first_call_s": 2.3354532540543005,
+      "hydrology_preparation_s": 0.000977291027083993,
+      "peak_rss_mib": 376.64453125,
+      "source_stable": true
+    },
+    {
+      "label": "baseline5",
+      "external_process_wall_s": 19.63116697501391,
+      "loop_wall_s": 16.473359153955244,
+      "loop_less_first_components_s": 13.396563921007328,
+      "physics_steady_s": 3.521848929929547,
+      "hydrology_steady_s": 6.678447974380106,
+      "sediment_steady_s": 1.9726434766780585,
+      "physics_first_call_s": 2.0750520129222423,
+      "physics_preparation_s": 0.0008718350436538458,
+      "hydrology_first_call_s": 0.5160858230665326,
+      "hydrology_preparation_s": 0,
+      "peak_rss_mib": 365.859375,
+      "source_stable": true
+    },
+    {
+      "label": "candidate3",
+      "external_process_wall_s": 18.490971838939004,
+      "loop_wall_s": 15.312716978951357,
+      "loop_less_first_components_s": 10.308830316993408,
+      "physics_steady_s": 3.4067162338178605,
+      "hydrology_steady_s": 3.789415393723175,
+      "sediment_steady_s": 1.907701049814932,
+      "physics_first_call_s": 2.076912658987567,
+      "physics_preparation_s": 0.0007885529194027185,
+      "hydrology_first_call_s": 2.334222166100517,
+      "hydrology_preparation_s": 0.0009603289654478431,
+      "peak_rss_mib": 372.765625,
+      "source_stable": true
+    }
+  ],
+  "medians": {
+    "baseline": {
+      "external_process_wall_s": 19.63116697501391,
+      "loop_wall_s": 16.473359153955244,
+      "loop_less_first_components_s": 13.396563921007328,
+      "physics_steady_s": 3.5371387312188745,
+      "hydrology_steady_s": 6.678447974380106,
+      "sediment_steady_s": 1.9726434766780585,
+      "physics_first_call_s": 2.0750520129222423,
+      "physics_preparation_s": 0.0007572919130325317,
+      "hydrology_first_call_s": 0.5007027349201962,
+      "hydrology_preparation_s": 0,
+      "peak_rss_mib": 366.2421875
+    },
+    "candidate": {
+      "external_process_wall_s": 18.48604514298495,
+      "loop_wall_s": 15.312716978951357,
+      "loop_less_first_components_s": 10.308830316993408,
+      "physics_steady_s": 3.4067162338178605,
+      "hydrology_steady_s": 3.789415393723175,
+      "sediment_steady_s": 1.907701049814932,
+      "physics_first_call_s": 2.0232690030243248,
+      "physics_preparation_s": 0.0007885529194027185,
+      "hydrology_first_call_s": 2.334222166100517,
+      "hydrology_preparation_s": 0.0009648969862610102,
+      "peak_rss_mib": 376.64453125
+    }
+  },
+  "comparisons": [
+    {
+      "baseline": "outputs/phase7h_hydrology/baseline3",
+      "candidate": "outputs/phase7h_hydrology/candidate1",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "water_rtol": 2e-12,
+      "water_atol": 1e-14,
+      "note": "Predeclared implementation comparison only; conservation tolerances unchanged. Water exactness also reported, times/counts/peak exact.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 6.783039841612437e-18
+        },
+        "water_export_m3": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 3.3949080525952358e-18
+        },
+        "cumulative_detachment_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 8.326672684688674e-17
+        },
+        "cumulative_deposition_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 5.551115123125783e-17
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 3.1916201452542037e-18
+        },
+        "final_mobile_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 2.4936649967166602e-18
+        },
+        "identity_residual_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.3877787476942212e-16
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6138349337446734e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": -3.3306690738754696e-16,
+      "peak_time_exact": true,
+      "passed": true
+    },
+    {
+      "baseline": "outputs/phase7h_hydrology/baseline4",
+      "candidate": "outputs/phase7h_hydrology/candidate2",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "water_rtol": 2e-12,
+      "water_atol": 1e-14,
+      "note": "Predeclared implementation comparison only; conservation tolerances unchanged. Water exactness also reported, times/counts/peak exact.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 6.783039841612437e-18
+        },
+        "water_export_m3": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 3.3949080525952358e-18
+        },
+        "cumulative_detachment_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 8.326672684688674e-17
+        },
+        "cumulative_deposition_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 5.551115123125783e-17
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 3.1916201452542037e-18
+        },
+        "final_mobile_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 2.4936649967166602e-18
+        },
+        "identity_residual_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.3877787476942212e-16
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6138349337446734e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": -3.3306690738754696e-16,
+      "peak_time_exact": true,
+      "passed": true
+    },
+    {
+      "baseline": "outputs/phase7h_hydrology/baseline5",
+      "candidate": "outputs/phase7h_hydrology/candidate3",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "water_rtol": 2e-12,
+      "water_atol": 1e-14,
+      "note": "Predeclared implementation comparison only; conservation tolerances unchanged. Water exactness also reported, times/counts/peak exact.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.1102230246251565e-16
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 6.783039841612437e-18
+        },
+        "water_export_m3": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 3.3949080525952358e-18
+        },
+        "cumulative_detachment_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 8.326672684688674e-17
+        },
+        "cumulative_deposition_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 5.551115123125783e-17
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 3.1916201452542037e-18
+        },
+        "final_mobile_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 2.4936649967166602e-18
+        },
+        "identity_residual_kg": {
+          "exact": false,
+          "within_tolerance": true,
+          "max_abs_difference": 1.3877787476942212e-16
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6138349337446734e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": -3.3306690738754696e-16,
+      "peak_time_exact": true,
+      "passed": true
+    }
+  ],
+  "candidate_source_manifest": {
+    "src/maple_syrup/conservation.py": "1072cdade368a76290c8a41162dfeb7a5b60ffaf970a7ede4707635bb3cf1bb1",
+    "src/maple_syrup/infiltration.py": "89c8f31c481cf4535d1006599f896383606d986b7922b8676aa37115a5a6d60a",
+    "src/maple_syrup/__init__.py": "039be50eaa7bd7e21c5cb5a88a604dc2041c9fe60f723af4b63f7dca1366adbc",
+    "src/maple_syrup/legacy_experiment.py": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1",
+    "src/maple_syrup/sediment_experiment.py": "626fd563e5da9911d771f971c0326abb87867886683e138d11250ccb5afe4515",
+    "src/maple_syrup/routing.py": "ac4eef69e78a0cb44cff21f7e52c5a1b7972aa24b5bda7362d6154559641d3b7",
+    "src/maple_syrup/event_experiment.py": "8c3d3e77cf3e7b952bba4c375af6960354224935ee4b1243521a30d800401682",
+    "src/maple_syrup/sediment_bed.py": "bcf214d7d3b7d3d41496d3e1185caceb51a60dcd60dd9bdc8c41246e4711b4f2",
+    "src/maple_syrup/complete_event.py": "3e64d727768e84f93dd3543e620b6a809623d73f34fb441b5eb3844840180335",
+    "src/maple_syrup/routing_numba.py": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+    "src/maple_syrup/rainfall.py": "9680256608b2ca372bb88115ff5135f3bca6e350e7067968ebebb4f0b42c04b5",
+    "src/maple_syrup/benchmark_experiment.py": "37c9bce3e47fe4b82b505d6c337163d466317f748c1dcf073b80024242848020",
+    "src/maple_syrup/sediment_event.py": "2e864fd5ae7781ff8a1512e0649e5458ad0857b5fa69d49a2bb711276a16f4be",
+    "src/maple_syrup/hydrology_numba.py": "3430172a9d0b7c378356cd0c4526d7beadc11c0f3ed42114fc98bfcae8e2bca6",
+    "src/maple_syrup/storm.py": "ac1a5fda28ac03e68776ce24ea8f4f65eff471515e6f09cf97f52bff527f5a19",
+    "src/maple_syrup/column_experiment.py": "a533573442f5e8beb7451b11265e05b7823160fa3063aa670fcd9fef59e50dd9",
+    "src/maple_syrup/dependency.py": "b0c1875a0fa7ef1e67844da82b49f6cae0159bf177414cbdef9bac73d7698159",
+    "src/maple_syrup/legacy_transport.py": "69f2fef5ce2a6562b48edfb3f732998b390f3a942788664bbcdc3fe775db2172",
+    "src/maple_syrup/storm_experiment.py": "46c91e891495eb4abdd3ca11b6b73bad4449c9d4e497583248fec6a9b086a969",
+    "src/maple_syrup/sediment_transport.py": "9fa27d7701768a54205755428a2dba48c829a1bd75c3b5a2f166d28ba5507a10",
+    "src/maple_syrup/sediment_physics.py": "e582356773ee14c301188bc70347a96e8294af878f61ab85a284eaf3ba02ffdb",
+    "src/maple_syrup/characteristic_numba.py": "07eaac65ec4d8f01737ffcee36ef4deeaa6a064dd7f77dd7445009553ade4852",
+    "src/maple_syrup/checkpoint.py": "340dca782885cd5883d7f5886c7bc545cf4f0fa64bcb4d2b31ef502c6d662d0c",
+    "src/maple_syrup/legacy_physics_numba.py": "abf0c4e5044352830a8d2cbe0750afdb126abe78b849f029023a5a09149e13da",
+    "src/maple_syrup/probe.py": "af859fd93960d88f0ce205834b74dc906b0f5513d1a29d98c65649ee53750ef1",
+    "src/maple_syrup/characteristic_transport.py": "5f1a9928e8de2b6f3e41b1b9f41db994908565c2104986a9d52903a3b0f6dd77",
+    "src/maple_syrup/case_import.py": "21a87b9380296bd88b122a2ecb59f12d307bc43f39b279b2e25d0cdcaeaec056",
+    "src/maple_syrup/provenance.py": "30945a037ded51402471a2f59192144b3b44f69cf7df7088472684d60bdfcaaa"
+  },
+  "candidate_context": {
+    "shape": [
+      60,
+      20
+    ],
+    "n_cells": 1200,
+    "n_active": 1200,
+    "dx_m": 0.5,
+    "infiltration_model": "pavement_hawkins",
+    "n_levels": 66,
+    "max_level_width": 86,
+    "static_bytes": 132536,
+    "preparation_s": 0.0009499309817329049,
+    "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+    "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+    "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+    "host_only": true,
+    "fastmath": false
+  },
+  "candidate_hydrology_kernels": {
+    "implementation": "numba",
+    "module": "maple_syrup.hydrology_numba",
+    "module_sha256": "3430172a9d0b7c378356cd0c4526d7beadc11c0f3ed42114fc98bfcae8e2bca6",
+    "kernels": [
+      "column_kernel (phase A)",
+      "route_kernel (phases B1-B3)"
+    ],
+    "ordered_sweep": "maple_syrup.routing_numba._sweep via compiled_sweep(), called from inside route_kernel",
+    "routing_numba_sha256": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+    "numba_options": {
+      "fastmath": false,
+      "parallel": false,
+      "nogil": true,
+      "boundscheck": false,
+      "error_model": "numpy",
+      "cache": false
+    },
+    "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+    "versions": {
+      "numba": "0.67.0",
+      "llvmlite": "0.49.0"
+    },
+    "compiled_in_process": true,
+    "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+  },
+  "candidate_totals_kg": {
+    "pickup_kg": 452.8372764154656,
+    "deposition_active_kg": 452.8121709344983,
+    "deposition_outside_active_kg": 0.01923359383832554,
+    "effective_clip_source_kg": 0.2919315672323073,
+    "cn_export_kg": 0.009216339369260694,
+    "endpoint_export_kg": 0.009216339369260688,
+    "outlet_flux_kg_s": 0.009216339369260688
+  },
+  "candidate_water": {
+    "peak_outlet_m3_s": 0.00011508089280551061,
+    "time_of_peak_s": 1334.0,
+    "export_m3": 0.16444993704263075
+  },
+  "candidate_sediment_peak_time_s": 1261.0,
+  "validation": {
+    "scoped_tests": "351 passed, 6 device-dependent skips, 31.31s",
+    "direct_original_fortran_tests": "6 passed, 14 deselected, 3.59s",
+    "command": "pytest tests/phase7h tests/phase7f tests/phase3/test_infiltration.py tests/phase4/test_routing.py tests/phase4/test_storm.py -q",
+    "lint": "passed",
+    "task_evidence": "agent_handoffs/tasks/phase7h_hydrology"
+  },
+  "reference": {
+    "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+    "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+    "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+    "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+    "reference_outputs_sha256": {
+      "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+      "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+      "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+      "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+      "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+      "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+      "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+      "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+      "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+      "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+      "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+      "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+      "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+      "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+      "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+    }
+  }
+}

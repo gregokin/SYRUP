@@ -94,6 +94,13 @@ def build_parser() -> argparse.ArgumentParser:
                         "CPU kernel on a prepared frozen-composition context (explicit error if Numba is missing, no "
                         "silent fallback). array = the NumPy sediment_physics_step reference (declared slower; may be "
                         "combined with compiled hydrology and legacy transport for controlled comparisons).")
+    p.add_argument("--hydrology-implementation", choices=("prepared", "reference"), default=None,
+                   help="rainfall/infiltration/routing step. Default: prepared with --implementation numba, "
+                        "reference with --implementation array. prepared = fused compiled CPU kernels on a "
+                        "prepared fixed-terrain context (same equations, bisection and checks; requires "
+                        "--implementation numba and host NumPy, explicit error if Numba is missing, no silent "
+                        "fallback). reference = the NumPy/CuPy-reference storm.coupled_step (with the numba or "
+                        "array sweep per --implementation); declared slower, kept for controlled comparisons.")
     p.add_argument("--fortran-ledger", type=Path, default=Path(LEGACY_DEFAULT_LEDGER))
     p.add_argument("--reference-run", "--reference-run-dir", dest="reference_run", type=Path,
                    default=Path(LEGACY_DEFAULT_REFERENCE_RUN))
@@ -128,10 +135,20 @@ def resolve_physics_implementation(args: argparse.Namespace) -> str:
     return args.physics_implementation or args.implementation
 
 
-def require_compiled(implementation: str, physics_implementation: str | None = None) -> list[str]:
+def resolve_hydrology_implementation(args: argparse.Namespace) -> str:
+    """The hydrology step: explicit --hydrology-implementation, else prepared with compiled water, reference
+    with the array water diagnostic."""
+    explicit = getattr(args, "hydrology_implementation", None)
+    return explicit or ("prepared" if args.implementation == "numba" else "reference")
+
+
+def require_compiled(implementation: str, physics_implementation: str | None = None,
+                     hydrology_implementation: str | None = None) -> list[str]:
     """Numba-default path: compiled water AND compiled sediment kernels, never a silent Python fallback.
-    A compiled wet-law evaluation (default with --implementation numba) additionally needs Numba."""
+    A compiled wet-law evaluation (default with --implementation numba) additionally needs Numba, and so does
+    the prepared hydrology (default with --implementation numba), which also refuses array water."""
     physics = physics_implementation or implementation
+    hydrology = hydrology_implementation or ("prepared" if implementation == "numba" else "reference")
     problems = []
     if implementation == "numba":
         if not numba_available():
@@ -140,14 +157,22 @@ def require_compiled(implementation: str, physics_implementation: str | None = N
             problems.append("the legacy sediment kernels are running as pure Python (Numba import failed)")
     if physics == "numba" and not numba_available():
         problems.append("Numba is not importable, so the compiled wet physical laws are unavailable")
-    return [p + "; refusing the numba legacy replay (use --implementation array only as a declared diagnostic)"
-            for p in problems]
+    if hydrology == "prepared" and implementation == "numba" and not numba_available():
+        problems.append("Numba is not importable, so the prepared compiled hydrology is unavailable")
+    refusals = [p + "; refusing the numba legacy replay (use --implementation array only as a declared diagnostic)"
+                for p in problems]
+    if hydrology == "prepared" and implementation != "numba":
+        refusals.append(f"--hydrology-implementation prepared requires --implementation numba (got "
+                        f"{implementation}); the prepared hydrology is the compiled numba sweep and there is no "
+                        "silent fallback (use --hydrology-implementation reference for the array diagnostic)")
+    return refusals
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    problems = check_supported(args) + require_compiled(args.implementation, args.physics_implementation)
+    problems = check_supported(args) + require_compiled(args.implementation, args.physics_implementation,
+                                                        args.hydrology_implementation)
     if problems:
         for msg in problems:
             print(f"legacy replay refused: {msg}", file=sys.stderr)
@@ -204,6 +229,26 @@ def run(args: argparse.Namespace) -> None:
         t_prep0 = time.perf_counter()
         physics_ctx = prepare_legacy_physics(sediment, grid, vegetation, holdings0)
         physics_prep_s = time.perf_counter() - t_prep0
+    hydrology_impl = resolve_hydrology_implementation(args)
+    hydrology_prep_s = 0.0
+    hydrology_ctx = None
+    hydrology_kernels = None
+    if hydrology_impl == "prepared":  # fixed-terrain static preparation, timed apart from the loop and from JIT
+        from maple_syrup.hydrology_numba import (
+            kernel_provenance,
+            prepare_hydrology,
+            prepared_coupled_step,
+        )
+
+        t_prep0 = time.perf_counter()
+        hydrology_ctx = prepare_hydrology(graph, column)
+        hydrology_prep_s = time.perf_counter() - t_prep0
+
+        def hydrology_step(rate_field, storm_state, step_dt):
+            return prepared_coupled_step(hydrology_ctx, rate_field, storm_state, step_dt, storm_control)
+    else:
+        def hydrology_step(rate_field, storm_state, step_dt):
+            return coupled_step(graph, column, rate_field, storm_state, step_dt, storm_control)
     storm = state0.storm
     prev_depth = np.asarray(storm.depth_m, dtype=np.float64).copy()
     v_prev = np.zeros((ny, nx, nc))
@@ -223,7 +268,7 @@ def run(args: argparse.Namespace) -> None:
         field.apply(schedule.rate_after_m_per_s(t), out=rate)
         t0 = time.perf_counter()
         try:
-            hydro = coupled_step(graph, column, rate, storm, dt, storm_control)
+            hydro = hydrology_step(rate, storm, dt)
         except RoutingStepRejected as exc:
             raise SystemExit(f"water step rejected at t={t}: {exc}; the legacy program has no retry") from exc
         hydro_s += time.perf_counter() - t0
@@ -269,6 +314,8 @@ def run(args: argparse.Namespace) -> None:
         t = boundary
         storm = replace(hydro.state, t_s=t)
     loop_s = time.perf_counter() - t_loop0
+    if hydrology_ctx is not None:
+        hydrology_kernels = kernel_provenance()
     residual = (ledger[:, :, 5] - ledger[:, :, 4] - (ledger[:, :, 0] - ledger[:, :, 1]) + ledger[:, :, 6] - ledger[:, :, 3])
     digests_after = _source_digests(Path(syrup_prov["package_dir"]), verified.maple_dependency.package_dir)
     if digests_after != digests_before:
@@ -288,6 +335,7 @@ def run(args: argparse.Namespace) -> None:
                   "unlimited supply, fixed composition, no evolving MAPLE bed); not a conservative complete-event, restart or wind-handoff model",
         "steps": int(steps), "dt_s": 1.0, "end_s": end, "depth_time_level": args.depth_time_level,
         "kernel_implementation": L.KERNEL_IMPLEMENTATION, "water_implementation": args.implementation,
+        "hydrology_implementation": hydrology_impl,
         "physics_implementation": physics_impl,
         "totals_by_class_kg": totals,
         "totals_kg": {k: float(np.sum(v)) for k, v in totals.items()},
@@ -307,6 +355,10 @@ def run(args: argparse.Namespace) -> None:
                                                                 "steps": int(steps) - 1},
                         "water_implementation": args.implementation,
                         "physics_implementation": physics_impl,
+                        "hydrology_implementation": hydrology_impl,
+                        "hydrology_preparation_s": hydrology_prep_s,
+                        "hydrology_context": None if hydrology_ctx is None else hydrology_ctx.summary(),
+                        "hydrology_kernels": hydrology_kernels,
                         "physics_preparation_s": physics_prep_s,
                         "physics_context": None if physics_ctx is None else physics_ctx.summary(),
                         "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,

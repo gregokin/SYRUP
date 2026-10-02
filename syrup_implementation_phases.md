@@ -258,3 +258,28 @@ yield, sorting, spatial and timing tolerances across representative storms.
 Separate convergence within the conservative model from differences caused by
 legacy supply, composition, deposition timing and clipping; retain the legacy
 replay as the default comparison workflow while this phase is deferred.
+
+
+## Phase 7h — CPU hydrology optimization and GPU kernel preparation
+
+User-authorized follow-up to the compiled legacy wet laws. A prepared fixed-terrain
+context owns validated routing and column data; fused CPU Numba calculations combine
+infiltration/runoff branches and routing setup/output checks around the existing
+ordered sweep. The legacy replay uses it by default with compiled water; explicit
+`--hydrology-implementation reference` retains the original path. Scientific equations,
+bisection, budgets and tolerances are unchanged. Conservative event/retry callers
+retain their current path until separately qualified for this interface.
+
+CPU acceptance: 351 scoped tests passed, six device-dependent skips; six direct
+original-Fortran routing tests passed. Full matched storm comparisons and warm
+larger-grid calls are recorded in docs/phase7h/performance.md. GPU preparation covers
+owned static/dynamic layouts and cellwise/ordered-level/reduction boundaries;
+actual GPU kernels, resident event execution and performance are still pending.
+
+Important follow-up: the existing positive-rain partial/complete-infiltration depth
+expressions can differ by an ulp and trigger the strict old-flow-depth check on
+otherwise physical states. Preserve the documented reproducer and evaluate a
+roundoff-consistent formulation in a separate correction, with unchanged water
+budgets and matched-storm fidelity. This CPU optimization preserves that reference
+behavior. Phase 4R remains the investigation of solver/GPU execution alternatives;
+Phase 7g remains deferred multi-bin optimization.

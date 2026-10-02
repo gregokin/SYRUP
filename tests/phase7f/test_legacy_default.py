@@ -132,6 +132,11 @@ PHYSICS_FLOAT_KEYS = ("ledger", "cumulative_detachment_kg", "cumulative_depositi
                       "cumulative_clipping_source_kg", "final_mobile_kg", "identity_residual_kg")
 COMPILED_RTOL = 2.0e-11
 COMPILED_ATOL = 1.0e-14
+# Phase 7h: the default hydrology is the prepared compiled kernel, whose expm1/pow come from libm instead of
+# NumPy's loops. The declared water bound (set before any result was inspected) is tighter than the physics one.
+WATER_FLOAT_KEYS = ("water_outlet_m3_s", "water_export_m3")
+WATER_RTOL = 2.0e-12
+WATER_ATOL = 1.0e-14
 
 
 @NUMBA
@@ -139,11 +144,12 @@ COMPILED_ATOL = 1.0e-14
 @pytest.mark.parametrize("physics", ["array", "default"])
 def test_short_cli_run_matches_original_script(plot1_case, tmp_path, monkeypatch, physics):
     """`array`: the NumPy-physics path reproduces the pre-promotion script's ledger arrays BITWISE.
-    `default`: the compiled-physics default matches within the declared float tolerance on physics-dependent
-    arrays and exactly on water, times and non-floats."""
+    `default`: the compiled-physics and prepared-hydrology default matches within the declared float tolerances
+    (physics-dependent arrays 2e-11/1e-14, water arrays 2e-12/1e-14) and exactly on times and non-floats."""
     monkeypatch.chdir(REPO)
     new = tmp_path / "new"
-    extra = ["--physics-implementation", "array"] if physics == "array" else []
+    extra = (["--physics-implementation", "array", "--hydrology-implementation", "reference"]
+             if physics == "array" else [])
     assert bench.main(["--case-dir", str(plot1_case), "--output-dir", str(new), "--end-s", "30",
                        "--allow-maple-source-change", *extra]) == 0
     shown = subprocess.run(["git", "show", f"{BASELINE_COMMIT}:benchmarks/phase7e/run_legacy_benchmark.py"], cwd=REPO,
@@ -163,6 +169,9 @@ def test_short_cli_run_matches_original_script(plot1_case, tmp_path, monkeypatch
         if physics == "default" and key in PHYSICS_FLOAT_KEYS:
             assert a[key].dtype == b[key].dtype and a[key].shape == b[key].shape, key
             np.testing.assert_allclose(a[key], b[key], rtol=COMPILED_RTOL, atol=COMPILED_ATOL, err_msg=key)
+        elif physics == "default" and key in WATER_FLOAT_KEYS:
+            assert a[key].dtype == b[key].dtype and a[key].shape == b[key].shape, key
+            np.testing.assert_allclose(a[key], b[key], rtol=WATER_RTOL, atol=WATER_ATOL, err_msg=key)
         else:
             np.testing.assert_array_equal(a[key], b[key], err_msg=key)
     assert float(a["ledger"][:, :, 0].sum()) > 0.0
