@@ -1,0 +1,4312 @@
+{
+  "status": "accepted exact CPU prepared-hydrology optimization; final Claude read-only review no blocking defect",
+  "baseline_revision": "7e254af",
+  "maple_package_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+  "method": "three fresh-process pairs, order baseline1/candidate1/candidate2/baseline2/baseline3/candidate3; all physics, parameters and dependency identical; task tests/benchmarks not concurrent; other user workloads not stopped; no fresh wholeFortran speed comparison",
+  "metrics": {
+    "baseline": {
+      "external_process_s": {
+        "median": 19.38431426801253,
+        "min": 19.05904092802666,
+        "max": 20.389577373978682,
+        "samples": [
+          20.389577373978682,
+          19.38431426801253,
+          19.05904092802666
+        ]
+      },
+      "loop_s": {
+        "median": 16.09843847202137,
+        "min": 15.730658465996385,
+        "max": 16.838097881060094,
+        "samples": [
+          16.838097881060094,
+          16.09843847202137,
+          15.730658465996385
+        ]
+      },
+      "steady_hydrology_s": {
+        "median": 3.967424612492323,
+        "min": 3.916114739025943,
+        "max": 4.068270581890829,
+        "samples": [
+          4.068270581890829,
+          3.967424612492323,
+          3.916114739025943
+        ]
+      },
+      "first_hydrology_s": {
+        "median": 2.5161027759313583,
+        "min": 2.3097675669705495,
+        "max": 2.5842069759964943,
+        "samples": [
+          2.5842069759964943,
+          2.5161027759313583,
+          2.3097675669705495
+        ]
+      },
+      "loop_minus_timed_first_components_s": {
+        "median": 10.919918811996467,
+        "min": 10.776596219977364,
+        "max": 11.342649562982842,
+        "samples": [
+          11.342649562982842,
+          10.919918811996467,
+          10.776596219977364
+        ]
+      },
+      "peak_process_rss_mib": {
+        "median": 376.5625,
+        "min": 376.421875,
+        "max": 377.1796875,
+        "samples": [
+          377.1796875,
+          376.5625,
+          376.421875
+        ]
+      }
+    },
+    "candidate": {
+      "external_process_s": {
+        "median": 17.27159458596725,
+        "min": 17.198197048041038,
+        "max": 17.281878976034932,
+        "samples": [
+          17.27159458596725,
+          17.281878976034932,
+          17.198197048041038
+        ]
+      },
+      "loop_s": {
+        "median": 13.903918041964062,
+        "min": 13.736484757973813,
+        "max": 14.027086168061942,
+        "samples": [
+          14.027086168061942,
+          13.903918041964062,
+          13.736484757973813
+        ]
+      },
+      "steady_hydrology_s": {
+        "median": 1.8260751283960417,
+        "min": 1.7945239279652014,
+        "max": 1.8342974366387352,
+        "samples": [
+          1.8342974366387352,
+          1.8260751283960417,
+          1.7945239279652014
+        ]
+      },
+      "first_hydrology_s": {
+        "median": 2.606540697044693,
+        "min": 2.6034034519689158,
+        "max": 2.6593990339897573,
+        "samples": [
+          2.6593990339897573,
+          2.606540697044693,
+          2.6034034519689158
+        ]
+      },
+      "loop_minus_timed_first_components_s": {
+        "median": 8.615466571995057,
+        "min": 8.472670329967514,
+        "max": 8.68515891104471,
+        "samples": [
+          8.68515891104471,
+          8.615466571995057,
+          8.472670329967514
+        ]
+      },
+      "peak_process_rss_mib": {
+        "median": 377.8828125,
+        "min": 377.7890625,
+        "max": 383.12109375,
+        "samples": [
+          377.7890625,
+          377.8828125,
+          383.12109375
+        ]
+      }
+    }
+  },
+  "runs": {
+    "baseline": [
+      {
+        "run": "baseline1",
+        "execution": {
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "maple_syrup.benchmark_experiment",
+            "--output-dir",
+            "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline1",
+            "--allow-maple-source-change"
+          ],
+          "external_process_wall_s": 20.389577373978682,
+          "returncode": 0,
+          "snapshot": "outputs/phase7j_routing_solver/baseline_snapshot",
+          "output": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline1"
+        },
+        "performance": {
+          "loop_wall_s": 16.838097881060094,
+          "hydrology_s": 6.652477557887323,
+          "physics_s": 5.992726627271622,
+          "legacy_walk_plus_cn_s": 2.83373502723407,
+          "whole_process_wall_s": 18.833976153982803,
+          "first_step_including_warmup_s": {
+            "hydrology_s": 2.5842069759964943,
+            "physics_s": 2.2929670420708135,
+            "legacy_walk_plus_cn_s": 0.6180211900500581,
+            "total_s": 5.495448318077251
+          },
+          "steady_state_excluding_first_step_s": {
+            "hydrology_s": 4.068270581890829,
+            "physics_s": 3.699759585200809,
+            "legacy_walk_plus_cn_s": 2.215713837184012,
+            "steps": 5399
+          },
+          "water_implementation": "numba",
+          "physics_implementation": "numba",
+          "hydrology_implementation": "prepared",
+          "hydrology_preparation_s": 0.0008597190026193857,
+          "hydrology_context": {
+            "shape": [
+              60,
+              20
+            ],
+            "n_cells": 1200,
+            "n_active": 1200,
+            "dx_m": 0.5,
+            "infiltration_model": "pavement_hawkins",
+            "n_levels": 66,
+            "max_level_width": 86,
+            "static_bytes": 132536,
+            "preparation_s": 0.0008438540389761329,
+            "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+            "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+            "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+            "host_only": true,
+            "fastmath": false
+          },
+          "hydrology_kernels": {
+            "implementation": "numba",
+            "module": "maple_syrup.hydrology_numba",
+            "module_sha256": "3430172a9d0b7c378356cd0c4526d7beadc11c0f3ed42114fc98bfcae8e2bca6",
+            "kernels": [
+              "column_kernel (phase A)",
+              "route_kernel (phases B1-B3)"
+            ],
+            "ordered_sweep": "maple_syrup.routing_numba._sweep via compiled_sweep(), called from inside route_kernel",
+            "routing_numba_sha256": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+            "numba_options": {
+              "fastmath": false,
+              "parallel": false,
+              "nogil": true,
+              "boundscheck": false,
+              "error_model": "numpy",
+              "cache": false
+            },
+            "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+            "versions": {
+              "numba": "0.67.0",
+              "llvmlite": "0.49.0"
+            },
+            "compiled_in_process": true,
+            "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+          },
+          "physics_preparation_s": 0.0008070359472185373,
+          "physics_context": {
+            "implementation": "numba",
+            "frozen_composition": true,
+            "shape": [
+              60,
+              20
+            ],
+            "n_classes": 6,
+            "static_bytes": 212872,
+            "preparation_s": 0.0007516680052503943,
+            "fastmath": false,
+            "error_model": "numpy"
+          },
+          "peak_rss_kib": 386232,
+          "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+        },
+        "provenance": {
+          "maple_syrup": {
+            "schema": "maple_syrup.syrup_provenance.v1",
+            "version": "0.0.1.dev0",
+            "package_dir": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline_snapshot/maple_syrup",
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline_snapshot/maple_syrup",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+              "file_count": 28,
+              "total_bytes": 830853
+            },
+            "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+            "repository_root": "/home/okin/SYRUP/outputs/phase7j_routing_solver",
+            "git": {
+              "status": "not_a_git_repository"
+            }
+          },
+          "maple": {
+            "schema": "maple_syrup.maple_provenance.v1",
+            "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+            "dependency": {
+              "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source",
+              "source_kind": "editable_working_tree",
+              "distribution_name": "maple",
+              "distribution_version": "0.0.1",
+              "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+              "direct_url": {
+                "dir_info": {
+                  "editable": true
+                },
+                "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+              },
+              "project_name": "maple",
+              "project_version": "0.0.1"
+            },
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+              "file_count": 324,
+              "total_bytes": 7646372
+            },
+            "metadata_file_sha256": {
+              "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+            },
+            "git": {
+              "status": "not_a_git_repository"
+            },
+            "limitations": [
+              "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+              "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+              "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+            ]
+          },
+          "source_digests_before": {
+            "maple_syrup": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_digests_after": {
+            "maple_syrup": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_stable": true,
+          "reference": {
+            "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+            "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+            "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+            "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+            "reference_outputs_sha256": {
+              "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+              "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+              "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+              "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+              "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+              "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+              "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+              "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+              "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+              "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+              "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+              "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+              "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+              "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+              "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+            }
+          },
+          "applied_rainfall": {
+            "path": "/home/okin/SYRUP/outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+            "sha256": "84584a8c10e0a2b308c94168d270deefb4931c2252c585b6f6e9e5b45db177e8",
+            "size_bytes": 405039,
+            "n_rows": 5400,
+            "n_pieces": 18,
+            "interval_lengths_s": [
+              1.0
+            ],
+            "start_s": 0.0,
+            "end_s": 5400.0,
+            "total_depth_mm": 9.656233333333333,
+            "max_intensity_mm_h": 60.96,
+            "convention": "per-step APPLIED rainfall logged by the reference program at iteration start (Set_rain_xml.f90 record switch after routing: records apply one step late, the first record one extra second); interval [start_s, end_s] at the logged intensity; exact interval integration; equal consecutive intensities merged; intensities carry the log's 0.01 mm/h printing precision; zero after the last interval"
+          },
+          "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+          "environment": {
+            "python_version": "3.12.3",
+            "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+            "sys_prefix": "/home/okin/MAPLE/.venv",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+            "package_versions": {
+              "numpy": "2.5.2",
+              "jax": "0.11.1",
+              "cupy-cuda12x": null
+            }
+          },
+          "module_sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1"
+        },
+        "peak_time_s": 1261.0,
+        "regime_counts": {
+          "dry": 21481566,
+          "wet_no_law": 8330352,
+          "diffuse": 9068082,
+          "transitional_rain": 0,
+          "transitional_dry": 0,
+          "concentrated": 0,
+          "suspended": 0
+        },
+        "max_identity_residual_kg": 1.6138349337446734e-15
+      },
+      {
+        "run": "baseline2",
+        "execution": {
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "maple_syrup.benchmark_experiment",
+            "--output-dir",
+            "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline2",
+            "--allow-maple-source-change"
+          ],
+          "external_process_wall_s": 19.38431426801253,
+          "returncode": 0,
+          "snapshot": "outputs/phase7j_routing_solver/baseline_snapshot",
+          "output": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline2"
+        },
+        "performance": {
+          "loop_wall_s": 16.09843847202137,
+          "hydrology_s": 6.483527388423681,
+          "physics_s": 5.629248280311003,
+          "legacy_walk_plus_cn_s": 2.6913615475641564,
+          "whole_process_wall_s": 17.912137019098736,
+          "first_step_including_warmup_s": {
+            "hydrology_s": 2.5161027759313583,
+            "physics_s": 2.043462664936669,
+            "legacy_walk_plus_cn_s": 0.6187289319932461,
+            "total_s": 5.178519660024904
+          },
+          "steady_state_excluding_first_step_s": {
+            "hydrology_s": 3.967424612492323,
+            "physics_s": 3.585785615374334,
+            "legacy_walk_plus_cn_s": 2.0726326155709103,
+            "steps": 5399
+          },
+          "water_implementation": "numba",
+          "physics_implementation": "numba",
+          "hydrology_implementation": "prepared",
+          "hydrology_preparation_s": 0.000907527981325984,
+          "hydrology_context": {
+            "shape": [
+              60,
+              20
+            ],
+            "n_cells": 1200,
+            "n_active": 1200,
+            "dx_m": 0.5,
+            "infiltration_model": "pavement_hawkins",
+            "n_levels": 66,
+            "max_level_width": 86,
+            "static_bytes": 132536,
+            "preparation_s": 0.0008910599863156676,
+            "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+            "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+            "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+            "host_only": true,
+            "fastmath": false
+          },
+          "hydrology_kernels": {
+            "implementation": "numba",
+            "module": "maple_syrup.hydrology_numba",
+            "module_sha256": "3430172a9d0b7c378356cd0c4526d7beadc11c0f3ed42114fc98bfcae8e2bca6",
+            "kernels": [
+              "column_kernel (phase A)",
+              "route_kernel (phases B1-B3)"
+            ],
+            "ordered_sweep": "maple_syrup.routing_numba._sweep via compiled_sweep(), called from inside route_kernel",
+            "routing_numba_sha256": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+            "numba_options": {
+              "fastmath": false,
+              "parallel": false,
+              "nogil": true,
+              "boundscheck": false,
+              "error_model": "numpy",
+              "cache": false
+            },
+            "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+            "versions": {
+              "numba": "0.67.0",
+              "llvmlite": "0.49.0"
+            },
+            "compiled_in_process": true,
+            "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+          },
+          "physics_preparation_s": 0.0007623970741406083,
+          "physics_context": {
+            "implementation": "numba",
+            "frozen_composition": true,
+            "shape": [
+              60,
+              20
+            ],
+            "n_classes": 6,
+            "static_bytes": 212872,
+            "preparation_s": 0.0007236429955810308,
+            "fastmath": false,
+            "error_model": "numpy"
+          },
+          "peak_rss_kib": 385600,
+          "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+        },
+        "provenance": {
+          "maple_syrup": {
+            "schema": "maple_syrup.syrup_provenance.v1",
+            "version": "0.0.1.dev0",
+            "package_dir": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline_snapshot/maple_syrup",
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline_snapshot/maple_syrup",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+              "file_count": 28,
+              "total_bytes": 830853
+            },
+            "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+            "repository_root": "/home/okin/SYRUP/outputs/phase7j_routing_solver",
+            "git": {
+              "status": "not_a_git_repository"
+            }
+          },
+          "maple": {
+            "schema": "maple_syrup.maple_provenance.v1",
+            "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+            "dependency": {
+              "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source",
+              "source_kind": "editable_working_tree",
+              "distribution_name": "maple",
+              "distribution_version": "0.0.1",
+              "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+              "direct_url": {
+                "dir_info": {
+                  "editable": true
+                },
+                "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+              },
+              "project_name": "maple",
+              "project_version": "0.0.1"
+            },
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+              "file_count": 324,
+              "total_bytes": 7646372
+            },
+            "metadata_file_sha256": {
+              "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+            },
+            "git": {
+              "status": "not_a_git_repository"
+            },
+            "limitations": [
+              "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+              "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+              "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+            ]
+          },
+          "source_digests_before": {
+            "maple_syrup": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_digests_after": {
+            "maple_syrup": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_stable": true,
+          "reference": {
+            "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+            "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+            "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+            "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+            "reference_outputs_sha256": {
+              "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+              "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+              "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+              "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+              "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+              "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+              "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+              "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+              "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+              "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+              "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+              "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+              "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+              "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+              "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+            }
+          },
+          "applied_rainfall": {
+            "path": "/home/okin/SYRUP/outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+            "sha256": "84584a8c10e0a2b308c94168d270deefb4931c2252c585b6f6e9e5b45db177e8",
+            "size_bytes": 405039,
+            "n_rows": 5400,
+            "n_pieces": 18,
+            "interval_lengths_s": [
+              1.0
+            ],
+            "start_s": 0.0,
+            "end_s": 5400.0,
+            "total_depth_mm": 9.656233333333333,
+            "max_intensity_mm_h": 60.96,
+            "convention": "per-step APPLIED rainfall logged by the reference program at iteration start (Set_rain_xml.f90 record switch after routing: records apply one step late, the first record one extra second); interval [start_s, end_s] at the logged intensity; exact interval integration; equal consecutive intensities merged; intensities carry the log's 0.01 mm/h printing precision; zero after the last interval"
+          },
+          "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+          "environment": {
+            "python_version": "3.12.3",
+            "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+            "sys_prefix": "/home/okin/MAPLE/.venv",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+            "package_versions": {
+              "numpy": "2.5.2",
+              "jax": "0.11.1",
+              "cupy-cuda12x": null
+            }
+          },
+          "module_sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1"
+        },
+        "peak_time_s": 1261.0,
+        "regime_counts": {
+          "dry": 21481566,
+          "wet_no_law": 8330352,
+          "diffuse": 9068082,
+          "transitional_rain": 0,
+          "transitional_dry": 0,
+          "concentrated": 0,
+          "suspended": 0
+        },
+        "max_identity_residual_kg": 1.6138349337446734e-15
+      },
+      {
+        "run": "baseline3",
+        "execution": {
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "maple_syrup.benchmark_experiment",
+            "--output-dir",
+            "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline3",
+            "--allow-maple-source-change"
+          ],
+          "external_process_wall_s": 19.05904092802666,
+          "returncode": 0,
+          "snapshot": "outputs/phase7j_routing_solver/baseline_snapshot",
+          "output": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline3"
+        },
+        "performance": {
+          "loop_wall_s": 15.730658465996385,
+          "hydrology_s": 6.2258823059964925,
+          "physics_s": 5.604901433456689,
+          "legacy_walk_plus_cn_s": 2.634089258732274,
+          "whole_process_wall_s": 17.63051559100859,
+          "first_step_including_warmup_s": {
+            "hydrology_s": 2.3097675669705495,
+            "physics_s": 2.04514270008076,
+            "legacy_walk_plus_cn_s": 0.5989026770694181,
+            "total_s": 4.954062246019021
+          },
+          "steady_state_excluding_first_step_s": {
+            "hydrology_s": 3.916114739025943,
+            "physics_s": 3.5597587333759293,
+            "legacy_walk_plus_cn_s": 2.035186581662856,
+            "steps": 5399
+          },
+          "water_implementation": "numba",
+          "physics_implementation": "numba",
+          "hydrology_implementation": "prepared",
+          "hydrology_preparation_s": 0.0008703219937160611,
+          "hydrology_context": {
+            "shape": [
+              60,
+              20
+            ],
+            "n_cells": 1200,
+            "n_active": 1200,
+            "dx_m": 0.5,
+            "infiltration_model": "pavement_hawkins",
+            "n_levels": 66,
+            "max_level_width": 86,
+            "static_bytes": 132536,
+            "preparation_s": 0.000855550984852016,
+            "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+            "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+            "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+            "host_only": true,
+            "fastmath": false
+          },
+          "hydrology_kernels": {
+            "implementation": "numba",
+            "module": "maple_syrup.hydrology_numba",
+            "module_sha256": "3430172a9d0b7c378356cd0c4526d7beadc11c0f3ed42114fc98bfcae8e2bca6",
+            "kernels": [
+              "column_kernel (phase A)",
+              "route_kernel (phases B1-B3)"
+            ],
+            "ordered_sweep": "maple_syrup.routing_numba._sweep via compiled_sweep(), called from inside route_kernel",
+            "routing_numba_sha256": "dbf8c66485313c595d70deb9e1176b5437c436d8dfaac4a7ae57898847808f21",
+            "numba_options": {
+              "fastmath": false,
+              "parallel": false,
+              "nogil": true,
+              "boundscheck": false,
+              "error_model": "numpy",
+              "cache": false
+            },
+            "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+            "versions": {
+              "numba": "0.67.0",
+              "llvmlite": "0.49.0"
+            },
+            "compiled_in_process": true,
+            "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+          },
+          "physics_preparation_s": 0.000841061002574861,
+          "physics_context": {
+            "implementation": "numba",
+            "frozen_composition": true,
+            "shape": [
+              60,
+              20
+            ],
+            "n_classes": 6,
+            "static_bytes": 212872,
+            "preparation_s": 0.0007933250162750483,
+            "fastmath": false,
+            "error_model": "numpy"
+          },
+          "peak_rss_kib": 385456,
+          "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+        },
+        "provenance": {
+          "maple_syrup": {
+            "schema": "maple_syrup.syrup_provenance.v1",
+            "version": "0.0.1.dev0",
+            "package_dir": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline_snapshot/maple_syrup",
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/phase7j_routing_solver/baseline_snapshot/maple_syrup",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+              "file_count": 28,
+              "total_bytes": 830853
+            },
+            "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+            "repository_root": "/home/okin/SYRUP/outputs/phase7j_routing_solver",
+            "git": {
+              "status": "not_a_git_repository"
+            }
+          },
+          "maple": {
+            "schema": "maple_syrup.maple_provenance.v1",
+            "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+            "dependency": {
+              "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source",
+              "source_kind": "editable_working_tree",
+              "distribution_name": "maple",
+              "distribution_version": "0.0.1",
+              "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+              "direct_url": {
+                "dir_info": {
+                  "editable": true
+                },
+                "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+              },
+              "project_name": "maple",
+              "project_version": "0.0.1"
+            },
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+              "file_count": 324,
+              "total_bytes": 7646372
+            },
+            "metadata_file_sha256": {
+              "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+            },
+            "git": {
+              "status": "not_a_git_repository"
+            },
+            "limitations": [
+              "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+              "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+              "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+            ]
+          },
+          "source_digests_before": {
+            "maple_syrup": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_digests_after": {
+            "maple_syrup": "de0a52ea0fb94da8fa480a2b1329e81de1fab21dfa3265e578772a56b68b0343",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_stable": true,
+          "reference": {
+            "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+            "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+            "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+            "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+            "reference_outputs_sha256": {
+              "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+              "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+              "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+              "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+              "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+              "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+              "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+              "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+              "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+              "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+              "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+              "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+              "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+              "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+              "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+            }
+          },
+          "applied_rainfall": {
+            "path": "/home/okin/SYRUP/outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+            "sha256": "84584a8c10e0a2b308c94168d270deefb4931c2252c585b6f6e9e5b45db177e8",
+            "size_bytes": 405039,
+            "n_rows": 5400,
+            "n_pieces": 18,
+            "interval_lengths_s": [
+              1.0
+            ],
+            "start_s": 0.0,
+            "end_s": 5400.0,
+            "total_depth_mm": 9.656233333333333,
+            "max_intensity_mm_h": 60.96,
+            "convention": "per-step APPLIED rainfall logged by the reference program at iteration start (Set_rain_xml.f90 record switch after routing: records apply one step late, the first record one extra second); interval [start_s, end_s] at the logged intensity; exact interval integration; equal consecutive intensities merged; intensities carry the log's 0.01 mm/h printing precision; zero after the last interval"
+          },
+          "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+          "environment": {
+            "python_version": "3.12.3",
+            "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+            "sys_prefix": "/home/okin/MAPLE/.venv",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+            "package_versions": {
+              "numpy": "2.5.2",
+              "jax": "0.11.1",
+              "cupy-cuda12x": null
+            }
+          },
+          "module_sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1"
+        },
+        "peak_time_s": 1261.0,
+        "regime_counts": {
+          "dry": 21481566,
+          "wet_no_law": 8330352,
+          "diffuse": 9068082,
+          "transitional_rain": 0,
+          "transitional_dry": 0,
+          "concentrated": 0,
+          "suspended": 0
+        },
+        "max_identity_residual_kg": 1.6138349337446734e-15
+      }
+    ],
+    "candidate": [
+      {
+        "run": "candidate1",
+        "execution": {
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "maple_syrup.benchmark_experiment",
+            "--output-dir",
+            "/home/okin/SYRUP/outputs/phase7j_routing_solver/candidate1",
+            "--allow-maple-source-change"
+          ],
+          "external_process_wall_s": 17.27159458596725,
+          "returncode": 0,
+          "snapshot": null,
+          "output": "/home/okin/SYRUP/outputs/phase7j_routing_solver/candidate1"
+        },
+        "performance": {
+          "loop_wall_s": 14.027086168061942,
+          "hydrology_s": 4.4936964706284925,
+          "physics_s": 5.720558440545574,
+          "legacy_walk_plus_cn_s": 2.537040434544906,
+          "whole_process_wall_s": 15.827961458009668,
+          "first_step_including_warmup_s": {
+            "hydrology_s": 2.6593990339897573,
+            "physics_s": 2.182549549965188,
+            "legacy_walk_plus_cn_s": 0.49971861205995083,
+            "total_s": 5.3419272570172325
+          },
+          "steady_state_excluding_first_step_s": {
+            "hydrology_s": 1.8342974366387352,
+            "physics_s": 3.538008890580386,
+            "legacy_walk_plus_cn_s": 2.037321822484955,
+            "steps": 5399
+          },
+          "water_implementation": "numba",
+          "physics_implementation": "numba",
+          "hydrology_implementation": "prepared",
+          "hydrology_preparation_s": 0.0009088510414585471,
+          "hydrology_context": {
+            "shape": [
+              60,
+              20
+            ],
+            "n_cells": 1200,
+            "n_active": 1200,
+            "dx_m": 0.5,
+            "infiltration_model": "pavement_hawkins",
+            "n_levels": 66,
+            "max_level_width": 86,
+            "static_bytes": 132536,
+            "preparation_s": 0.0008920120308175683,
+            "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+            "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+            "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+            "host_only": true,
+            "fastmath": false
+          },
+          "hydrology_kernels": {
+            "implementation": "numba",
+            "module": "maple_syrup.hydrology_numba",
+            "module_sha256": "449938573fa3f229defb02103f555c5a103ddcff9c4f5b13dc4c8467fc2f4666",
+            "kernels": [
+              "column_kernel (phase A)",
+              "route_kernel (phases B1-B3)"
+            ],
+            "ordered_sweep": "maple_syrup.routing_numba._sweep_batched via compiled_sweep_batched() (level-batched, zero/non-positive-RHS lanes skip the root iterations; bit-identical to _sweep), called from inside route_kernel",
+            "routing_numba_sha256": "d0fe99c3d90bf02a8e2712a36ab1181253ce125a439ee0f473035e530087582d",
+            "numba_options": {
+              "fastmath": false,
+              "parallel": false,
+              "nogil": true,
+              "boundscheck": false,
+              "error_model": "numpy",
+              "cache": false
+            },
+            "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+            "versions": {
+              "numba": "0.67.0",
+              "llvmlite": "0.49.0"
+            },
+            "compiled_in_process": true,
+            "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+          },
+          "physics_preparation_s": 0.0008051570039242506,
+          "physics_context": {
+            "implementation": "numba",
+            "frozen_composition": true,
+            "shape": [
+              60,
+              20
+            ],
+            "n_classes": 6,
+            "static_bytes": 212872,
+            "preparation_s": 0.0007590639870613813,
+            "fastmath": false,
+            "error_model": "numpy"
+          },
+          "peak_rss_kib": 386856,
+          "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+        },
+        "provenance": {
+          "maple_syrup": {
+            "schema": "maple_syrup.syrup_provenance.v1",
+            "version": "0.0.1.dev0",
+            "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/src/maple_syrup",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+              "file_count": 28,
+              "total_bytes": 834923
+            },
+            "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+            "repository_root": "/home/okin/SYRUP",
+            "git": {
+              "status": "ok",
+              "head_commit": "7e254af91a1bbd9388a6e6c30c582df00b8cc873",
+              "head_ref": "refs/heads/main",
+              "scoped_status": {
+                "pathspecs": [
+                  "src",
+                  "tests",
+                  "docs",
+                  "cases",
+                  "pyproject.toml"
+                ],
+                "command": [
+                  "git",
+                  "--no-optional-locks",
+                  "-c",
+                  "core.fsmonitor=false",
+                  "-C",
+                  "/home/okin/SYRUP",
+                  "status",
+                  "--porcelain=v1",
+                  "-z",
+                  "--untracked-files=all",
+                  "--",
+                  "src",
+                  "tests",
+                  "docs",
+                  "cases",
+                  "pyproject.toml"
+                ],
+                "status": "dirty",
+                "entries": [
+                  {
+                    "code": " M",
+                    "path": "src/maple_syrup/hydrology_numba.py"
+                  },
+                  {
+                    "code": " M",
+                    "path": "src/maple_syrup/routing_numba.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "docs/phase7j/design.md"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/__init__.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/conftest.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/test_prepared_batched.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/test_sweep_batched.py"
+                  }
+                ]
+              },
+              "head_describes_source": false
+            }
+          },
+          "maple": {
+            "schema": "maple_syrup.maple_provenance.v1",
+            "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+            "dependency": {
+              "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source",
+              "source_kind": "editable_working_tree",
+              "distribution_name": "maple",
+              "distribution_version": "0.0.1",
+              "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+              "direct_url": {
+                "dir_info": {
+                  "editable": true
+                },
+                "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+              },
+              "project_name": "maple",
+              "project_version": "0.0.1"
+            },
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+              "file_count": 324,
+              "total_bytes": 7646372
+            },
+            "metadata_file_sha256": {
+              "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+            },
+            "git": {
+              "status": "not_a_git_repository"
+            },
+            "limitations": [
+              "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+              "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+              "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+            ]
+          },
+          "source_digests_before": {
+            "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_digests_after": {
+            "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_stable": true,
+          "reference": {
+            "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+            "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+            "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+            "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+            "reference_outputs_sha256": {
+              "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+              "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+              "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+              "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+              "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+              "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+              "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+              "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+              "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+              "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+              "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+              "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+              "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+              "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+              "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+            }
+          },
+          "applied_rainfall": {
+            "path": "/home/okin/SYRUP/outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+            "sha256": "84584a8c10e0a2b308c94168d270deefb4931c2252c585b6f6e9e5b45db177e8",
+            "size_bytes": 405039,
+            "n_rows": 5400,
+            "n_pieces": 18,
+            "interval_lengths_s": [
+              1.0
+            ],
+            "start_s": 0.0,
+            "end_s": 5400.0,
+            "total_depth_mm": 9.656233333333333,
+            "max_intensity_mm_h": 60.96,
+            "convention": "per-step APPLIED rainfall logged by the reference program at iteration start (Set_rain_xml.f90 record switch after routing: records apply one step late, the first record one extra second); interval [start_s, end_s] at the logged intensity; exact interval integration; equal consecutive intensities merged; intensities carry the log's 0.01 mm/h printing precision; zero after the last interval"
+          },
+          "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+          "environment": {
+            "python_version": "3.12.3",
+            "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+            "sys_prefix": "/home/okin/MAPLE/.venv",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+            "package_versions": {
+              "numpy": "2.5.2",
+              "jax": "0.11.1",
+              "cupy-cuda12x": null
+            }
+          },
+          "module_sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1"
+        },
+        "peak_time_s": 1261.0,
+        "regime_counts": {
+          "dry": 21481566,
+          "wet_no_law": 8330352,
+          "diffuse": 9068082,
+          "transitional_rain": 0,
+          "transitional_dry": 0,
+          "concentrated": 0,
+          "suspended": 0
+        },
+        "max_identity_residual_kg": 1.6138349337446734e-15
+      },
+      {
+        "run": "candidate2",
+        "execution": {
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "maple_syrup.benchmark_experiment",
+            "--output-dir",
+            "/home/okin/SYRUP/outputs/phase7j_routing_solver/candidate2",
+            "--allow-maple-source-change"
+          ],
+          "external_process_wall_s": 17.281878976034932,
+          "returncode": 0,
+          "snapshot": null,
+          "output": "/home/okin/SYRUP/outputs/phase7j_routing_solver/candidate2"
+        },
+        "performance": {
+          "loop_wall_s": 13.903918041964062,
+          "hydrology_s": 4.432615825440735,
+          "physics_s": 5.710241421009414,
+          "legacy_walk_plus_cn_s": 2.4984133327379823,
+          "whole_process_wall_s": 15.82224698702339,
+          "first_step_including_warmup_s": {
+            "hydrology_s": 2.606540697044693,
+            "physics_s": 2.1903248430462554,
+            "legacy_walk_plus_cn_s": 0.4913275029975921,
+            "total_s": 5.288451469969004
+          },
+          "steady_state_excluding_first_step_s": {
+            "hydrology_s": 1.8260751283960417,
+            "physics_s": 3.5199165779631585,
+            "legacy_walk_plus_cn_s": 2.00708582974039,
+            "steps": 5399
+          },
+          "water_implementation": "numba",
+          "physics_implementation": "numba",
+          "hydrology_implementation": "prepared",
+          "hydrology_preparation_s": 0.0008770700078457594,
+          "hydrology_context": {
+            "shape": [
+              60,
+              20
+            ],
+            "n_cells": 1200,
+            "n_active": 1200,
+            "dx_m": 0.5,
+            "infiltration_model": "pavement_hawkins",
+            "n_levels": 66,
+            "max_level_width": 86,
+            "static_bytes": 132536,
+            "preparation_s": 0.0008611180819571018,
+            "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+            "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+            "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+            "host_only": true,
+            "fastmath": false
+          },
+          "hydrology_kernels": {
+            "implementation": "numba",
+            "module": "maple_syrup.hydrology_numba",
+            "module_sha256": "449938573fa3f229defb02103f555c5a103ddcff9c4f5b13dc4c8467fc2f4666",
+            "kernels": [
+              "column_kernel (phase A)",
+              "route_kernel (phases B1-B3)"
+            ],
+            "ordered_sweep": "maple_syrup.routing_numba._sweep_batched via compiled_sweep_batched() (level-batched, zero/non-positive-RHS lanes skip the root iterations; bit-identical to _sweep), called from inside route_kernel",
+            "routing_numba_sha256": "d0fe99c3d90bf02a8e2712a36ab1181253ce125a439ee0f473035e530087582d",
+            "numba_options": {
+              "fastmath": false,
+              "parallel": false,
+              "nogil": true,
+              "boundscheck": false,
+              "error_model": "numpy",
+              "cache": false
+            },
+            "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+            "versions": {
+              "numba": "0.67.0",
+              "llvmlite": "0.49.0"
+            },
+            "compiled_in_process": true,
+            "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+          },
+          "physics_preparation_s": 0.0007038050098344684,
+          "physics_context": {
+            "implementation": "numba",
+            "frozen_composition": true,
+            "shape": [
+              60,
+              20
+            ],
+            "n_classes": 6,
+            "static_bytes": 212872,
+            "preparation_s": 0.0006656879559159279,
+            "fastmath": false,
+            "error_model": "numpy"
+          },
+          "peak_rss_kib": 386952,
+          "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+        },
+        "provenance": {
+          "maple_syrup": {
+            "schema": "maple_syrup.syrup_provenance.v1",
+            "version": "0.0.1.dev0",
+            "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/src/maple_syrup",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+              "file_count": 28,
+              "total_bytes": 834923
+            },
+            "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+            "repository_root": "/home/okin/SYRUP",
+            "git": {
+              "status": "ok",
+              "head_commit": "7e254af91a1bbd9388a6e6c30c582df00b8cc873",
+              "head_ref": "refs/heads/main",
+              "scoped_status": {
+                "pathspecs": [
+                  "src",
+                  "tests",
+                  "docs",
+                  "cases",
+                  "pyproject.toml"
+                ],
+                "command": [
+                  "git",
+                  "--no-optional-locks",
+                  "-c",
+                  "core.fsmonitor=false",
+                  "-C",
+                  "/home/okin/SYRUP",
+                  "status",
+                  "--porcelain=v1",
+                  "-z",
+                  "--untracked-files=all",
+                  "--",
+                  "src",
+                  "tests",
+                  "docs",
+                  "cases",
+                  "pyproject.toml"
+                ],
+                "status": "dirty",
+                "entries": [
+                  {
+                    "code": " M",
+                    "path": "src/maple_syrup/hydrology_numba.py"
+                  },
+                  {
+                    "code": " M",
+                    "path": "src/maple_syrup/routing_numba.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "docs/phase7j/design.md"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/__init__.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/conftest.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/test_prepared_batched.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/test_sweep_batched.py"
+                  }
+                ]
+              },
+              "head_describes_source": false
+            }
+          },
+          "maple": {
+            "schema": "maple_syrup.maple_provenance.v1",
+            "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+            "dependency": {
+              "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source",
+              "source_kind": "editable_working_tree",
+              "distribution_name": "maple",
+              "distribution_version": "0.0.1",
+              "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+              "direct_url": {
+                "dir_info": {
+                  "editable": true
+                },
+                "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+              },
+              "project_name": "maple",
+              "project_version": "0.0.1"
+            },
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+              "file_count": 324,
+              "total_bytes": 7646372
+            },
+            "metadata_file_sha256": {
+              "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+            },
+            "git": {
+              "status": "not_a_git_repository"
+            },
+            "limitations": [
+              "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+              "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+              "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+            ]
+          },
+          "source_digests_before": {
+            "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_digests_after": {
+            "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_stable": true,
+          "reference": {
+            "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+            "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+            "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+            "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+            "reference_outputs_sha256": {
+              "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+              "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+              "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+              "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+              "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+              "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+              "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+              "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+              "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+              "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+              "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+              "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+              "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+              "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+              "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+            }
+          },
+          "applied_rainfall": {
+            "path": "/home/okin/SYRUP/outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+            "sha256": "84584a8c10e0a2b308c94168d270deefb4931c2252c585b6f6e9e5b45db177e8",
+            "size_bytes": 405039,
+            "n_rows": 5400,
+            "n_pieces": 18,
+            "interval_lengths_s": [
+              1.0
+            ],
+            "start_s": 0.0,
+            "end_s": 5400.0,
+            "total_depth_mm": 9.656233333333333,
+            "max_intensity_mm_h": 60.96,
+            "convention": "per-step APPLIED rainfall logged by the reference program at iteration start (Set_rain_xml.f90 record switch after routing: records apply one step late, the first record one extra second); interval [start_s, end_s] at the logged intensity; exact interval integration; equal consecutive intensities merged; intensities carry the log's 0.01 mm/h printing precision; zero after the last interval"
+          },
+          "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+          "environment": {
+            "python_version": "3.12.3",
+            "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+            "sys_prefix": "/home/okin/MAPLE/.venv",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+            "package_versions": {
+              "numpy": "2.5.2",
+              "jax": "0.11.1",
+              "cupy-cuda12x": null
+            }
+          },
+          "module_sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1"
+        },
+        "peak_time_s": 1261.0,
+        "regime_counts": {
+          "dry": 21481566,
+          "wet_no_law": 8330352,
+          "diffuse": 9068082,
+          "transitional_rain": 0,
+          "transitional_dry": 0,
+          "concentrated": 0,
+          "suspended": 0
+        },
+        "max_identity_residual_kg": 1.6138349337446734e-15
+      },
+      {
+        "run": "candidate3",
+        "execution": {
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "maple_syrup.benchmark_experiment",
+            "--output-dir",
+            "/home/okin/SYRUP/outputs/phase7j_routing_solver/candidate3",
+            "--allow-maple-source-change"
+          ],
+          "external_process_wall_s": 17.198197048041038,
+          "returncode": 0,
+          "snapshot": null,
+          "output": "/home/okin/SYRUP/outputs/phase7j_routing_solver/candidate3"
+        },
+        "performance": {
+          "loop_wall_s": 13.736484757973813,
+          "hydrology_s": 4.397927379934117,
+          "physics_s": 5.657228991622105,
+          "legacy_walk_plus_cn_s": 2.445515803527087,
+          "whole_process_wall_s": 15.648481130949222,
+          "first_step_including_warmup_s": {
+            "hydrology_s": 2.6034034519689158,
+            "physics_s": 2.17636413697619,
+            "legacy_walk_plus_cn_s": 0.4837911350186914,
+            "total_s": 5.263814428006299
+          },
+          "steady_state_excluding_first_step_s": {
+            "hydrology_s": 1.7945239279652014,
+            "physics_s": 3.4808648546459153,
+            "legacy_walk_plus_cn_s": 1.9617246685083956,
+            "steps": 5399
+          },
+          "water_implementation": "numba",
+          "physics_implementation": "numba",
+          "hydrology_implementation": "prepared",
+          "hydrology_preparation_s": 0.0009436060208827257,
+          "hydrology_context": {
+            "shape": [
+              60,
+              20
+            ],
+            "n_cells": 1200,
+            "n_active": 1200,
+            "dx_m": 0.5,
+            "infiltration_model": "pavement_hawkins",
+            "n_levels": 66,
+            "max_level_width": 86,
+            "static_bytes": 132536,
+            "preparation_s": 0.000927338027395308,
+            "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+            "ownership": "contiguous read-only copies; no alias of the caller's graph/parameter arrays",
+            "layout": "flat cell-major; column_static (n_cells, 6) = ksat, suction, drainage, thickness, Smax, lambda; donors/levels in level order",
+            "host_only": true,
+            "fastmath": false
+          },
+          "hydrology_kernels": {
+            "implementation": "numba",
+            "module": "maple_syrup.hydrology_numba",
+            "module_sha256": "449938573fa3f229defb02103f555c5a103ddcff9c4f5b13dc4c8467fc2f4666",
+            "kernels": [
+              "column_kernel (phase A)",
+              "route_kernel (phases B1-B3)"
+            ],
+            "ordered_sweep": "maple_syrup.routing_numba._sweep_batched via compiled_sweep_batched() (level-batched, zero/non-positive-RHS lanes skip the root iterations; bit-identical to _sweep), called from inside route_kernel",
+            "routing_numba_sha256": "d0fe99c3d90bf02a8e2712a36ab1181253ce125a439ee0f473035e530087582d",
+            "numba_options": {
+              "fastmath": false,
+              "parallel": false,
+              "nogil": true,
+              "boundscheck": false,
+              "error_model": "numpy",
+              "cache": false
+            },
+            "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
+            "versions": {
+              "numba": "0.67.0",
+              "llvmlite": "0.49.0"
+            },
+            "compiled_in_process": true,
+            "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep"
+          },
+          "physics_preparation_s": 0.0007903429213911295,
+          "physics_context": {
+            "implementation": "numba",
+            "frozen_composition": true,
+            "shape": [
+              60,
+              20
+            ],
+            "n_classes": 6,
+            "static_bytes": 212872,
+            "preparation_s": 0.0007302729645743966,
+            "fastmath": false,
+            "error_model": "numpy"
+          },
+          "peak_rss_kib": 392316,
+          "note": "single run; first step includes JIT compilation; do not quote per-step means that include it"
+        },
+        "provenance": {
+          "maple_syrup": {
+            "schema": "maple_syrup.syrup_provenance.v1",
+            "version": "0.0.1.dev0",
+            "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/src/maple_syrup",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+              "file_count": 28,
+              "total_bytes": 834923
+            },
+            "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+            "repository_root": "/home/okin/SYRUP",
+            "git": {
+              "status": "ok",
+              "head_commit": "7e254af91a1bbd9388a6e6c30c582df00b8cc873",
+              "head_ref": "refs/heads/main",
+              "scoped_status": {
+                "pathspecs": [
+                  "src",
+                  "tests",
+                  "docs",
+                  "cases",
+                  "pyproject.toml"
+                ],
+                "command": [
+                  "git",
+                  "--no-optional-locks",
+                  "-c",
+                  "core.fsmonitor=false",
+                  "-C",
+                  "/home/okin/SYRUP",
+                  "status",
+                  "--porcelain=v1",
+                  "-z",
+                  "--untracked-files=all",
+                  "--",
+                  "src",
+                  "tests",
+                  "docs",
+                  "cases",
+                  "pyproject.toml"
+                ],
+                "status": "dirty",
+                "entries": [
+                  {
+                    "code": " M",
+                    "path": "src/maple_syrup/hydrology_numba.py"
+                  },
+                  {
+                    "code": " M",
+                    "path": "src/maple_syrup/routing_numba.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "docs/phase7j/design.md"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/__init__.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/conftest.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/test_prepared_batched.py"
+                  },
+                  {
+                    "code": "??",
+                    "path": "tests/phase7j/test_sweep_batched.py"
+                  }
+                ]
+              },
+              "head_describes_source": false
+            }
+          },
+          "maple": {
+            "schema": "maple_syrup.maple_provenance.v1",
+            "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not",
+            "dependency": {
+              "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source",
+              "source_kind": "editable_working_tree",
+              "distribution_name": "maple",
+              "distribution_version": "0.0.1",
+              "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+              "direct_url": {
+                "dir_info": {
+                  "editable": true
+                },
+                "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+              },
+              "project_name": "maple",
+              "project_version": "0.0.1"
+            },
+            "package_source_digest": {
+              "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+              "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+              "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+              "file_count": 324,
+              "total_bytes": 7646372
+            },
+            "metadata_file_sha256": {
+              "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+            },
+            "git": {
+              "status": "not_a_git_repository"
+            },
+            "limitations": [
+              "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+              "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+              "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+            ]
+          },
+          "source_digests_before": {
+            "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_digests_after": {
+            "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+            "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65"
+          },
+          "source_stable": true,
+          "reference": {
+            "fortran_ledger": "/home/okin/SYRUP/outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+            "fortran_ledger_sha256": "871ef053d675f11ad225cdcae3e9c1e176326287277c29f7b9a8598b33f9d721",
+            "reference_run": "/home/okin/SYRUP/outputs/phase7/mahleran_deterministic_ksat_run",
+            "reference_execution_sha256": "a576769f0f8e10362fd264174bcc6fdbfc2161e4bbf086c48e3679ba7e0c9284",
+            "reference_outputs_sha256": {
+              "SedChange.dat": "85b7fb294ad8fa4a9628f445fb7336ea7b2cf6c3bee3ae91e4556e5f156eba42",
+              "aspct001.asc": "26ebe1ca8c3d508bcfa08197f9ad111f51d629e18cdee6a67152535fc2ca2e0f",
+              "depth001.asc": "e31a8984de8afdf923aae9cf397b6167b8b57a9c025a872a3f77272a7527df66",
+              "detac001.asc": "efa0c15ce9933b61e388df6656f2ed63e546aaa66bee41674d6f57fd9c576d08",
+              "dschg001.asc": "9b7abdd76944645d6843ca05c3e4884a30cb1bca03bfa41b1d49e4b38c680cd2",
+              "hydro001.dat": "5f71cc6de571ffd9f470a9c161392d5234ca05b510bebcecd619824eaba6a266",
+              "ksat_001.asc": "cf9bf80f39272a0ee26bb38d0d44466f13319af8e2284d39f98d18ea9a2645e2",
+              "neter001.asc": "14af0e61471824eb9fecae50277252e40a130273707dff897f331fabb5fb5535",
+              "param001.dat": "1ed3fdf37764af6e74749350016dc53e857a85c17be341e7ddb3d88cf0368522",
+              "pave.asc": "3ba68d52ed6dc7c9495bdfb0e6789d39cfbb350ade1b5dbe74a4bf9320c862df",
+              "seddisch001.dat": "2140eddb5177cef27ac034594eb994a8e478fe3a3b4f057c0fd123c9d0a272b6",
+              "sedtr001.asc": "2b3d9055386c82473a139c45202135db2b534fa712caeae576b4d6afadd61c5e",
+              "sedtr001.dat": "d5fc40f20bc5b48a917b4249b1d1a3d40a9897119c8bd2d47fab2ab4e3a4fab4",
+              "theta001.asc": "ce6f345f810b82dfe1e03ef53a86305831fbd0b4ffc757da42369ead442b0c1c",
+              "veloc001.asc": "1316bf595730276f1d924c4f09cb98cf7b3395ffe386b0ed6e36273ad7953d89"
+            }
+          },
+          "applied_rainfall": {
+            "path": "/home/okin/SYRUP/outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+            "sha256": "84584a8c10e0a2b308c94168d270deefb4931c2252c585b6f6e9e5b45db177e8",
+            "size_bytes": 405039,
+            "n_rows": 5400,
+            "n_pieces": 18,
+            "interval_lengths_s": [
+              1.0
+            ],
+            "start_s": 0.0,
+            "end_s": 5400.0,
+            "total_depth_mm": 9.656233333333333,
+            "max_intensity_mm_h": 60.96,
+            "convention": "per-step APPLIED rainfall logged by the reference program at iteration start (Set_rain_xml.f90 record switch after routing: records apply one step late, the first record one extra second); interval [start_s, end_s] at the logged intensity; exact interval integration; equal consecutive intensities merged; intensities carry the log's 0.01 mm/h printing precision; zero after the last interval"
+          },
+          "graph_input_sha256": "1a07c33478a9573da729a8c91802dced80823f2c4e674d7586d366ec33e62aab",
+          "environment": {
+            "python_version": "3.12.3",
+            "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+            "sys_prefix": "/home/okin/MAPLE/.venv",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+            "package_versions": {
+              "numpy": "2.5.2",
+              "jax": "0.11.1",
+              "cupy-cuda12x": null
+            }
+          },
+          "module_sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1"
+        },
+        "peak_time_s": 1261.0,
+        "regime_counts": {
+          "dry": 21481566,
+          "wet_no_law": 8330352,
+          "diffuse": 9068082,
+          "transitional_rain": 0,
+          "transitional_dry": 0,
+          "concentrated": 0,
+          "suspended": 0
+        },
+        "max_identity_residual_kg": 1.6138349337446734e-15
+      }
+    ]
+  },
+  "paired_comparisons": [
+    {
+      "baseline": "outputs/phase7j_routing_solver/baseline1",
+      "candidate": "outputs/phase7j_routing_solver/candidate1",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "water_rtol": 2e-12,
+      "water_atol": 1e-14,
+      "note": "Predeclared implementation comparison only; conservation tolerances unchanged. Water exactness also reported, times/counts/peak exact.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "water_export_m3": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_detachment_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_deposition_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "final_mobile_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "identity_residual_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6138349337446734e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": 0.0,
+      "peak_time_exact": true,
+      "passed": true
+    },
+    {
+      "baseline": "outputs/phase7j_routing_solver/baseline2",
+      "candidate": "outputs/phase7j_routing_solver/candidate2",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "water_rtol": 2e-12,
+      "water_atol": 1e-14,
+      "note": "Predeclared implementation comparison only; conservation tolerances unchanged. Water exactness also reported, times/counts/peak exact.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "water_export_m3": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_detachment_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_deposition_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "final_mobile_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "identity_residual_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6138349337446734e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": 0.0,
+      "peak_time_exact": true,
+      "passed": true
+    },
+    {
+      "baseline": "outputs/phase7j_routing_solver/baseline3",
+      "candidate": "outputs/phase7j_routing_solver/candidate3",
+      "float_rtol": 2e-11,
+      "float_atol": 1e-14,
+      "water_rtol": 2e-12,
+      "water_atol": 1e-14,
+      "note": "Predeclared implementation comparison only; conservation tolerances unchanged. Water exactness also reported, times/counts/peak exact.",
+      "arrays": {
+        "t_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "ledger": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "columns": {
+          "exact": true,
+          "within_tolerance": true
+        },
+        "water_outlet_m3_s": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "water_export_m3": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_detachment_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_deposition_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "cumulative_clipping_source_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "final_mobile_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        },
+        "identity_residual_kg": {
+          "exact": true,
+          "within_tolerance": true,
+          "max_abs_difference": 0.0
+        }
+      },
+      "regime_counts_exact": true,
+      "source_stable": true,
+      "legacy_identity_residual_kg": 1.6138349337446734e-15,
+      "identity_limit_kg": 1e-14,
+      "export_relative_difference": 0.0,
+      "peak_time_exact": true,
+      "passed": true
+    }
+  ],
+  "heterogeneous_ordinary_reference_parity": {
+    "atol": 1e-14,
+    "compared_steps": 5400,
+    "fields_over_bound": [],
+    "max_normalised_excess": 0.1761995205050189,
+    "max_normalised_excess_by_field": {
+      "step.column.depth_m": 0.00317538051116002,
+      "step.column.drainage_m": 2.6469517614242712e-09,
+      "step.column.dt_s": 0.0,
+      "step.column.intake_m": 8.066901893487584e-05,
+      "step.column.rain_m": 0.0,
+      "step.column.saturation_return_m": 0.0,
+      "step.column.soil_water_m": 8.508212433780336e-05,
+      "step.dt_s": 0.0,
+      "step.n_complete_runon": 0.0,
+      "step.n_no_runon": 0.0,
+      "step.n_partial_runon": 0.0,
+      "step.route.bisection_iterations": 0.0,
+      "step.route.budget_residual_m3": 6.911788849595088e-05,
+      "step.route.conservative": 0.0,
+      "step.route.depth_m": 0.0031754581652915256,
+      "step.route.discharge_m2_s": 0.0024073196324325276,
+      "step.route.dt_s": 0.0,
+      "step.route.export_m3": 2.4854801764742023e-05,
+      "step.route.face_volume_m3": 0.0006030505733893201,
+      "step.route.flow_depth_m": 0.09944260925422406,
+      "step.route.implementation": 0.0,
+      "step.route.inflow_m2_s": 0.0024073196324325276,
+      "step.route.max_cell_balance_residual_m": 5.8275866771095857e-05,
+      "step.route.max_constitutive_residual_m": 8.673617379880483e-05,
+      "step.route.max_courant_new": 0.0001863591366350817,
+      "step.route.max_courant_old": 0.00029653052770387087,
+      "step.route.old_discharge_m2_s": 0.0019292219174330057,
+      "step.route.old_inflow_m2_s": 0.0019292219174330057,
+      "step.route.outlet_discharge_m3_s": 2.5526833384673787e-05,
+      "step.route.stale_inflow_gain_m3": 0.0,
+      "step.route.storage_change_m3": 6.769396238570469e-05,
+      "step.route.velocity_m_s": 0.1761995205050189,
+      "step.state.depth_m": 0.0031754581652915256,
+      "step.state.discharge_m2_s": 0.0024073196324325276,
+      "step.state.soil_water_m": 8.508212433780336e-05,
+      "step.state.t_s": 0.0
+    },
+    "n_public_fields": 36,
+    "pass": true,
+    "rtol": 2e-12,
+    "structural_mismatch_fields": []
+  },
+  "heterogeneous_budget": {
+    "bound_m3": 5.810992284032491e-07,
+    "bound_rule": "volume_roundoff_bound_m3(4 n_cells n_steps + 7, largest operand): the MAPLE summation coefficient used by benchmark_experiment (src/maple_syrup/benchmark_experiment.py 633-635)",
+    "closed": true,
+    "drainage": 0.0504418684692164,
+    "export": 0.10494016207589314,
+    "intake": 2.7919298029148703,
+    "rain": 2.8968699649907546,
+    "return": 0.0,
+    "soil_final": 25.241488828515315,
+    "soil_initial": 22.50000089406967,
+    "surface_final": 0.0,
+    "surface_initial": 0.0,
+    "units": "m3",
+    "water_residual_m3": -1.7763568394002505e-15
+  },
+  "heterogeneous_saved_fields_vs_phase7i": {
+    "history.npz:t_s": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:rate_m_s": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:outlet_m3_s": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:export_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:rain_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:intake_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:return_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:drainage_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:surface_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:soil_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:max_depth_m": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:max_velocity_m_s": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:budget_residual_m3": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:max_cell_balance_residual_m": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:n_no_runon": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:n_partial_runon": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "history.npz:n_complete_runon": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:ksat_m_per_s": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:own_peak_depth_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:own_peak_velocity_m_s": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:final_depth_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:final_soil_water_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:cum_rain_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:cum_intake_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:cum_return_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:cum_drainage_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:snapshot_s1321_depth_m": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "fields.npz:snapshot_s1321_velocity_m_s": {
+      "exact": true,
+      "shape": [
+        60,
+        20
+      ],
+      "dtype": "float64"
+    },
+    "forcing.npz:rval_applied_mm_s": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    },
+    "forcing.npz:rate_m_s": {
+      "exact": true,
+      "shape": [
+        5400
+      ],
+      "dtype": "float64"
+    }
+  },
+  "full_prepared_bitwise_parity": {
+    "mode": "prepared serial versus prepared batched (NOT ordinary storm.coupled_step reference); both explicitly selected on every call",
+    "counts": {
+      "batched_calls": 5400,
+      "serial_calls": 5400,
+      "bitwise_step_checks": 5400
+    },
+    "arithmetic_AST_identical_to_baseline": true,
+    "parity": {
+      "atol": 1e-14,
+      "compared_steps": 5400,
+      "fields_over_bound": [],
+      "max_normalised_excess": 0.0,
+      "max_normalised_excess_by_field": {
+        "step.column.depth_m": 0.0,
+        "step.column.drainage_m": 0.0,
+        "step.column.dt_s": 0.0,
+        "step.column.intake_m": 0.0,
+        "step.column.rain_m": 0.0,
+        "step.column.saturation_return_m": 0.0,
+        "step.column.soil_water_m": 0.0,
+        "step.dt_s": 0.0,
+        "step.n_complete_runon": 0.0,
+        "step.n_no_runon": 0.0,
+        "step.n_partial_runon": 0.0,
+        "step.route.bisection_iterations": 0.0,
+        "step.route.budget_residual_m3": 0.0,
+        "step.route.conservative": 0.0,
+        "step.route.depth_m": 0.0,
+        "step.route.discharge_m2_s": 0.0,
+        "step.route.dt_s": 0.0,
+        "step.route.export_m3": 0.0,
+        "step.route.face_volume_m3": 0.0,
+        "step.route.flow_depth_m": 0.0,
+        "step.route.implementation": 0.0,
+        "step.route.inflow_m2_s": 0.0,
+        "step.route.max_cell_balance_residual_m": 0.0,
+        "step.route.max_constitutive_residual_m": 0.0,
+        "step.route.max_courant_new": 0.0,
+        "step.route.max_courant_old": 0.0,
+        "step.route.old_discharge_m2_s": 0.0,
+        "step.route.old_inflow_m2_s": 0.0,
+        "step.route.outlet_discharge_m3_s": 0.0,
+        "step.route.stale_inflow_gain_m3": 0.0,
+        "step.route.storage_change_m3": 0.0,
+        "step.route.velocity_m_s": 0.0,
+        "step.state.depth_m": 0.0,
+        "step.state.discharge_m2_s": 0.0,
+        "step.state.soil_water_m": 0.0,
+        "step.state.t_s": 0.0
+      },
+      "n_public_fields": 36,
+      "pass": true,
+      "rtol": 2e-12,
+      "structural_mismatch_fields": []
+    },
+    "budget": {
+      "bound_m3": 5.810992284032491e-07,
+      "bound_rule": "volume_roundoff_bound_m3(4 n_cells n_steps + 7, largest operand): the MAPLE summation coefficient used by benchmark_experiment (src/maple_syrup/benchmark_experiment.py 633-635)",
+      "closed": true,
+      "drainage": 0.0504418684692164,
+      "export": 0.10494016207589314,
+      "intake": 2.7919298029148703,
+      "rain": 2.8968699649907546,
+      "return": 0.0,
+      "soil_final": 25.241488828515315,
+      "soil_initial": 22.50000089406967,
+      "surface_final": 0.0,
+      "surface_initial": 0.0,
+      "units": "m3",
+      "water_residual_m3": -1.7763568394002505e-15
+    },
+    "source_binding": {
+      "capture_data_sha256": "59b69d29ede0523148eb3a6ada6b2d06c1bdb164f5f00046c825ce57455b780c",
+      "capture_digest_after": {
+        "Output/syrup_hydro_final.txt": "fea0ce777badf7f14ec4a2430fd13837f27ff9e025c7d9d9c5f418239f65d999",
+        "Output/syrup_hydro_static.txt": "7cf6b3ecbb185c8e20f855d48579ffbc0e99a52edf7cd11dd4c00b9b1954451b",
+        "Output/syrup_hydro_steps.txt": "031160dd1972b65a2aae1cff01b18667800c98525ba94e256864c7fa292ec4cf",
+        "execution.json": "92ecc686f8a76274c834535aee9805e00561482bff157b00572c9fc239dcaf8e"
+      },
+      "capture_digest_before": {
+        "Output/syrup_hydro_final.txt": "fea0ce777badf7f14ec4a2430fd13837f27ff9e025c7d9d9c5f418239f65d999",
+        "Output/syrup_hydro_static.txt": "7cf6b3ecbb185c8e20f855d48579ffbc0e99a52edf7cd11dd4c00b9b1954451b",
+        "Output/syrup_hydro_steps.txt": "031160dd1972b65a2aae1cff01b18667800c98525ba94e256864c7fa292ec4cf",
+        "execution.json": "92ecc686f8a76274c834535aee9805e00561482bff157b00572c9fc239dcaf8e"
+      },
+      "capture_unchanged": true,
+      "environment": {
+        "package_versions": {
+          "cupy-cuda12x": null,
+          "jax": "0.11.1",
+          "numpy": "2.5.2"
+        },
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "python_executable": "/home/okin/MAPLE/.venv/bin/python",
+        "python_version": "3.12.3",
+        "sys_prefix": "/home/okin/MAPLE/.venv"
+      },
+      "maple": {
+        "dependency": {
+          "direct_url": {
+            "dir_info": {
+              "editable": true
+            },
+            "url": "file:///home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+          },
+          "distribution_name": "maple",
+          "distribution_summary": "MAPLE \u2014 Aeolian Transport Model",
+          "distribution_version": "0.0.1",
+          "package_dir": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+          "project_name": "maple",
+          "project_version": "0.0.1",
+          "source_kind": "editable_working_tree",
+          "source_root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source"
+        },
+        "git": {
+          "status": "not_a_git_repository"
+        },
+        "limitations": [
+          "The digest covers the imported package directory and pyproject.toml only; third-party packages are identified by version alone and MAPLE tests, docs and cases are not covered.",
+          "Detection, not archival: a dirty working tree is detected and its content fingerprinted, but reproducing it requires a separately archived snapshot.",
+          "Files can change between capture and import; compare a second digest taken after the run to detect concurrent edits."
+        ],
+        "metadata_file_sha256": {
+          "pyproject.toml": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae"
+        },
+        "package_source_digest": {
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+          "digest_sha256": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+          "file_count": 324,
+          "root": "/home/okin/SYRUP/outputs/dependencies/maple_72310c49/source/src/maple",
+          "total_bytes": 7646372
+        },
+        "schema": "maple_syrup.maple_provenance.v1",
+        "working_source_label": "editable/development working source: the live, mutable file content under package_dir at capture time; package_source_digest identifies it, a git HEAD alone does not"
+      },
+      "maple_syrup": {
+        "git": {
+          "head_commit": "7e254af91a1bbd9388a6e6c30c582df00b8cc873",
+          "head_describes_source": false,
+          "head_ref": "refs/heads/main",
+          "scoped_status": {
+            "command": [
+              "git",
+              "--no-optional-locks",
+              "-c",
+              "core.fsmonitor=false",
+              "-C",
+              "/home/okin/SYRUP",
+              "status",
+              "--porcelain=v1",
+              "-z",
+              "--untracked-files=all",
+              "--",
+              "src",
+              "tests",
+              "docs",
+              "cases",
+              "pyproject.toml"
+            ],
+            "entries": [
+              {
+                "code": " M",
+                "path": "src/maple_syrup/hydrology_numba.py"
+              },
+              {
+                "code": " M",
+                "path": "src/maple_syrup/routing_numba.py"
+              },
+              {
+                "code": "??",
+                "path": "docs/phase7j/design.md"
+              },
+              {
+                "code": "??",
+                "path": "tests/phase7j/__init__.py"
+              },
+              {
+                "code": "??",
+                "path": "tests/phase7j/conftest.py"
+              },
+              {
+                "code": "??",
+                "path": "tests/phase7j/test_prepared_batched.py"
+              },
+              {
+                "code": "??",
+                "path": "tests/phase7j/test_sweep_batched.py"
+              }
+            ],
+            "pathspecs": [
+              "src",
+              "tests",
+              "docs",
+              "cases",
+              "pyproject.toml"
+            ],
+            "status": "dirty"
+          },
+          "status": "ok"
+        },
+        "note": "SYRUP was not a git repository when Phase 1 was written; the digest is its only source identity.",
+        "package_dir": "/home/okin/SYRUP/src/maple_syrup",
+        "package_source_digest": {
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+          "digest_sha256": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5",
+          "file_count": 28,
+          "root": "/home/okin/SYRUP/src/maple_syrup",
+          "total_bytes": 834923
+        },
+        "repository_root": "/home/okin/SYRUP",
+        "schema": "maple_syrup.syrup_provenance.v1",
+        "version": "0.0.1.dev0"
+      },
+      "script_sha256": "41c23ba615cebac07ad7e9e50974d865af2a95c891115be0d48c9216f97e2cf1",
+      "source_digests_after": {
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+        "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5"
+      },
+      "source_digests_before": {
+        "maple": "72310c49ae3b2db99f8ab919669303e98b14ee4479eb17522e5f6ad7ff474f65",
+        "maple_syrup": "63e4cadeceb08ed297d16766c691f971a8fb6f92a6acf8656ecc523b5e4f83d5"
+      }
+    }
+  },
+  "warm_sweep": {
+    "method": "warm, bitwise-checked, alternating order, perf_counter; no claims encoded",
+    "iterations": 40,
+    "c": 0.16666666666666666,
+    "repeats": 30,
+    "records": [
+      {
+        "graph": "valley_60x21",
+        "n_active": 1260,
+        "n_levels": 70,
+        "max_level_width": 120,
+        "wet_fraction": 0.0,
+        "base_positive_fraction": 0.0,
+        "timing": {
+          "serial": {
+            "median_s": 0.00042342644883319736,
+            "min_s": 0.0004155789501965046,
+            "iqr_s": 4.2275263695046306e-05,
+            "samples_s": [
+              0.0004788759397342801,
+              0.00045829499140381813,
+              0.0004197109956294298,
+              0.0004780420567840338,
+              0.0004203000571578741,
+              0.0004196370719000697,
+              0.000828768010251224,
+              0.00047105306293815374,
+              0.00047259603161364794,
+              0.0004179259994998574,
+              0.0004155789501965046,
+              0.000430078012868762,
+              0.00043245404958724976,
+              0.00041611201595515013,
+              0.00041619595140218735,
+              0.0004162259865552187,
+              0.0004299810389056802,
+              0.00041656300891190767,
+              0.0004158120136708021,
+              0.00041581608820706606,
+              0.0004216899396851659,
+              0.00042723806109279394,
+              0.00042516295798122883,
+              0.00041576498188078403,
+              0.0004160950193181634,
+              0.0004268669290468097,
+              0.000415649963542819,
+              0.0004466549726203084,
+              0.00047306891065090895,
+              0.000458915950730443
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 8.612521924078465e-06,
+            "min_s": 7.916940376162529e-06,
+            "iqr_s": 2.4242326617240906e-06,
+            "samples_s": [
+              1.1712079867720604e-05,
+              8.94803088158369e-06,
+              8.143950253725052e-06,
+              1.092301681637764e-05,
+              8.156988769769669e-06,
+              8.001923561096191e-06,
+              2.5790068320930004e-05,
+              1.4820019714534283e-05,
+              1.7991987988352776e-05,
+              8.495058864355087e-06,
+              8.178059943020344e-06,
+              8.582021109759808e-06,
+              9.543029591441154e-06,
+              7.99400731921196e-06,
+              8.692033588886261e-06,
+              8.724047802388668e-06,
+              7.962924428284168e-06,
+              9.172013960778713e-06,
+              8.177012205123901e-06,
+              7.931026630103588e-06,
+              8.643022738397121e-06,
+              9.251059964299202e-06,
+              8.038012310862541e-06,
+              8.538947440683842e-06,
+              8.148024789988995e-06,
+              7.916940376162529e-06,
+              8.526956662535667e-06,
+              1.9890954717993736e-05,
+              1.4282995834946632e-05,
+              1.045397948473692e-05
+            ]
+          },
+          "batched": {
+            "median_s": 1.0051007848232985e-05,
+            "min_s": 9.173061698675156e-06,
+            "iqr_s": 4.872737918049097e-06,
+            "samples_s": [
+              1.200998667627573e-05,
+              1.0374002158641815e-05,
+              2.9569026082754135e-05,
+              1.0985997505486012e-05,
+              9.348033927381039e-06,
+              9.352108463644981e-06,
+              2.4028937332332134e-05,
+              1.615099608898163e-05,
+              1.7170095816254616e-05,
+              1.5240977518260479e-05,
+              9.808922186493874e-06,
+              9.768991731107235e-06,
+              1.011404674500227e-05,
+              9.2389527708292e-06,
+              9.921030141413212e-06,
+              9.377021342515945e-06,
+              9.34000127017498e-06,
+              1.1619995348155499e-05,
+              9.541050530970097e-06,
+              9.251991286873817e-06,
+              9.677954949438572e-06,
+              9.9879689514637e-06,
+              9.31799877434969e-06,
+              1.1333031579852104e-05,
+              9.38598532229662e-06,
+              9.173061698675156e-06,
+              1.0831980034708977e-05,
+              1.7610960640013218e-05,
+              1.6040983609855175e-05,
+              1.3911048881709576e-05
+            ]
+          }
+        }
+      },
+      {
+        "graph": "valley_60x21",
+        "n_active": 1260,
+        "n_levels": 70,
+        "max_level_width": 120,
+        "wet_fraction": 0.45,
+        "base_positive_fraction": 0.49603174603174605,
+        "timing": {
+          "serial": {
+            "median_s": 0.0005206600180827081,
+            "min_s": 0.00046845292672514915,
+            "iqr_s": 9.654788300395012e-05,
+            "samples_s": [
+              0.0005375960608944297,
+              0.000501322909258306,
+              0.0005295230075716972,
+              0.00046877493150532246,
+              0.000522113055922091,
+              0.00048263208009302616,
+              0.00048126501496881247,
+              0.0007664710283279419,
+              0.00047561596147716045,
+              0.00046845292672514915,
+              0.0005207810318097472,
+              0.000522828078828752,
+              0.00048272102139890194,
+              0.0004921159707009792,
+              0.0006622729124501348,
+              0.0005766409449279308,
+              0.0005854299524798989,
+              0.0004976149648427963,
+              0.0004685530439019203,
+              0.000520539004355669,
+              0.0005623729666694999,
+              0.0004805780481547117,
+              0.000502233044244349,
+              0.0005449471063911915,
+              0.00047527498099952936,
+              0.00048637203872203827,
+              0.0009606580715626478,
+              0.0008619179716333747,
+              0.0007458510808646679,
+              0.0007423060014843941
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.0004573569167405367,
+            "min_s": 0.00042516703251749277,
+            "iqr_s": 5.983325536362827e-05,
+            "samples_s": [
+              0.0004765070043504238,
+              0.0004654510412365198,
+              0.00044823007192462683,
+              0.0004271989455446601,
+              0.0004838679451495409,
+              0.00045827694702893496,
+              0.00042833201587200165,
+              0.00042734097223728895,
+              0.00043005100451409817,
+              0.00045196106657385826,
+              0.0004886159440502524,
+              0.0004564368864521384,
+              0.00042516703251749277,
+              0.0004887740360572934,
+              0.0006046459311619401,
+              0.0005875740898773074,
+              0.0004671080969274044,
+              0.0004289689240977168,
+              0.00042732502333819866,
+              0.0004391949623823166,
+              0.00044650991912931204,
+              0.00042838207446038723,
+              0.0004584889393299818,
+              0.00045193196274340153,
+              0.00042824295815080404,
+              0.0004881679778918624,
+              0.0007719260174781084,
+              0.0009210400748997927,
+              0.0006276119966059923,
+              0.00118746398948133
+            ]
+          },
+          "batched": {
+            "median_s": 8.035253267735243e-05,
+            "min_s": 6.596697494387627e-05,
+            "iqr_s": 1.6482284991070628e-05,
+            "samples_s": [
+              7.81399430707097e-05,
+              7.806101348251104e-05,
+              8.102704305201769e-05,
+              7.898197509348392e-05,
+              8.527305908501148e-05,
+              7.261894643306732e-05,
+              6.596697494387627e-05,
+              7.849407847970724e-05,
+              0.00014280795585364103,
+              8.945399895310402e-05,
+              7.767300121486187e-05,
+              7.374701090157032e-05,
+              8.261797484010458e-05,
+              7.229100447148085e-05,
+              8.691300172358751e-05,
+              8.889299351722002e-05,
+              8.68040369823575e-05,
+              9.113596752285957e-05,
+              6.88780564814806e-05,
+              8.463289123028517e-05,
+              7.19260424375534e-05,
+              7.967802230268717e-05,
+              6.819004192948341e-05,
+              6.767199374735355e-05,
+              8.178502321243286e-05,
+              7.23470002412796e-05,
+              9.330094326287508e-05,
+              0.00015457894187420607,
+              0.00012478302232921124,
+              0.00013149995356798172
+            ]
+          }
+        }
+      },
+      {
+        "graph": "valley_60x21",
+        "n_active": 1260,
+        "n_levels": 70,
+        "max_level_width": 120,
+        "wet_fraction": 1.0,
+        "base_positive_fraction": 1.0,
+        "timing": {
+          "serial": {
+            "median_s": 0.000765107455663383,
+            "min_s": 0.0004752129316329956,
+            "iqr_s": 0.00043260803795419633,
+            "samples_s": [
+              0.001387265045195818,
+              0.0005730019183829427,
+              0.000547438976354897,
+              0.0005396500928327441,
+              0.0005803529638797045,
+              0.0009064809419214725,
+              0.0005344570381566882,
+              0.001093653030693531,
+              0.000952285947278142,
+              0.0004752129316329956,
+              0.0006487079663202167,
+              0.0008582499576732516,
+              0.0009809639304876328,
+              0.0011661159805953503,
+              0.0010039439657703042,
+              0.00065953703597188,
+              0.0010326610645279288,
+              0.0007196819642558694,
+              0.0010695570381358266,
+              0.000767559977248311,
+              0.0006211340660229325,
+              0.0005691399564966559,
+              0.000762654934078455,
+              0.0007797320140525699,
+              0.0006066720234230161,
+              0.0013885189546272159,
+              0.00116442097350955,
+              0.0005349399289116263,
+              0.0009023470338433981,
+              0.00067515904083848
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.0006787684396840632,
+            "min_s": 0.000477425055578351,
+            "iqr_s": 0.00042844447307288647,
+            "samples_s": [
+              0.0006743689300492406,
+              0.0006831679493188858,
+              0.0006661720108240843,
+              0.0007988009601831436,
+              0.0006195539608597755,
+              0.0005134420935064554,
+              0.0010324039030820131,
+              0.0012274159817025065,
+              0.0005018400261178613,
+              0.000477425055578351,
+              0.0005214520497247577,
+              0.0005968839395791292,
+              0.0008960299892351031,
+              0.0009619829943403602,
+              0.000626435037702322,
+              0.0006340279942378402,
+              0.0010889500845223665,
+              0.0010524089448153973,
+              0.0010436509037390351,
+              0.001149318995885551,
+              0.0006100669270381331,
+              0.0006459730211645365,
+              0.0007068170234560966,
+              0.0010528280399739742,
+              0.000813437975011766,
+              0.0014618899440392852,
+              0.0006272799801081419,
+              0.0005367900012061,
+              0.000578257953748107,
+              0.0009095739806070924
+            ]
+          },
+          "batched": {
+            "median_s": 0.0001143510453402996,
+            "min_s": 6.498396396636963e-05,
+            "iqr_s": 0.00014761326019652188,
+            "samples_s": [
+              9.954697452485561e-05,
+              0.00010572804603725672,
+              7.679802365601063e-05,
+              7.0395995862782e-05,
+              9.511190000921488e-05,
+              6.498396396636963e-05,
+              0.000246757990680635,
+              0.0003983329515904188,
+              0.0002783730160444975,
+              9.80159966275096e-05,
+              6.958306767046452e-05,
+              0.00015779503155499697,
+              0.00015684799291193485,
+              0.00017667107749730349,
+              0.00016951898578554392,
+              8.086394518613815e-05,
+              0.00011946901213377714,
+              0.00010759395081549883,
+              0.0003075490240007639,
+              0.00018168508540838957,
+              0.00010845100041478872,
+              0.00010923307854682207,
+              0.00040421111043542624,
+              0.00010693399235606194,
+              0.0002442849799990654,
+              0.0003432700177654624,
+              0.00017106602899730206,
+              0.0001070479629561305,
+              9.311805479228497e-05,
+              0.0002709610853344202
+            ]
+          }
+        }
+      },
+      {
+        "graph": "valley_128x129",
+        "n_active": 16512,
+        "n_levels": 192,
+        "max_level_width": 256,
+        "wet_fraction": 0.0,
+        "base_positive_fraction": 0.0,
+        "timing": {
+          "serial": {
+            "median_s": 0.008893555030226707,
+            "min_s": 0.005513587035238743,
+            "iqr_s": 0.0024172630219254643,
+            "samples_s": [
+              0.007757402956485748,
+              0.008566598990000784,
+              0.009551533963531256,
+              0.008567946963012218,
+              0.00908870401326567,
+              0.008413798990659416,
+              0.009804222965613008,
+              0.006965934997424483,
+              0.008885522023774683,
+              0.00956527004018426,
+              0.009714000043459237,
+              0.00901224697008729,
+              0.009490653988905251,
+              0.010029255994595587,
+              0.009678989998064935,
+              0.00910520798061043,
+              0.009870621026493609,
+              0.007368454011157155,
+              0.009241216001100838,
+              0.0059650089824572206,
+              0.005667426041327417,
+              0.0055894439574331045,
+              0.005788067006506026,
+              0.005555568030104041,
+              0.005513587035238743,
+              0.008901588036678731,
+              0.007129502948373556,
+              0.00925985595677048,
+              0.008824167074635625,
+              0.00901215395424515
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.00016258301911875606,
+            "min_s": 9.180593769997358e-05,
+            "iqr_s": 9.36422438826412e-05,
+            "samples_s": [
+              0.00044563692063093185,
+              0.00041420396883040667,
+              0.00015054899267852306,
+              0.0003336810041218996,
+              0.00013685598969459534,
+              0.00025570206344127655,
+              0.00017536897212266922,
+              0.0001328820362687111,
+              0.0001683899899944663,
+              0.0001682430738583207,
+              0.0002763270167633891,
+              9.806896559894085e-05,
+              0.00017006497364491224,
+              0.000123462057672441,
+              0.00013122300151735544,
+              0.0001965709961950779,
+              0.00017710099928081036,
+              0.0004012869903817773,
+              0.00012017902918159962,
+              0.0001103089889511466,
+              0.00010540906805545092,
+              9.38979210332036e-05,
+              9.194598533213139e-05,
+              9.834789671003819e-05,
+              0.00012518907897174358,
+              9.180593769997358e-05,
+              0.0002828589640557766,
+              0.00016852898988872766,
+              0.00015795906074345112,
+              0.000167206977494061
+            ]
+          },
+          "batched": {
+            "median_s": 0.0001505340333096683,
+            "min_s": 0.00010506599210202694,
+            "iqr_s": 7.713347440585494e-05,
+            "samples_s": [
+              0.00031057908199727535,
+              0.0003227499546483159,
+              0.00012223701924085617,
+              0.00015750003512948751,
+              0.0001479550264775753,
+              0.00011092692147940397,
+              0.00019113195594400167,
+              0.00019062601495534182,
+              0.00010692491196095943,
+              0.00018364808056503534,
+              0.0003030200023204088,
+              0.00010922702495008707,
+              0.00023645302280783653,
+              0.0001817219890654087,
+              0.00015575392171740532,
+              0.00020888110157102346,
+              0.0001531130401417613,
+              0.00015495007392019033,
+              0.00013012904673814774,
+              0.00012225902173668146,
+              0.00010962807573378086,
+              0.0001110130688175559,
+              0.00010595005005598068,
+              0.00011863198596984148,
+              0.00010506599210202694,
+              0.00011892500333487988,
+              0.00013340997975319624,
+              0.0002898760139942169,
+              0.00011996598914265633,
+              0.00020204705651849508
+            ]
+          }
+        }
+      },
+      {
+        "graph": "valley_128x129",
+        "n_active": 16512,
+        "n_levels": 192,
+        "max_level_width": 256,
+        "wet_fraction": 0.45,
+        "base_positive_fraction": 0.453609496124031,
+        "timing": {
+          "serial": {
+            "median_s": 0.00636785855749622,
+            "min_s": 0.006226398050785065,
+            "iqr_s": 0.0022118734777905047,
+            "samples_s": [
+              0.006534187006764114,
+              0.008076485013589263,
+              0.010652013006620109,
+              0.01011006801854819,
+              0.009964328026399016,
+              0.010304432013072073,
+              0.006539308000355959,
+              0.00636824406683445,
+              0.0063148640329018235,
+              0.006644584005698562,
+              0.006289029959589243,
+              0.00634859804995358,
+              0.006226398050785065,
+              0.006333227036520839,
+              0.006385974935255945,
+              0.006294435006566346,
+              0.011356043047271669,
+              0.006320105050690472,
+              0.006270378944464028,
+              0.006436390918679535,
+              0.006396931945346296,
+              0.009831262985244393,
+              0.012059618020430207,
+              0.006327067967504263,
+              0.006267054006457329,
+              0.006272800033912063,
+              0.006323580979369581,
+              0.006245644995942712,
+              0.006306263036094606,
+              0.00636747304815799
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.0062199829844757915,
+            "min_s": 0.006090709939599037,
+            "iqr_s": 0.0012919542205054313,
+            "samples_s": [
+              0.00615074101369828,
+              0.006224925979040563,
+              0.00992825604043901,
+              0.01074123999569565,
+              0.009191586985252798,
+              0.007719323039054871,
+              0.006090709939599037,
+              0.006227102945558727,
+              0.006613433011807501,
+              0.006125692976638675,
+              0.006189906038343906,
+              0.006117082899436355,
+              0.006624995032325387,
+              0.0065118520287796855,
+              0.006233815918676555,
+              0.007357907947152853,
+              0.009786517010070384,
+              0.006119717028923333,
+              0.006148183019831777,
+              0.006185915088281035,
+              0.006258460925891995,
+              0.007639245013706386,
+              0.009589012945070863,
+              0.006137249991297722,
+              0.006133401999250054,
+              0.00620880292262882,
+              0.006113384966738522,
+              0.0061217519687488675,
+              0.00621503998991102,
+              0.006139845005236566
+            ]
+          },
+          "batched": {
+            "median_s": 0.0008178184507414699,
+            "min_s": 0.0007652160711586475,
+            "iqr_s": 0.0002957199758384377,
+            "samples_s": [
+              0.0007743710884824395,
+              0.0008180969161912799,
+              0.0016530409920960665,
+              0.0008788770064711571,
+              0.0020537939853966236,
+              0.001164603978395462,
+              0.0007961000083014369,
+              0.000814522965811193,
+              0.0007678309921175241,
+              0.0008469930617138743,
+              0.0008108559995889664,
+              0.0008230529492720962,
+              0.0010552429594099522,
+              0.0007757700514048338,
+              0.0008167289197444916,
+              0.0010150739690288901,
+              0.001423667068593204,
+              0.002282144036144018,
+              0.0008175399852916598,
+              0.0007652160711586475,
+              0.0008359879720956087,
+              0.0015688559506088495,
+              0.00144307897426188,
+              0.0007972730090841651,
+              0.0008675649296492338,
+              0.000767710036598146,
+              0.000771191087551415,
+              0.0008028310257941484,
+              0.0007664739387109876,
+              0.0007905609672889113
+            ]
+          }
+        }
+      },
+      {
+        "graph": "valley_128x129",
+        "n_active": 16512,
+        "n_levels": 192,
+        "max_level_width": 256,
+        "wet_fraction": 1.0,
+        "base_positive_fraction": 1.0,
+        "timing": {
+          "serial": {
+            "median_s": 0.006315102975349873,
+            "min_s": 0.006199575960636139,
+            "iqr_s": 6.846594624221325e-05,
+            "samples_s": [
+              0.006323780049569905,
+              0.006367778987623751,
+              0.006308495998382568,
+              0.0062436789739876986,
+              0.006324615911580622,
+              0.006302163004875183,
+              0.006248092046007514,
+              0.007422014023177326,
+              0.007041719043627381,
+              0.006281141075305641,
+              0.006299640983343124,
+              0.006335907033644617,
+              0.006306880968622863,
+              0.006767189013771713,
+              0.006344072986394167,
+              0.006239437032490969,
+              0.006362632033415139,
+              0.00629257399123162,
+              0.00627112400252372,
+              0.006335772923193872,
+              0.006372852949425578,
+              0.006254396052099764,
+              0.006347812945023179,
+              0.006288824020884931,
+              0.006236455985344946,
+              0.006346866022795439,
+              0.006302646943368018,
+              0.006199575960636139,
+              0.0063396269688382745,
+              0.006321709952317178
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.006285464507527649,
+            "min_s": 0.006229797028936446,
+            "iqr_s": 7.372238906100392e-05,
+            "samples_s": [
+              0.006247653043828905,
+              0.006354495999403298,
+              0.006287707015872002,
+              0.00628514401614666,
+              0.00632617506198585,
+              0.006236184970475733,
+              0.006255542975850403,
+              0.006339314975775778,
+              0.006229797028936446,
+              0.006230644998140633,
+              0.006315715028904378,
+              0.006240535993129015,
+              0.006241040071472526,
+              0.00667131005320698,
+              0.006292852922342718,
+              0.0063166439067572355,
+              0.006354467943310738,
+              0.006273095030337572,
+              0.006257193046621978,
+              0.006357165984809399,
+              0.006254906067624688,
+              0.006255279993638396,
+              0.006319819018244743,
+              0.0062644920544698834,
+              0.006285784998908639,
+              0.006309706950560212,
+              0.006287771975621581,
+              0.006232975050806999,
+              0.006319689913652837,
+              0.00623736809939146
+            ]
+          },
+          "batched": {
+            "median_s": 0.000793004990555346,
+            "min_s": 0.000751300947740674,
+            "iqr_s": 3.8232014048844576e-05,
+            "samples_s": [
+              0.0007719818968325853,
+              0.0007897609611973166,
+              0.0007945799734443426,
+              0.000754214939661324,
+              0.0007997510256245732,
+              0.000794657040387392,
+              0.0007720920257270336,
+              0.0007694469531998038,
+              0.0008712690323591232,
+              0.0008100200211629272,
+              0.0008522990392521024,
+              0.0007758889114484191,
+              0.0007866639643907547,
+              0.0012496070703491569,
+              0.000811125966720283,
+              0.0008024699054658413,
+              0.000751300947740674,
+              0.0008139790734276175,
+              0.0008148329798132181,
+              0.0007959079230204225,
+              0.0008303989889100194,
+              0.0008044990245252848,
+              0.0007850360125303268,
+              0.0007913189474493265,
+              0.0007935609901323915,
+              0.000752091989852488,
+              0.0007851449772715569,
+              0.0007589999586343765,
+              0.0007924489909783006,
+              0.0007686630124226213
+            ]
+          }
+        }
+      },
+      {
+        "graph": "random_256x257",
+        "n_active": 65792,
+        "n_levels": 256,
+        "max_level_width": 257,
+        "wet_fraction": 0.0,
+        "base_positive_fraction": 0.0,
+        "timing": {
+          "serial": {
+            "median_s": 0.022043317556381226,
+            "min_s": 0.021707886015065014,
+            "iqr_s": 0.0008362956577911973,
+            "samples_s": [
+              0.022081551025621593,
+              0.021707886015065014,
+              0.021920508006587625,
+              0.022053790977224708,
+              0.021977407042868435,
+              0.021976873045787215,
+              0.02199076593387872,
+              0.02204438508488238,
+              0.022042250027880073,
+              0.022004963015206158,
+              0.022035008994862437,
+              0.021980031044222414,
+              0.02198766788933426,
+              0.021945775020867586,
+              0.02271978696808219,
+              0.023890938027761877,
+              0.02327749994583428,
+              0.021997003932483494,
+              0.02447023196145892,
+              0.022645228076726198,
+              0.0250488449819386,
+              0.026419583009555936,
+              0.02211123297456652,
+              0.022154659032821655,
+              0.021961537073366344,
+              0.022019856958650053,
+              0.021865966031327844,
+              0.031403242028318346,
+              0.022624820936471224,
+              0.0231033219024539
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.00038987601874396205,
+            "min_s": 0.000370959984138608,
+            "iqr_s": 4.873532452620566e-05,
+            "samples_s": [
+              0.00038679700810462236,
+              0.00039438309613615274,
+              0.0003841909347102046,
+              0.00043995806481689215,
+              0.0003739820094779134,
+              0.00038403295911848545,
+              0.00038641702849417925,
+              0.000370959984138608,
+              0.00039537507109344006,
+              0.0003885389305651188,
+              0.0003753560595214367,
+              0.00043087999802082777,
+              0.0003886120393872261,
+              0.00038922601379454136,
+              0.00038368499372154474,
+              0.0004389070672914386,
+              0.000547999981790781,
+              0.0004000499611720443,
+              0.0003864509053528309,
+              0.0003734249621629715,
+              0.0005544329760596156,
+              0.0004445119993761182,
+              0.00040375906974077225,
+              0.00038464402314275503,
+              0.0003803810104727745,
+              0.0004252329235896468,
+              0.0004107709974050522,
+              0.0007041950011625886,
+              0.0007048060651868582,
+              0.00039052602369338274
+            ]
+          },
+          "batched": {
+            "median_s": 0.00043954746797680855,
+            "min_s": 0.00040217209607362747,
+            "iqr_s": 4.661027924157679e-05,
+            "samples_s": [
+              0.00044581806287169456,
+              0.0004048319533467293,
+              0.00045658997260034084,
+              0.00042524992022663355,
+              0.0004049669951200485,
+              0.00044276693370193243,
+              0.0004177680239081383,
+              0.00040801498107612133,
+              0.0004401899641379714,
+              0.0004389049718156457,
+              0.0004249290795996785,
+              0.00043159397318959236,
+              0.0004343549953773618,
+              0.0004059410421177745,
+              0.0004479230847209692,
+              0.0005787250120192766,
+              0.0006137840682640672,
+              0.0004460670752450824,
+              0.00046669808216392994,
+              0.00040217209607362747,
+              0.0007971670711413026,
+              0.00046841707080602646,
+              0.0004078350029885769,
+              0.00041586498264223337,
+              0.000414003967307508,
+              0.00040776003152132034,
+              0.00045339297503232956,
+              0.0007719439454376698,
+              0.0009921119781211019,
+              0.0004449940752238035
+            ]
+          }
+        }
+      },
+      {
+        "graph": "random_256x257",
+        "n_active": 65792,
+        "n_levels": 256,
+        "max_level_width": 257,
+        "wet_fraction": 0.45,
+        "base_positive_fraction": 0.4527146157587549,
+        "timing": {
+          "serial": {
+            "median_s": 0.025085389032028615,
+            "min_s": 0.024867890984751284,
+            "iqr_s": 0.0005386887933127582,
+            "samples_s": [
+              0.028854117961600423,
+              0.025074054021388292,
+              0.025082348962314427,
+              0.025498186005279422,
+              0.02502686600200832,
+              0.025091329007409513,
+              0.025085045024752617,
+              0.025069680996239185,
+              0.025125760002993047,
+              0.024983023991808295,
+              0.025177837000228465,
+              0.02517296199221164,
+              0.02498207299504429,
+              0.025293020997196436,
+              0.025041218963451684,
+              0.025292870006524026,
+              0.025035357102751732,
+              0.024867890984751284,
+              0.025007029995322227,
+              0.025803748052567244,
+              0.025764187099412084,
+              0.035724370973184705,
+              0.0389109990792349,
+              0.02581756596919149,
+              0.0257909270003438,
+              0.025085733039304614,
+              0.025022240006364882,
+              0.024873074959032238,
+              0.02505782200023532,
+              0.02502339193597436
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.025241319031920284,
+            "min_s": 0.02470968395937234,
+            "iqr_s": 0.00256373718730174,
+            "samples_s": [
+              0.02697549993172288,
+              0.02509959100279957,
+              0.025148725020699203,
+              0.024874056107364595,
+              0.026044792030006647,
+              0.02484269894193858,
+              0.02485035709105432,
+              0.024799937033094466,
+              0.02470968395937234,
+              0.02990869409404695,
+              0.028746490948833525,
+              0.025253650033846498,
+              0.02483659901190549,
+              0.02489443402737379,
+              0.025269114994443953,
+              0.02522898802999407,
+              0.025495531037449837,
+              0.024855894967913628,
+              0.03085629001725465,
+              0.02529552497435361,
+              0.02630501100793481,
+              0.04050478292629123,
+              0.03900829900521785,
+              0.026203321991488338,
+              0.0399679719703272,
+              0.03682254394516349,
+              0.024850335088558495,
+              0.02479037898592651,
+              0.024863698054105043,
+              0.02500103192869574
+            ]
+          },
+          "batched": {
+            "median_s": 0.003043072472792119,
+            "min_s": 0.0029420849168673158,
+            "iqr_s": 0.00027554825646802783,
+            "samples_s": [
+              0.0030695078894495964,
+              0.0029951289761811495,
+              0.003030669060535729,
+              0.0032255130354315042,
+              0.002960497047752142,
+              0.0030153970001265407,
+              0.002972163027152419,
+              0.003012284985743463,
+              0.003001767909154296,
+              0.004389130976051092,
+              0.003151716897264123,
+              0.0030817450024187565,
+              0.002960577025078237,
+              0.002972702030092478,
+              0.0030666060047224164,
+              0.0031106090173125267,
+              0.002960194949992001,
+              0.003043220960535109,
+              0.005825254018418491,
+              0.0030429239850491285,
+              0.003315923037007451,
+              0.0036568029318004847,
+              0.00635036698076874,
+              0.003324743011035025,
+              0.0046448849607259035,
+              0.0029454209143295884,
+              0.00301288696937263,
+              0.0029420849168673158,
+              0.002963916049338877,
+              0.003087220946326852
+            ]
+          }
+        }
+      },
+      {
+        "graph": "random_256x257",
+        "n_active": 65792,
+        "n_levels": 256,
+        "max_level_width": 257,
+        "wet_fraction": 1.0,
+        "base_positive_fraction": 1.0,
+        "timing": {
+          "serial": {
+            "median_s": 0.02497010404476896,
+            "min_s": 0.024761605891399086,
+            "iqr_s": 0.0005897712835576385,
+            "samples_s": [
+              0.02496171393431723,
+              0.025394023046828806,
+              0.025442223995923996,
+              0.026311288005672395,
+              0.024817758006975055,
+              0.02588428999297321,
+              0.024925670004449785,
+              0.02516708103939891,
+              0.025125941028818488,
+              0.025127342902123928,
+              0.024761605891399086,
+              0.03723595291376114,
+              0.024867906933650374,
+              0.024808120913803577,
+              0.04385459690820426,
+              0.024967070086859167,
+              0.024973138002678752,
+              0.02493932005017996,
+              0.024814033997245133,
+              0.02488916099537164,
+              0.0249577600043267,
+              0.02487129799555987,
+              0.026581175974570215,
+              0.024948669015429914,
+              0.024940308067016304,
+              0.026082613971084356,
+              0.025324275018647313,
+              0.025672798976302147,
+              0.02494002995081246,
+              0.0254508190555498
+            ]
+          },
+          "serial_dry_skip": {
+            "median_s": 0.024968729994725436,
+            "min_s": 0.024849360925145447,
+            "iqr_s": 0.0001832745037972927,
+            "samples_s": [
+              0.024975741980597377,
+              0.025084909051656723,
+              0.025122615974396467,
+              0.024896161048673093,
+              0.024946277029812336,
+              0.02645862801000476,
+              0.024961718008853495,
+              0.02635052299592644,
+              0.025188495055772364,
+              0.02489255298860371,
+              0.024953796062618494,
+              0.025081911007873714,
+              0.025038395076990128,
+              0.025019794004037976,
+              0.02620664204005152,
+              0.0249191599432379,
+              0.024915946065448225,
+              0.024863086990080774,
+              0.024849360925145447,
+              0.024999831104651093,
+              0.024926353013142943,
+              0.02487833600025624,
+              0.024960310896858573,
+              0.025000152993015945,
+              0.02500907308422029,
+              0.025250506005249918,
+              0.026022136909887195,
+              0.024896406917832792,
+              0.02495747699867934,
+              0.02487859793473035
+            ]
+          },
+          "batched": {
+            "median_s": 0.0029449849971570075,
+            "min_s": 0.0028563590021803975,
+            "iqr_s": 9.063264587894082e-05,
+            "samples_s": [
+              0.0029857619665563107,
+              0.002971425070427358,
+              0.002956988988444209,
+              0.002990074921399355,
+              0.0029539470560848713,
+              0.0028973540756851435,
+              0.0029379159677773714,
+              0.0028803410241380334,
+              0.0030263960361480713,
+              0.0029512649634853005,
+              0.003009800100699067,
+              0.0033296580659225583,
+              0.0028563590021803975,
+              0.0029210089705884457,
+              0.005756439990364015,
+              0.0029209969798102975,
+              0.0029353928985074162,
+              0.002892768010497093,
+              0.0028976609464734793,
+              0.002949398010969162,
+              0.0029712909599766135,
+              0.0029007180128246546,
+              0.0031602228991687298,
+              0.0030348780564963818,
+              0.002954190014861524,
+              0.0028734400402754545,
+              0.002864910988137126,
+              0.0028707210440188646,
+              0.002940571983344853,
+              0.0028783970046788454
+            ]
+          }
+        }
+      }
+    ],
+    "asm_batched": {
+      "packed_sqrt_pd": 2,
+      "scalar_sqrt_sd": 4,
+      "packed_mul_pd": 6,
+      "scalar_mul_sd": 15,
+      "fma_instructions": 0
+    },
+    "numba": {
+      "numba": "0.67.0",
+      "llvmlite": "0.49.0"
+    },
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "numpy": "2.5.2",
+    "cpu_flags": [
+      "avx",
+      "avx2",
+      "avx512dq",
+      "avx512f",
+      "avx512vl",
+      "fma",
+      "sse2",
+      "sse4_2"
+    ]
+  },
+  "warm_hydrology_scaling": {
+    "method": "fixed synthetic wet state; oldpreparedserial and newpreparedbatched kernels selected explicitly in one isolated benchmark process; alternating order, context/graph creation and JIT excluded; bitwise publicresults; not storm/GPU scaling",
+    "records": [
+      {
+        "shape": [
+          60,
+          21
+        ],
+        "n_cells": 1260,
+        "n_levels": 70,
+        "max_level_width": 120,
+        "static_bytes": 139168,
+        "repetitions": 50,
+        "median_call_s": {
+          "serial": 0.000689520500600338,
+          "batched": 0.00025172001915052533
+        },
+        "samples_s": {
+          "serial": [
+            0.000871064024977386,
+            0.0007660320261493325,
+            0.0006960660684853792,
+            0.0007159170927479863,
+            0.0006880470318719745,
+            0.0007434670114889741,
+            0.0006994729628786445,
+            0.0007203990826383233,
+            0.000686662970110774,
+            0.0006567590171471238,
+            0.0007501610089093447,
+            0.0006568309618160129,
+            0.0006602099165320396,
+            0.0006843109149485826,
+            0.0006739259697496891,
+            0.0006887060590088367,
+            0.0006627509137615561,
+            0.0007493200246244669,
+            0.0007035069866105914,
+            0.0007402719929814339,
+            0.0006737440126016736,
+            0.0007156950887292624,
+            0.0006646480178460479,
+            0.0006681850645691156,
+            0.0006465720944106579,
+            0.0006919651059433818,
+            0.0006633130833506584,
+            0.0007273049559444189,
+            0.0006635519675910473,
+            0.000684486934915185,
+            0.0006638249615207314,
+            0.0007016860181465745,
+            0.0006889420328661799,
+            0.0006501080933958292,
+            0.0007085660472512245,
+            0.0007009850814938545,
+            0.000690098968334496,
+            0.0006640040082857013,
+            0.0006846539909020066,
+            0.0007118369685485959,
+            0.0006923889741301537,
+            0.0007173600606620312,
+            0.0007060390198603272,
+            0.0006760349497199059,
+            0.0006588170072063804,
+            0.0007297559641301632,
+            0.0006619789637625217,
+            0.0007175609935075045,
+            0.0007295999675989151,
+            0.0006579030305147171
+          ],
+          "batched": [
+            0.0002707230160012841,
+            0.00027358403895050287,
+            0.0002512149512767792,
+            0.000260957982391119,
+            0.00029624300077557564,
+            0.00028036092408001423,
+            0.0002487630117684603,
+            0.000261136912740767,
+            0.0002463699784129858,
+            0.0002396369818598032,
+            0.0002522250870242715,
+            0.0002386230044066906,
+            0.00026806897949427366,
+            0.0002452030312269926,
+            0.00024088192731142044,
+            0.0002701099729165435,
+            0.00025787006597965956,
+            0.0002866360591724515,
+            0.0002479610266163945,
+            0.00028943398501724005,
+            0.0002477319212630391,
+            0.00023804896045476198,
+            0.00023587094619870186,
+            0.00023156404495239258,
+            0.0002335419412702322,
+            0.00024899898562580347,
+            0.0002581559820100665,
+            0.00027597497683018446,
+            0.0002388970460742712,
+            0.00023615406826138496,
+            0.00027894601225852966,
+            0.00028303591534495354,
+            0.0002607080386951566,
+            0.0002614769618958235,
+            0.000243998016230762,
+            0.00023696909192949533,
+            0.00024398299865424633,
+            0.00029185099992901087,
+            0.0002442880067974329,
+            0.0002373760798946023,
+            0.0002656850265339017,
+            0.0002438570372760296,
+            0.00024844403378665447,
+            0.0002393210306763649,
+            0.00028968509286642075,
+            0.0002674129791557789,
+            0.00028317689429968596,
+            0.00026086706202477217,
+            0.00026843103114515543,
+            0.0002444739220663905
+          ]
+        },
+        "public_field_comparison": {
+          "step.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.t_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.soil_water_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.soil_water_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.rain_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.intake_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.saturation_return_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.drainage_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.flow_depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.velocity_m_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.inflow_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.old_discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.old_inflow_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.face_volume_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.export_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.outlet_discharge_m3_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.storage_change_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.budget_residual_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_courant_old": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_courant_new": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_constitutive_residual_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_cell_balance_residual_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          }
+        },
+        "peak_process_rss_kib": 335176
+      },
+      {
+        "shape": [
+          128,
+          129
+        ],
+        "n_cells": 16512,
+        "n_levels": 192,
+        "max_level_width": 256,
+        "static_bytes": 1817864,
+        "repetitions": 15,
+        "median_call_s": {
+          "serial": 0.009752802085131407,
+          "batched": 0.004243419039994478
+        },
+        "samples_s": {
+          "serial": [
+            0.009439693996682763,
+            0.010284382966347039,
+            0.011039117001928389,
+            0.009709539008326828,
+            0.009848864981904626,
+            0.009973359061405063,
+            0.009870391921140254,
+            0.01006422401405871,
+            0.009752802085131407,
+            0.009734501945786178,
+            0.00999414303805679,
+            0.009579795994795859,
+            0.009738937951624393,
+            0.0097117789555341,
+            0.009702294017188251
+          ],
+          "batched": [
+            0.004223564988933504,
+            0.0041562640108168125,
+            0.005026829079724848,
+            0.004586260067299008,
+            0.004439515992999077,
+            0.0042720240307971835,
+            0.004666927037760615,
+            0.004895170917734504,
+            0.004163731005974114,
+            0.004181682947091758,
+            0.004277945030480623,
+            0.0041703819297254086,
+            0.004172709072008729,
+            0.00413192599080503,
+            0.004243419039994478
+          ]
+        },
+        "public_field_comparison": {
+          "step.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.t_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.soil_water_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.soil_water_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.rain_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.intake_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.saturation_return_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.drainage_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.flow_depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.velocity_m_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.inflow_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.old_discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.old_inflow_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.face_volume_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.export_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.outlet_discharge_m3_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.storage_change_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.budget_residual_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_courant_old": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_courant_new": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_constitutive_residual_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_cell_balance_residual_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          }
+        },
+        "peak_process_rss_kib": 346044
+      },
+      {
+        "shape": [
+          256,
+          257
+        ],
+        "n_cells": 65792,
+        "n_levels": 384,
+        "max_level_width": 512,
+        "static_bytes": 7240200,
+        "repetitions": 8,
+        "median_call_s": {
+          "serial": 0.03919183649122715,
+          "batched": 0.016612143022939563
+        },
+        "samples_s": {
+          "serial": [
+            0.04101049201563001,
+            0.039468811941333115,
+            0.039378735003992915,
+            0.03844732092693448,
+            0.039004937978461385,
+            0.04558816005010158,
+            0.03866625402588397,
+            0.03895855997689068
+          ],
+          "batched": [
+            0.016750101931393147,
+            0.016692058998160064,
+            0.01686434808652848,
+            0.016029646969400346,
+            0.016890801023691893,
+            0.01653222704771906,
+            0.016317551024258137,
+            0.016132208984345198
+          ]
+        },
+        "public_field_comparison": {
+          "step.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.t_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.soil_water_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.state.discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.soil_water_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.rain_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.intake_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.saturation_return_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.column.drainage_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.dt_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.flow_depth_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.velocity_m_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.inflow_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.old_discharge_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.old_inflow_m2_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.face_volume_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.export_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.outlet_discharge_m3_s": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.storage_change_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.budget_residual_m3": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_courant_old": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_courant_new": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_constitutive_residual_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          },
+          "step.route.max_cell_balance_residual_m": {
+            "exact": true,
+            "passed": true,
+            "max_abs_difference": 0.0
+          }
+        },
+        "peak_process_rss_kib": 383220
+      }
+    ]
+  },
+  "source_manifest": {
+    "src/maple_syrup/__init__.py": "039be50eaa7bd7e21c5cb5a88a604dc2041c9fe60f723af4b63f7dca1366adbc",
+    "src/maple_syrup/benchmark_experiment.py": "37c9bce3e47fe4b82b505d6c337163d466317f748c1dcf073b80024242848020",
+    "src/maple_syrup/case_import.py": "21a87b9380296bd88b122a2ecb59f12d307bc43f39b279b2e25d0cdcaeaec056",
+    "src/maple_syrup/characteristic_numba.py": "07eaac65ec4d8f01737ffcee36ef4deeaa6a064dd7f77dd7445009553ade4852",
+    "src/maple_syrup/characteristic_transport.py": "5f1a9928e8de2b6f3e41b1b9f41db994908565c2104986a9d52903a3b0f6dd77",
+    "src/maple_syrup/checkpoint.py": "340dca782885cd5883d7f5886c7bc545cf4f0fa64bcb4d2b31ef502c6d662d0c",
+    "src/maple_syrup/column_experiment.py": "a533573442f5e8beb7451b11265e05b7823160fa3063aa670fcd9fef59e50dd9",
+    "src/maple_syrup/complete_event.py": "3e64d727768e84f93dd3543e620b6a809623d73f34fb441b5eb3844840180335",
+    "src/maple_syrup/conservation.py": "1072cdade368a76290c8a41162dfeb7a5b60ffaf970a7ede4707635bb3cf1bb1",
+    "src/maple_syrup/dependency.py": "b0c1875a0fa7ef1e67844da82b49f6cae0159bf177414cbdef9bac73d7698159",
+    "src/maple_syrup/event_experiment.py": "8c3d3e77cf3e7b952bba4c375af6960354224935ee4b1243521a30d800401682",
+    "src/maple_syrup/hydrology_numba.py": "449938573fa3f229defb02103f555c5a103ddcff9c4f5b13dc4c8467fc2f4666",
+    "src/maple_syrup/infiltration.py": "89c8f31c481cf4535d1006599f896383606d986b7922b8676aa37115a5a6d60a",
+    "src/maple_syrup/legacy_experiment.py": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1",
+    "src/maple_syrup/legacy_physics_numba.py": "abf0c4e5044352830a8d2cbe0750afdb126abe78b849f029023a5a09149e13da",
+    "src/maple_syrup/legacy_transport.py": "69f2fef5ce2a6562b48edfb3f732998b390f3a942788664bbcdc3fe775db2172",
+    "src/maple_syrup/probe.py": "af859fd93960d88f0ce205834b74dc906b0f5513d1a29d98c65649ee53750ef1",
+    "src/maple_syrup/provenance.py": "30945a037ded51402471a2f59192144b3b44f69cf7df7088472684d60bdfcaaa",
+    "src/maple_syrup/rainfall.py": "9680256608b2ca372bb88115ff5135f3bca6e350e7067968ebebb4f0b42c04b5",
+    "src/maple_syrup/routing.py": "ac4eef69e78a0cb44cff21f7e52c5a1b7972aa24b5bda7362d6154559641d3b7",
+    "src/maple_syrup/routing_numba.py": "d0fe99c3d90bf02a8e2712a36ab1181253ce125a439ee0f473035e530087582d",
+    "src/maple_syrup/sediment_bed.py": "bcf214d7d3b7d3d41496d3e1185caceb51a60dcd60dd9bdc8c41246e4711b4f2",
+    "src/maple_syrup/sediment_event.py": "2e864fd5ae7781ff8a1512e0649e5458ad0857b5fa69d49a2bb711276a16f4be",
+    "src/maple_syrup/sediment_experiment.py": "626fd563e5da9911d771f971c0326abb87867886683e138d11250ccb5afe4515",
+    "src/maple_syrup/sediment_physics.py": "e582356773ee14c301188bc70347a96e8294af878f61ab85a284eaf3ba02ffdb",
+    "src/maple_syrup/sediment_transport.py": "9fa27d7701768a54205755428a2dba48c829a1bd75c3b5a2f166d28ba5507a10",
+    "src/maple_syrup/storm.py": "ac1a5fda28ac03e68776ce24ea8f4f65eff471515e6f09cf97f52bff527f5a19",
+    "src/maple_syrup/storm_experiment.py": "46c91e891495eb4abdd3ca11b6b73bad4449c9d4e497583248fec6a9b086a969",
+    "tests/phase7j/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/phase7j/conftest.py": "1b96e2e12f7a8836e7a1a98ac1237b54d9bf9ba96bb13b9399783649e51bc95d",
+    "tests/phase7j/test_prepared_batched.py": "0a3ec26c3cd66f1dac1a7d78b50675c05525dab31a3e3d2d6d968a942710aeb4",
+    "tests/phase7j/test_sweep_batched.py": "af0cd1b964999701869fc15fc8cc121bd3aa195d63f721ddba4be20be2106d00",
+    "benchmarks/phase7j/bench_sweep.py": "7d0dcb47ebee999ab0d40f2890960522d51c39d277c3e8e266c8bfcfd805a518"
+  },
+  "baseline_sweep_diagnosis": {
+    "counts": {
+      "cells": 6480000,
+      "zero_rhs": 3580261,
+      "positive_rhs": 2899739
+    },
+    "dry_fraction": 0.552509413580247,
+    "samples": [
+      {
+        "time_s": 1,
+        "sweep_median_s": 0.0004495870089158416,
+        "hydrology_call_s": 2.3424035110510886,
+        "zero_rhs": 0,
+        "n": 1200
+      },
+      {
+        "time_s": 600,
+        "sweep_median_s": 0.00044989294838160276,
+        "hydrology_call_s": 0.0007478670449927449,
+        "zero_rhs": 0,
+        "n": 1200
+      },
+      {
+        "time_s": 1200,
+        "sweep_median_s": 0.0004502139054238796,
+        "hydrology_call_s": 0.0007635450456291437,
+        "zero_rhs": 0,
+        "n": 1200
+      },
+      {
+        "time_s": 1321,
+        "sweep_median_s": 0.00044981599785387516,
+        "hydrology_call_s": 0.0011451849713921547,
+        "zero_rhs": 0,
+        "n": 1200
+      },
+      {
+        "time_s": 1800,
+        "sweep_median_s": 0.0004376779543235898,
+        "hydrology_call_s": 0.0007159089436754584,
+        "zero_rhs": 298,
+        "n": 1200
+      },
+      {
+        "time_s": 2700,
+        "sweep_median_s": 0.00041305890772491693,
+        "hydrology_call_s": 0.0006803140277042985,
+        "zero_rhs": 855,
+        "n": 1200
+      },
+      {
+        "time_s": 3600,
+        "sweep_median_s": 0.000404963968321681,
+        "hydrology_call_s": 0.0007689560297876596,
+        "zero_rhs": 1048,
+        "n": 1200
+      },
+      {
+        "time_s": 5400,
+        "sweep_median_s": 0.0003981249174103141,
+        "hydrology_call_s": 0.0006615899037569761,
+        "zero_rhs": 1200,
+        "n": 1200
+      }
+    ],
+    "note": "observer overhead excluded from isolated sweep timings; first hydrology includes JIT; not end-to-end speed benchmark"
+  },
+  "tests": {
+    "existing_regression_passed": 411,
+    "new_tests_passed_after_fixture_corrections": 202,
+    "device_dependent_skipped": 5,
+    "direct_batched_original_fortran_tests": 6,
+    "initial_combined_run": "607passed5skipped6test-harnessfailures63.42s; six corrected in tests only; focused202passed8.79s",
+    "lint": "all checks passed"
+  },
+  "limits": [
+    "CPU prepared hydrology and default legacy replay only; conservative storm.evolve retains reference path",
+    "fixed geometry and frozen composition/unlimited supply/clipping-accounted sediment benchmark; not evolvingbed conservation",
+    "GPU kernels/backend equivalence not implemented/qualified here",
+    "existing positiveRain hpre strictguard roundoff limitation preserved"
+  ],
+  "claude_review": {
+    "task_file": "agent_handoffs/tasks/phase7j_routing_solver/final_claude_review.md",
+    "sha256": "ef2d988c2c0cce297dc7ceaa13b62e214ed405ee6d19d6bd1aa35833f9e6eb07",
+    "disposition": "accept, no blocking finding",
+    "executed_by_reviewer": false
+  }
+}

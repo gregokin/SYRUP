@@ -37,6 +37,7 @@ from maple_syrup.routing import RoutingError
 __all__ = [
     "NumbaUnavailableError",
     "compiled_sweep",
+    "compiled_sweep_batched",
     "numba_available",
     "numba_versions",
     "reset_compiled",
@@ -44,6 +45,7 @@ __all__ = [
 ]
 
 _SWEEP: Any = None
+_BATCHED: Any = None
 
 
 class NumbaUnavailableError(RoutingError):
@@ -107,26 +109,115 @@ def _sweep(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterations,
             rhs_lo[p] = rhs
 
 
+def _sweep_batched(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterations,
+                   qin_new_lo, q_new_lo, flow_lo, rhs_lo):
+    """Level-batched method-5 sweep, bit-identical to `_sweep` (same signature, same outputs).
+
+    Per level, in series: (1) for every cell the donor sum `((0 + d0) + d1) + d2) + d3` (non-donors add
+    0.0, donors are always in earlier levels) and `rhs = base + qin * c`, stored RAW; (2) the root
+    iterations OUTER and the independent cells INNER over contiguous scratch, with exactly the `_sweep`
+    multiply sequence and the strict `<` test; (3) `q = (sqrt(lo) * lo) * k` for every cell, always the
+    same formula.
+
+    Only cells with `rhs > 0.0` enter the root iterations. For `not (rhs > 0.0)` (+-0, negative, -inf,
+    NaN) `_sweep` provably leaves `lo = +0.0`: rhs = +-0 gives mid = +0, t = +0 and `0 < rhs` is False;
+    rhs < 0 gives a negative mid, NaN t (or +0 after underflow of w) and a False comparison; NaN
+    propagates to a False comparison. Positive tiny, subnormal and +inf rhs run the unchanged operations.
+    No threshold, no clipping. All four outputs are written for every active cell. Scratch is allocated
+    per call (never shared). No fastmath, no prange; one level's cells are independent, which is the
+    structure a device kernel (one launch/barrier per level, predicated lanes) would use."""
+    n_levels = bounds.shape[0] - 1
+    width = 1
+    for lev in range(n_levels):
+        width = max(width, bounds[lev + 1] - bounds[lev])
+    idx = np.empty(width, dtype=np.int64)
+    r_s = np.empty(width, dtype=np.float64)
+    k_s = np.empty(width, dtype=np.float64)
+    w_s = np.empty(width, dtype=np.float64)
+    l_s = np.empty(width, dtype=np.float64)
+    for lev in range(n_levels):
+        b0 = bounds[lev]
+        b1 = bounds[lev + 1]
+        m = 0
+        for p in range(b0, b1):
+            qin = 0.0
+            for s in range(4):
+                if donor_mask[s, p]:
+                    qin = qin + q_new_lo[donor_position[s, p]]
+                else:
+                    qin = qin + 0.0
+            rhs = base_lo[p] + qin * c
+            qin_new_lo[p] = qin
+            rhs_lo[p] = rhs
+            flow_lo[p] = 0.0
+            if rhs > 0.0:
+                idx[m] = p
+                r_s[m] = rhs
+                k_s[m] = k_lo[p]
+                w_s[m] = rhs
+                l_s[m] = 0.0
+                m += 1
+        for _ in range(iterations):
+            for j in range(m):
+                w = w_s[j] * 0.5
+                w_s[j] = w
+                lo = l_s[j]
+                mid = lo + w
+                t = np.sqrt(mid)
+                t = t * mid
+                t = t * k_s[j]
+                t = t * c
+                t = t + mid
+                if t < r_s[j]:
+                    l_s[j] = mid
+        for j in range(m):
+            flow_lo[idx[j]] = l_s[j]
+        for p in range(b0, b1):
+            lo = flow_lo[p]
+            q = np.sqrt(lo)
+            q = q * lo
+            q = q * k_lo[p]
+            q_new_lo[p] = q
+
+
+def _require_numba():
+    try:
+        import numba
+    except ImportError as exc:
+        raise NumbaUnavailableError(
+            "implementation 'numba' requested but Numba is not installed (optional extra "
+            "maple-syrup[numba]); there is no fallback to the array implementation"
+        ) from exc
+    return numba
+
+
 def compiled_sweep():
     """The nopython-compiled `_sweep` (compiled lazily, once per process)."""
     global _SWEEP
     if _SWEEP is None:
-        try:
-            import numba
-        except ImportError as exc:
-            raise NumbaUnavailableError(
-                "implementation 'numba' requested but Numba is not installed (optional extra "
-                "maple-syrup[numba]); there is no fallback to the array implementation"
-            ) from exc
+        numba = _require_numba()
         cache = os.environ.get("MAPLE_SYRUP_NUMBA_CACHE", "0") == "1"
         _SWEEP = numba.njit(cache=cache, fastmath=False, nogil=True, boundscheck=False)(_sweep)
     return _SWEEP
 
 
+def compiled_sweep_batched():
+    """The nopython-compiled level-batched `_sweep_batched` (CPU only; host NumPy arrays; same arguments and
+    bit-identical results as `compiled_sweep()`; compiled lazily, once per process; a missing Numba raises
+    `NumbaUnavailableError`, no fallback)."""
+    global _BATCHED
+    if _BATCHED is None:
+        numba = _require_numba()
+        cache = os.environ.get("MAPLE_SYRUP_NUMBA_CACHE", "0") == "1"
+        _BATCHED = numba.njit(cache=cache, fastmath=False, nogil=True, boundscheck=False)(_sweep_batched)
+    return _BATCHED
+
+
 def reset_compiled() -> None:
-    """Drop the compiled dispatcher (tests: cold-start and missing-Numba paths)."""
-    global _SWEEP
+    """Drop the compiled dispatchers (tests: cold-start and missing-Numba paths)."""
+    global _SWEEP, _BATCHED
     _SWEEP = None
+    _BATCHED = None
 
 
 def run_sweep(graph, base_lo: np.ndarray, c: float, iterations: int):

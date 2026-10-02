@@ -11,8 +11,9 @@ one-time preparation of everything that is constant in a fixed-terrain replay (g
 What is preserved (term by term, in the reference's expression and evaluation order): the Smith-Parlange
 capacity and its limits, linear drainage and saturation return (`infiltration.column_step`); the legacy
 branch precedence complete > no run-on > partial and the old-flux choice (`storm.coupled_step`); the coherent
-donor sum, the Courant/old-flux checks, the `[0, R]` bisection (executed by the existing compiled
-`routing_numba._sweep`, called from inside the kernel, not re-implemented), the storage identity and every
+donor sum, the Courant/old-flux checks, the `[0, R]` bisection (executed by the compiled level-batched
+`routing_numba._sweep_batched` (Phase 7j), called from inside the kernel; bitwise equal to the original
+`_sweep`, which stays the oracle), the storage identity and every
 per-cell/global balance check (`routing._route`). No fastmath, no prange, no changed timestep, no relaxed
 tolerance, no clipping. The scalar sums (storage change, export, balance scale, outlet discharge) are formed
 by `numpy.sum` on kernel-produced operand rows so their pairwise summation order is exactly the reference's.
@@ -92,7 +93,7 @@ from maple_syrup.routing import (
 )
 from maple_syrup.routing_numba import (
     NumbaUnavailableError,
-    compiled_sweep,
+    compiled_sweep_batched,
     numba_available,
     numba_versions,
 )
@@ -195,9 +196,10 @@ def _lowest_bit(flags: int) -> int:
 
 # --- kernels -----------------------------------------------------------------------------------------------
 def _build_kernels(numba: Any) -> SimpleNamespace:
-    """Define the nopython functions (Numba is imported lazily by the caller). `routing_numba._sweep` is
-    reused through its own dispatcher, so the bisection/donor-sum arithmetic is literally the reference's."""
-    sweep = compiled_sweep()  # raises NumbaUnavailableError if Numba is missing
+    """Define the nopython functions (Numba is imported lazily by the caller). The ordered sweep is the
+    level-batched `routing_numba._sweep_batched` (Phase 7j), reused through its own dispatcher; it is
+    bit-identical to the original `routing_numba._sweep` (still the reference, `compiled_sweep()`)."""
+    sweep = compiled_sweep_batched()  # raises NumbaUnavailableError if Numba is missing
     p23 = _TWO_THIRDS
     eps64 = _EPS64
     jit = numba.njit(cache=False, fastmath=False, nogil=True, boundscheck=False, error_model="numpy")
@@ -542,7 +544,9 @@ def kernel_provenance() -> dict[str, Any]:
         "module": "maple_syrup.hydrology_numba",
         "module_sha256": hashlib.sha256(here.read_bytes()).hexdigest(),
         "kernels": ["column_kernel (phase A)", "route_kernel (phases B1-B3)"],
-        "ordered_sweep": "maple_syrup.routing_numba._sweep via compiled_sweep(), called from inside route_kernel",
+        "ordered_sweep": "maple_syrup.routing_numba._sweep_batched via compiled_sweep_batched() (level-batched, "
+                         "zero/non-positive-RHS lanes skip the root iterations; bit-identical to _sweep), "
+                         "called from inside route_kernel",
         "routing_numba_sha256": hashlib.sha256(sweep_file.read_bytes()).hexdigest(),
         "numba_options": {"fastmath": False, "parallel": False, "nogil": True, "boundscheck": False,
                           "error_model": "numpy", "cache": False},
