@@ -1,0 +1,1726 @@
+{
+  "schema": "maple-syrup-phase7i-hydrology-comparison/1",
+  "targets_predeclared": {
+    "integrated_outlet_relative_difference": 0.01,
+    "peak_outlet_relative_difference": 0.01,
+    "peak_time_tolerance_s": 10.0,
+    "spatial_relative_l2": 0.01
+  },
+  "capture_run": "/home/okin/SYRUP/outputs/phase7i/mahleran_capture_run",
+  "capture_executable_sha256": "4bf0f01d0605a40e2475a30520d781fb8284afb72c67f6a924616abd834b87ce",
+  "capture_files_sha256": {
+    "Output/syrup_hydro_static.txt": "7cf6b3ecbb185c8e20f855d48579ffbc0e99a52edf7cd11dd4c00b9b1954451b",
+    "Output/syrup_hydro_steps.txt": "031160dd1972b65a2aae1cff01b18667800c98525ba94e256864c7fa292ec4cf",
+    "Output/syrup_hydro_final.txt": "fea0ce777badf7f14ec4a2430fd13837f27ff9e025c7d9d9c5f418239f65d999"
+  },
+  "earlier_run_identity": {
+    "identical": [
+      "SedChange.dat",
+      "aspct001.asc",
+      "depth001.asc",
+      "detac001.asc",
+      "dschg001.asc",
+      "hydro001.dat",
+      "ksat_001.asc",
+      "neter001.asc",
+      "pave.asc",
+      "seddisch001.dat",
+      "sedtr001.asc",
+      "sedtr001.dat",
+      "theta001.asc",
+      "veloc001.asc"
+    ],
+    "different": [],
+    "missing": [],
+    "all_numeric_outputs_identical": true,
+    "interpretation": "byte-identical rounded outputs: the derivative reproduces the earlier run; the captured field is that run's realization (bitwise equivalence of the unprinted state is not inferred from rounded files, only supported by it)"
+  },
+  "stock_consistency": {
+    "hydro001_outlet_rounded_mismatches": 0,
+    "hydro001_rows": 5400,
+    "ksat_map": {
+      "max_relative_difference": 0.0004671861699679737,
+      "bound": 0.0005000000005,
+      "printed_zero_cells_hiding_nonzero_capture": 0,
+      "consistent": true
+    },
+    "peak_depth_map": {
+      "max_relative_difference": 0.0004944670621816128,
+      "bound": 0.0005000000005,
+      "printed_zero_cells_hiding_nonzero_capture": 0,
+      "consistent": true
+    },
+    "peak_velocity_map": {
+      "max_relative_difference": 0.00047254621074640986,
+      "bound": 0.0005000000005,
+      "printed_zero_cells_hiding_nonzero_capture": 0,
+      "consistent": true
+    },
+    "ksat_map_consistent": true,
+    "peak_maps_consistent": true,
+    "model_dmax_minus_hook_copy_mm": 0.0,
+    "model_vmax_minus_hook_copy_mm_s": 0.0,
+    "hook_peak_copy_equals_model_maps": true
+  },
+  "comparison_sources_sha256": {
+    "compare_hydrology.py": "9cde904e93aaec416387bf1dfed230b8f2d6f8a0f840a1b419560040ffa247ab",
+    "capture_data.py": "59b69d29ede0523148eb3a6ada6b2d06c1bdb164f5f00046c825ce57455b780c",
+    "run_controlled_fortran.py": "b6011cf83b8ef475a357e6f0cc79e53bf0bc3aa4a033975b316aa3ef705fc7ec"
+  },
+  "legacy": {
+    "peak_time_single_precision_logic_s": 1321.0,
+    "peak_time_double_precision_s": 1321.0,
+    "peak_discharge_single_m3_s": 0.0001097796859741211,
+    "peak_discharge_double_m3_s": 0.0001097796814116199,
+    "argmax_single_equals_model_peak": true,
+    "argmax_double_equals_hook_peak": true,
+    "single_vs_double_max_relative_difference": 1.721759906902128e-07,
+    "endpoint_integral_double_m3": 0.10579439100311731,
+    "endpoint_integral_single_m3": 0.10579439127535958,
+    "endpoint_integral_stock_rounded_m3": 0.1057948743254811
+  },
+  "legacy_budget": {
+    "units": "m3",
+    "rain": 2.8968699649907648,
+    "soil_initial": 22.50000089406967,
+    "surface_final": 0.0,
+    "soil_final": 25.242141100388384,
+    "drainage": 0.05044303418801396,
+    "net_infiltration": 2.792583240506726,
+    "export_endpoint_sum_q_dt": 0.10579439100311731,
+    "export_cn_face": 0.1057682373553854,
+    "residual_with_cn_export": 0.0014815128713467907,
+    "residual_with_endpoint_export": 0.001507666519078743,
+    "note": "the original program keeps no water ledger: this is reconstructed from the hook's per-step sums"
+  },
+  "legacy_budget_reading": "the conservative CN face export closes the legacy budget to the stale-inflow gain and the Crank-Nicolson closure error; endpoint sums are the stock quantity",
+  "syrup": {
+    "dt1": {
+      "directory": "/home/okin/SYRUP/outputs/phase7i/syrup_hydrology_dt1",
+      "substeps": 1,
+      "implementation": "prepared",
+      "own_peak_time_s": 1321.0,
+      "own_peak_outlet_m3_s": 0.0001097506073367302,
+      "own_peak_time_offset_from_legacy_exact_single_s": 0.0,
+      "own_peak_time_offset_from_legacy_exact_double_s": 0.0,
+      "hydrograph_vs_stock_rounded": {
+        "reference_endpoint_integral_m3": 0.1057948743254811,
+        "test_endpoint_integral_m3": 0.10496610134310866,
+        "test_rounded_endpoint_integral_m3": 0.10496581060372902,
+        "integrated_relative_difference": -0.00783377254953481,
+        "reference_peak_m3_s": 0.00010980000000000001,
+        "test_peak_m3_s": 0.0001097506073367302,
+        "peak_relative_difference": -0.00044984210628249707,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1323.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.9058320424678673e-07,
+        "max_abs_difference_m3_s": 7.920084150464326e-07,
+        "time_of_max_abs_difference_s": 2025.0,
+        "rounding_floor_m3_s": 4.9920789910613004e-08,
+        "nash_sutcliffe": 0.9999058009232077,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.00783377254953481,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.00044984210628249707,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "hydrograph_vs_full_precision": {
+        "reference_endpoint_integral_m3": 0.10579439100311731,
+        "test_endpoint_integral_m3": 0.10496610134310866,
+        "test_rounded_endpoint_integral_m3": 0.10496581060372902,
+        "integrated_relative_difference": -0.007829239831667906,
+        "reference_peak_m3_s": 0.0001097796814116199,
+        "test_peak_m3_s": 0.0001097506073367302,
+        "peak_relative_difference": -0.0002648402192086103,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.9048979377389186e-07,
+        "max_abs_difference_m3_s": 7.877232530536837e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.9920789910613004e-08,
+        "nash_sutcliffe": 0.9999058600056033,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007829239831667906,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.0002648402192086103,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "hydrograph_vs_single_precision": {
+        "reference_endpoint_integral_m3": 0.10579439127535958,
+        "test_endpoint_integral_m3": 0.10496610134310866,
+        "test_rounded_endpoint_integral_m3": 0.10496581060372902,
+        "integrated_relative_difference": -0.007829242384835584,
+        "reference_peak_m3_s": 0.0001097796859741211,
+        "test_peak_m3_s": 0.0001097506073367302,
+        "peak_relative_difference": -0.00026488176872505503,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.904898370118581e-07,
+        "max_abs_difference_m3_s": 7.877237920240007e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.9920789910613004e-08,
+        "nash_sutcliffe": 0.9999058599782916,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007829242384835584,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.00026488176872505503,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "conservative_face_export_m3": 0.10494016207589314,
+      "one_second_sample_endpoint_integral_m3": 0.10496610134310866,
+      "native_dt_endpoint_integral_m3": 0.10496610134310866,
+      "endpoint_vs_conservative_export_m3": 2.5939267215516204e-05,
+      "budget": {
+        "bound_m3": 5.810992284032491e-07,
+        "bound_rule": "volume_roundoff_bound_m3(4 n_cells n_steps + 7, largest operand): the MAPLE summation coefficient used by benchmark_experiment (src/maple_syrup/benchmark_experiment.py 633-635)",
+        "closed": true,
+        "drainage": 0.0504418684692164,
+        "export": 0.10494016207589314,
+        "intake": 2.7919298029148703,
+        "rain": 2.8968699649907546,
+        "return": 0.0,
+        "soil_final": 25.241488828515315,
+        "soil_initial": 22.50000089406967,
+        "surface_final": 0.0,
+        "surface_initial": 0.0,
+        "units": "m3",
+        "water_residual_m3": -1.7763568394002505e-15
+      },
+      "parity_prepared_vs_reference": {
+        "atol": 1e-14,
+        "compared_steps": 5400,
+        "fields_over_bound": [],
+        "max_normalised_excess": 0.1761995205050189,
+        "max_normalised_excess_by_field": {
+          "step.column.depth_m": 0.00317538051116002,
+          "step.column.drainage_m": 2.6469517614242712e-09,
+          "step.column.dt_s": 0.0,
+          "step.column.intake_m": 8.066901893487584e-05,
+          "step.column.rain_m": 0.0,
+          "step.column.saturation_return_m": 0.0,
+          "step.column.soil_water_m": 8.508212433780336e-05,
+          "step.dt_s": 0.0,
+          "step.n_complete_runon": 0.0,
+          "step.n_no_runon": 0.0,
+          "step.n_partial_runon": 0.0,
+          "step.route.bisection_iterations": 0.0,
+          "step.route.budget_residual_m3": 6.911788849595088e-05,
+          "step.route.conservative": 0.0,
+          "step.route.depth_m": 0.0031754581652915256,
+          "step.route.discharge_m2_s": 0.0024073196324325276,
+          "step.route.dt_s": 0.0,
+          "step.route.export_m3": 2.4854801764742023e-05,
+          "step.route.face_volume_m3": 0.0006030505733893201,
+          "step.route.flow_depth_m": 0.09944260925422406,
+          "step.route.implementation": 0.0,
+          "step.route.inflow_m2_s": 0.0024073196324325276,
+          "step.route.max_cell_balance_residual_m": 5.8275866771095857e-05,
+          "step.route.max_constitutive_residual_m": 8.673617379880483e-05,
+          "step.route.max_courant_new": 0.0001863591366350817,
+          "step.route.max_courant_old": 0.00029653052770387087,
+          "step.route.old_discharge_m2_s": 0.0019292219174330057,
+          "step.route.old_inflow_m2_s": 0.0019292219174330057,
+          "step.route.outlet_discharge_m3_s": 2.5526833384673787e-05,
+          "step.route.stale_inflow_gain_m3": 0.0,
+          "step.route.storage_change_m3": 6.769396238570469e-05,
+          "step.route.velocity_m_s": 0.1761995205050189,
+          "step.state.depth_m": 0.0031754581652915256,
+          "step.state.discharge_m2_s": 0.0024073196324325276,
+          "step.state.soil_water_m": 8.508212433780336e-05,
+          "step.state.t_s": 0.0
+        },
+        "n_public_fields": 36,
+        "pass": true,
+        "rtol": 2e-12,
+        "structural_mismatch_fields": []
+      },
+      "conductivity": {
+        "max_mm_s": 0.003008843860339949,
+        "mean_mm_s": 0.0008790293950665602,
+        "min_mm_s": 1.6269477918941905e-06,
+        "n_cells": 1200,
+        "nominal_xml_mean_mm_s": 0.00025000000000000006,
+        "note": "the positive-truncated sample mean exceeds the nominal location parameter",
+        "sha256_of_m_per_s_bytes": "a7e043450cfd7dc6a865544ceffb0e019622b8f77b6fe47374e93a8cd69afda8",
+        "source": "full-precision realization captured from the application's own setup",
+        "std_mm_s": 0.0006170448047486217
+      },
+      "forcing": {
+        "distinct_rates": 5,
+        "log_consistency": {
+          "max_abs_difference_mm_h": 7.367134102764794e-07,
+          "n_steps": 5400,
+          "printing_half_ulp_mm_h": 0.005
+        },
+        "sha256": "9041b933b6a0065118f755d522095a6426ad84a7823b75208193213a99ee6d43",
+        "source": "exact per-step applied rate (single-precision rval widened), read before infilt",
+        "total_depth_mm": 9.656233216635883
+      },
+      "syrup_vs_legacy_totals": {
+        "rain_m3": {
+          "syrup": 2.8968699649907546,
+          "mahleran": 2.8968699649907648,
+          "relative": -3.525892411461418e-15
+        },
+        "drainage_m3": {
+          "syrup": 0.0504418684692164,
+          "mahleran": 0.05044303418801396,
+          "relative": -2.3109609013915106e-05
+        },
+        "net_infiltration_m3": {
+          "syrup": 2.7919298029148703,
+          "mahleran": 2.792583240506726,
+          "relative": -0.0002339903722036617
+        },
+        "surface_final_m3": {
+          "syrup": 0.0,
+          "mahleran": 0.0,
+          "relative": null
+        },
+        "soil_final_m3": {
+          "syrup": 25.241488828515315,
+          "mahleran": 25.242141100388384,
+          "relative": -2.584059214606654e-05
+        },
+        "conservative_export_m3": {
+          "syrup": 0.10494016207589314,
+          "mahleran_cn_face": 0.1057682373553854,
+          "relative": -0.00782914890327514
+        },
+        "one_second_sample_endpoint_integral_m3": {
+          "syrup": 0.10496610134310866,
+          "mahleran": 0.10579439100311731,
+          "relative": -0.007829239831667906
+        },
+        "native_dt_endpoint_integral_m3": {
+          "syrup": 0.10496610134310866,
+          "mahleran": 0.10579439100311731,
+          "relative": -0.007829239831667906
+        }
+      },
+      "spatial": {
+        "target_definition": "each model at its OWN peak-outlet step (legacy: the model's strict-greater single-precision running maximum, replicated by the hook); depth m, velocity m/s",
+        "own_peak_depth": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785247072626029,
+          "sum_ratio_test_over_reference": 0.9998597887623902,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522717182005026,
+          "rmse": 2.06808599575943e-07,
+          "max_abs_difference": 1.8981391967966277e-06,
+          "relative_l2": 0.00023784551854087195,
+          "pearson_r": 0.9999999728031522,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_velocity": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732499155126183,
+          "sum_ratio_test_over_reference": 0.9999443375283664,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129916118961705,
+          "rmse": 1.082152032392741e-06,
+          "max_abs_difference": 8.65416973898532e-06,
+          "relative_l2": 0.0001111982496228648,
+          "pearson_r": 0.9999999807015716,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_depth_vs_legacy_double_peak": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785247072626029,
+          "sum_ratio_test_over_reference": 0.9998597887623902,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522717182005026,
+          "rmse": 2.06808599575943e-07,
+          "max_abs_difference": 1.8981391967966277e-06,
+          "relative_l2": 0.00023784551854087195,
+          "pearson_r": 0.9999999728031522,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_velocity_vs_legacy_double_peak": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732499155126183,
+          "sum_ratio_test_over_reference": 0.9999443375283664,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129916118961705,
+          "rmse": 1.082152032392741e-06,
+          "max_abs_difference": 8.65416973898532e-06,
+          "relative_l2": 0.0001111982496228648,
+          "pearson_r": 0.9999999807015716,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "final_surface_depth": {
+          "reference_sum": 0.0,
+          "test_sum": 0.0,
+          "sum_ratio_test_over_reference": null,
+          "reference_max": 0.0,
+          "test_max": 0.0,
+          "rmse": 0.0,
+          "max_abs_difference": 0.0,
+          "relative_l2": null,
+          "pearson_r": null,
+          "cell_of_max_abs_difference_maple_row_col": [
+            0,
+            0
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": false,
+          "reference_is_zero": true,
+          "zero_match": true,
+          "note": "the legacy reference field is identically zero: no relative assessment; compare max_abs_difference",
+          "pass": null
+        },
+        "final_soil_water": {
+          "reference_sum": 100.9685644015535,
+          "test_sum": 100.96595531406126,
+          "sum_ratio_test_over_reference": 0.9999741594078544,
+          "reference_max": 0.08705392467324823,
+          "test_max": 0.08703714652456407,
+          "rmse": 3.914961727301035e-06,
+          "max_abs_difference": 2.6194428668843694e-05,
+          "relative_l2": 4.652743400228037e-05,
+          "pearson_r": 0.9999918523969965,
+          "cell_of_max_abs_difference_maple_row_col": [
+            20,
+            11
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "cumulative_drainage": {
+          "reference_sum": 0.20177213675205602,
+          "test_sum": 0.2017674738768656,
+          "sum_ratio_test_over_reference": 0.9999768903909853,
+          "reference_max": 0.0005769668101451,
+          "test_max": 0.0005769593983087213,
+          "rmse": 8.770450745153417e-09,
+          "max_abs_difference": 8.947053349627268e-08,
+          "relative_l2": 4.266093633938962e-05,
+          "pearson_r": 0.9999999986183823,
+          "cell_of_max_abs_difference_maple_row_col": [
+            20,
+            11
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_depth_at_legacy_single_peak_step_diagnostic": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785247072626029,
+          "sum_ratio_test_over_reference": 0.9998597887623902,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522717182005026,
+          "rmse": 2.06808599575943e-07,
+          "max_abs_difference": 1.8981391967966277e-06,
+          "relative_l2": 0.00023784551854087195,
+          "pearson_r": 0.9999999728031522,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_velocity_at_legacy_single_peak_step_diagnostic": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732499155126183,
+          "sum_ratio_test_over_reference": 0.9999443375283664,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129916118961705,
+          "rmse": 1.082152032392741e-06,
+          "max_abs_difference": 8.65416973898532e-06,
+          "relative_l2": 0.0001111982496228648,
+          "pearson_r": 0.9999999807015716,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_depth_at_legacy_double_peak_step_diagnostic": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785247072626029,
+          "sum_ratio_test_over_reference": 0.9998597887623902,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522717182005026,
+          "rmse": 2.06808599575943e-07,
+          "max_abs_difference": 1.8981391967966277e-06,
+          "relative_l2": 0.00023784551854087195,
+          "pearson_r": 0.9999999728031522,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_velocity_at_legacy_double_peak_step_diagnostic": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732499155126183,
+          "sum_ratio_test_over_reference": 0.9999443375283664,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129916118961705,
+          "rmse": 1.082152032392741e-06,
+          "max_abs_difference": 8.65416973898532e-06,
+          "relative_l2": 0.0001111982496228648,
+          "pearson_r": 0.9999999807015716,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        }
+      }
+    },
+    "dt0.5": {
+      "directory": "/home/okin/SYRUP/outputs/phase7i/syrup_hydrology_dt0p5",
+      "substeps": 2,
+      "implementation": "prepared",
+      "own_peak_time_s": 1321.0,
+      "own_peak_outlet_m3_s": 0.00010975014140754396,
+      "own_peak_time_offset_from_legacy_exact_single_s": 0.0,
+      "own_peak_time_offset_from_legacy_exact_double_s": 0.0,
+      "hydrograph_vs_stock_rounded": {
+        "reference_endpoint_integral_m3": 0.1057948743254811,
+        "test_endpoint_integral_m3": 0.10497872455858666,
+        "test_rounded_endpoint_integral_m3": 0.104978559138587,
+        "integrated_relative_difference": -0.007714454713406339,
+        "reference_peak_m3_s": 0.00010980000000000001,
+        "test_peak_m3_s": 0.00010975014140754396,
+        "peak_relative_difference": -0.0004540855414941344,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1323.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.862027842888783e-07,
+        "max_abs_difference_m3_s": 7.807395042270287e-07,
+        "time_of_max_abs_difference_s": 2025.0,
+        "rounding_floor_m3_s": 4.9858592456042405e-08,
+        "nash_sutcliffe": 0.9999086195402954,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007714454713406339,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.0004540855414941344,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "hydrograph_vs_full_precision": {
+        "reference_endpoint_integral_m3": 0.10579439100311731,
+        "test_endpoint_integral_m3": 0.10497872455858666,
+        "test_rounded_endpoint_integral_m3": 0.104978559138587,
+        "integrated_relative_difference": -0.007709921450435125,
+        "reference_peak_m3_s": 0.0001097796814116199,
+        "test_peak_m3_s": 0.00010975014140754396,
+        "peak_relative_difference": -0.000269084439817074,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.861097579559244e-07,
+        "max_abs_difference_m3_s": 7.764546007996793e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.9858592456042405e-08,
+        "nash_sutcliffe": 0.9999086775085181,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007709921450435125,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.000269084439817074,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "hydrograph_vs_single_precision": {
+        "reference_endpoint_integral_m3": 0.10579439127535958,
+        "test_endpoint_integral_m3": 0.10497872455858666,
+        "test_rounded_endpoint_integral_m3": 0.104978559138587,
+        "integrated_relative_difference": -0.007709924003909847,
+        "reference_peak_m3_s": 0.0001097796859741211,
+        "test_peak_m3_s": 0.00010975014140754396,
+        "peak_relative_difference": -0.0002691259891571267,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.861098003299373e-07,
+        "max_abs_difference_m3_s": 7.764551397699963e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.9858592456042405e-08,
+        "nash_sutcliffe": 0.9999086774821592,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007709924003909847,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.0002691259891571267,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "conservative_face_export_m3": 0.10496574575357252,
+      "one_second_sample_endpoint_integral_m3": 0.10497872455858666,
+      "native_dt_endpoint_integral_m3": 0.10497871395894884,
+      "endpoint_vs_conservative_export_m3": 1.2968205376315267e-05,
+      "budget": {
+        "bound_m3": 1.1621971121303518e-06,
+        "bound_rule": "volume_roundoff_bound_m3(4 n_cells n_steps + 7, largest operand): the MAPLE summation coefficient used by benchmark_experiment (src/maple_syrup/benchmark_experiment.py 633-635)",
+        "closed": true,
+        "drainage": 0.0504420810906482,
+        "export": 0.10496574575357252,
+        "intake": 2.791904219237191,
+        "rain": 2.8968699649906924,
+        "return": 0.0,
+        "soil_final": 25.241463032216213,
+        "soil_initial": 22.50000089406967,
+        "surface_final": 0.0,
+        "surface_initial": 0.0,
+        "units": "m3",
+        "water_residual_m3": 6.750155989720952e-14
+      },
+      "parity_prepared_vs_reference": null,
+      "conductivity": {
+        "max_mm_s": 0.003008843860339949,
+        "mean_mm_s": 0.0008790293950665602,
+        "min_mm_s": 1.6269477918941905e-06,
+        "n_cells": 1200,
+        "nominal_xml_mean_mm_s": 0.00025000000000000006,
+        "note": "the positive-truncated sample mean exceeds the nominal location parameter",
+        "sha256_of_m_per_s_bytes": "a7e043450cfd7dc6a865544ceffb0e019622b8f77b6fe47374e93a8cd69afda8",
+        "source": "full-precision realization captured from the application's own setup",
+        "std_mm_s": 0.0006170448047486217
+      },
+      "forcing": {
+        "distinct_rates": 5,
+        "log_consistency": {
+          "max_abs_difference_mm_h": 7.367134102764794e-07,
+          "n_steps": 5400,
+          "printing_half_ulp_mm_h": 0.005
+        },
+        "sha256": "9041b933b6a0065118f755d522095a6426ad84a7823b75208193213a99ee6d43",
+        "source": "exact per-step applied rate (single-precision rval widened), read before infilt",
+        "total_depth_mm": 9.656233216635883
+      },
+      "syrup_vs_legacy_totals": {
+        "rain_m3": {
+          "syrup": 2.8968699649906924,
+          "mahleran": 2.8968699649907648,
+          "relative": -2.4987846220357003e-14
+        },
+        "drainage_m3": {
+          "syrup": 0.0504420810906482,
+          "mahleran": 0.05044303418801396,
+          "relative": -1.8894528870205817e-05
+        },
+        "net_infiltration_m3": {
+          "syrup": 2.791904219237191,
+          "mahleran": 2.792583240506726,
+          "relative": -0.00024315166677435515
+        },
+        "surface_final_m3": {
+          "syrup": 0.0,
+          "mahleran": 0.0,
+          "relative": null
+        },
+        "soil_final_m3": {
+          "syrup": 25.241463032216213,
+          "mahleran": 25.242141100388384,
+          "relative": -2.68625458305643e-05
+        },
+        "conservative_export_m3": {
+          "syrup": 0.10496574575357252,
+          "mahleran_cn_face": 0.1057682373553854,
+          "relative": -0.00758726458791666
+        },
+        "one_second_sample_endpoint_integral_m3": {
+          "syrup": 0.10497872455858666,
+          "mahleran": 0.10579439100311731,
+          "relative": -0.007709921450435125
+        },
+        "native_dt_endpoint_integral_m3": {
+          "syrup": 0.10497871395894884,
+          "mahleran": 0.10579439100311731,
+          "relative": -0.007710021641359424
+        }
+      },
+      "spatial": {
+        "target_definition": "each model at its OWN peak-outlet step (legacy: the model's strict-greater single-precision running maximum, replicated by the hook); depth m, velocity m/s",
+        "own_peak_depth": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785207767499907,
+          "sum_ratio_test_over_reference": 0.9998547408024815,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522671907900357,
+          "rmse": 2.0953821296198806e-07,
+          "max_abs_difference": 1.8683771596129245e-06,
+          "relative_l2": 0.00024098478021834197,
+          "pearson_r": 0.9999999734795126,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_velocity": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732477307476847,
+          "sum_ratio_test_over_reference": 0.9999423019881883,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.02212978485644741,
+          "rmse": 1.096124727967573e-06,
+          "max_abs_difference": 8.801603596824553e-06,
+          "relative_l2": 0.00011263403613337847,
+          "pearson_r": 0.999999980862764,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_depth_vs_legacy_double_peak": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785207767499907,
+          "sum_ratio_test_over_reference": 0.9998547408024815,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522671907900357,
+          "rmse": 2.0953821296198806e-07,
+          "max_abs_difference": 1.8683771596129245e-06,
+          "relative_l2": 0.00024098478021834197,
+          "pearson_r": 0.9999999734795126,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_velocity_vs_legacy_double_peak": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732477307476847,
+          "sum_ratio_test_over_reference": 0.9999423019881883,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.02212978485644741,
+          "rmse": 1.096124727967573e-06,
+          "max_abs_difference": 8.801603596824553e-06,
+          "relative_l2": 0.00011263403613337847,
+          "pearson_r": 0.999999980862764,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "final_surface_depth": {
+          "reference_sum": 0.0,
+          "test_sum": 0.0,
+          "sum_ratio_test_over_reference": null,
+          "reference_max": 0.0,
+          "test_max": 0.0,
+          "rmse": 0.0,
+          "max_abs_difference": 0.0,
+          "relative_l2": null,
+          "pearson_r": null,
+          "cell_of_max_abs_difference_maple_row_col": [
+            0,
+            0
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": false,
+          "reference_is_zero": true,
+          "zero_match": true,
+          "note": "the legacy reference field is identically zero: no relative assessment; compare max_abs_difference",
+          "pass": null
+        },
+        "final_soil_water": {
+          "reference_sum": 100.9685644015535,
+          "test_sum": 100.96585212886485,
+          "sum_ratio_test_over_reference": 0.9999731374541698,
+          "reference_max": 0.08705392467324823,
+          "test_max": 0.08703691864402224,
+          "rmse": 3.971481393243686e-06,
+          "max_abs_difference": 2.6105340264009902e-05,
+          "relative_l2": 4.7199143002304375e-05,
+          "pearson_r": 0.9999917617241253,
+          "cell_of_max_abs_difference_maple_row_col": [
+            20,
+            11
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "cumulative_drainage": {
+          "reference_sum": 0.20177213675205602,
+          "test_sum": 0.2017683243625928,
+          "sum_ratio_test_over_reference": 0.999981105471129,
+          "reference_max": 0.0005769668101451,
+          "test_max": 0.0005769627094921814,
+          "rmse": 8.141036051114886e-09,
+          "max_abs_difference": 8.585419192632185e-08,
+          "relative_l2": 3.959935820917866e-05,
+          "pearson_r": 0.9999999986692917,
+          "cell_of_max_abs_difference_maple_row_col": [
+            20,
+            11
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_depth_at_legacy_single_peak_step_diagnostic": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785207767499907,
+          "sum_ratio_test_over_reference": 0.9998547408024815,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522671907900357,
+          "rmse": 2.0953821296198806e-07,
+          "max_abs_difference": 1.8683771596129245e-06,
+          "relative_l2": 0.00024098478021834197,
+          "pearson_r": 0.9999999734795126,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_velocity_at_legacy_single_peak_step_diagnostic": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732477307476847,
+          "sum_ratio_test_over_reference": 0.9999423019881883,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.02212978485644741,
+          "rmse": 1.096124727967573e-06,
+          "max_abs_difference": 8.801603596824553e-06,
+          "relative_l2": 0.00011263403613337847,
+          "pearson_r": 0.999999980862764,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_depth_at_legacy_double_peak_step_diagnostic": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785207767499907,
+          "sum_ratio_test_over_reference": 0.9998547408024815,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522671907900357,
+          "rmse": 2.0953821296198806e-07,
+          "max_abs_difference": 1.8683771596129245e-06,
+          "relative_l2": 0.00024098478021834197,
+          "pearson_r": 0.9999999734795126,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_velocity_at_legacy_double_peak_step_diagnostic": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732477307476847,
+          "sum_ratio_test_over_reference": 0.9999423019881883,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.02212978485644741,
+          "rmse": 1.096124727967573e-06,
+          "max_abs_difference": 8.801603596824553e-06,
+          "relative_l2": 0.00011263403613337847,
+          "pearson_r": 0.999999980862764,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        }
+      }
+    },
+    "dt0.25": {
+      "directory": "/home/okin/SYRUP/outputs/phase7i/syrup_hydrology_dt0p25",
+      "substeps": 4,
+      "implementation": "prepared",
+      "own_peak_time_s": 1321.0,
+      "own_peak_outlet_m3_s": 0.00010974993246893759,
+      "own_peak_time_offset_from_legacy_exact_single_s": 0.0,
+      "own_peak_time_offset_from_legacy_exact_double_s": 0.0,
+      "hydrograph_vs_stock_rounded": {
+        "reference_endpoint_integral_m3": 0.1057948743254811,
+        "test_endpoint_integral_m3": 0.10498505668962302,
+        "test_rounded_endpoint_integral_m3": 0.10498464547197559,
+        "integrated_relative_difference": -0.007654601803927199,
+        "reference_peak_m3_s": 0.00010980000000000001,
+        "test_peak_m3_s": 0.00010974993246893759,
+        "peak_relative_difference": -0.0004559884431914562,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1323.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1320.0,
+          1326.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.8401365650567474e-07,
+        "max_abs_difference_m3_s": 7.751122272841863e-07,
+        "time_of_max_abs_difference_s": 2025.0,
+        "rounding_floor_m3_s": 4.993246893759409e-08,
+        "nash_sutcliffe": 0.9999100121085078,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007654601803927199,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.0004559884431914562,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "hydrograph_vs_full_precision": {
+        "reference_endpoint_integral_m3": 0.10579439100311731,
+        "test_endpoint_integral_m3": 0.10498505668962302,
+        "test_rounded_endpoint_integral_m3": 0.10498464547197559,
+        "integrated_relative_difference": -0.007650068267517578,
+        "reference_peak_m3_s": 0.0001097796814116199,
+        "test_peak_m3_s": 0.00010974993246893759,
+        "peak_relative_difference": -0.00027098769371323463,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1320.0,
+          1326.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.8392083850090515e-07,
+        "max_abs_difference_m3_s": 7.708274898712017e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.993246893759409e-08,
+        "nash_sutcliffe": 0.999910069512123,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007650068267517578,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.00027098769371323463,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "hydrograph_vs_single_precision": {
+        "reference_endpoint_integral_m3": 0.10579439127535958,
+        "test_endpoint_integral_m3": 0.10498505668962302,
+        "test_rounded_endpoint_integral_m3": 0.10498464547197559,
+        "integrated_relative_difference": -0.007650070821146321,
+        "reference_peak_m3_s": 0.0001097796859741211,
+        "test_peak_m3_s": 0.00010974993246893759,
+        "peak_relative_difference": -0.0002710292429741871,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1320.0,
+          1326.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.839208804275817e-07,
+        "max_abs_difference_m3_s": 7.708280288415187e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.993246893759409e-08,
+        "nash_sutcliffe": 0.9999100694862438,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.007650070821146321,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.0002710292429741871,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "conservative_face_export_m3": 0.10497855973343151,
+      "one_second_sample_endpoint_integral_m3": 0.10498505668962302,
+      "native_dt_endpoint_integral_m3": 0.10498504346678743,
+      "endpoint_vs_conservative_export_m3": 6.48373335591923e-06,
+      "budget": {
+        "bound_m3": 2.3243928775574676e-06,
+        "bound_rule": "volume_roundoff_bound_m3(4 n_cells n_steps + 7, largest operand): the MAPLE summation coefficient used by benchmark_experiment (src/maple_syrup/benchmark_experiment.py 633-635)",
+        "closed": true,
+        "drainage": 0.050442187275883996,
+        "export": 0.10497855973343151,
+        "intake": 2.791891405257336,
+        "rain": 2.8968699649906986,
+        "return": 0.0,
+        "soil_final": 25.241450112051126,
+        "soil_initial": 22.50000089406967,
+        "surface_final": 0.0,
+        "surface_initial": 0.0,
+        "units": "m3",
+        "water_residual_m3": 7.194245199571014e-14
+      },
+      "parity_prepared_vs_reference": null,
+      "conductivity": {
+        "max_mm_s": 0.003008843860339949,
+        "mean_mm_s": 0.0008790293950665602,
+        "min_mm_s": 1.6269477918941905e-06,
+        "n_cells": 1200,
+        "nominal_xml_mean_mm_s": 0.00025000000000000006,
+        "note": "the positive-truncated sample mean exceeds the nominal location parameter",
+        "sha256_of_m_per_s_bytes": "a7e043450cfd7dc6a865544ceffb0e019622b8f77b6fe47374e93a8cd69afda8",
+        "source": "full-precision realization captured from the application's own setup",
+        "std_mm_s": 0.0006170448047486217
+      },
+      "forcing": {
+        "distinct_rates": 5,
+        "log_consistency": {
+          "max_abs_difference_mm_h": 7.367134102764794e-07,
+          "n_steps": 5400,
+          "printing_half_ulp_mm_h": 0.005
+        },
+        "sha256": "9041b933b6a0065118f755d522095a6426ad84a7823b75208193213a99ee6d43",
+        "source": "exact per-step applied rate (single-precision rval widened), read before infilt",
+        "total_depth_mm": 9.656233216635883
+      },
+      "syrup_vs_legacy_totals": {
+        "rain_m3": {
+          "syrup": 2.8968699649906986,
+          "mahleran": 2.8968699649907648,
+          "relative": -2.2841650839467446e-14
+        },
+        "drainage_m3": {
+          "syrup": 0.050442187275883996,
+          "mahleran": 0.05044303418801396,
+          "relative": -1.6789476358835073e-05
+        },
+        "net_infiltration_m3": {
+          "syrup": 2.791891405257336,
+          "mahleran": 2.792583240506726,
+          "relative": -0.0002477402425665132
+        },
+        "surface_final_m3": {
+          "syrup": 0.0,
+          "mahleran": 0.0,
+          "relative": null
+        },
+        "soil_final_m3": {
+          "syrup": 25.241450112051126,
+          "mahleran": 25.242141100388384,
+          "relative": -2.7374394846689926e-05
+        },
+        "conservative_export_m3": {
+          "syrup": 0.10497855973343151,
+          "mahleran_cn_face": 0.1057682373553854,
+          "relative": -0.007466113094997944
+        },
+        "one_second_sample_endpoint_integral_m3": {
+          "syrup": 0.10498505668962302,
+          "mahleran": 0.10579439100311731,
+          "relative": -0.007650068267517578
+        },
+        "native_dt_endpoint_integral_m3": {
+          "syrup": 0.10498504346678743,
+          "mahleran": 0.10579439100311731,
+          "relative": -0.007650193253686173
+        }
+      },
+      "spatial": {
+        "target_definition": "each model at its OWN peak-outlet step (legacy: the model's strict-greater single-precision running maximum, replicated by the hook); depth m, velocity m/s",
+        "own_peak_depth": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785188385223798,
+          "sum_ratio_test_over_reference": 0.9998522515354981,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522646930312237,
+          "rmse": 2.1102441721208376e-07,
+          "max_abs_difference": 1.8546262481045073e-06,
+          "relative_l2": 0.00024269402742201952,
+          "pearson_r": 0.9999999737407682,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_velocity": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732466326182848,
+          "sum_ratio_test_over_reference": 0.9999412788636957,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129714941546863,
+          "rmse": 1.103782115381248e-06,
+          "max_abs_difference": 8.88203216175415e-06,
+          "relative_l2": 0.00011342088313047009,
+          "pearson_r": 0.9999999808799891,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_depth_vs_legacy_double_peak": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785188385223798,
+          "sum_ratio_test_over_reference": 0.9998522515354981,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522646930312237,
+          "rmse": 2.1102441721208376e-07,
+          "max_abs_difference": 1.8546262481045073e-06,
+          "relative_l2": 0.00024269402742201952,
+          "pearson_r": 0.9999999737407682,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "own_peak_velocity_vs_legacy_double_peak": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732466326182848,
+          "sum_ratio_test_over_reference": 0.9999412788636957,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129714941546863,
+          "rmse": 1.103782115381248e-06,
+          "max_abs_difference": 8.88203216175415e-06,
+          "relative_l2": 0.00011342088313047009,
+          "pearson_r": 0.9999999808799891,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "final_surface_depth": {
+          "reference_sum": 0.0,
+          "test_sum": 0.0,
+          "sum_ratio_test_over_reference": null,
+          "reference_max": 0.0,
+          "test_max": 0.0,
+          "rmse": 0.0,
+          "max_abs_difference": 0.0,
+          "relative_l2": null,
+          "pearson_r": null,
+          "cell_of_max_abs_difference_maple_row_col": [
+            0,
+            0
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": false,
+          "reference_is_zero": true,
+          "zero_match": true,
+          "note": "the legacy reference field is identically zero: no relative assessment; compare max_abs_difference",
+          "pass": null
+        },
+        "final_soil_water": {
+          "reference_sum": 100.9685644015535,
+          "test_sum": 100.9658004482045,
+          "sum_ratio_test_over_reference": 0.9999726256051538,
+          "reference_max": 0.08705392467324823,
+          "test_max": 0.08703680256895395,
+          "rmse": 4.0006949310793196e-06,
+          "max_abs_difference": 2.6065351253268254e-05,
+          "relative_l2": 4.754633182515849e-05,
+          "pearson_r": 0.9999917118318341,
+          "cell_of_max_abs_difference_maple_row_col": [
+            20,
+            11
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "cumulative_drainage": {
+          "reference_sum": 0.20177213675205602,
+          "test_sum": 0.20176874910353598,
+          "sum_ratio_test_over_reference": 0.9999832105236404,
+          "reference_max": 0.0005769668101451,
+          "test_max": 0.0005769643321352802,
+          "rmse": 7.844490894989688e-09,
+          "max_abs_difference": 8.406170887349275e-08,
+          "relative_l2": 3.815691307211402e-05,
+          "pearson_r": 0.9999999986934529,
+          "cell_of_max_abs_difference_maple_row_col": [
+            20,
+            11
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_depth_at_legacy_single_peak_step_diagnostic": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785188385223798,
+          "sum_ratio_test_over_reference": 0.9998522515354981,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522646930312237,
+          "rmse": 2.1102441721208376e-07,
+          "max_abs_difference": 1.8546262481045073e-06,
+          "relative_l2": 0.00024269402742201952,
+          "pearson_r": 0.9999999737407682,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_velocity_at_legacy_single_peak_step_diagnostic": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732466326182848,
+          "sum_ratio_test_over_reference": 0.9999412788636957,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129714941546863,
+          "rmse": 1.103782115381248e-06,
+          "max_abs_difference": 8.88203216175415e-06,
+          "relative_l2": 0.00011342088313047009,
+          "pearson_r": 0.9999999808799891,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_depth_at_legacy_double_peak_step_diagnostic": {
+          "reference_sum": 0.7786338804826303,
+          "test_sum": 0.7785188385223798,
+          "sum_ratio_test_over_reference": 0.9998522515354981,
+          "reference_max": 0.004523282242287691,
+          "test_max": 0.004522646930312237,
+          "rmse": 2.1102441721208376e-07,
+          "max_abs_difference": 1.8546262481045073e-06,
+          "relative_l2": 0.00024269402742201952,
+          "pearson_r": 0.9999999737407682,
+          "cell_of_max_abs_difference_maple_row_col": [
+            16,
+            5
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        },
+        "synchronous_velocity_at_legacy_double_peak_step_diagnostic": {
+          "reference_sum": 10.733096585810431,
+          "test_sum": 10.732466326182848,
+          "sum_ratio_test_over_reference": 0.9999412788636957,
+          "reference_max": 0.022131658382103125,
+          "test_max": 0.022129714941546863,
+          "rmse": 1.103782115381248e-06,
+          "max_abs_difference": 8.88203216175415e-06,
+          "relative_l2": 0.00011342088313047009,
+          "pearson_r": 0.9999999808799891,
+          "cell_of_max_abs_difference_maple_row_col": [
+            17,
+            17
+          ],
+          "target_relative_l2": 0.01,
+          "evaluable": true,
+          "pass": true
+        }
+      }
+    }
+  },
+  "sensitivity": [
+    {
+      "label": "MAHLERAN application dt=1 (full precision)",
+      "one_second_sample_endpoint_integral_m3": 0.10579439100311731,
+      "native_dt_endpoint_integral_m3": 0.10579439100311731,
+      "peak_m3_s": 0.0001097796814116199,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.1057682373553854
+    },
+    {
+      "label": "dt1",
+      "one_second_sample_endpoint_integral_m3": 0.10496610134310866,
+      "native_dt_endpoint_integral_m3": 0.10496610134310866,
+      "native_dt_integral_relative_difference_vs_legacy_endpoint": -0.007829239831667906,
+      "integrated_relative_difference": -0.007829239831667906,
+      "peak_m3_s": 0.0001097506073367302,
+      "peak_relative_difference": -0.0002648402192086103,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.10494016207589314,
+      "rmse_m3_s": 2.9048979377389186e-07,
+      "nash_sutcliffe": 0.9999058600056033
+    },
+    {
+      "label": "dt0.5",
+      "one_second_sample_endpoint_integral_m3": 0.10497872455858666,
+      "native_dt_endpoint_integral_m3": 0.10497871395894884,
+      "native_dt_integral_relative_difference_vs_legacy_endpoint": -0.007710021641359424,
+      "integrated_relative_difference": -0.007709921450435125,
+      "peak_m3_s": 0.00010975014140754396,
+      "peak_relative_difference": -0.000269084439817074,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.10496574575357252,
+      "rmse_m3_s": 2.861097579559244e-07,
+      "nash_sutcliffe": 0.9999086775085181
+    },
+    {
+      "label": "dt0.25",
+      "one_second_sample_endpoint_integral_m3": 0.10498505668962302,
+      "native_dt_endpoint_integral_m3": 0.10498504346678743,
+      "native_dt_integral_relative_difference_vs_legacy_endpoint": -0.007650193253686173,
+      "integrated_relative_difference": -0.007650068267517578,
+      "peak_m3_s": 0.00010974993246893759,
+      "peak_relative_difference": -0.00027098769371323463,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.10497855973343151,
+      "rmse_m3_s": 2.8392083850090515e-07,
+      "nash_sutcliffe": 0.999910069512123
+    },
+    {
+      "label": "dt1",
+      "one_second_sample_endpoint_integral_m3": 0.10579439100311731,
+      "native_dt_endpoint_integral_m3": 0.10579439100311731,
+      "native_dt_integral_relative_difference_vs_legacy_endpoint": 0.0,
+      "integrated_relative_difference": 0.0,
+      "peak_m3_s": 0.0001097796814116199,
+      "peak_relative_difference": 0.0,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.10576823735538521,
+      "rmse_m3_s": 0.0,
+      "nash_sutcliffe": 1.0
+    },
+    {
+      "label": "dt0.5",
+      "one_second_sample_endpoint_integral_m3": 0.10539130066347996,
+      "native_dt_endpoint_integral_m3": 0.10539129014015618,
+      "native_dt_integral_relative_difference_vs_legacy_endpoint": -0.0038102290597736782,
+      "integrated_relative_difference": -0.0038101295901923323,
+      "peak_m3_s": 0.00010976467151144663,
+      "peak_relative_difference": -0.00013672748891473612,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.10537826850878557,
+      "rmse_m3_s": 1.4134706506075463e-07,
+      "nash_sutcliffe": 0.9999777112351682
+    },
+    {
+      "label": "dt0.25",
+      "one_second_sample_endpoint_integral_m3": 0.10519096087334762,
+      "native_dt_endpoint_integral_m3": 0.10519094767817797,
+      "native_dt_integral_relative_difference_vs_legacy_endpoint": -0.005703925503210917,
+      "integrated_relative_difference": -0.005703800778548992,
+      "peak_m3_s": 0.00010975720206002602,
+      "peak_relative_difference": -0.00020476787056426273,
+      "peak_time_s": 1321.0,
+      "conservative_export_m3": 0.10518445060929722,
+      "rmse_m3_s": 2.116580991704737e-07,
+      "nash_sutcliffe": 0.9999500216177063
+    }
+  ],
+  "controlled": {
+    "dt1": {
+      "directory": "/home/okin/SYRUP/outputs/phase7i/controlled_dt1",
+      "dt_s": 1.0,
+      "executable_sha256": "33e742587532e020bda23edb88cbcc6b0b96a0dc09034e99c04c2e216afeb35b",
+      "driver_source_sha256": "be32e554a031e12a7d22830a4a58ee3e31c8acf78ffc0ec6a5b4854956f05b01",
+      "hydrograph_vs_full_precision": {
+        "reference_endpoint_integral_m3": 0.10579439100311731,
+        "test_endpoint_integral_m3": 0.10579439100311731,
+        "test_rounded_endpoint_integral_m3": 0.10579488442548107,
+        "integrated_relative_difference": 0.0,
+        "reference_peak_m3_s": 0.0001097796814116199,
+        "test_peak_m3_s": 0.0001097796814116199,
+        "peak_relative_difference": 0.0,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1323.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 0.0,
+        "max_abs_difference_m3_s": 0.0,
+        "time_of_max_abs_difference_s": 1.0,
+        "rounding_floor_m3_s": 4.961915883838872e-08,
+        "nash_sutcliffe": 1.0,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": 0.0,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": 0.0,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "final_budget_residual_m3": 0.0014815128713849823,
+      "final_stale_gain_m3": 0.0014812897938930663,
+      "final_closure_sum_m3": 2.230774390139574e-07,
+      "residual_minus_stale_minus_closure_m3": 5.2902071695670223e-14,
+      "driver_export_m3": 0.10576823735538521,
+      "driver_bracket_end_count": 0.0,
+      "max_closure_m": 5.1446673587918214e-12,
+      "application_vs_driver_max_abs_outlet_m3_s": 0.0,
+      "application_vs_driver_max_relative_outlet": 0.0,
+      "application_cn_export_vs_driver_export_m3": -1.942890293094024e-16
+    },
+    "dt0.5": {
+      "directory": "/home/okin/SYRUP/outputs/phase7i/controlled_dt0p5",
+      "dt_s": 0.5,
+      "executable_sha256": "33e742587532e020bda23edb88cbcc6b0b96a0dc09034e99c04c2e216afeb35b",
+      "driver_source_sha256": "be32e554a031e12a7d22830a4a58ee3e31c8acf78ffc0ec6a5b4854956f05b01",
+      "hydrograph_vs_full_precision": {
+        "reference_endpoint_integral_m3": 0.10579439100311731,
+        "test_endpoint_integral_m3": 0.10539130066347996,
+        "test_rounded_endpoint_integral_m3": 0.1053910565775601,
+        "integrated_relative_difference": -0.0038101295901923323,
+        "reference_peak_m3_s": 0.0001097796814116199,
+        "test_peak_m3_s": 0.00010976467151144663,
+        "peak_relative_difference": -0.00013672748891473612,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1322.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 1.4134706506075463e-07,
+        "max_abs_difference_m3_s": 3.8378033411457863e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.916316223694845e-08,
+        "nash_sutcliffe": 0.9999777112351682,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.0038101295901923323,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.00013672748891473612,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "final_budget_residual_m3": 0.0007385526578334023,
+      "final_stale_gain_m3": 0.0007380879196192551,
+      "final_closure_sum_m3": 4.6473823414208254e-07,
+      "residual_minus_stale_minus_closure_m3": -1.99948945814603e-14,
+      "driver_export_m3": 0.10537826850878557,
+      "driver_bracket_end_count": 0.0,
+      "max_closure_m": 5.058856444861704e-12
+    },
+    "dt0.25": {
+      "directory": "/home/okin/SYRUP/outputs/phase7i/controlled_dt0p25",
+      "dt_s": 0.25,
+      "executable_sha256": "33e742587532e020bda23edb88cbcc6b0b96a0dc09034e99c04c2e216afeb35b",
+      "driver_source_sha256": "be32e554a031e12a7d22830a4a58ee3e31c8acf78ffc0ec6a5b4854956f05b01",
+      "hydrograph_vs_full_precision": {
+        "reference_endpoint_integral_m3": 0.10579439100311731,
+        "test_endpoint_integral_m3": 0.10519096087334762,
+        "test_rounded_endpoint_integral_m3": 0.10519092592431109,
+        "integrated_relative_difference": -0.005703800778548992,
+        "reference_peak_m3_s": 0.0001097796814116199,
+        "test_peak_m3_s": 0.00010975720206002602,
+        "peak_relative_difference": -0.00020476787056426273,
+        "reference_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "test_peak_time_s": 1321.0,
+        "test_rounded_peak_plateau_s": [
+          1321.0,
+          1321.0
+        ],
+        "peak_time_offset_from_plateau_s": 0.0,
+        "rmse_m3_s": 2.116580991704737e-07,
+        "max_abs_difference_m3_s": 5.747804914700902e-07,
+        "time_of_max_abs_difference_s": 2036.0,
+        "rounding_floor_m3_s": 4.999317889913392e-08,
+        "nash_sutcliffe": 0.9999500216177063,
+        "targets": {
+          "integrated_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.005703800778548992,
+            "pass": true
+          },
+          "peak_outlet_relative_difference": {
+            "target": 0.01,
+            "value": -0.00020476787056426273,
+            "pass": true
+          },
+          "peak_time_within_rounded_plateau": {
+            "target_s": 10.0,
+            "offset_s": 0.0,
+            "pass": true
+          },
+          "policy": "a missed target is investigated (timestep, forcing, solver differences), never relaxed or matched artificially; sediment and spatial metrics are measurements without a pass mark"
+        },
+        "diagnostic_peak_time_offset_from_reference_argmax_s": 0.0
+      },
+      "final_budget_residual_m3": 0.00036936305461843233,
+      "final_stale_gain_m3": 0.0003684020840402193,
+      "final_closure_sum_m3": 9.60970740605331e-07,
+      "residual_minus_stale_minus_closure_m3": -1.6239232549651497e-13,
+      "driver_export_m3": 0.10518445060929722,
+      "driver_bracket_end_count": 0.0,
+      "max_closure_m": 5.036038697170397e-12
+    }
+  },
+  "matched_timestep_runoff": [
+    {
+      "dt_s": 1.0,
+      "syrup_endpoint_m3": 0.10496610134310866,
+      "fortran_endpoint_m3": 0.10579439100311731,
+      "relative_difference": -0.007829239831667945,
+      "syrup_cn_export_m3": 0.10494016207589314,
+      "fortran_cn_export_m3": 0.10576823735538521
+    },
+    {
+      "dt_s": 0.5,
+      "syrup_endpoint_m3": 0.10497871395894884,
+      "fortran_endpoint_m3": 0.10539129014015618,
+      "relative_difference": -0.003914708517740562,
+      "syrup_cn_export_m3": 0.10496574575357252,
+      "fortran_cn_export_m3": 0.10537826850878557
+    },
+    {
+      "dt_s": 0.25,
+      "syrup_endpoint_m3": 0.10498504346678743,
+      "fortran_endpoint_m3": 0.10519094767817797,
+      "relative_difference": -0.001957432801351744,
+      "syrup_cn_export_m3": 0.10497855973343151,
+      "fortran_cn_export_m3": 0.10518445060929722
+    }
+  ],
+  "execution_note": "Timestep runs and regression jobs could overlap; timings are observational and no speed comparison is claimed.",
+  "verification": {
+    "tests": "167 passed, 1 skipped in 16.55s",
+    "lint": "All checks passed!",
+    "baseline_git_head": "98f144fa223263e20f3a3a85966617880f41f41b",
+    "production_source_unchanged": true
+  },
+  "review": {
+    "claude_session_id": "c6beebd2-6555-43d6-bdbe-2b4abc853ea5",
+    "status": "no material blocking defect; Codex accepted",
+    "scope": "read-only review of Codex input-binding/anchor corrections and saved metrics; execution verified independently by Codex"
+  }
+}
