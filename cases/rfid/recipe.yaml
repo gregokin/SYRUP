@@ -1,0 +1,72 @@
+# EXPERIMENTAL RFID_2014 water-only benchmark recipe (task rfid_timing).
+# Authored configuration only. Generated output goes to a NEW directory:
+#   python -m maple_syrup.rfid_case --recipe cases/rfid/recipe.yaml --output-dir <NEW dir> \
+#       --applied-forcing-capture outputs/rfid/native_compat_diagnostic/Output/syrup_hydro_steps.txt
+# Every value is either read from the MAHLERAN input (and cross-checked by the audit) or an explicit, documented assumption.
+# See docs/rfid/README.md. Water only: no sediment transport, splash, erosion, wind, evolving terrain or restart.
+schema: maple_syrup.rfid_recipe.v1
+case_name: mahleran_rfid_2014_water
+
+mahleran:
+  root: /home/okin/MAHLERAN              # read-only legacy reference
+  xml: Input/RFID_2014/mahleran_input.xml  # the valid standard file, NOT the malformed "(2)" variant
+  input_folder: Input/RFID_2014
+  expected_version: "1.2.0"
+
+legacy_grid:
+  nrows: 106
+  ncols: 60
+  cellsize_m: 0.1
+  nodata_value: -9999
+
+grain_maps:
+  # the six XML-named maps are uniform over the active cells at [0, 0, 0, 0.092, 0.908, 0] (the XML per-type defaults are
+  # unused because use_map_phi is true); roundoff-only normalization of their sum
+  closure_roundoff_tolerance: 1.0e-12
+
+bed:
+  # MAPLE-style defaults (no MAHLERAN value exists); same numbers as the Plot 1 fixture except where stated
+  voxel_dz_m: 0.1
+  active_layer_thickness_m: 0.002
+  bulk_density_kg_m3: 1250.0      # ASSUMPTION (MAPLE default); MAHLERAN has none
+  minimum_fill_depth_m: 0.3       # ASSUMPTION: finite erodible column under the lowest bed cell
+  datum_offset_rounding_m: 0.001
+  headroom_m: 0.2
+
+maple:
+  seed: 2014
+  sediment_available_fraction: 1.0
+  boundary: prescribed_zero_inflow   # sediment-boundary METADATA only; not a hydraulic wall or outlet
+
+placeholder:
+  # The 335 INACTIVE interior cells have no terrain (DEM and scaling are nodata). The MAPLE bed needs a finite elevation, so
+  # they receive the minimum ACTIVE elevation in the bed ONLY. Invented; excluded from hydraulics; original DEM kept.
+  rule: min_active_elevation
+
+hydrology:
+  model: fixed_ksat                 # native infiltration_model 1
+  # EXACT native K (mm/s): executed native application static capture (native_static_audit.json). The native setup (inf_type 1)
+  # computes K = 0.00585 + 0.000166667 * mean_rainfall - pave*1e-4 and ignores the XML conductivity (0.01 +/- 0.001).
+  ksat_mm_per_s: 0.028867846354842186
+  ksat_formula_rtol: 1.0e-6         # REAL32 constants in the legacy formula vs the FP64 recomputation
+  suction_mm: 23.6                  # XML wetting_front_suction_mean; the native run overwrote it with 0.05 (setup bug, not copied)
+  drainage_parameter: 0.05          # XML drainage_parameter_mean; the native run left 0 (setup bug, not copied)
+  soil_thickness_m: 0.21            # XML; the native run stored the FP32 rounding 0.209999993
+  friction_factor: 40.0             # XML friction_factor_mean (type 1: constant)
+  theta_sat: 0.36                   # saturated-moisture map (uniform)
+  theta0: 0.004                     # initial-moisture map (uniform)
+
+forcing:
+  # native_applied_capture: the rate the executed native application actually applied each step (0.038363 mm/s for 2641 s,
+  # then 0 to 2700 s: the legacy one-second switching lag is included). legacy_file: the interval-ending parser reading
+  # of rfid_2014_rainfall.dat (rain to 2640 s). The audit records the depth difference.
+  kind: native_applied_capture
+  capture_default_path: /home/okin/SYRUP/outputs/rfid/native_compat_diagnostic/Output/syrup_hydro_steps.txt
+  capture_expected_sha256: ce078efed2300bfd9ff52273ac15aa071a10eb1f47070c03c117112b002b30cf  # the executed native capture
+
+expected_topology:
+  n_active: 5697
+  n_pit_storage: 26                 # strict D4 sinks kept as terminal storage (no flats)
+  n_outlets: 1
+  outlet_north_first_0based: [104, 23]
+  ring_receiver_north_first_0based: [105, 23]

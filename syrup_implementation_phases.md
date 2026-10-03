@@ -40,6 +40,9 @@ User refinement, 2026-09-29: include Numba compilation of the same MAHLERAN-deri
 
 ## Phase 4R — Priority follow-up: alternative routing approaches
 
+Research update (2026-10-02): [alternate GPU approaches](docs/phase4r/alternate_gpu_approaches.md) prioritizes same-equation safeguarded Newton, conservative explicit D4 kinematic GPU routing with the existing Darcy–Weisbach/column physics, then a separately qualified uniform-grid local-inertial comparison. Full-storm timestep sensitivity, runoff/depth/velocity and sediment consequences must accompany performance measurements. These remain experiments, not adopted replacements; the exact-physics resident GPU storm task proceeds separately.
+
+
 Added by user direction, 2026-09-29. This important investigation follows acceptance of the Phase 4 water-only baseline; its suffix preserves existing phase numbers. It is distinct from Phase 4 implementation subtasks. See [the literature review](docs/phase4/solver_alternatives.md). Numba compilation of the baseline is now part of Phase 4, not deferred here.
 
 First investigate safeguarded Newton on the same scalar equation and improved dependency-level/GPU execution. Then compare explicit conservative kinematic routing and local-inertial face-flux methods as separately selectable experiments. Retain MAHLERAN's selected Darcy–Weisbach relationship where applicable and document changed hydraulic terms, time discretization, direction selection, boundaries and additional state. Explicit kinematic timestep limits must account for wave celerity, not only water velocity. Do not adopt the rejected sandpile formulation.
@@ -47,6 +50,23 @@ First investigate safeguarded Newton on the same scalar equation and improved de
 Compare identical forcing, terrain, infiltration and boundary assumptions on Plot 1 and larger networks with varied width/depth, wetting/drying and recession. Set quantitative acceptance tolerances before evaluating candidates. Measure runoff volume, hydrograph peak/time, depth, velocity, constitutive residuals, conservation and timestep/grid sensitivity alongside whole-event runtime, startup, peak CPU/GPU memory and host/device transfers. Depth and velocity fidelity matter for subsequent erosion even when outlet volumes agree. Recheck detachment and sediment timing when sediment coupling becomes available before adopting a different hydraulic solver.
 
 Exit: reproducible comparative benchmarks and an evidence-based recommendation to retain or supplement the baseline, including accuracy/performance tradeoffs, hardware, backend agreement and unsupported cases. No solver is accepted merely because it is faster or conserves total water. Unavailable GPU execution remains unverified. The investigation may conclude that the compiled MAHLERAN approach is sufficient.
+
+**GPU execution milestone, 2026-10-02:** the unchanged method-5 bisection now has an explicitly selected CUDA
+routing kernel using one launch per dependency level. Actual-device parity/refusal tests and Plot1/larger-grid
+timings passed; see [Phase 4R routing results](docs/phase4r/performance.md). It greatly reduces the old CuPy
+array execution cost, while optimized batched CPU routing remains faster on the tested GTX 1080 Ti. CPU defaults
+remain unchanged. Fewer GPU launches and coupled GPU infiltration remain follow-ups; alternative hydraulic
+equations, full-storm GPU performance and restart are not established by this routing milestone.
+
+## Phase 4S — Resident GPU storm hydrology
+
+User-authorized 2026-10-02. Reuse the authoritative storm scheduler with prepared CUDA column/routing kernels and resident cumulative fields/reporting. Keep CPU defaults and water/sediment separation explicit. Actual-device tests and full mean/heterogeneous Plot1 comparisons are recorded in [resident GPU results](docs/phase4s/performance.md). Small-grid CUDA is slower than the best prepared Numba baseline; larger-grid whole-event scaling, memory peaks and disk restart remain qualification work. This milestone does not qualify GPU sediment.
+
+## Phase 4T — Testable explicit and local-inertial GPU alternatives
+
+User-authorized 2026-10-02: implement BOTH methods as separately selectable water-only experiments, retaining actual MAPLE case/backend/bed ownership, rainfall and MAHLERAN-inspired column physics. Explicit routing keeps D4 receivers and Darcy k but changes time discretization; uniform local inertia introduces signed face momentum and water-surface gradients, with declared friction/boundary choices. Preserve fixed geometry for comparison, pure retries, conserved water and continuation state.
+
+Compare synchronized depth/velocity, runoff volume/peak/time, timestep refinement and complete-event runtime against the compiled legacy baseline. Water-budget closure alone does not qualify their velocity for detachment. Wetting/drying, momentum stability, face/cell velocity interpretation and local-inertial applicability require explicit follow-up before sediment coupling. Keep numerical/root optimizations and deferred multi-bin sediment work as separate investigations. Explicit follow-up for local inertia: investigate momentum smoothing, wetting/drying and Darcy friction discretization, stage-consistent hydraulic diagnostics, outlet sensitivity and omitted-advection applicability; retain the current experimental form as a controlled comparator. Quantify long-storm CPU/GPU sensitivity without silently relaxing the baseline tolerances.
 
 ## Phase 5 — Conservative detachment, travel and deposition
 
@@ -283,3 +303,15 @@ roundoff-consistent formulation in a separate correction, with unchanged water
 budgets and matched-storm fidelity. This CPU optimization preserves that reference
 behavior. Phase 4R remains the investigation of solver/GPU execution alternatives;
 Phase 7g remains deferred multi-bin optimization.
+
+## CPU Newton follow-up — implemented and benchmarked
+
+Selectable NumPy-vectorized and prepared Numba safeguarded Newton solve the same
+corrected implicit hydraulic equation; existing bisection remains the default.
+Full fixed-terrain water-only Plot 1/RFID storms save 14.3%/13.6% Numba time and
+38.1%/42.6% NumPy time. Unchanged conservation/backend bounds, full pre-edit
+default captures, wet maps and restart checks pass. Original Fortran RFID Newton
+remains faster (2.282 s versus 3.694 s) with disclosed native conservation and
+fixed-step differences. See [results](docs/newton_cpu/results.md). GPU Newton and
+a Plot 1 model-2-aware original-Fortran adapter remain follow-ups; neither is
+implemented or qualified by this task. Deferred multi-bin work remains separate.

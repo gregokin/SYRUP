@@ -60,8 +60,11 @@ from maple_syrup.rainfall import RainfallField, RainfallSchedule
 from maple_syrup.routing import (
     DEFAULT_BISECTION_ITERATIONS,
     DEFAULT_COURANT_MAX,
+    DEFAULT_NEWTON_MAX_ITERATIONS,
     DEFAULT_ROOT_TOLERANCE_M,
     IMPLEMENTATIONS,
+    MAX_NEWTON_ITERATIONS,
+    ROOT_SOLVERS,
     RouteStep,
     RoutingGraph,
     RoutingStepRejected,
@@ -70,6 +73,7 @@ from maple_syrup.routing import (
 
 __all__ = [
     "HYDROGRAPH_COLUMNS",
+    "STORM_IMPLEMENTATIONS",
     "CoupledStep",
     "EvolveResult",
     "StormControl",
@@ -102,6 +106,11 @@ HYDROGRAPH_COLUMNS = (
     "max_constitutive_residual_m",
 )
 _EPS = float(np.finfo(np.float64).eps)
+# Hydrology implementations of a storm. `routing.IMPLEMENTATIONS` (the ordered-sweep choice of every other module,
+# CLI and the sediment/legacy code) deliberately stays ("array", "numba"): "cuda" is the explicit, water-only,
+# CuPy-only prepared hydrology of `hydrology_cuda` (column + routing + reductions on the device) and is refused by
+# the sediment event controls.
+STORM_IMPLEMENTATIONS = (*IMPLEMENTATIONS, "cuda")
 # Two boundaries closer than this (relative to their magnitude) are floating-
 # point noise of the same instant, e.g. 0.1 * 3 versus a 0.3 forcing edge.
 _COINCIDENT_RTOL = 16.0 * _EPS
@@ -150,6 +159,11 @@ class StormControl:
     bisection_iterations: int = DEFAULT_BISECTION_ITERATIONS
     root_tolerance_m: float = DEFAULT_ROOT_TOLERANCE_M
     implementation: str = "array"
+    # Root solver of the cell equation (routing_newton.py). "bisection" is the unchanged default; "newton" is the
+    # CPU-only safeguarded Newton on the same equation. These two fields are LAST so every existing construction is
+    # unchanged; the checkpoint encoding omits them at their defaults (older checkpoints stay loadable).
+    root_solver: str = "bisection"
+    newton_max_iterations: int = DEFAULT_NEWTON_MAX_ITERATIONS
 
     def validated(self) -> StormControl:
         """Strict: bools and non-integers are refused, never coerced."""
@@ -164,8 +178,17 @@ class StormControl:
         _strict_int(self.bisection_iterations, "bisection_iterations")
         for name in ("courant_max", "root_tolerance_m"):
             _real(getattr(self, name), name)  # ranges are enforced by route_step
-        if self.implementation not in IMPLEMENTATIONS:
-            raise StormError(f"implementation must be one of {IMPLEMENTATIONS}, got {self.implementation!r}")
+        if self.implementation not in STORM_IMPLEMENTATIONS:
+            raise StormError(f"implementation must be one of {STORM_IMPLEMENTATIONS}, got {self.implementation!r}")
+        if not isinstance(self.root_solver, str) or self.root_solver not in ROOT_SOLVERS:
+            raise StormError(f"root_solver must be one of {ROOT_SOLVERS}, got {self.root_solver!r}")
+        _strict_int(self.newton_max_iterations, "newton_max_iterations")
+        if self.newton_max_iterations > MAX_NEWTON_ITERATIONS:
+            raise StormError(f"newton_max_iterations must be an int in [1, {MAX_NEWTON_ITERATIONS}], "
+                             f"got {self.newton_max_iterations!r}")
+        if self.root_solver == "newton" and self.implementation == "cuda":
+            raise StormError("root_solver 'newton' is CPU-only: implementation 'cuda' supports the bisection solver "
+                             "only (no GPU Newton, no fallback)")
         return self
 
 
@@ -277,9 +300,23 @@ def coupled_step(graph: RoutingGraph, params: ColumnParameters, rain_rate_m_per_
                  dt_s: float, control: StormControl) -> CoupledStep:
     """Column then routing on the ORIGINAL `state` (see module docstring).
     Pure: raises before returning anything on any kernel failure;
-    `RoutingStepRejected` means "retry with a smaller dt"."""
+    `RoutingStepRejected` means "retry with a smaller dt".
+
+    `control.implementation == "cuda"` (control need not have been validated()) dispatches lazily to the prepared
+    CUDA hydrology (`hydrology_cuda`): a CONTEXT IS PREPARED ON EVERY CALL (a counted download of the static data), so
+    this is the convenience form; loops should prepare once (`hydrology_cuda.prepare_cuda_hydrology`) and use
+    `prepared_coupled_step`, as `evolve` does. Needs a CuPy graph/parameters/arrays; no fallback; CPU
+    implementations never reach it."""
     from maple.core.backend import errstate
 
+    if getattr(control, "implementation", None) == "cuda":
+        if getattr(control, "root_solver", "bisection") != "bisection":  # before any context is prepared
+            raise StormError("root_solver 'newton' is CPU-only: implementation 'cuda' supports the bisection solver "
+                             "only (no GPU Newton, no fallback)")
+        from maple_syrup import hydrology_cuda
+
+        ctx = hydrology_cuda.prepare_cuda_hydrology(graph, params)
+        return hydrology_cuda.prepared_coupled_step(ctx, rain_rate_m_per_s, state, dt_s, control)
     xp = graph.xp
     shape = graph.shape
     h, soil, q_prev = state.depth_m, state.soil_water_m, state.discharge_m2_s
@@ -290,6 +327,10 @@ def coupled_step(graph: RoutingGraph, params: ColumnParameters, rain_rate_m_per_
         k = graph.conveyance.reshape(shape)
         active = graph.active_flat.reshape(shape)
         complete = active & (intake >= h + rain)  # infilt.for 106: tested first
+        # infilt.for 112-115: the complete branch SETS d(1) = 0. When a tiny h is absorbed by the rain in the sum h + rain,
+        # the arithmetic `h - (intake - rain)` can leave a roundoff residue > 0 while the column depth is exactly 0; the legacy
+        # d(1) is 0 there, so set it explicitly (the column arithmetic and every check stay unchanged).
+        hpre = xp.where(complete, 0.0, hpre)
         no_runon = active & ~complete & (intake <= rain)  # 125
         partial = active & ~complete & ~no_runon  # 141
         recomputed = (xp.sqrt(hpre) * hpre) * k
@@ -297,7 +338,8 @@ def coupled_step(graph: RoutingGraph, params: ColumnParameters, rain_rate_m_per_
     route = route_step(
         graph, col.depth_m, hpre, dt_s, old_discharge_m2_s=q_old, courant_max=control.courant_max,
         bisection_iterations=control.bisection_iterations, root_tolerance_m=control.root_tolerance_m,
-        implementation=control.implementation,
+        implementation=control.implementation, root_solver=control.root_solver,
+        newton_max_iterations=control.newton_max_iterations,
     )
     new_state = StormState(state.t_s + float(dt_s), route.depth_m, col.soil_water_m, route.discharge_m2_s)
     return CoupledStep(
@@ -392,20 +434,50 @@ def evolve(
     *,
     report_every_s: float,
     max_report_rows: int = 100_000,
+    cuda_context: Any = None,
 ) -> EvolveResult:
     """Advance `state` to `end_s` (see module docstring). Raises `StormError`
     on validation and guard failures; `RoutingStepRejected` never escapes
     (it is retried until the guards trip); every other exception propagates
     untouched. Owns every scratch array it writes; inputs are never
-    modified."""
+    modified.
+
+    ONE host scheduler serves every implementation. With
+    `control.implementation == "cuda"` (water only, CuPy graph/parameters/
+    field required, no fallback) the context is prepared ONCE before the loop
+    (or `cuda_context`, a `hydrology_cuda.CudaHydrologyContext` of this graph
+    and these parameters, is used) and only two things change: each attempt
+    is `hydrology_cuda.cuda_step_with_packet` (one counted 144-byte packet
+    read) and the per-step accumulation / per-row reporting are fused device
+    kernels (`CudaStormAccumulator`) instead of ~20 / ~30 small CuPy
+    operations; boundaries, substeps, retries, floors and guards are the
+    code below, unchanged. `cuda_context` is refused for other
+    implementations."""
     control = control.validated()
     xp = graph.xp
     shape = graph.shape
     area = graph.dx_m * graph.dx_m
+    cuda = control.implementation == "cuda"
+    if cuda_context is not None and not cuda:
+        raise StormError("cuda_context is only meaningful with control.implementation == 'cuda'")
     _validate_state(graph, state, control.root_tolerance_m, params)
     if not isinstance(field, RainfallField) or field.shape != shape or field.xp is not xp:
         raise StormError("rainfall field must match the graph shape and namespace")
     boundaries = plan_boundaries(schedule, state.t_s, end_s, report_every_s, max_report_rows=max_report_rows)
+    if cuda:  # prepare ONCE (counted static download, kernel load) before any time is advanced
+        from maple_syrup import hydrology_cuda
+
+        if cuda_context is None:
+            cuda_context = hydrology_cuda.prepare_cuda_hydrology(graph, params)
+        elif (not isinstance(cuda_context, hydrology_cuda.CudaHydrologyContext)
+              or cuda_context.graph_input_sha256 != str(graph.input_sha256)
+              or cuda_context.shape != tuple(shape) or cuda_context.model != params.model
+              or not cuda_context.is_bound_to(graph, params)):
+            # is_bound_to: the very graph/params OBJECTS prepared from (weak identity) with unchanged array metadata;
+            # a same-shape/same-model parameter set with different values is therefore refused before any step
+            raise StormError("cuda_context must be the CudaHydrologyContext prepared for exactly this graph and "
+                             "these parameters (prepare_cuda_hydrology(graph, params)); contexts own static copies "
+                             "of the data and are immutable")
 
     def zeros():
         return xp.zeros(shape, dtype=np.float64)
@@ -426,6 +498,12 @@ def evolve(
     cells_no, cells_partial, cells_complete = (xp.zeros((), dtype=np.int64) for _ in range(3))
     hydrograph = xp.zeros((boundaries.size, len(HYDROGRAPH_COLUMNS)), dtype=np.float64)
     rate = xp.empty(shape, dtype=np.float64)  # owned scratch; never aliases a caller array
+    accumulator = None
+    if cuda:
+        accumulator = hydrology_cuda.CudaStormAccumulator(
+            cuda_context, cum_rain=cum_rain, cum_intake=cum_intake, cum_return=cum_return, cum_drain=cum_drain,
+            peak_depth=peak_depth, peak_velocity=peak_velocity, peak_q=peak_q, peak_t=peak_t)
+    packet = None
 
     n_steps = n_rejected = 0
     rejections: list[dict[str, Any]] = []
@@ -464,7 +542,10 @@ def evolve(
                         raise StormError(f"floating time does not advance: t = {t} s, dt = {dt} s")
                     field.apply(schedule.rate_after_m_per_s(t), out=rate)
                     try:
-                        step = coupled_step(graph, params, rate, state, dt, control)
+                        if cuda:
+                            step, packet = hydrology_cuda.cuda_step_with_packet(cuda_context, rate, state, dt, control)
+                        else:
+                            step = coupled_step(graph, params, rate, state, dt, control)
                     except RoutingStepRejected as exc:
                         retries += 1
                         n_rejected += 1
@@ -485,30 +566,39 @@ def evolve(
                 t = target if snap else t + dt
                 state = replace(step.state, t_s=t)
                 col, route = step.column, step.route
-                cum_rain += col.rain_m
-                cum_intake += col.intake_m
-                cum_return += col.saturation_return_m
-                cum_drain += col.drainage_m
-                cum_export = cum_export + route.export_m3
-                outlet_q = route.outlet_discharge_m3_s
-                higher = outlet_q > peak_q
-                peak_t = xp.where(higher, scalar(t), peak_t)
-                peak_q = xp.where(higher, outlet_q, peak_q)
-                xp.maximum(peak_depth, route.depth_m, out=peak_depth)
-                xp.maximum(peak_velocity, route.velocity_m_s, out=peak_velocity)
-                last_velocity = route.velocity_m_s
-                max_balance = xp.maximum(max_balance, route.max_cell_balance_residual_m)
-                max_constitutive = xp.maximum(max_constitutive, route.max_constitutive_residual_m)
-                max_cr_old = xp.maximum(max_cr_old, route.max_courant_old)
-                max_cr_new = xp.maximum(max_cr_new, route.max_courant_new)
-                cells_no = cells_no + step.n_no_runon
-                cells_partial = cells_partial + step.n_partial_runon
-                cells_complete = cells_complete + step.n_complete_runon
+                if cuda:  # one fused accumulate launch; the scalars come from the step's device packet
+                    accumulator.accept(step, packet, t)
+                    outlet_q = route.outlet_discharge_m3_s
+                    last_velocity = route.velocity_m_s
+                else:
+                    cum_rain += col.rain_m
+                    cum_intake += col.intake_m
+                    cum_return += col.saturation_return_m
+                    cum_drain += col.drainage_m
+                    cum_export = cum_export + route.export_m3
+                    outlet_q = route.outlet_discharge_m3_s
+                    higher = outlet_q > peak_q
+                    peak_t = xp.where(higher, scalar(t), peak_t)
+                    peak_q = xp.where(higher, outlet_q, peak_q)
+                    xp.maximum(peak_depth, route.depth_m, out=peak_depth)
+                    xp.maximum(peak_velocity, route.velocity_m_s, out=peak_velocity)
+                    last_velocity = route.velocity_m_s
+                    max_balance = xp.maximum(max_balance, route.max_cell_balance_residual_m)
+                    max_constitutive = xp.maximum(max_constitutive, route.max_constitutive_residual_m)
+                    max_cr_old = xp.maximum(max_cr_old, route.max_courant_old)
+                    max_cr_new = xp.maximum(max_cr_new, route.max_courant_new)
+                    cells_no = cells_no + step.n_no_runon
+                    cells_partial = cells_partial + step.n_partial_runon
+                    cells_complete = cells_complete + step.n_complete_runon
                 n_steps += 1
                 dt_min, dt_max = min(dt_min, dt), max(dt_max, dt)
                 if n_steps == 1:
                     first_wall, first_cpu = time.perf_counter() - wall0, time.process_time() - cpu0
                     wall0, cpu0 = time.perf_counter(), time.process_time()
+        if cuda:  # one single-block launch reading the device accumulators and the last accepted step's packet
+            accumulator.report(hydrograph, row, state, last_velocity, packet, t, n_steps, n_rejected,
+                               dt_min if n_steps else 0.0)
+            continue
         hydrograph[row] = xp.stack([
             scalar(t),
             area * xp.sum(cum_rain), area * xp.sum(cum_intake), area * xp.sum(cum_return),
@@ -520,6 +610,14 @@ def evolve(
             scalar(dt_min if n_steps else 0.0),
             scalar(max_balance), scalar(max_constitutive),
         ])
+    if cuda:  # the accumulated scalars live in the accumulator's device block (0-d views, no read-back)
+        sc = accumulator.scalars()
+        cum_export, peak_q, peak_t = sc["cumulative_export_m3"], sc["peak_outlet_discharge_m3_s"], sc[
+            "time_of_peak_outlet_s"]
+        max_balance, max_constitutive = sc["max_balance_residual_m"], sc["max_constitutive_residual_m"]
+        max_cr_old, max_cr_new = sc["max_courant_old"], sc["max_courant_new"]
+        cells_no, cells_partial, cells_complete = (sc["cell_steps_no_runon"], sc["cell_steps_partial_runon"],
+                                                   sc["cell_steps_complete_runon"])
     remaining_wall, remaining_cpu = time.perf_counter() - wall0, time.process_time() - cpu0
     return EvolveResult(
         state=state, hydrograph=hydrograph, boundaries=boundaries,

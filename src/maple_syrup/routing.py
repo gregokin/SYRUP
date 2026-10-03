@@ -47,6 +47,11 @@ loop over dependency levels and bisection iterations) and
 `implementation="numba"` (optional, CPU NumPy only, one compiled call; see
 routing_numba.py). There is no silent fallback between them.
 
+The root solver is selectable: `root_solver="bisection"` (default, unchanged) or `"newton"` (routing_newton.py: a
+safeguarded Newton iteration on the SAME equation with a guaranteed bracket and bisection fallback; CPU NumPy
+graphs only, `implementation` "array" or "numba", never "cuda"). Newton is a different root finder for the same
+physics, not bitwise equal to bisection; the constitutive, balance and water checks are unchanged.
+
 Every step is pure: inputs are never modified, and a rejected step raises
 `RoutingError` before anything is returned. There is never a Python loop
 over cells in `route_step`.
@@ -63,11 +68,19 @@ from typing import Any
 
 import numpy as np
 
+from maple_syrup import routing_newton
+from maple_syrup.routing_newton import (
+    DEFAULT_NEWTON_MAX_ITERATIONS,
+    MAX_NEWTON_ITERATIONS,
+    ROOT_SOLVERS,
+)
+
 __all__ = [
     "ASPECT_STEPS",
     "BALANCE_RTOL",
     "DEFAULT_BISECTION_ITERATIONS",
     "DEFAULT_COURANT_MAX",
+    "DEFAULT_NEWTON_MAX_ITERATIONS",
     "DEFAULT_ROOT_TOLERANCE_M",
     "DONOR_SLOTS",
     "EXPORT",
@@ -75,6 +88,9 @@ __all__ = [
     "IMPLEMENTATIONS",
     "INACTIVE",
     "LEGACY_FRICTION_FLOOR",
+    "PIT_STORAGE",
+    "ROOT_SOLVERS",
+    "ROUTE_IMPLEMENTATIONS",
     "RouteStep",
     "RoutingError",
     "RoutingGraph",
@@ -99,6 +115,10 @@ DONOR_SLOTS = ((-1, 0), (0, -1), (1, 0), (0, 1))
 # `receiver` codes besides a flat cell index.
 EXPORT = -1
 INACTIVE = -2
+# OPT-IN terminal storage (build_routing_graph(allow_pit_storage=True) only): an ACTIVE strict D4 sink. It has aspect 0,
+# zero slope and zero conveyance, receives its donors' flow and keeps the water (no overtopping, no export). It is
+# deliberately distinct from EXPORT (leaves the domain) and INACTIVE (not a computed cell).
+PIT_STORAGE = -3
 # topog_attrib.for 218-224: slope > 1000 -> 1.
 _LEGACY_SLOPE_CAP = 1000.0
 # route_water.for 916-920 floors ff to 0.1 after the root is found, so the
@@ -107,6 +127,10 @@ _LEGACY_SLOPE_CAP = 1000.0
 LEGACY_FRICTION_FLOOR = 0.1
 
 IMPLEMENTATIONS = ("array", "numba")
+# `route_step` additionally accepts "cuda" (routing_cuda.py: one RawKernel launch per dependency level, CuPy graph
+# only). It is deliberately NOT in IMPLEMENTATIONS, which the storm controls and the experiment CLIs use as their
+# choice list: they stay CPU/array only and cannot select a GPU sweep.
+ROUTE_IMPLEMENTATIONS = (*IMPLEMENTATIONS, "cuda")
 DEFAULT_COURANT_MAX = 1.0
 # Bracket width after n halvings is R 2^-n; 40 gives <= 1e-12 R.
 DEFAULT_BISECTION_ITERATIONS = 40
@@ -188,6 +212,10 @@ class RoutingGraph:
     donor_mask: Any
     input_sha256: str
     xp: ModuleType
+    # Defaults LAST so every existing positional/keyword construction is unchanged. `pit_storage` is the host bool
+    # `(ny, nx)` mask of terminal-storage cells (all False for the strict default); `policy` names the build policy.
+    pit_storage: Any = None
+    policy: str = "strict"
 
     @property
     def n_active(self) -> int:
@@ -210,7 +238,12 @@ class RoutingGraph:
              "slope": float(self.slope[r, c])}
             for r, c in zip(*np.nonzero(self.outlet), strict=True)
         ]
+        policy_keys = {}
+        if self.policy != "strict":  # absent for the strict default so existing reports are unchanged
+            policy_keys = {"policy": self.policy,
+                           "n_pit_storage": 0 if self.pit_storage is None else int(np.sum(self.pit_storage))}
         return {
+            **policy_keys,
             "shape": list(self.shape),
             "dx_m": self.dx_m,
             "n_active": self.n_active,
@@ -269,8 +302,18 @@ def build_routing_graph(
     active_mask: np.ndarray | None = None,
     nodata_value: float | None = None,
     xp: ModuleType | None = None,
+    allow_masked_nodata: bool = False,
+    allow_pit_storage: bool = False,
 ) -> RoutingGraph:
     """Build the legacy D4 network from host NumPy arrays.
+
+    OPT-IN POLICIES (both default OFF; with both off the behaviour, errors and digest are exactly the strict ones):
+    `allow_masked_nodata` (needs `nodata_value`) lets cells equal to the sentinel exist on INACTIVE cells and the ring.
+    They are never a receiver (the legacy `topog_attrib.for` skip of `nodata_value_from_topog` neighbours), so no false
+    low neighbour arises; an ACTIVE cell holding the sentinel is still refused. `allow_pit_storage` keeps every ACTIVE
+    strict sink (no strictly lower neighbour, no equal neighbour) as a terminal STORAGE cell: aspect 0, receiver
+    `PIT_STORAGE`, slope 0, conveyance 0, not an outlet. It receives its donors' flow and retains the water; nothing
+    is filled, carved or exported and there is no overtopping. Flat sinks (an equal neighbour) are still refused.
 
     `elevation_full_m` `(ny + 2, nx + 2)` float64, MAPLE orientation (row 0 =
     south), including a one-cell boundary ring; every value finite and, when
@@ -311,13 +354,20 @@ def build_routing_graph(
     if not np.all(np.isfinite(z)):
         raise RoutingGraphError("elevation_full_m must be finite everywhere, ring included "
                                 "(legacy nodata elevations are unsupported)")
+    nodata_cells = np.zeros(z.shape, dtype=np.bool_)
+    if allow_masked_nodata and nodata_value is None:
+        raise RoutingGraphError("allow_masked_nodata needs the nodata_value that marks the masked cells")
     if nodata_value is not None:
         sentinel = _real(nodata_value, "nodata_value", RoutingGraphError)
         if np.any(z == sentinel):
-            raise RoutingGraphError(
-                f"elevation_full_m holds the nodata value {sentinel!r} in {int(np.sum(z == sentinel))} cell(s); "
-                "nodata elevations are unsupported (a finite sentinel would act as a false low receiver)"
-            )
+            if not allow_masked_nodata:
+                raise RoutingGraphError(
+                    f"elevation_full_m holds the nodata value {sentinel!r} in {int(np.sum(z == sentinel))} cell(s); "
+                    "nodata elevations are unsupported (a finite sentinel would act as a false low receiver)"
+                )
+            nodata_cells = z == sentinel
+            if np.any(nodata_cells[1:-1, 1:-1] & active):
+                raise RoutingGraphError("an ACTIVE cell holds the nodata elevation: " + _cells(nodata_cells[1:-1, 1:-1] & active))
     if not active.any():
         raise RoutingGraphError("active_mask has no active cell")
     if not np.all(np.isfinite(ff[active])) or np.any(ff[active] < LEGACY_FRICTION_FLOOR):
@@ -339,20 +389,27 @@ def build_routing_graph(
     for code in (1, 2, 3, 4):
         dr, dc = ASPECT_STEPS[code]
         neighbour = zmm[1 + dr: 1 + dr + ny, 1 + dc: 1 + dc + nx]
-        better = neighbour < zmin
+        # a masked-nodata neighbour is never eligible (topog_attrib.for 104-113); with no such cell this is all True
+        eligible = ~nodata_cells[1 + dr: 1 + dr + ny, 1 + dc: 1 + dc + nx]
+        better = (neighbour < zmin) & eligible
         aspect[better] = code
         zmin = np.where(better, neighbour, zmin)
-        has_equal |= neighbour == centre
+        has_equal |= (neighbour == centre) & eligible
     slope = (centre - zmin) / (dx * 1000.0)  # 117, legacy mm / mm
     slope = np.where(active, slope, 0.0)  # 190-197
     slope = np.where(slope > _LEGACY_SLOPE_CAP, 1.0, slope)  # 218-224
 
     sinks = active & (aspect == 0)
+    pit = np.zeros((ny, nx), dtype=np.bool_)
     if sinks.any():
-        raise RoutingGraphError(
-            "unsupported sinks (no strictly lower D4 neighbour; no filling, carving or pit storage): "
-            f"flats {_cells(sinks & has_equal) or 'none'}; strict pits {_cells(sinks & ~has_equal) or 'none'}"
-        )
+        if allow_pit_storage and not (sinks & has_equal).any():
+            pit = sinks.copy()
+        else:
+            raise RoutingGraphError(
+                "unsupported sinks (no strictly lower D4 neighbour; no filling, carving or "
+                + ("flat-sink storage" if allow_pit_storage else "pit storage")
+                + f"): flats {_cells(sinks & has_equal) or 'none'}; strict pits {_cells(sinks & ~has_equal) or 'none'}"
+            )
     aspect = np.where(active, aspect, 0).astype(np.int8)
 
     rows, cols = np.indices((ny, nx))
@@ -369,9 +426,11 @@ def build_routing_graph(
             "outflow without reporting it): " + _cells(lost)
         )
     receiver = np.full((ny, nx), INACTIVE, dtype=np.int64)
-    receiver[active & receiver_active] = (rr * nx + cc)[active & receiver_active]
+    moving = active & receiver_active & ~pit  # a pit "receives itself" in the step arithmetic: it is terminal
+    receiver[moving] = (rr * nx + cc)[moving]
     outlet = active & ~receiver_active
     receiver[outlet] = EXPORT
+    receiver[pit] = PIT_STORAGE
 
     # 265-293, in the legacy loop order (i = 2..nr north to south, j ascending),
     # in place: a cell whose receiver is masked copies the opposite neighbour's
@@ -388,7 +447,7 @@ def build_routing_graph(
         if slope[r, c] > slope[orr, occ] or slope[r, c] == 0.0:
             slope[r, c] = slope[orr, occ]
             applied[r, c] = True
-    flat = active & ~(slope > 0.0)
+    flat = active & ~(slope > 0.0) & ~pit
     if flat.any():
         raise RoutingGraphError("zero slope on an active cell (no conveyance): " + _cells(flat))
 
@@ -436,6 +495,10 @@ def build_routing_graph(
         digest.update(np.ascontiguousarray(array).tobytes())
     digest.update(repr(dx).encode())
     digest.update(repr(nodata_value).encode())
+    policy = "strict"
+    if allow_masked_nodata or allow_pit_storage:  # the strict default keeps its historical digest
+        policy = f"masked_nodata={bool(allow_masked_nodata)};pit_storage={bool(allow_pit_storage)}"
+        digest.update(f"policy:{policy}".encode())
 
     namespace = np if xp is None else xp
 
@@ -468,6 +531,8 @@ def build_routing_graph(
         donor_mask=runtime(donor_mask),
         input_sha256=digest.hexdigest(),
         xp=namespace,
+        pit_storage=host(pit),
+        policy=policy,
     )
 
 
@@ -529,7 +594,12 @@ class RouteStep:
     budget_residual_m3  storage change + export (0 up to rounding when
                      `conservative`; the created volume in the literal mode)
     stale_inflow_gain_m3  literal mode only: dx^2 c sum(stale - coherent Qin_old)
-    implementation   "array" or "numba" (which ordered sweep produced it)
+    implementation   "array", "numba" or "cuda" (which ordered sweep produced it)
+    bisection_iterations  the fixed halving count of the bisection solver; 0 for the Newton solver (no bisection
+                     count is configured there: see `newton_max_iterations`)
+    root_solver      "bisection" (default) or "newton"; `newton_max_iterations` the Newton pass cap (0 for bisection)
+    root_stats       None for bisection; for Newton the `routing_newton.STAT_NAMES` counters of the sweep
+                     (host ints: max/total Newton passes, bisection safeguard steps, fallback cells, iterated cells)
     """
 
     dt_s: float
@@ -553,6 +623,9 @@ class RouteStep:
     conservative: bool
     bisection_iterations: int
     implementation: str
+    root_solver: str = "bisection"
+    newton_max_iterations: int = 0
+    root_stats: dict[str, int] | None = None
 
 
 def _require_arrays(named: dict[str, Any], shape: tuple[int, int], xp: ModuleType) -> None:
@@ -633,6 +706,57 @@ def _sweep_array(graph, base_lo, c, iterations, xp):
     return qin_new_lo, q_new_lo, flow_lo, rhs_lo
 
 
+def _sweep_array_newton(graph, base_lo, c, max_iter):
+    """`_sweep_array` with the Newton root, vectorized per level (NumPy graph only): returns the same four
+    level-ordered arrays plus the Newton statistics."""
+    n_active = graph.n_active
+    k_lo = graph.conveyance_lo
+    qin_new_lo = np.zeros(n_active, dtype=np.float64)
+    q_new_lo = np.zeros(n_active, dtype=np.float64)
+    flow_lo = np.zeros(n_active, dtype=np.float64)
+    rhs_lo = np.empty(n_active, dtype=np.float64)
+    top = total = steps = fallbacks = iterated = 0
+    for lev, (b0, b1) in enumerate(itertools.pairwise(graph.level_bounds)):
+        sl = slice(b0, b1)
+        if lev:
+            qin_new_lo[sl] = _donor_sum(q_new_lo, graph.donor_position[:, sl], graph.donor_mask[:, sl], np)
+        rhs = rhs_lo[sl]
+        np.multiply(qin_new_lo[sl], c, out=rhs)
+        np.add(base_lo[sl], rhs, out=rhs)
+        flow, passes, bisect_steps, fallback = routing_newton.newton_root_level(rhs, k_lo[sl], c, max_iter)
+        flow_lo[sl] = flow
+        q = q_new_lo[sl]
+        np.sqrt(flow, out=q)
+        np.multiply(q, flow, out=q)
+        np.multiply(q, k_lo[sl], out=q)
+        top = max(top, int(passes.max()))
+        total += int(passes.sum())
+        steps += int(bisect_steps.sum())
+        fallbacks += int(fallback.sum())
+        iterated += int(np.count_nonzero(passes))
+    stats = routing_newton.stats_dict((top, total, steps, fallbacks, iterated))
+    return qin_new_lo, q_new_lo, flow_lo, rhs_lo, stats
+
+
+def _check_root_solver(root_solver, newton_max_iterations, implementation, xp):
+    """Validate the root-solver options before anything is computed. Newton is CPU NumPy only: CUDA (and any
+    non-NumPy graph) is refused explicitly, never silently replaced."""
+    if not isinstance(root_solver, str) or root_solver not in ROOT_SOLVERS:
+        raise RoutingError(f"root_solver must be one of {ROOT_SOLVERS}, got {root_solver!r}")
+    if (isinstance(newton_max_iterations, bool) or not isinstance(newton_max_iterations, (int, np.integer))
+            or not (1 <= int(newton_max_iterations) <= MAX_NEWTON_ITERATIONS)):
+        raise RoutingError(f"newton_max_iterations must be an int in [1, {MAX_NEWTON_ITERATIONS}], "
+                           f"got {newton_max_iterations!r}")
+    if root_solver == "newton":
+        if implementation == "cuda":
+            raise RoutingError("root_solver 'newton' is CPU-only: implementation 'cuda' supports the bisection "
+                               "solver only (no GPU Newton, no fallback)")
+        if xp is not np:
+            raise RoutingError(f"root_solver 'newton' runs on host NumPy graphs only; the graph lives in "
+                               f"{xp.__name__!r} and no host/device transfer is performed")
+    return root_solver, int(newton_max_iterations)
+
+
 def _check_step_options(dt_s, courant_max, iterations, root_tolerance_m, implementation):
     dt = _real(dt_s, "dt_s", RoutingError)
     if not math.isfinite(dt) or dt <= 0.0:
@@ -648,13 +772,14 @@ def _check_step_options(dt_s, courant_max, iterations, root_tolerance_m, impleme
             or not (1 <= int(iterations) <= _MAX_BISECTION_ITERATIONS):
         raise RoutingError(f"bisection_iterations must be an int in [1, {_MAX_BISECTION_ITERATIONS}], "
                            f"got {iterations!r}")
-    if implementation not in IMPLEMENTATIONS:
-        raise RoutingError(f"implementation must be one of {IMPLEMENTATIONS}, got {implementation!r}")
+    if implementation not in ROUTE_IMPLEMENTATIONS:
+        raise RoutingError(f"implementation must be one of {ROUTE_IMPLEMENTATIONS}, got {implementation!r}")
     return dt, cr_max, int(iterations), root_tol
 
 
 def _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, stale_old_inflow_m2_s,
-           courant_max, bisection_iterations, root_tolerance_m, implementation) -> RouteStep:
+           courant_max, bisection_iterations, root_tolerance_m, implementation,
+           root_solver="bisection", newton_max_iterations=DEFAULT_NEWTON_MAX_ITERATIONS) -> RouteStep:
     from maple.core.backend import (
         DeferredChecks,
         errstate,
@@ -667,6 +792,14 @@ def _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, sta
         raise RoutingError("graph must be a RoutingGraph (use build_routing_graph)")
     dt, cr_max, iterations, root_tol = _check_step_options(dt_s, courant_max, bisection_iterations,
                                                            root_tolerance_m, implementation)
+    solver, newton_cap = _check_root_solver(root_solver, newton_max_iterations, implementation,
+                                            graph.xp)
+    newton = solver == "newton"
+    if implementation == "cuda" and stale_old_inflow_m2_s is not None:
+        raise RoutingError(
+            "implementation 'cuda' does not support the literal-legacy stale-inflow step "
+            "(legacy_stale_inflow_step is a non-conservative comparison tool); use 'array' or 'numba'"
+        )
     named = {"depth_start_m": depth_start_m, "old_flow_depth_m": old_flow_depth_m}
     if old_discharge_m2_s is not None:
         named["old_discharge_m2_s"] = old_discharge_m2_s
@@ -679,6 +812,16 @@ def _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, sta
             f"implementation 'numba' runs on host NumPy arrays only; the graph lives in {xp.__name__!r} "
             "and no host/device transfer is performed (build the graph with xp=numpy or use 'array')"
         )
+    if implementation == "cuda":
+        if xp is np:
+            raise RoutingError(
+                "implementation 'cuda' runs on CuPy graphs and arrays only; the graph lives in 'numpy' and no "
+                "host/device transfer is performed (build the graph with xp=cupy or use 'numba'/'array')"
+            )
+        from maple_syrup import routing_cuda
+
+        # Structure, current device and the owned static context are checked before any shared arithmetic.
+        routing_cuda.require_inputs(graph, named)
 
     ny, nx = graph.shape
     n_active = graph.n_active
@@ -724,7 +867,18 @@ def _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, sta
         coherent_lo = _donor_sum(q_old_lo, graph.donor_position, graph.donor_mask, xp)
         qin_old_lo = coherent_lo if stale_old_inflow_m2_s is None else stale_old_inflow_m2_s.reshape(-1)[order]
         base_lo = h_start[order] + c * (qin_old_lo - q_old_lo)
-        if implementation == "numba":
+        root_stats = None
+        if newton:
+            if implementation == "numba":
+                qin_new_lo, q_new_lo, flow_lo, rhs_lo, root_stats = routing_newton.run_sweep(
+                    graph, base_lo, c, newton_cap)
+            else:
+                qin_new_lo, q_new_lo, flow_lo, rhs_lo, root_stats = _sweep_array_newton(
+                    graph, base_lo, c, newton_cap)
+            root_stats = routing_newton.stats_dict(root_stats) if not isinstance(root_stats, dict) else root_stats
+        elif implementation == "cuda":
+            qin_new_lo, q_new_lo, flow_lo, rhs_lo = routing_cuda.run_sweep(graph, base_lo, c, iterations)
+        elif implementation == "numba":
             from maple_syrup import routing_numba
 
             qin_new_lo, q_new_lo, flow_lo, rhs_lo = routing_numba.run_sweep(graph, base_lo, c, iterations)
@@ -773,9 +927,14 @@ def _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, sta
         scalars.append(("stale inflow gain", stale_gain))
     for name, value in scalars:
         checks.require(finite_flag(xp.asarray(value)), f"step produced non-finite {name} (volume overflow)")
-    checks.forbid(true_flag(xp.abs(constitutive) > root_tol),
-                  f"bisection did not reach root_tolerance_m = {root_tol} m after {iterations} iterations "
-                  "(increase bisection_iterations); nothing is clipped")
+    if newton:
+        checks.forbid(true_flag(xp.abs(constitutive) > root_tol),
+                      f"Newton root solver did not reach root_tolerance_m = {root_tol} m "
+                      f"(newton_max_iterations = {newton_cap}); nothing is clipped")
+    else:
+        checks.forbid(true_flag(xp.abs(constitutive) > root_tol),
+                      f"bisection did not reach root_tolerance_m = {root_tol} m after {iterations} iterations "
+                      "(increase bisection_iterations); nothing is clipped")
     checks.forbid(true_flag(xp.abs(balance) > BALANCE_RTOL * scale),
                   "per-cell water balance violated beyond FP64 tolerance")
     if stale_old_inflow_m2_s is None:
@@ -809,8 +968,11 @@ def _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, sta
         max_constitutive_residual_m=xp.max(xp.abs(constitutive)),
         max_cell_balance_residual_m=xp.max(xp.abs(balance)),
         conservative=stale_old_inflow_m2_s is None,
-        bisection_iterations=iterations,
+        bisection_iterations=0 if newton else iterations,
         implementation=implementation,
+        root_solver=solver,
+        newton_max_iterations=newton_cap if newton else 0,
+        root_stats=root_stats,
     )
 
 
@@ -825,6 +987,8 @@ def route_step(
     bisection_iterations: int = DEFAULT_BISECTION_ITERATIONS,
     root_tolerance_m: float = DEFAULT_ROOT_TOLERANCE_M,
     implementation: str = "array",
+    root_solver: str = "bisection",
+    newton_max_iterations: int = DEFAULT_NEWTON_MAX_ITERATIONS,
 ) -> RouteStep:
     """One conservative method-5 step (see the module docstring).
 
@@ -834,11 +998,19 @@ def route_step(
     checked against that relation within `root_tolerance_m` in depth. The
     receiver's old inflow is the donor sum of this same q_old.
     `implementation` selects the ordered sweep: "array" (default, graph
-    namespace) or "numba" (CPU NumPy only; raises `RoutingError` if Numba is
-    missing or the graph is on a device -- no fallback). One batched flag
+    namespace), "numba" (CPU NumPy only; raises `RoutingError` if Numba is
+    missing or the graph is on a device -- no fallback) or "cuda" (CuPy graph
+    only; one RawKernel launch per dependency level, see routing_cuda.py;
+    raises on a NumPy graph, missing CuPy/device or a device mismatch -- no
+    fallback or dynamic array conversion; first use prepares owned static data
+    with counted transfers (see routing_cuda.py); `RouteStep.implementation` is "cuda").
+    `root_solver` "bisection" (default; exactly the historical solver) or "newton" (routing_newton.py; CPU NumPy
+    graph with "array" or "numba"; "cuda" is refused; `newton_max_iterations` caps the Newton passes per cell and
+    `bisection_iterations` is then validated but unused). One batched flag
     read; any failure raises `RoutingError` and returns nothing."""
     return _route(graph, depth_start_m, old_flow_depth_m, dt_s, old_discharge_m2_s, None,
-                  courant_max, bisection_iterations, root_tolerance_m, implementation)
+                  courant_max, bisection_iterations, root_tolerance_m, implementation,
+                  root_solver, newton_max_iterations)
 
 
 def legacy_stale_inflow_step(

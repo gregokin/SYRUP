@@ -85,12 +85,15 @@ from maple_syrup.routing import (
     _NEGATIVE_RHS_REJECTION,
     BALANCE_RTOL,
     EXPORT,
+    PIT_STORAGE,
     RouteStep,
     RoutingError,
     RoutingGraph,
     RoutingStepRejected,
+    _check_root_solver,
     _check_step_options,
 )
+from maple_syrup.routing_newton import compiled_sweep_newton, stats_dict
 from maple_syrup.routing_numba import (
     NumbaUnavailableError,
     compiled_sweep_batched,
@@ -112,6 +115,7 @@ __all__ = [
 ]
 
 _KERNELS: Any = None
+_NEWTON_KERNELS: Any = None  # the same kernels on the Newton root solver (selected explicitly; never the default)
 _EPS = float(np.finfo(np.float64).eps)
 _EPS64 = 64.0 * _EPS  # routing._route: root_tol + 64 eps h_old
 _TWO_THIRDS = 2.0 / 3.0
@@ -195,11 +199,15 @@ def _lowest_bit(flags: int) -> int:
 
 
 # --- kernels -----------------------------------------------------------------------------------------------
-def _build_kernels(numba: Any) -> SimpleNamespace:
+def _build_kernels(numba: Any, newton: bool = False) -> SimpleNamespace:
     """Define the nopython functions (Numba is imported lazily by the caller). The ordered sweep is the
     level-batched `routing_numba._sweep_batched` (Phase 7j), reused through its own dispatcher; it is
-    bit-identical to the original `routing_numba._sweep` (still the reference, `compiled_sweep()`)."""
-    sweep = compiled_sweep_batched()  # raises NumbaUnavailableError if Numba is missing
+    bit-identical to the original `routing_numba._sweep` (still the reference, `compiled_sweep()`).
+
+    `newton=True` builds the same kernels on `routing_newton.compiled_sweep_newton()` (safeguarded Newton on the
+    same cell equation; per-cell, level-ordered, `max_iter` for `iterations`, statistics in the trailing `stats`
+    array); the default build calls the batched bisection sweep exactly as before and leaves `stats` untouched."""
+    sweep = compiled_sweep_newton() if newton else compiled_sweep_batched()  # raises NumbaUnavailableError
     p23 = _TWO_THIRDS
     eps64 = _EPS64
     jit = numba.njit(cache=False, fastmath=False, nogil=True, boundscheck=False, error_model="numpy")
@@ -284,7 +292,12 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
             retained = wetted - drainage
             overflow = fmax(retained - smax, 0.0)
             soil = fmin(retained, smax)
-            depth = (avail - intake) + overflow
+            # coherent branch form of h + P - J (same retained arithmetic as hp below); see infiltration.column_step
+            if a and intake >= avail:
+                ret_s = 0.0
+            else:
+                ret_s = fmax(hi - fmax(intake - rain, 0.0), 0.0)
+            depth = (ret_s + fmax(rain - intake, 0.0)) + overflow
 
             depth_new[i] = depth
             soil_new[i] = soil
@@ -322,6 +335,8 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
             # coupled_step: hpre, branch masks (legacy precedence), old flux
             hp = fmax(hi - fmax(intake - rain, 0.0), 0.0)
             complete = a and intake >= hi + rain
+            if complete:  # infilt.for 112-115 sets d(1) = 0; a tiny hi absorbed in hi + rain must not leave a residue
+                hp = 0.0
             no_runon = a and (not complete) and intake <= rain
             partial = a and (not complete) and (not no_runon)
             qp = qprev[i]
@@ -354,7 +369,7 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
     @jit
     def route_kernel(order, k, k_lo, active, outlet, donor_position, donor_mask, bounds,
                      h_start, h_old, q_old, c, dt_over_dx, area, cr_max, root_tol, bal_rtol, iterations,
-                     h_new, flow, q_new, qin_new, qin_old, velocity, face, scratch, maxima):
+                     h_new, flow, q_new, qin_new, qin_old, velocity, face, scratch, maxima, stats):
         """Phases B1-B3. Mirrors routing._route with old_discharge supplied (the coupled path)."""
         n = h_start.shape[0]
         na = order.shape[0]
@@ -423,8 +438,12 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
         q_new_lo = np.zeros(na, dtype=np.float64)
         flow_lo = np.zeros(na, dtype=np.float64)
         rhs_lo = np.zeros(na, dtype=np.float64)
-        sweep(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterations,
-              qin_new_lo, q_new_lo, flow_lo, rhs_lo)
+        if newton:  # compile-time constant: the untaken branch is pruned
+            sweep(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterations,
+                  qin_new_lo, q_new_lo, flow_lo, rhs_lo, stats)
+        else:
+            sweep(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterations,
+                  qin_new_lo, q_new_lo, flow_lo, rhs_lo)
 
         # B3: scatter to cell order (inactive cells keep h_start, zero elsewhere) and the RHS checks
         for i in range(n):
@@ -515,8 +534,18 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
     return SimpleNamespace(column=column_kernel, route=route_kernel, sweep=sweep)
 
 
-def _kernels() -> SimpleNamespace:
-    global _KERNELS
+def _kernels(root_solver: str = "bisection") -> SimpleNamespace:
+    global _KERNELS, _NEWTON_KERNELS
+    if root_solver == "newton":
+        if _NEWTON_KERNELS is None:
+            if not numba_available():
+                raise HydrologyNumbaUnavailableError(
+                    "the prepared compiled hydrology requires Numba (optional extra maple-syrup[numba]), which is "
+                    "not importable; there is no fallback to the NumPy reference")
+            import numba
+
+            _NEWTON_KERNELS = _build_kernels(numba, newton=True)
+        return _NEWTON_KERNELS
     if _KERNELS is None:
         if not numba_available():
             raise HydrologyNumbaUnavailableError(
@@ -531,8 +560,9 @@ def _kernels() -> SimpleNamespace:
 
 def reset_compiled() -> None:
     """Drop the compiled dispatchers (tests: cold-start and missing-Numba paths)."""
-    global _KERNELS
+    global _KERNELS, _NEWTON_KERNELS
     _KERNELS = None
+    _NEWTON_KERNELS = None
 
 
 def kernel_provenance() -> dict[str, Any]:
@@ -553,6 +583,11 @@ def kernel_provenance() -> dict[str, Any]:
         "scalar_reductions": "numpy.sum on kernel-produced operand rows (reference pairwise order)",
         "versions": numba_versions(),
         "compiled_in_process": _KERNELS is not None,
+        "newton_compiled_in_process": _NEWTON_KERNELS is not None,
+        "root_solvers": {"bisection": "default (compiled batched sweep above)",
+                         "newton": "explicit: maple_syrup.routing_newton.compiled_sweep_newton (CPU, per-cell "
+                                   "safeguarded Newton, same equation)"},
+        "routing_newton_sha256": hashlib.sha256(here.with_name("routing_newton.py").read_bytes()).hexdigest(),
         "compilation": "lazy: the first prepared step includes JIT compilation of both kernels and the sweep",
     }
 
@@ -707,8 +742,22 @@ def prepare_hydrology(graph: RoutingGraph, params: ColumnParameters) -> Hydrolog
     n_internal = int(np.count_nonzero(receiver[active] >= 0))
     if donor_cell.size != n_internal or np.unique(donor_cell).size != n_internal:
         raise HydrologyPreparationError("graph donors are not exactly the active cells with an internal receiver")
-    if np.any(receiver[active] < EXPORT):
-        raise HydrologyPreparationError("an active cell has no receiver (neither a cell nor EXPORT)")
+    active_receiver = receiver[active]
+    if np.any((active_receiver < EXPORT) & (active_receiver != PIT_STORAGE)):
+        raise HydrologyPreparationError("an active cell has no receiver (neither a cell, EXPORT nor PIT_STORAGE)")
+    pit_cells = active & (receiver == PIT_STORAGE)
+    # the opt-in terminal storage code (routing.build_routing_graph(allow_pit_storage=True)) must be a zero-conveyance non-outlet
+    declared_pits = graph.pit_storage
+    if np.any(pit_cells) or (declared_pits is not None and np.any(declared_pits)):
+        if np.any(pit_cells) and (np.any(k[pit_cells] != 0.0) or np.any(outlet[pit_cells])):
+            raise HydrologyPreparationError("a PIT_STORAGE cell must have zero conveyance and cannot be an outlet")
+        mask = _own(declared_pits, "graph.pit_storage", np.bool_, shape).reshape(-1) if declared_pits is not None else None
+        aspect = _own(graph.aspect, "graph.aspect", np.int8, shape).reshape(-1)
+        slope = _own(graph.slope, "graph.slope", np.float64, shape).reshape(-1)
+        if (mask is None or not np.array_equal(mask, pit_cells) or graph.policy == "strict"
+                or np.any(aspect[pit_cells] != 0) or np.any(slope[pit_cells] != 0.0)):
+            raise HydrologyPreparationError(
+                "PIT_STORAGE receivers are inconsistent with graph.pit_storage / policy / aspect 0 / slope 0")
     if not np.array_equal(outlet, active & (receiver == EXPORT)):
         raise HydrologyPreparationError("graph.outlet is not exactly the exporting active cells")
 
@@ -818,12 +867,15 @@ def prepared_column_step(ctx: HydrologyContext, depth_m: Any, soil_water_m: Any,
 
 # --- one coupled step --------------------------------------------------------------------------------------
 def _resolve_route(flags: int, scalar_nonfinite: tuple[bool, ...], residual_failed: bool, qflags: int,
-                   cr_max: float, root_tol: float, iterations: int) -> None:
+                   cr_max: float, root_tol: float, iterations: int, newton_cap: int = 0) -> None:
     """Raise the FIRST failure in the reference's recorded order: kernel bits 0..23, the host scalar finiteness
     checks, kernel bits 24-25, the global balance, then the prepared-step previous-discharge checks."""
     def message(bit: int) -> str:
         if bit == 10:
             return f"{_COURANT_REJECTION} {cr_max}; step rejected (retry with a smaller dt)"
+        if bit == 24 and newton_cap:
+            return (f"Newton root solver did not reach root_tolerance_m = {root_tol} m "
+                    f"(newton_max_iterations = {newton_cap}); nothing is clipped")
         if bit == 24:
             return (f"bisection did not reach root_tolerance_m = {root_tol} m after {iterations} iterations "
                     "(increase bisection_iterations); nothing is clipped")
@@ -879,9 +931,12 @@ def prepared_coupled_step(ctx: HydrologyContext, rain_rate_m_per_s: Any, state: 
     if control.implementation != "numba":
         raise RoutingError(f"the prepared hydrology runs the compiled numba sweep only; control.implementation is "
                            f"{control.implementation!r} (select the reference hydrology for the array sweep)")
+    solver, newton_cap = _check_root_solver(control.root_solver, control.newton_max_iterations,
+                                            control.implementation, np)
 
     # B. routing (cellwise checks, level-ordered sweep, cellwise outputs) and C. host reductions
-    route = _route_phase(ctx, arrays[0], arrays[6], hpre, dt_r, cr_max, iterations, root_tol, qflags)
+    route = _route_phase(ctx, arrays[0], arrays[6], hpre, dt_r, cr_max, iterations, root_tol, qflags,
+                         solver, newton_cap)
     col = _column_step_from(ctx, dt, arrays)
     new_state = StormState(state.t_s + float(dt_s), route.depth_m, col.soil_water_m, route.discharge_m2_s)
     return CoupledStep(
@@ -891,7 +946,8 @@ def prepared_coupled_step(ctx: HydrologyContext, rain_rate_m_per_s: Any, state: 
 
 
 def _route_phase(ctx: HydrologyContext, depth_start: np.ndarray, q_old: np.ndarray, hpre: np.ndarray, dt: float,
-                 cr_max: float, iterations: int, root_tol: float, qflags: int) -> RouteStep:
+                 cr_max: float, iterations: int, root_tol: float, qflags: int,
+                 root_solver: str = "bisection", newton_cap: int = 0) -> RouteStep:
     """`routing._route` for the coupled path (h_start = column depth, h_old = hpre, q_old supplied)."""
     n = ctx.n_cells
     dx = ctx.dx_m
@@ -902,10 +958,13 @@ def _route_phase(ctx: HydrologyContext, depth_start: np.ndarray, q_old: np.ndarr
     flow, q_new, qin_new, qin_old = (np.zeros(n, dtype=np.float64) for _ in range(4))
     scratch = np.empty((4, n), dtype=np.float64)  # operand rows of the four reference sums
     maxima = np.zeros(4, dtype=np.float64)  # Courant old, constitutive, balance, velocity
-    flags = int(_kernels().route(
+    newton = root_solver == "newton"
+    stats = np.zeros(5, dtype=np.int64)  # routing_newton.STAT_NAMES; untouched by the bisection kernels
+    flags = int(_kernels(root_solver).route(
         ctx.level_order, ctx.conveyance, ctx.conveyance_lo, ctx.active, ctx.outlet, ctx.donor_position,
         ctx.donor_mask, ctx.level_bounds, depth_start, hpre, q_old, c, dt_over_dx, area, cr_max, root_tol,
-        BALANCE_RTOL, iterations, h_new, flow, q_new, qin_new, qin_old, velocity, face, scratch, maxima))
+        BALANCE_RTOL, newton_cap if newton else iterations, h_new, flow, q_new, qin_new, qin_old, velocity, face,
+        scratch, maxima, stats))
     with np.errstate(all="ignore"):
         storage_change = area * scratch[0].sum()
         export = scratch[1].sum()
@@ -916,7 +975,8 @@ def _route_phase(ctx: HydrologyContext, depth_start: np.ndarray, q_old: np.ndarr
         max_courant_new = maxima[3] * dt_over_dx
     scalar_nonfinite = tuple(not math.isfinite(float(v)) for v in
                              (storage_change, export, residual, global_tol, outlet_discharge))
-    _resolve_route(flags, scalar_nonfinite, residual_failed, qflags, cr_max, root_tol, iterations)
+    _resolve_route(flags, scalar_nonfinite, residual_failed, qflags, cr_max, root_tol, iterations,
+                   newton_cap if newton else 0)
 
     grid = ctx.shape
     return RouteStep(
@@ -939,6 +999,9 @@ def _route_phase(ctx: HydrologyContext, depth_start: np.ndarray, q_old: np.ndarr
         max_constitutive_residual_m=maxima[1],
         max_cell_balance_residual_m=maxima[2],
         conservative=True,
-        bisection_iterations=iterations,
+        bisection_iterations=0 if newton else iterations,
         implementation="numba",
+        root_solver=root_solver,
+        newton_max_iterations=newton_cap if newton else 0,
+        root_stats=stats_dict(stats) if newton else None,
     )

@@ -268,7 +268,7 @@ def test_masked_cells_keep_their_inventory_and_report_zero_flux():
     compare(coupled_step(case.graph, case.params, case.rate_on, case.state, 1.0, CONTROL), new, exact=False)
 
 
-# --- known reference roundoff inconsistency (documented follow-up, NOT fixed here) --------------------------------
+# --- former reference roundoff inconsistency (fixed by the coherent branch arithmetic; seeded triggers kept) --------------------------------
 def _find_inconsistent_wet_depth(rain_m: float = 1e-5):
     """Deterministic search of a small depth h for which, on a dry column (J = A, no saturation return),
     hpre = h - max(J - P, 0) is a ulp ABOVE h* = (h + P - J) + 0 = 0 in FP64: the reference's own old-flow depth
@@ -285,26 +285,47 @@ def _find_inconsistent_wet_depth(rain_m: float = 1e-5):
     raise AssertionError("no inconsistent depth found; the roundoff premise of this reproducer changed")
 
 
-def test_reference_roundoff_inconsistency_is_refused_identically_by_both_paths():
-    """The reference refuses `old_flow_depth_m exceeds depth_start_m` when a fully-infiltrating wet cell has
-    hpre = h - ((h + P) - P) one ulp above h* = (h + P) - J. Documented follow-up; the prepared step must keep the
-    equations and the guard and refuse the SAME input with the same class and message, mutating nothing."""
+def _run_coherent_branch(case, depth, soil, rate):
+    """Reference and prepared step on the SAME input: both must run (no old-flow refusal), agree at the unchanged bounds, and
+    mutate nothing; the unchanged per-cell/global balances (validate=True, route checks) pass inside both."""
+    state = initial_state(case.graph, depth, soil)
+    before = [a.copy() for a in (depth, soil, rate, state.discharge_m2_s)]
+    ref = coupled_step(case.graph, case.params, rate, state, 1.0, CONTROL)
+    new = hn.prepared_coupled_step(case.ctx, rate, state, 1.0, CONTROL)
+    compare(ref, new, exact=False)
+    for a, b in zip(before, (depth, soil, rate, state.discharge_m2_s), strict=True):
+        np.testing.assert_array_equal(a, b)
+    assert abs(float(ref.route.budget_residual_m3)) <= 1e-13
+    return ref, new
+
+
+def test_former_roundoff_trigger_now_runs_the_coherent_complete_branch_identically_in_both_paths():
+    """Formerly refused (hpre one ulp above h*): a fully-infiltrating wet cell. The complete branch sets the old-flow depth to 0
+    exactly and the column depth shares that arithmetic, so the step runs; reference and prepared agree."""
     h = _find_inconsistent_wet_depth()
     case = _chain_case(0.0, rate_value=1e-5)
     depth = np.zeros(case.graph.shape)
     depth[1, 0] = h
-    soil = np.zeros(case.graph.shape)  # dry column: Smith-Parlange capacity unbounded, all water infiltrates
-    state = initial_state(case.graph, depth, soil)
-    rate = np.full(case.graph.shape, 1e-5)
-    before = [a.copy() for a in (depth, soil, rate, state.discharge_m2_s)]
-    with pytest.raises(RoutingError, match="exceeds depth_start_m") as ref_err:
-        coupled_step(case.graph, case.params, rate, state, 1.0, CONTROL)
-    with pytest.raises(RoutingError, match="exceeds depth_start_m") as new_err:
-        hn.prepared_coupled_step(case.ctx, rate, state, 1.0, CONTROL)
-    assert type(new_err.value) is type(ref_err.value) and not isinstance(new_err.value, RoutingStepRejected)
-    assert str(new_err.value) == str(ref_err.value)
-    for a, b in zip(before, (depth, soil, rate, state.discharge_m2_s), strict=True):
-        np.testing.assert_array_equal(a, b)
+    ref, _ = _run_coherent_branch(case, depth, np.zeros(case.graph.shape), np.full(case.graph.shape, 1e-5))
+    assert int(ref.n_complete_runon) >= 1 and float(ref.state.depth_m[1, 0]) == 0.0
+
+
+def test_the_routing_guard_still_rejects_a_genuinely_inconsistent_old_depth():
+    """The guard is unchanged: an old-flow depth ABOVE the start depth (one ulp is enough) is refused by route_step, with the same
+    class and message in the array sweep, and nothing is mutated."""
+    from maple_syrup.routing import route_step
+
+    case = _chain_case(0.0, rate_value=1e-5)
+    start = np.zeros(case.graph.shape)
+    start[1, 0] = 9.949999999999987e-05
+    old = start.copy()
+    old[1, 0] = np.nextafter(start[1, 0], 1.0)
+    before = (start.copy(), old.copy())
+    with pytest.raises(RoutingError, match="exceeds depth_start_m") as err:
+        route_step(case.graph, start, old, 1.0)
+    assert not isinstance(err.value, RoutingStepRejected)
+    np.testing.assert_array_equal(start, before[0])
+    np.testing.assert_array_equal(old, before[1])
 
 
 def _find_partial_positive_rain_depth(rain_m: float = 1e-5, ksat: float = 3e-5):
@@ -322,25 +343,16 @@ def _find_partial_positive_rain_depth(rain_m: float = 1e-5, ksat: float = 3e-5):
     raise AssertionError("no inconsistent partial-intake depth found; the roundoff premise changed")
 
 
-def test_partial_positive_rain_roundoff_refusal_is_identical_in_both_paths():
-    """Documents that the reference guard also bites for P > 0 partial intake at ordinary depths (follow-up, the
-    guard and equations are intentionally unchanged): both paths refuse the same input identically."""
+def test_former_partial_roundoff_trigger_now_runs_the_coherent_partial_branch_identically_in_both_paths():
+    """Formerly refused for P > 0 partial intake at ordinary depths. Retained depth h - (J - P) is now the single arithmetic
+    of the column depth and the old-flow depth: the step runs, reference and prepared agree, nothing is mutated."""
     h = _find_partial_positive_rain_depth()
     case = _chain_case(0.0, rate_value=1e-5, ksat=3e-5)
     depth = np.zeros(case.graph.shape)
     depth[1, 0] = h
     soil = case.params.storage_max_m - 1e-4
-    state = initial_state(case.graph, depth, soil)
-    rate = np.full(case.graph.shape, 1e-5)
-    before = [a.copy() for a in (depth, soil, rate, state.discharge_m2_s)]
-    with pytest.raises(RoutingError, match="exceeds depth_start_m") as ref_err:
-        coupled_step(case.graph, case.params, rate, state, 1.0, CONTROL)
-    with pytest.raises(RoutingError, match="exceeds depth_start_m") as new_err:
-        hn.prepared_coupled_step(case.ctx, rate, state, 1.0, CONTROL)
-    assert type(new_err.value) is type(ref_err.value) and not isinstance(new_err.value, RoutingStepRejected)
-    assert str(new_err.value) == str(ref_err.value)
-    for a, b in zip(before, (depth, soil, rate, state.discharge_m2_s), strict=True):
-        np.testing.assert_array_equal(a, b)
+    ref, _ = _run_coherent_branch(case, depth, soil, np.full(case.graph.shape, 1e-5))
+    assert int(ref.n_partial_runon) >= 1
 
 
 # --- column alone ------------------------------------------------------------------------------------------

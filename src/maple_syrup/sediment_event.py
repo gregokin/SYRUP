@@ -260,6 +260,10 @@ class SedimentEventControl:
     def validated(self) -> SedimentEventControl:
         if not isinstance(self.storm, StormControl):
             raise SedimentEventError("storm must be a StormControl")
+        if self.storm.implementation == "cuda":  # StormControl.validated() accepts it for the water-only storm
+            raise SedimentEventError("storm implementation 'cuda' is the explicit WATER-ONLY CUDA hydrology; GPU "
+                                     "sediment transport is not implemented or qualified, refusing before any "
+                                     "physics (use 'array' or 'numba')")
         self.storm.validated()
         if self.transport_scheme not in TRANSPORT_SCHEMES:
             raise SedimentEventError(f"transport_scheme must be one of {TRANSPORT_SCHEMES}, got "

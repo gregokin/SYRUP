@@ -3,6 +3,15 @@
     python -m maple_syrup.storm_experiment --case-dir outputs/plot1 \\
         --output-dir outputs/plot1_storm_dt1 --max-dt-s 1 --implementation numba
 
+Explicit GPU form (water only; needs CuPy and a CUDA device, never Numba, no fallback):
+
+    python -m maple_syrup.storm_experiment --case-dir outputs/plot1 \\
+        --output-dir outputs/plot1_storm_cuda --max-dt-s 1 --implementation cuda --backend cupy
+
+`--implementation cuda` without `--backend cupy` is refused before anything is read. The summary then carries a
+`cuda_hydrology` block with the actual context/kernel metadata and the separately counted preparation, loop and
+reporting transfers. See docs/phase4s/usage.md.
+
 Rainfall/infiltration (accepted Phase 3 columns) and method-5 routing
 (accepted Phase 4b) are coupled by `storm.evolve` from t = 0 to `--end-s`
 (default: the legacy `stormlength`, 5400 s; the Plot 1 record ends at
@@ -68,13 +77,13 @@ from maple_syrup.rainfall import (
 )
 from maple_syrup.routing import (
     BALANCE_RTOL,
-    IMPLEMENTATIONS,
     RoutingError,
     RoutingGraphError,
     plot1_routing_graph,
 )
 from maple_syrup.storm import (
     HYDROGRAPH_COLUMNS,
+    STORM_IMPLEMENTATIONS,
     StormControl,
     StormError,
     evolve,
@@ -126,6 +135,7 @@ def run_plot1_storm(
     allow_maple_source_change: bool = False,
 ) -> StormRun:
     from maple.core.backend import (
+        gpu_execution_available,
         read_transfer_counters,
         resolve_backend,
         synchronize,
@@ -146,8 +156,15 @@ def run_plot1_storm(
                            implementation=implementation).validated()
     if isinstance(max_report_rows, bool) or not isinstance(max_report_rows, int) or max_report_rows < 1:
         raise StormError(f"max_report_rows must be a positive int, got {max_report_rows!r}")
-    if implementation not in IMPLEMENTATIONS:
-        raise StormError(f"implementation must be one of {IMPLEMENTATIONS}, got {implementation!r}")
+    if implementation not in STORM_IMPLEMENTATIONS:
+        raise StormError(f"implementation must be one of {STORM_IMPLEMENTATIONS}, got {implementation!r}")
+    if implementation == "cuda":
+        if backend != "cupy":
+            raise StormError("implementation 'cuda' needs --backend cupy (explicit: there is no automatic backend "
+                             "switch and no host fallback)")
+        if not gpu_execution_available():
+            raise StormError("implementation 'cuda' requested but CuPy or a CUDA device is unavailable; there is "
+                             "no fallback to the numpy/numba implementations")
     if implementation == "numba" and backend != "numpy":
         raise StormError("implementation 'numba' runs on the numpy backend only; use --implementation array "
                          "for other backends (no transfer, no fallback)")
@@ -208,13 +225,28 @@ def run_plot1_storm(
     state0 = initial_state(graph, depth0, soil0, t_s=0.0)
     setup = clock.lap()
 
-    # --- coupled loop: arrays stay in xp; two validating flag reads per attempt ---------
+    # CUDA: the static device context is prepared ONCE here (counted static download + kernel compile/load), apart from
+    # setup and from the loop, and handed to the single shared host scheduler `evolve`.
+    cuda_context = None
+    cuda_prepare = None
+    evolve_extra: dict[str, Any] = {}
+    if implementation == "cuda":
+        from maple_syrup import hydrology_cuda
+
+        prepare_before = read_transfer_counters()
+        cuda_context = hydrology_cuda.prepare_cuda_hydrology(graph, params)
+        cuda_prepare = {"timing": clock.lap(),
+                        "transfer_counters": dataclasses.asdict(read_transfer_counters().delta(prepare_before))}
+        evolve_extra["cuda_context"] = cuda_context
+
+    # --- coupled loop: arrays stay in xp; CPU: two validating flag reads per attempt; CUDA: ONE counted packet read ---
     counters_before = read_transfer_counters()
     result = evolve(graph, params, field, schedule, state0, end, control,
-                    report_every_s=cadence, max_report_rows=max_report_rows)
+                    report_every_s=cadence, max_report_rows=max_report_rows, **evolve_extra)
     synchronize(xp)
     loop = clock.lap()
-    transfers = dataclasses.asdict(read_transfer_counters().delta(counters_before))
+    counters_after_loop = read_transfer_counters()
+    transfers = dataclasses.asdict(counters_after_loop.delta(counters_before))
 
     # --- reporting boundary: one stacked read of every scalar ---------------------------
     final = result.state
@@ -247,6 +279,7 @@ def run_plot1_storm(
         "cumulative_return_m": to_host(result.cumulative_saturation_return_m).copy(),
         "cumulative_drainage_m": to_host(result.cumulative_drainage_m).copy(),
     }
+    reporting_transfers = dataclasses.asdict(read_transfer_counters().delta(counters_after_loop))
     if not all(np.all(np.isfinite(v)) for v in grids_out.values()) or not np.all(np.isfinite(hydrograph)):
         raise StormError("non-finite final grids or hydrograph; no output written")
     if np.any(final_depth < 0.0) or np.any(final_soil < 0.0) or np.any(final_q < 0.0):
@@ -401,9 +434,15 @@ def run_plot1_storm(
             "backend": resolved.backend.value, "device_id": resolved.device_id,
             "fingerprint": json.loads(json.dumps(resolved.fingerprint, default=str)),
             "loop_transfer_counters": transfers,
-            "validation": "two batched flag reads per attempt (column, routing); hydrograph rows written into a "
-                          "device buffer; grids copied to the host once at the end",
-            "gpu": "not exercised unless backend is cupy on an available device; no GPU claim",
+            "validation": ("ONE counted 144-byte packet read per attempted step (every column, routing and balance "
+                           "check runs on the device); the cumulative/peak accumulation and the hydrograph rows are "
+                           "fused device kernels; grids copied to the host once at the end"
+                           if implementation == "cuda" else
+                           "two batched flag reads per attempt (column, routing); hydrograph rows written into a "
+                           "device buffer; grids copied to the host once at the end"),
+            "gpu": ("water-only CUDA hydrology (explicit --implementation cuda --backend cupy); no GPU sediment, "
+                    "no restart-to-disk, no ET/splash/dry reset" if implementation == "cuda" else
+                    "not exercised unless backend is cupy on an available device; no GPU claim"),
         },
         "timings": {
             "setup_and_verification": setup,
@@ -432,6 +471,23 @@ def run_plot1_storm(
         ],
     }
 
+    if cuda_context is not None:
+        summary["cuda_hydrology"] = {
+            "context": cuda_context.summary(),
+            "kernels": hydrology_cuda.kernel_provenance(),
+            "preparation": cuda_prepare,
+            "loop_transfer_counters": transfers,
+            "reporting_transfer_counters": reporting_transfers,
+            "scope": "water-only prepared CUDA hydrology on the frozen terrain; static data downloaded once for "
+                     "validation and uploaded as owned copies at preparation; the loop transfers one counted packet "
+                     "per attempted step; the reporting reads above are the explicit final downloads",
+            "not_claimed": [
+                "GPU sediment or wind", "restart to disk", "evapotranspiration, splash, dry reset",
+                "evolving terrain or re-routing",
+                ("bitwise equality with the CPU (declared bound rtol 2e-12 / atol 1e-14; device libm and "
+                 "fixed-tree sums)"),
+            ],
+        }
     output_dir.mkdir(parents=True)
     with (output_dir / FINAL_NAME).open("xb") as handle:
         np.savez(handle, **grids_out)
@@ -466,8 +522,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-dt-s", type=float, default=1.0, help="Largest step (s); knots always split.")
     parser.add_argument("--end-s", type=float, default=None,
                         help="Simulated end (s); default the legacy stormlength (5400 s for Plot 1).")
-    parser.add_argument("--implementation", default="numba", choices=IMPLEMENTATIONS,
-                        help="Ordered-sweep implementation (default numba; missing Numba is an error, no fallback).")
+    parser.add_argument("--implementation", default="numba", choices=STORM_IMPLEMENTATIONS,
+                        help="Hydrology implementation (default numba; missing Numba is an error, no fallback). "
+                             "'cuda' is the explicit water-only prepared CUDA hydrology: it REQUIRES --backend cupy "
+                             "and a CUDA device and never needs Numba (no fallback).")
     parser.add_argument("--backend", default="numpy", choices=("numpy", "cupy"))
     parser.add_argument("--report-every-s", type=float, default=60.0, help="Hydrograph row cadence (s).")
     parser.add_argument("--min-dt-s", type=float, default=1.0 / 1024.0)

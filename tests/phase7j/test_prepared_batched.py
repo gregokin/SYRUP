@@ -24,6 +24,7 @@ from phase7h.test_hydrology_prepared import (
     _find_inconsistent_wet_depth,
     _find_partial_positive_rain_depth,
     build_case,
+    compare,
     run_pair,
 )
 
@@ -221,8 +222,12 @@ def test_bisection_five_iterations_is_refused_with_the_non_recoverable_class_and
     (_find_inconsistent_wet_depth, {"rate_value": 1e-5}),
     (_find_partial_positive_rain_depth, {"rate_value": 1e-5, "ksat": 3e-5}),
 ])
-def test_known_positive_rain_roundoff_refusals_are_unchanged(finder, case_kwargs):
-    """The existing `old_flow_depth_m exceeds depth_start_m` refusal is NOT fixed here: it must stay identical."""
+def test_former_positive_rain_roundoff_triggers_now_run_identically_in_every_path(finder, case_kwargs):
+    """The seeded inputs that used to trip `old_flow_depth_m exceeds depth_start_m` (hpre one ulp above h*) now run: the column
+    depth and the old-flow depth share one arithmetic. The reference, the prepared batched sweep and the prepared ORIGINAL serial
+    sweep all accept the input; the two prepared paths are bitwise equal, both agree with the reference at the unchanged water
+    bound, the per-step budget closes, and no input is mutated. The route guard itself is unchanged (genuine bad-old-depth
+    refusals are tested in phase7h/phase4s/rfid)."""
     h = finder()
     case = _chain_case(0.0, **case_kwargs)
     depth = np.zeros(case.graph.shape)
@@ -231,14 +236,16 @@ def test_known_positive_rain_roundoff_refusals_are_unchanged(finder, case_kwargs
     state = initial_state(case.graph, depth, soil)
     rate = np.full(case.graph.shape, 1e-5)
     before = [a.copy() for a in (depth, soil, rate, state.discharge_m2_s)]
-    with pytest.raises(RoutingError, match="exceeds depth_start_m") as new_err:
-        hn.prepared_coupled_step(case.ctx, rate, state, 1.0, CONTROL)
+    ref = coupled_step(case.graph, case.params, rate, state, 1.0, CONTROL)
+    new = hn.prepared_coupled_step(case.ctx, rate, state, 1.0, CONTROL)
     with original_sweep():
         old_case = _chain_case(0.0, **case_kwargs)
-        with pytest.raises(RoutingError, match="exceeds depth_start_m") as old_err:
-            hn.prepared_coupled_step(old_case.ctx, rate, state, 1.0, CONTROL)
-    assert type(new_err.value) is type(old_err.value) and str(new_err.value) == str(old_err.value)
-    assert not isinstance(new_err.value, RoutingStepRejected)
+        old = hn.prepared_coupled_step(old_case.ctx, rate, state, 1.0, CONTROL)
+    assert_bitwise(old, new)
+    compare(ref, new, exact=False)
+    assert abs(float(new.route.budget_residual_m3)) <= 1e-13 and abs(float(ref.route.budget_residual_m3)) <= 1e-13
+    branch = new.n_complete_runon if finder is _find_inconsistent_wet_depth else new.n_partial_runon
+    assert int(branch) >= 1
     for a, b in zip(before, (depth, soil, rate, state.discharge_m2_s), strict=True):
         np.testing.assert_array_equal(a, b)
 

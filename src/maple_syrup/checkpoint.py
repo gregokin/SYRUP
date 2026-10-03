@@ -26,6 +26,7 @@ from maple_syrup.complete_event import (
     quiet_metrics,
     water_budget,
 )
+from maple_syrup.routing_newton import DEFAULT_NEWTON_MAX_ITERATIONS
 from maple_syrup.sediment_bed import BedState, TerrainReference, refresh_routing
 from maple_syrup.sediment_event import (
     SedimentEventControl,
@@ -59,6 +60,9 @@ def _graph_digest(graph):
         if f.name in ('xp', 'input_sha256'):
             continue
         value = getattr(graph, f.name)
+        # opt-in policy fields (RFID): omitted for the strict default so the digest of every existing graph is unchanged
+        if (f.name == 'policy' and value == 'strict') or (f.name == 'pit_storage' and (value is None or not np.any(value))):
+            continue
         h.update(f.name.encode())
         if isinstance(value, np.ndarray):
             h.update(str((value.shape, value.dtype.str)).encode())
@@ -66,6 +70,9 @@ def _graph_digest(graph):
         else:
             h.update(repr(value).encode())
     return h.hexdigest()
+
+
+_NEWTON_CONTROL_FIELDS = frozenset({'root_solver', 'newton_max_iterations'})
 
 
 def _registry():
@@ -296,7 +303,12 @@ def save_checkpoint(path, item, context, column, sediment, identity):
             name = type(value).__name__
             if registry.get(name) is not type(value):
                 raise SedimentEventError(f'unregistered checkpoint type {name}')
-            return {'type': name, 'fields': {f.name: encode(getattr(value, f.name)) for f in dataclasses.fields(value)}}
+            names = [f.name for f in dataclasses.fields(value)]
+            if isinstance(value, StormControl) and value.root_solver == 'bisection' \
+                    and value.newton_max_iterations == DEFAULT_NEWTON_MAX_ITERATIONS:
+                # conditional metadata: the default bisection control encodes exactly as before the Newton option
+                names = [n for n in names if n not in _NEWTON_CONTROL_FIELDS]
+            return {'type': name, 'fields': {n: encode(getattr(value, n)) for n in names}}
         if isinstance(value, dict):
             if any(not isinstance(k, str) for k in value):
                 raise SedimentEventError('checkpoint mapping keys must be strings')
@@ -418,7 +430,17 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
                                 sediment_availability=snapshot['sediment_availability'], **values)
             if keys == {'type', 'fields'}:
                 cls = registry.get(value['type'])
-                if cls is None or set(value['fields']) != {f.name for f in dataclasses.fields(cls)}:
+                if cls is None or not isinstance(value['fields'], dict):
+                    raise SedimentEventError('unknown checkpoint type or fields')
+                expected = {f.name for f in dataclasses.fields(cls)}
+                # historical StormControl data has NEITHER Newton field (the bisection control); new data has BOTH.
+                # One of the two is malformed metadata and is refused, never defaulted.
+                present = set(value['fields'])
+                if cls is StormControl:
+                    ok = present in (expected - _NEWTON_CONTROL_FIELDS, expected)
+                else:
+                    ok = present == expected
+                if not ok:
                     raise SedimentEventError('unknown checkpoint type or fields')
                 return cls(**{k: decode(v) for k, v in value['fields'].items()})
             if keys == {'dict'}:

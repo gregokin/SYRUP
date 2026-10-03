@@ -7,8 +7,9 @@ Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.
 The CPU legacy replay also prepares fixed hydrology data and compiles infiltration,
 runoff branches, and routing setup/checks around the existing ordered sweep.
 `--hydrology-implementation reference` selects the original hydrology for comparison.
-See [hydrology qualification](docs/phase7h/performance.md). Actual GPU hydrology
-kernels and complete-event GPU qualification remain pending.
+See [CPU hydrology qualification](docs/phase7h/performance.md). Water-only resident
+CUDA storms are now available through an explicit backend choice; see
+[GPU hydrology results](docs/phase4s/performance.md). GPU sediment remains unqualified.
 
 ## Default run workflow (Phase 7f)
 
@@ -34,6 +35,18 @@ multi-bin conservative model remains available with
 convergence/performance work is deferred to Phase 7g. Details:
 [default workflow](docs/phase7f/default_workflow.md),
 [performance diagnosis](docs/phase7f/performance.md).
+
+## Experimental water hydraulics
+
+Two separately selectable CPU/CUDA candidates reuse the existing MAPLE case,
+rainfall and MAHLERAN-inspired infiltration: explicit D4 kinematic routing and
+uniform-grid local inertia. Use `python -m maple_syrup.experimental_experiment`
+with `--solver explicit` or `--solver local_inertial`, `--backend numpy` or
+`--backend cupy`, and the verified case and a new output directory.
+See [usage, equations and qualification limits](docs/hydraulic_candidates/README.md)
+and [measured comparisons](docs/hydraulic_candidates/results.md).
+These are water-only experiments; local-inertial velocity and full-storm backend
+sensitivity require further work before erosion coupling. Existing defaults remain unchanged.
 
 ## Current water workflow
 
@@ -153,7 +166,7 @@ Phase 3 validation: 222 tests passed, 2 GPU tests skipped; see `docs/phase3/acce
 
 ## Phase 4 water-only storm
 
-MAHLERAN method-5 routing now couples to rainfall/infiltration on the actual MAPLE case, with an optional Numba CPU sweep. Full storms, timestep refinement and original-Fortran routine comparisons are verified: 366 tests passed, 5 GPU-dependent tests skipped. See [acceptance, timings and reproduction commands](docs/phase4/storm_acceptance.md) and [coupling contract](docs/phase4/storm.md). GPU execution remains unverified. Phase 5 adds wet sediment transport; see its separate acceptance record.
+MAHLERAN method-5 routing now couples to rainfall/infiltration on the actual MAPLE case, with an optional Numba CPU sweep. Full storms, timestep refinement and original-Fortran routine comparisons are verified: 366 tests passed, 5 GPU-dependent tests skipped. See [acceptance, timings and reproduction commands](docs/phase4/storm_acceptance.md) and [coupling contract](docs/phase4/storm.md). Those checks preceded GPU qualification. Resident GPU water hydrology is now verified in [Phase 4S](docs/phase4s/performance.md); alternate hydraulic solvers have separate [experimental results and limitations](docs/hydraulic_candidates/results.md). Phase 5 adds wet sediment transport; see its separate acceptance record.
 
 ## Phase 5 wet sediment
 

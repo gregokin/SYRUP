@@ -370,7 +370,13 @@ def column_step(
         retained = wetted - drainage  # >= 0: drainage <= wetted
         overflow = xp.maximum(retained - smax, 0.0)
         soil_new = xp.minimum(retained, smax)
-        depth_new = (available - intake) + overflow  # available - intake >= 0: intake <= available
+        # Coherent branch representation of h + P - J (infilt.for 106-164): complete -> retained 0; otherwise retained
+        # h - max(J - P, 0) (the legacy post-infiltration d(1), the SAME arithmetic coupled_step uses for hpre) plus the rainfall
+        # excess max(P - J, 0). Mathematically (h + P) - J; reassociated so the pre-routing depth is not rounded independently
+        # of hpre. Intake, soil, drainage, overflow and the balance checks are unchanged.
+        complete = active & (intake >= available)
+        retained_surface = xp.where(complete, 0.0, xp.maximum(h - xp.maximum(intake - rain, 0.0), 0.0))
+        depth_new = (retained_surface + xp.maximum(rain - intake, 0.0)) + overflow
 
     if validate:
         for name, array in (("depth", depth_new), ("soil water", soil_new), ("intake", intake),
