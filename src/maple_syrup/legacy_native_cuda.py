@@ -477,18 +477,28 @@ extern "C" __global__ void sg_laws(
         }
         const double theta = (ustar * ustar) / cls[3 * NC + k];
         if (!SG_FINITE(theta)) flags |= 1ull << 19;
-        const bool pos = theta > 0.0;
-        const double arg = pos ? theta : 1.0;
-        const double pc = log(0.049 / (arg * 0.25));
-        const double t = pc / 0.702;
-        const double inner = 1.0 - exp(p_par * (t * t));
-        double sgn;
-        if (pc > 0.0) sgn = 1.0; else if (pc < 0.0) sgn = -1.0; else if (pc == 0.0) sgn = 0.0; else sgn = sg_nan();
-        double p = 0.5 - (0.5 * sgn) * sqrt(sg_max(inner, 0.0));
-        if (!pos) p = 0.0;
-        if (!SG_FINITE(p)) flags |= 1ull << 31;
-        if (p < 0.0) flags |= 1ull << 42;
-        if (p > 1.0) flags |= 1ull << 43;
+        /* LAZY flow probability. `p` only reaches an output through `fd`, and `fd` is forced to 0 below when !flow_cell, so for a
+           non-flow cell the value is unused. It is also guaranteed finite and within [0, 1] (hence none of the flags 31/42/43 can be
+           set) when theta is finite and p_par is finite and strictly negative: theta <= 0 gives p = 0; theta > 0 gives
+           p = 0.5 - 0.5 sgn sqrt(max(1 - exp(p_par t^2), 0)) with sgn in {-1, 0, 1}, exp(x <= 0 or -inf) in [0, 1], so the sqrt
+           argument is in [0, 1] (the clamp covers a 1-ulp exp excess) and p in [0, 1]; theta subnormal or huge only drives pc to +-inf,
+           t*t to +inf and p_par*inf to -inf (never 0*inf because p_par != 0). Every other case (flow cell, non-finite theta,
+           non-finite, zero, positive or NaN p_par) takes the ORIGINAL block unchanged, so all error words are preserved. */
+        double p = 0.0;
+        if (flow_cell || !SG_FINITE(theta) || !SG_FINITE(p_par) || !(p_par < 0.0)) {
+            const bool pos = theta > 0.0;
+            const double arg = pos ? theta : 1.0;
+            const double pc = log(0.049 / (arg * 0.25));
+            const double t = pc / 0.702;
+            const double inner = 1.0 - exp(p_par * (t * t));
+            double sgn;
+            if (pc > 0.0) sgn = 1.0; else if (pc < 0.0) sgn = -1.0; else if (pc == 0.0) sgn = 0.0; else sgn = sg_nan();
+            p = 0.5 - (0.5 * sgn) * sqrt(sg_max(inner, 0.0));
+            if (!pos) p = 0.0;
+            if (!SG_FINITE(p)) flags |= 1ull << 31;
+            if (p < 0.0) flags |= 1ull << 42;
+            if (p > 1.0) flags |= 1ull << 43;
+        }
         double fd = ((p * hz) * f) / ref;
         if (flow_cell && fd > cap) fd = cap;
         if (!(f > 0.0)) fd = 0.0;

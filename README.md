@@ -198,5 +198,8 @@ The saved MAPLE snapshot and diagnostic grids are not a storm restart format.
 
 GPU Newton hydrology and coupled GPU legacy sediment replay now have Plot 1 and large Chastre comparisons against CPU Numba,
 with a completed original-routine Fortran reference for Chastre. See [current results, timings and qualifications](docs/legacy_gpu/current_status.md).
-This fixed-composition benchmark is separate from the conservative evolving MAPLE-bed model; candidate optimizations and the
-Fortran recession-water discrepancy remain follow-ups. Use MAPLE's CPU and CuPy environments; no separate SYRUP environment is needed.
+The validated lazy flow-probability CUDA source (P2) and the corrected Plot 1 golden comparison helper have been integrated into the
+tree as their exact pinned candidate bytes (uncommitted); the production CPU/GPU regression and full Plot1 checks passed; final read-only review passed. This fixed-composition legacy replay (fixed composition, unlimited supply, explicit clipping source, fixed terrain and
+routing, no direct splash, wet rain-assisted detachment retained) is separate from the conservative evolving MAPLE-bed model and is not
+a conservative complete-event, restart or wind-handoff model. The Fortran recession-water discrepancy remains an independent follow-up.
+Use MAPLE's CPU and CuPy environments; no separate SYRUP environment is needed.

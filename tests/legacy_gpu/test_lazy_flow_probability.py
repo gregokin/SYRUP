@@ -1,12 +1,15 @@
-"""P2: the LAZY flow-detachment probability candidate of `sg_laws` against the frozen B3C1 CUDA module.
+"""P2: the LAZY flow-detachment probability of `sg_laws` in the PRODUCTION `maple_syrup.legacy_native_cuda` against the frozen B3C1 module.
 
-Two independently loaded `legacy_native_cuda.py` files (the frozen B3C1 snapshot and the isolated candidate copy; each has its own kernel
-cache `_MODULES`) build contexts on the same unchanged package helpers (`legacy_native`, `legacy_physics_numba`, ...). The candidate computes
-the Gaussian probability `p` only when it can reach an output or an error word; every result (laws, regimes, velocities, flags, ledger rows,
-maps, tallies) must equal the baseline BITWISE, including the exact error words. The tests inject values into the CONTENT of device arrays of
-test contexts only (`d_cls`, `d_sc`, `d_slope`, `d_fractions`): the context seals (pointers, shapes, dtypes) are not bypassed, and a replacement
-is still refused. They are queued for the root on a verified-idle device; the CPU tests check the source qualification and the numerical range
-argument. Written without being run; no mock is presented as a GPU test."""
+The production module (`ROOT/src/maple_syrup/legacy_native_cuda.py`, imported as `maple_syrup.legacy_native_cuda`, the module every driver and
+test uses) and an independently loaded copy of the frozen B3C1 snapshot (`outputs/dependencies/syrup_gpu_sediment_gpu_b3c1`, each with its own
+kernel cache `_MODULES`) build contexts on the same unchanged package helpers (`legacy_native`, `legacy_physics_numba`, ...). The production
+module computes the Gaussian probability `p` only when it can reach an output or an error word; every result (laws, regimes, velocities, flags,
+ledger rows, maps, tallies) must equal the B3C1 baseline BITWISE, including the exact error words. The tests inject values into the CONTENT
+of device arrays of test contexts only (`d_cls`, `d_sc`, `d_slope`, `d_fractions`): the context seals (pointers, shapes, dtypes) are not
+bypassed, and a replacement is still refused. The GPU tests need the frozen B3C1 snapshot (git-ignored; absent on a clean checkout, hence the
+skip) and a device; the pin and range tests run anywhere and always exercise the production file. The archived P2 candidate package
+(`outputs/dependencies/syrup_gpu_sediment_flowprob_candidate`) is used ONLY to qualify its own archive receipt; a test on that archive
+alone says nothing about production, so every production claim below reads `CAND_FILE`. Written without being run."""
 from __future__ import annotations
 
 import difflib
@@ -26,15 +29,20 @@ from .helpers import GRAPHS, fraction_pattern, gpu_available, physics_for
 
 ROOT = Path(__file__).resolve().parents[2]
 DEPS = ROOT / "outputs" / "dependencies"
-BASE_DIR, CAND_DIR = DEPS / "syrup_gpu_sediment_gpu_b3c1", DEPS / "syrup_gpu_sediment_flowprob_candidate"
+BASE_DIR, ARCHIVE_DIR = DEPS / "syrup_gpu_sediment_gpu_b3c1", DEPS / "syrup_gpu_sediment_flowprob_candidate"
 REL = "src/maple_syrup/legacy_native_cuda.py"
-BASE_FILE, CAND_FILE = BASE_DIR / REL, CAND_DIR / REL
-BASE_PINNED_SHA256 = "11f219a98b680a5ef32fd3a57089f578d33c797063d9399c182eab217b75701c"  # the B3C1 snapshot receipt value
+BASE_FILE, ARCHIVE_FILE = BASE_DIR / REL, ARCHIVE_DIR / REL
+CAND_FILE = ROOT / "src" / "maple_syrup" / "legacy_native_cuda.py"  # the PRODUCTION module, the adopted P2 source
+BASE_PINNED_SHA256 = "11f219a98b680a5ef32fd3a57089f578d33c797063d9399c182eab217b75701c"  # the B3C1 snapshot receipt value (pre-adoption root)
+CAND_PINNED_SHA256 = "584db1b7e4c8cf10b808433dc793a37dc7e3083d4e4ae06d2bc011bc7a12bbe9"  # the accepted P2 candidate bytes (root-verified pin)
 FRACTIONS6 = np.array([0.1, 0.1, 0.2, 0.2, 0.2, 0.2])
 NC = 6
-needs_files = pytest.mark.skipif(not (BASE_FILE.is_file() and CAND_FILE.is_file()), reason="the frozen B3C1 snapshot or the candidate copy is absent")
+needs_baseline = pytest.mark.skipif(not BASE_FILE.is_file(), reason="the frozen B3C1 snapshot (git-ignored) is absent")
+needs_archive = pytest.mark.skipif(not (BASE_FILE.is_file() and ARCHIVE_FILE.is_file()),
+                                   reason="the frozen B3C1 snapshot or the archived P2 candidate package (git-ignored) is absent")
 needs_gpu = pytest.mark.skipif(not gpu_available() or importlib.util.find_spec("numba") is None, reason="no CuPy / CUDA device or no Numba")
 BIT_THETA, BIT_P_NONFINITE = 1 << 19, 1 << 31  # the error-word bits of a non-finite theta / non-finite p
+LAZY_GUARD = "if (flow_cell || !SG_FINITE(theta) || !SG_FINITE(p_par) || !(p_par < 0.0)) {"
 
 
 def sha256(path: Path) -> str:
@@ -51,33 +59,53 @@ def _load(name: str, path: Path):
 
 @functools.lru_cache(maxsize=1)
 def modules():
-    """(baseline, candidate) with the source qualification asserted first."""
+    """(baseline, production): the independently loaded frozen B3C1 file and the IMPORTED production module, with the source pins asserted."""
     assert sha256(BASE_FILE) == BASE_PINNED_SHA256, "the baseline file is not the pinned B3C1 legacy_native_cuda.py"
-    return _load("legacy_native_cuda_b3c1_baseline", BASE_FILE), _load("legacy_native_cuda_flowprob_candidate", CAND_FILE)
+    import maple_syrup.legacy_native_cuda as production
+
+    assert Path(production.__file__).resolve() == CAND_FILE.resolve(), f"the imported module is not the root file: {production.__file__}"
+    assert sha256(CAND_FILE) == CAND_PINNED_SHA256, "the production legacy_native_cuda.py is not the pinned accepted P2 candidate"
+    return _load("legacy_native_cuda_b3c1_baseline", BASE_FILE), production
 
 
-# ---- CPU: source qualification and the numerical range argument ----------------------------------------------------------------------
-@needs_files
-def test_the_baseline_is_the_pinned_b3c1_file_and_only_sg_laws_differs_in_the_candidate_package():
+# ---- CPU: the production file, no ignored dependency ------------------------------------------------------------------------------------
+def test_the_production_module_is_the_root_file_and_matches_the_pinned_accepted_p2_candidate():
+    import maple_syrup.legacy_native_cuda as production
+
+    assert Path(production.__file__).resolve() == CAND_FILE.resolve()
+    assert CAND_FILE.is_file() and sha256(CAND_FILE) == CAND_PINNED_SHA256
+    assert sha256(CAND_FILE) != BASE_PINNED_SHA256  # it is no longer the B3C1 root
+    text = CAND_FILE.read_text()
+    assert text.count(LAZY_GUARD) == 1 and "double p = 0.0;" in text  # the lazy block is present exactly once
+    assert production.kernel_source(6).count(LAZY_GUARD) == 1  # and reaches the generated kernel source
+    assert production.kernel_provenance(6)["fastmath"] is False and production.kernel_provenance(6)["compile_options"]  # unchanged flags path
+
+
+# ---- CPU: source qualification (frozen B3C1 baseline and the archived candidate package) -------------------------------------------------
+@needs_archive
+def test_the_baseline_is_the_pinned_b3c1_file_and_the_archived_candidate_package_differs_only_in_the_cuda_file():
+    """Archive receipt qualification of the frozen packages (git-ignored). This does NOT exercise production by itself; the last assertion ties
+    the archived candidate bytes to the root file so the archive's full-storm evidence applies to the adopted source."""
     base_receipt = json.loads((BASE_DIR / "snapshot_receipt.json").read_text())["files"]
-    cand_receipt = json.loads((CAND_DIR / "snapshot_receipt.json").read_text())["files"]
+    cand_receipt = json.loads((ARCHIVE_DIR / "snapshot_receipt.json").read_text())["files"]
     assert base_receipt[REL] == BASE_PINNED_SHA256 == sha256(BASE_FILE)
     assert cand_receipt[REL] == BASE_PINNED_SHA256  # the receipt records the pre-edit state of the candidate copy
     assert len(cand_receipt) == 46
     for rel, digest in cand_receipt.items():
         if rel != REL:  # every other file of the candidate package is byte-identical to its recorded digest
-            assert sha256(CAND_DIR / rel) == digest, rel
-    assert sha256(CAND_FILE) != BASE_PINNED_SHA256  # the one intended edit exists
+            assert sha256(ARCHIVE_DIR / rel) == digest, rel
+    assert sha256(ARCHIVE_FILE) == CAND_PINNED_SHA256 != BASE_PINNED_SHA256  # the one intended edit exists in the archive
+    assert sha256(CAND_FILE) == sha256(ARCHIVE_FILE) == CAND_PINNED_SHA256  # the ROOT file is byte-identical to the accepted archive
 
 
-@needs_files
-def test_the_candidate_diff_is_confined_to_the_probability_block_of_sg_laws():
+@needs_baseline
+def test_the_production_diff_from_b3c1_is_confined_to_the_probability_block_of_sg_laws():
     base, cand = BASE_FILE.read_text().splitlines(), CAND_FILE.read_text().splitlines()
     first = next(i for i, line in enumerate(base) if "const bool pos = theta > 0.0;" in line)
     last = next(i for i, line in enumerate(base) if "double fd = ((p * hz) * f) / ref;" in line)
     assert first < last
     ops = [op for op in difflib.SequenceMatcher(a=base, b=cand, autojunk=False).get_opcodes() if op[0] != "equal"]
-    assert ops, "no difference between the candidate and the baseline"
+    assert ops, "no difference between the production file and the baseline"
     for tag, i1, i2, j1, j2 in ops:
         assert first <= i1 and i2 <= last + 1, f"a {tag} edit outside the probability block: baseline lines {i1 + 1}-{i2}"
     def norm(line: str) -> str:
@@ -123,7 +151,7 @@ def test_the_fallback_conditions_are_needed_other_p_par_values_do_produce_invali
     assert p_block(0.0, 0.0) == 0.0 and p_block(-1.0, np.nan) == 0.0  # theta <= 0 forces p = 0 whatever p_par is
 
 
-# ---- GPU: baseline vs candidate -------------------------------------------------------------------------------------------------------
+# ---- GPU: frozen B3C1 baseline vs the PRODUCTION module ---------------------------------------------------------------------------------
 MODERATE = [(0.0, 0.0, 0.0), (0.0, 0.0, 2e-5), (1e-3, 0.1, 2e-5), (1e-3, 0.1, 0.0), (5e-3, 0.2, 2e-5), (5e-3, 0.2, 0.0), (1e-2, 0.5, 2e-5)]
 WITH_SUSPENSION = [*MODERATE, (0.5, 3.0, 0.0)]
 NON_FLOW_ONLY = [(1e-3, 0.1, 2e-5), (1e-3, 0.1, 0.0), (1e-12, 0.1, 2e-5), (0.0, 0.0, 0.0)]
@@ -195,7 +223,7 @@ def seed_absent(classes):
 
 
 def compare(graph_name, categories, *, n_steps=6, fractions=None, mutations=(), seed=1):
-    """Run both contexts on identical inputs and return (equal-differences, baseline snapshot, candidate snapshot)."""
+    """Run both contexts on identical inputs and return (equal-differences, baseline snapshot, production snapshot)."""
     cp, net, shape, contexts = build_pair(graph_name, fractions, n_steps)
     snaps = []
     for ctx in contexts:
@@ -209,15 +237,16 @@ def compare(graph_name, categories, *, n_steps=6, fractions=None, mutations=(), 
     return differing(*snaps), snaps[0], snaps[1]
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
-def test_baseline_and_candidate_load_independently_with_separate_kernel_caches_and_different_sources():
+def test_baseline_and_production_load_independently_with_separate_kernel_caches_and_different_sources():
     base, cand = modules()
     assert base is not cand and base._MODULES is not cand._MODULES
+    assert cand.__name__ == "maple_syrup.legacy_native_cuda" and Path(cand.__file__).resolve() == CAND_FILE.resolve()
     assert base.kernel_source(6) != cand.kernel_source(6) and base.kernel_provenance(6)["source_sha256"] != cand.kernel_provenance(6)["source_sha256"]
     cp, _, _, contexts = build_pair("converging", n_steps=1)
     assert all(any(key[1:] == (6, 6) or key[1:] == (6, 2) for key in mod._MODULES) for mod in (base, cand))  # each compiled its own variant
-    with pytest.raises(base.CudaLegacyError, match="d_sc"):  # the seal of the baseline AND the candidate still refuses a replaced array
+    with pytest.raises(base.CudaLegacyError, match="d_sc"):  # the seal of the baseline AND the production module still refuses a replaced array
         contexts[0].d_sc = cp.zeros_like(contexts[0].d_sc)
         contexts[0]._guard("replaced")
     with pytest.raises(cand.CudaLegacyError, match="d_sc"):
@@ -225,7 +254,7 @@ def test_baseline_and_candidate_load_independently_with_separate_kernel_caches_a
         contexts[1]._guard("replaced")
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 def test_every_wet_dry_rain_and_flow_regime_gives_bitwise_equal_results_and_no_error_word():
     seen = set()
@@ -243,7 +272,7 @@ def test_every_wet_dry_rain_and_flow_regime_gives_bitwise_equal_results_and_no_e
     assert {0, 1, 2, 3, 4, 5} <= seen, f"not every wet regime was exercised: {sorted(seen)}"  # dry, wet no law, rain/diffuse, rain+trans, trans, concentrated
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 def test_suspension_cells_are_covered_and_equal():
     seen = set()
@@ -254,7 +283,7 @@ def test_suspension_cells_are_covered_and_equal():
     assert 6 in seen, "no suspended cell was produced; the category (0.5 m, 3 m/s) did not exceed the class settling limits"
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 @pytest.mark.parametrize("name", ["converging", "terminal_pit", "inactive_neighbour"])
 def test_zero_fraction_classes_and_seeded_absent_grain_pools_and_velocities_are_unchanged(name):
@@ -271,7 +300,7 @@ THETA_CASES = {"theta_zero_by_infinite_divisor": float("inf"), "theta_subnormal"
                "theta_infinite_by_zero_divisor": 0.0, "theta_nan": float("nan")}
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 @pytest.mark.parametrize("case", sorted(THETA_CASES))
 def test_theta_zero_subnormal_finite_huge_and_invalid_give_bitwise_equal_results_and_identical_error_words(case):
@@ -288,7 +317,7 @@ P_PAR_CASES = {"zero": 0.0, "positive": 1.0, "nan": float("nan"), "plus_inf": fl
                "huge_negative": -1e300, "default": None}
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 @pytest.mark.parametrize("case", sorted(P_PAR_CASES))
 def test_p_par_zero_positive_nan_infinite_and_extreme_values_keep_every_error_word_for_non_flow_cells(case):
@@ -296,11 +325,11 @@ def test_p_par_zero_positive_nan_infinite_and_extreme_values_keep_every_error_wo
     mutations = () if value is None else (set_p_par(value),)
     diff, base, cand = compare("converging", NON_FLOW_ONLY, n_steps=len(NON_FLOW_ONLY), mutations=mutations)
     assert diff == [], (case, diff)
-    if case == "nan":  # only wet NON-FLOW cells here: the original raises flag 31 for them, so the candidate must take the original block
+    if case == "nan":  # only wet NON-FLOW cells here: the original raises flag 31 for them, so the production module must take the original block
         assert (base["flags"] & BIT_P_NONFINITE).any() and (cand["flags"] & BIT_P_NONFINITE).any()
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 @pytest.mark.parametrize("name", ["converging", "terminal_pit"])
 def test_p_par_zero_with_a_subnormal_theta_still_raises_the_non_finite_probability_word_on_non_flow_cells(name):
@@ -310,9 +339,9 @@ def test_p_par_zero_with_a_subnormal_theta_still_raises_the_non_finite_probabili
     assert (base["flags"] & BIT_P_NONFINITE).any() and (cand["flags"] & BIT_P_NONFINITE).any()
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
-def test_the_candidate_is_bitwise_repeatable_after_reset_and_equal_to_the_baseline_across_the_reset():
+def test_the_production_module_is_bitwise_repeatable_after_reset_and_equal_to_the_baseline_across_the_reset():
     cp, net, shape, contexts = build_pair("converging", n_steps=len(MODERATE))
     results = []
     for ctx in contexts:
@@ -330,7 +359,7 @@ def test_the_candidate_is_bitwise_repeatable_after_reset_and_equal_to_the_baseli
     assert all(results[0][2][k].tobytes() == results[1][2][k].tobytes() for k in results[0][2])
 
 
-@needs_files
+@needs_baseline
 @needs_gpu
 def test_slope_and_fraction_content_injection_extremes_stay_equal():
     """Declared test injection into static content: a vanishing and a huge slope (theta -> 0 / large) and an absent grain in every cell."""

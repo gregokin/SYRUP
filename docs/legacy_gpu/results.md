@@ -1,9 +1,8 @@
 # Executed results of the legacy sediment GPU work (task gpu_sediment) — executed history up to documentation correction D1
 
-**Current status: see [`current_status.md`](current_status.md).** This page is the executed history as of correction D1 (2026-10-06/07) and
-is retained as historical evidence, not as fresh checks. Since then the full Chastre CPU (Numba) references and the full original-Fortran
-reference have COMPLETED and been compared, the B3 eight-run matrix and the P2 candidate matrix have been executed, and the environments have
-changed (Numba absent). Any "pending", "still running" or "in progress" wording below is superseded by `current_status.md`.
+**Current status:** both candidates are now integrated into actual production source, with CPU/GPU regression and full Plot1
+validation passed. Final read-only review passed; see [current status](current_status.md).
+The results below retain the earlier executed history and its timing qualifications.
 
 Scope and honesty rules. Everything here is the MAHLERAN **legacy replay** benchmark: fixed composition, unlimited supply, an explicit artificial
 clipping source, frozen terrain and routing, 1 s steps, no splash/ET/dry reset, **no MAPLE bed read after case verification or written**, no conservation, restart, wind-handoff or
@@ -96,9 +95,10 @@ compact 3.7215 s (reverse order; 12.5% lower). The state is a computed 600 s wat
   1.3 g (+42.57% / +6.43%), and a native +24.952 m3 surface-water surplus confined to the recession after rain ends (cause not demonstrated;
   open). No full-storm Fortran "acceptance" is claimed; it is an observation set.
 * Full Chastre B3 CPU/GPU and bitwise accounting-mode gates passed. Fewer bookkeeping launches do not demonstrate a storm-time gain on this hardware; separate mode remains available.
-* The E1 read-only review found no confirmed defect; the P2 candidate (bitwise-identical outputs, shorter loops in each same-session pair) and
-  the corrected golden helper remain local candidates, NOT adopted; their adoption, regression and final review are separate steps.
+* The E1 read-only review found no confirmed defect. The P2 candidate (bitwise-identical outputs, shorter loops in each same-session pair) and
+  the corrected golden helper were local candidates at D1; they have since been integrated into the source tree as the exact pinned bytes
+  (uncommitted, `current_status.md` section 9). Their root regression and pin/diff review passed; final read-only review passed.
 * Not provided and not claimed: an evolving MAPLE bed, conservative event, restart, wind handoff, full-storm Fortran acceptance.
   Class-eligibility compaction is valid only for an event's immutable composition (`production_GPU_followups.md`, git-ignored task directory).
-* Environments: Numba/llvmlite are absent from the current MAPLE `.venv` (CPU) and `.venv-cupy` (GPU, CuPy 14.2.0); the compiled-test results
-  and CPU timings on this page are historical and were not rerun for the commit.
+* The MAPLE CPU and CuPy environments now include the missing Numba 0.67.0 and llvmlite 0.49.0; all previously installed versions were
+  preserved. Counts and large-domain timings on this history page remain historical; fresh adoption checks are in `current_status.md`.

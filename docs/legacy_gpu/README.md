@@ -1,11 +1,10 @@
 # Resident CUDA native-walk legacy sediment storm (task gpu_sediment, stages B1, B2 and B3)
 
-**Current status (commit of 2026-10-08): see [`current_status.md`](current_status.md)**, the single current statement of results, evidence
-and limits. It supersedes any "in progress" / "pending" wording left on this page and in `results.md`: the full Chastre CPU (Numba) and
-original-Fortran references have COMPLETED and been compared (all same-root CPU/GPU comparisons pass the unchanged bounds with exact
-integers and bitwise GPU repeats; the Fortran comparison is an observation set with an open recession-water investigation). The P2 CUDA
-candidate and the golden-helper candidate are NOT adopted. No GPU test or full-storm benchmark was rerun for the commit; fresh CPU verification is recorded in `current_status.md`.
-Numba is absent from the current environments, so the compiled-test and CPU-timing results below are historical.
+**Current status:** the P2 GPU optimization and corrected golden helper are integrated in production source.
+Actual-source CPU regression passed (598 tests), GPU regression passed on GPU 0 (287 tests), and four full Plot1 GPU storms matched
+saved CPU results at unchanged bounds with bitwise-repeatable outputs. Final read-only review passed; both adoptions are accepted.
+See [current status and qualifications](current_status.md). The scientific scope remains legacy benchmark replay; the Fortran recession-water
+surplus remains a follow-up.
 
 Executed status (documentation correction D1, 2026-10-06/07; historical). The code was authored with file-only tools (the author never ran it); the
 ROOT (Codex) then compiled, tested and ran it on a GTX 1080 Ti and recorded the results in `agent_handoffs/tasks/gpu_sediment/` (git-ignored). Those
@@ -122,8 +121,8 @@ labelled honestly: the first contains hydrology plus water accounting plus host 
 ## Commands (Codex; device selection and idle check by UUID are Codex's)
 
 ```bash
-source agent_handoffs/tasks/phase7_matched_benchmark/gpu_env.sh; source benchmarks/chastre/env.sh
-export PATH=/home/okin/MAPLE/.venv/bin:$PATH; export CUDA_VISIBLE_DEVICES=<verified idle device>
+export PATH=/home/okin/MAPLE/.venv-cupy/bin:$PATH
+source benchmarks/chastre/env.sh; export CUDA_VISIBLE_DEVICES=<verified idle device>
 python -m pytest tests/legacy_gpu -q                     # CPU-only tests run anywhere; GPU tests skip only without CuPy/device
 python -m maple_syrup.legacy_gpu_driver --case-kind plot1 --case outputs/plot1 --output outputs/legacy_gpu/plot1_40 --end-s 40 \
    --applied-rainfall outputs/phase7/mahleran_reference_audit/applied_rainfall.csv --allow-maple-source-change

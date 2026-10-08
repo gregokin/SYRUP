@@ -1,13 +1,20 @@
-# Legacy sediment replay (CPU Numba, CUDA, original-Fortran reference): current status at the commit of 2026-10-08
+# Legacy sediment replay (CPU Numba, CUDA, original-Fortran reference): current status (commit of 2026-10-08 plus the uncommitted candidate adoption)
 
 This page is the single current statement for the work documented in `docs/legacy_native` (A1, CPU Numba driver), `docs/legacy_sediment`
 (A2, original-routine Fortran harness) and `docs/legacy_gpu` (B1 to B3, resident CUDA driver). The other pages keep their executed history;
-where they say a run is "in progress" or "pending", this page supersedes them. Everything below was produced by the root (Codex) and
+where they say a run is "in progress" or "pending", this page supersedes them. Sections 3 to 8 were produced by the root (Codex) and
 read from the evidence files named in each section. Evidence lives under `agent_handoffs/tasks/gpu_sediment/`, which is git-ignored and
-therefore NOT part of the committed tree; the committed docs summarize the results; raw evidence remains local. No full-storm benchmark or GPU test was rerun for this commit. The documentation author ran nothing;
-Codex executed the CPU verification recorded below.
+therefore NOT part of the committed tree; the committed docs summarize the results; raw evidence remains local. No full-storm benchmark or GPU test was rerun for the commit. The documentation author ran nothing;
+Codex executed the CPU verification recorded in section 8.
 
-## 1. What is committed
+**Adoption status (2026-10-08, changes not yet committed):** both validated candidates are integrated into the production source.
+Codex verified their source hashes, CPU and GPU regression suites, clean-source tests, and four fresh full Plot1 GPU storms.
+The new storms match the saved CPU references at unchanged bounds and reproduce both each other and the archived P2 outputs bitwise.
+Final read-only Claude review completed with no confirmed source or test defect; Codex accepted both adoptions. Section 9 records the adoption checks.
+
+## 1. What is committed, and what is now integrated (uncommitted, regression verified)
+
+Committed at `5821d19`:
 
 * The CPU reference driver (`maple_syrup.legacy_driver`, modules `legacy_native`, `legacy_native_numba`, `legacy_case`, `chastre_case`).
 * The resident CUDA driver (`maple_syrup.legacy_gpu_driver`, modules `legacy_native_cuda`, `legacy_water_cuda`, `routing_newton_cuda`)
@@ -15,17 +22,20 @@ Codex executed the CPU verification recorded below.
   (`--water-accounting fused`, default; `separate` is the reference arithmetic).
 * The original-routine Fortran harness (`benchmarks/legacy_sediment/`), the CPU/GPU comparison harness
   (`benchmarks/legacy_gpu/compare_cpu_gpu.py`), the record-strategy microbenchmark and the kernel-event profiler, with their tests.
-* The ORIGINAL benchmark helper `benchmarks/legacy_sediment/compare_legacy_sediment.py`, unchanged (see section 7 for its known defects).
+* The ORIGINAL benchmark helper `benchmarks/legacy_sediment/compare_legacy_sediment.py` (its known defects are listed in section 7 as history).
 
-NOT committed, NOT adopted (local experimental candidates, outside the tree or git-ignored):
+Integrated after the commit, uncommitted (the exact pinned candidate bytes, no other source change; see section 9):
 
-* The P2 lazy flow-detachment-probability CUDA candidate (one changed `sg_laws` block in an isolated package copy under
-  `outputs/dependencies/syrup_gpu_sediment_flowprob_candidate/`). Its test `tests/legacy_gpu/test_lazy_flow_probability.py` IS committed and
-  skips when the frozen B3C1 snapshot or the candidate copy is absent.
-* The corrected golden-helper candidate (`agent_handoffs/tasks/gpu_sediment/golden_candidate/compare_legacy_sediment.py`). Its test
-  `tests/legacy_sediment/test_plot1_golden_candidate.py` IS committed and skips at module level when the candidate file is absent.
+* `src/maple_syrup/legacy_native_cuda.py` is now the P2 lazy flow-detachment-probability source (the one changed `sg_laws` block; pinned
+  SHA-256 `584db1b7…2bbe9`, replacing the B3C1 root `11f219a9…5701c`). Compile options, tolerances, per-class/flag/speed behaviour and
+  layouts are unchanged. Its test `tests/legacy_gpu/test_lazy_flow_probability.py` now loads the PRODUCTION module and keeps the frozen B3C1
+  snapshot (git-ignored) only as the comparison baseline.
+* `benchmarks/legacy_sediment/compare_legacy_sediment.py` is now the corrected golden helper (pinned SHA-256 `80c36e17…e0c0`): only the
+  Plot 1 golden section changed (`fortran_number`, `parse_fortran_ledger`, the strict `plot1_golden`); `compare_runs`, `map_stats`,
+  `injection_check`, `build_engine`, `_rel`, the source pins and the comparison bounds are untouched and are now locked by immutable
+  SHA-256 pins in `tests/legacy_sediment/test_plot1_golden.py`, which imports the SHIPPED helper and no longer skips (renamed during adoption).
 
-Adoption of either candidate requires its own regression and review; nothing here is a candidate acceptance.
+Root regression passed; final review passed (section 9).
 
 ## 2. Physical scope (unchanged)
 
@@ -46,33 +56,34 @@ changed or fitted.
 |---|---|---|
 | Full Plot 1 5400 s, both solvers, B2 and B3 modes, CPU Numba vs GPU | every saved field, snapshot and series within the unchanged bounds, 0 flags; integers exact; GPU repeats and `separate`/`fused` outputs bitwise | `plot1_full_*_matched_comparison.json`, `plot1_full_*_b3_modes_bitwise_comparison.json` |
 | Full Chastre 2700 s, both solvers, same-root CPU Numba vs GPU (B2, B3 separate, B3 fused, B3C1 paired) | all saved fields/snapshots/counters pass unchanged bounds, 0 flags; integers exact; within-mode and between-mode GPU outputs bitwise | `chastre_full_*_matched_comparison.json`, `chastre_*_b3c1_paired_full_matched_comparison.json`, `b3_chastre_full_timing_summary.json` |
-| P2 candidate vs committed B3 (Plot 1 and Chastre, both solvers, two runs each) | candidate passes the same CPU bounds; candidate repeats bitwise; candidate and baseline GPU outputs bitwise | `p2_plot1_executed_audit.json`, `p2_chastre_full_executed_audit.json` |
+| P2 source (then an isolated candidate, now the integrated production source) vs the old B3 baseline (Plot 1 and Chastre, both solvers, two runs each) | P2 passes the same CPU bounds; P2 repeats bitwise; P2 and old-B3 GPU outputs bitwise. Evidence from the pre-adoption candidate matrix, retained for the byte-identical adopted source; Chastre was not rerun during adoption; fresh Plot1 checks are in section 9 | `p2_plot1_executed_audit.json`, `p2_chastre_full_executed_audit.json` |
 | Full Chastre original-Fortran reference vs both saved CPU Numba references | completed; strict schema/EOF/completion, pinned executable/input/15 sources, case artifacts and tile digest passed; see section 5 | `fortran_chastre_recovery4_results.md`, `recovery4_independent_result_qualification.json` |
 
-Test suites recorded during the task (historical, NOT rerun for this commit): A1 C3 246 passed / 2 skipped; A2 C1 256 passed / 452 skipped
-(450 belong to older candidate-specific tests); B3 C1 real-GPU 240 passed / 2 single-visible-device skips, CPU guards 89 passed / 20 GPU skips;
-P2 CPU part 4 passed / 24 GPU-skipped, then 28 passed on GPU0 (3.47 s); golden-helper candidate 69 CPU tests passed; Ruff PASS in each. The
-root reruns the available CPU suites and Ruff before committing.
+Test suites recorded during the task (historical, pre-adoption, NOT rerun for the commit or after the adoption): A1 C3 246 passed / 2 skipped;
+A2 C1 256 passed / 452 skipped (450 belong to older candidate-specific tests); B3 C1 real-GPU 240 passed / 2 single-visible-device skips, CPU
+guards 89 passed / 20 GPU skips; P2 CPU part 4 passed / 24 GPU-skipped, then 28 passed on GPU0 (3.47 s) against the ISOLATED candidate copy;
+golden-helper candidate 69 CPU tests passed against the ISOLATED candidate file; Ruff PASS in each. Those two candidate suites were the
+pre-adoption forms of the tests; actual production regression was subsequently run and passed (section 9).
 
 ## 4. Timings (exploratory, one GTX 1080 Ti as GPU0 under recorded background load; loop seconds exclude case load, startup, JIT/NVRTC and publication)
 
-Committed B3 root, full Chastre 2700 s (the baseline runs of the paired P2 matrix, `p2_chastre_full_executed_audit.json`):
+Old B3 baseline (the pre-adoption committed root), full Chastre 2700 s (the baseline runs of the paired P2 matrix, `p2_chastre_full_executed_audit.json`):
 
-| Solver | B3 loop s, run 1 / run 2 |
+| Solver | old B3 baseline loop s, run 1 / run 2 |
 |---|---|
 | bisection | 290.581879 / 293.328463 |
 | Newton | 267.052132 / 183.021517 |
 
-P2 candidate, same matrix, NOT adopted:
+Adopted P2 source (measured as the isolated candidate, byte-identical to the now-integrated file), same matrix:
 
-| Solver | P2 candidate loop s, run 1 / run 2 |
+| Solver | adopted P2 loop s, run 1 / run 2 |
 |---|---|
 | bisection | 271.173501 / 270.566621 |
 | Newton | 246.100527 / 166.593027 |
 
 The second Newton pair (183.02 and 166.59 s) was rerun after a host crash on a different date and background load from the first pair. These
-pairs must not be averaged or quoted as a matched-precision speed-up; the only safe statement is that in each same-session pair the candidate
-loop was shorter (about 6.7 to 9.0% per pair) with bitwise-identical outputs, and that this is exploratory.
+pairs must not be averaged or quoted as a matched-precision speed-up; the only safe statement is that in each same-session pair the P2
+loop was shorter (about 6.7 to 9.0% per pair) with bitwise-identical outputs, and that this is exploratory. No fresh Chastre timing was taken during adoption; fresh Plot1 timings are in section 9.
 
 Earlier committed-root Chastre loops under their own loads (B2: 278.701 / 278.543 s bisection, 257.795 / 258.132 s Newton; the B3 eight-run
 fused/separate matrix: bisection 281.416 vs 282.011 s mean, Newton 259.571 vs 260.145 s mean) show no established fusion gain; the
@@ -115,19 +126,28 @@ closed water budget is retained and the suspected legacy defect is not copied.
 
 ## 6. Environments
 
-Only the user-repaired MAPLE environments are used: `/home/okin/MAPLE/.venv` for CPU (NumPy 2.5.3, JAX 0.11.2, SciPy 1.18.1, PyYAML 6.0.3)
-and `/home/okin/MAPLE/.venv-cupy` for GPU (NumPy 2.5.3, CuPy 14.2.0, JAX 0.11.2). There is no SYRUP-local virtual environment and no `/tmp`
-package overlay. Numba and llvmlite are ABSENT from both (`repaired_gpu_venv_probe.json`), so the compiled CPU driver, the Numba oracle of the
-GPU tests and every Numba-dependent test cannot run in the current environments; the recorded compiled-test results and CPU timings above are
-historical, obtained when Numba 0.67.0 / llvmlite 0.49.0 were temporarily present. No fresh GPU test or benchmark was run for this commit.
+Use only MAPLE's existing CPU environment at `/home/okin/MAPLE/.venv` and GPU environment at
+`/home/okin/MAPLE/.venv-cupy`. There is no SYRUP virtual environment or temporary package overlay.
+For this adoption Codex added only the previously missing Numba 0.67.0 and llvmlite 0.49.0 to both environments.
+Wheel metadata and hashes were verified; every pre-existing package version remained unchanged. Both environments passed
+`pip check` and a compiled Numba smoke test; CuPy compiled and executed on GPU 0.
+
+Current CPU/GPU NumPy is 2.5.3 and GPU CuPy is 14.2.0. Previous large-domain CPU timings used NumPy 2.5.2.
+The fresh regression and Plot1 runs below use the repaired environments; the earlier large-domain timing remains historical.
 
 ## 7. Known limitations and open items
 
 * Scientific: everything in section 2; the recession-water surplus of the original routines (section 5); zero-outlet export is vacuous.
-* Candidates: P2 and the golden helper are not adopted. The committed original `plot1_golden` has two confirmed defects (it cannot parse the
-  real application's omitted-`E` three-digit-exponent tokens, and it sums the mobile inventories over time under a `*_total` label) plus a
-  silent reshape and quiet truncation of unequal comparisons; the saved real Plot 1 ledger was reviewed with the isolated strict candidate, not
-  with the committed helper. Adoption, regression and the final review remain separate steps.
+* Adoption: P2 and the golden helper are integrated and their production regression passed; final review passed (section 9). The committed original `plot1_golden` had the confirmed defects listed here as history: it could not parse
+  the real application's omitted-`E` three-digit-exponent tokens (the subnormal `1.9762625833649862-323` crashed `float()`), it summed the
+  mobile inventories over time under a `*_total` label, it reshaped the ledger silently without validating the iteration/class/time columns
+  (arbitrary ascending class labels passed), it did not check matching time axes and it quietly
+  truncated unequal storms to the shorter length. The shipped helper now fixes all of these: strict `fortran_number` (omitted-`E` kept,
+  subnormal preserved, non-finite refused), exact class IDs 1..6 in every iteration, a finite exact (default 0 s) time-axis bound validated
+  before any read, refusal of unequal runs unless a labelled `partial_steps` is declared, and mobile FINAL/PEAK values (per class and total,
+  with peak times) instead of an inventory sum. The API intentionally separates `columns` (transfer totals, kg per step summed) from
+  `storage` (inventories); `compare_runs`, `map_stats`, `injection_check`, `build_engine` and `_rel` are untouched. The saved real Plot 1
+  ledger was reviewed with the isolated candidate before adoption and was then rechecked with the shipped helper (section 9).
 * Performance: no CPU-vs-GPU speed-up is claimed for Plot 1; the Chastre GPU/CPU loop ratios (about 20 to 22 to one against single-core
   Numba under concurrent load) are exploratory; no fusion gain; the P2 pairs are not a matched-precision speed-up.
 * Record compaction is valid only for an immutable event composition; an evolving active layer can expose absent classes
@@ -137,12 +157,13 @@ historical, obtained when Numba 0.67.0 / llvmlite 0.49.0 were temporarily presen
   MAHLERAN reference tree at `/home/okin/MAHLERAN`, generated cases under `outputs/`, a configured gfortran, Numba or a CUDA device, and may skip or refuse execution when those prerequisites are absent.
 
 
-## 8. Fresh commit verification (Codex, 2026-10-08)
+## 8. Commit verification (Codex, 2026-10-08; historical, PRE-adoption)
 
-No full storm or GPU test was rerun, and neither MAPLE environment was modified.
+These checks were run on the committed tree BEFORE the candidate adoption of section 9; the golden-candidate and P2 suites they count are the
+pre-adoption forms (isolated candidate files), not the adopted tests. No full storm or GPU test was rerun, and neither MAPLE environment was modified.
 
 * Current feature suites: 437 passed, 607 skipped, 4 deselected in 19.43 s, using MAPLE's CPU environment and the verified
-  Chastre MAPLE dependency. The four deselected tests explicitly require Numba, which is absent. Skips include optional
+  Chastre MAPLE dependency. The four deselected tests explicitly require Numba, which was absent at that pre-adoption check. Skips include optional
   compiled/device/reference checks; they are not fresh GPU or compiled-CPU validation. Three overflow warnings came from deliberate
   invalid-input probes.
 * Corrected source-path invocation of the subprocess/import-contract suites: 118 passed, 2 skipped in 5.65 s.
@@ -150,8 +171,8 @@ No full storm or GPU test was rerun, and neither MAPLE environment was modified.
 * Source-only copy without ignored outputs/candidates: all test suites collect successfully, 4,473 tests collected in 5.76 s.
   The golden candidate module skips rather than raising a missing-file collection error.
 * Ruff across source, benchmarks and tests, and Git whitespace validation: passed.
-* Claude's bounded review found the missing-candidate collection defect (fixed) and no additional confirmed blocker. Candidate adoption,
-  compiled/device regression and the native recession investigation remain separate work.
+* Those pre-adoption checks did not validate the candidates in production. The subsequent adoption checks are recorded in section 9;
+  the native recession investigation remains separate.
 
 The initial broad invocation had 1,427 passes, 2,990 skips, 14 failures and 44 fixture errors. All were inspected:
 nine subprocess failures lacked an exported SYRUP source path and passed after correction; one receipt assertion used live MAPLE instead
@@ -168,3 +189,50 @@ python -m pytest tests/chastre tests/gpu_newton tests/legacy_gpu tests/legacy_na
 python -m ruff check src/maple_syrup benchmarks tests
 git diff --check
 ```
+
+## 9. Adoption verification (Codex, 2026-10-08)
+
+The actual CUDA module SHA-256 equals the validated P2 candidate
+(`584db1b7e4c8cf10b808433dc793a37dc7e3083d4e4ae06d2bc011bc7a12bbe9`).
+The actual golden helper equals its validated candidate
+(`80c36e17416ddc864c8008faa4993f7e3e2a6fbda3505202d05771b7e8a0e0c0`).
+Of the 46 production package files, 45 match the frozen P2 package exactly; the remaining file differs only by one trailing newline
+removed in the preceding commit. No other executable model text, equation, compiler option or tolerance changed.
+
+* CPU feature and Newton suites: **598 passed, 583 skipped**, no exclusions, 71.48 s. The three warnings are deliberate overflow probes.
+* Actual production GPU suite on GPU 0: **287 passed, 2 skipped**, 120.70 s. The skips require another visible GPU, which was not allocated.
+  Tests include byte-for-byte comparisons against the frozen B3 kernel, pathological-input error words, reset, compaction and device guards.
+* Source-only checkout without ignored candidates or Git metadata: **73 passed, 26 skipped** for the adopted helper and probability tests;
+  **4,624 tests collected** across all suites. All 70 golden-helper tests run against the shipped helper. The optional archived-baseline GPU
+  comparisons skip when that archive is absent; core GPU tests do not require that archive.
+* Shipped helper versus the saved real MAHLERAN Plot1 ledger: all **5,400 steps**, exact time axes, new-mobile peak at **1,201 s** in both.
+  Transfers remain summed per step; mobile inventories are reported as final and peak, including per-class values/times.
+  Source hashes of the five unrelated comparison functions and all comparison constants remain unchanged.
+  The total peak time matches, but class 4 peaks at 1,191 s in Fortran and 1,141 s in SYRUP. Its peak inventories are
+  7.807104e-12 and 7.788845e-12 kg (about 7.8 nanograms), respectively; matching total timing does not imply identical timing in every class.
+* Four fresh full Plot1 GPU storms, two per solver, from actual production source: every saved field/snapshot passes the original
+  CPU/GPU bounds, controls and integer counts are exact, and both solver pairs are bitwise reproducible.
+  Saved arrays, snapshots and counters also match the archived P2 runs bitwise across the repaired environments.
+  CPU archive hashes/sizes were checked against their earlier independent pins; new GPU outputs were fsynced and pinned.
+* Ruff across source, benchmarks and tests, and Git whitespace checks: passed.
+
+Fresh Plot1 loop timings (5,400 steps; startup, compilation, warm-up and publication excluded):
+
+| Solver | Run 1, seconds | Run 2, seconds |
+|---|---:|---:|
+| bisection | 9.8390 | 10.1963 |
+| newton | 8.4219 | 8.1733 |
+
+
+These runs verify integration; they are not paired timing experiments against the old kernel.
+The completed Chastre candidate matrix remains evidence for the identical adopted computational code; the expensive native and CPU storms
+were not rerun during adoption. The original Fortran recession-water surplus remains unresolved and is not copied into SYRUP.
+
+Evidence is local under `agent_handoffs/tasks/candidate_adoption/`: CPU/GPU logs, `environment_verification.json`,
+`production_package_candidate_equivalence.json`, `actual_shipped_plot1_golden.json`, `actual_plot1_audit.json`,
+the per-solver strict comparisons, clean-source checks and the final review. Final read-only review passed; both adoptions are accepted.
+
+Final review: independent Claude session `305c629f-8f47-46f6-ae72-c07409cd8e1c` found no confirmed source/test defect.
+Codex corrected the two stale documentation statements, qualified the nanogram-scale class peak timing, and refreshed the active handoff prompt.
+Source/test changes are accepted; commit and push remain separate from this adoption request. Future intentional numerical changes require
+reviewing and updating the provenance assertions rather than weakening behavioral tests.

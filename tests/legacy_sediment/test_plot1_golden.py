@@ -1,48 +1,51 @@
-"""CPU tests of the isolated candidate `plot1_golden` helper (agent_handoffs/tasks/gpu_sediment/golden_candidate/compare_legacy_sediment.py).
+"""CPU regression tests of the SHIPPED `plot1_golden` helper (`benchmarks/legacy_sediment/compare_legacy_sediment.py`).
 
-EXPERIMENTAL LOCAL DEPENDENCE: the candidate helper lives under `agent_handoffs/`, which is git-ignored, so it is NOT part of a clean
-checkout. It is a local, not-adopted candidate (the committed benchmark helper `benchmarks/legacy_sediment/compare_legacy_sediment.py` is
-unchanged; see docs/legacy_gpu/current_status.md). When the candidate file is absent this whole module skips at collection time instead of
-failing on the dynamic load; when it is present, every test below runs unchanged.
-
-The candidate is loaded explicitly by path (never imported as the benchmark helper); the benchmark `sources.py` comes from the existing conftest
-path. The real saved Plot 1 reference and the published Numba output are for the root to run: the data here are small synthetic ledgers with
-distinct class and time values, persistent mobile storage (sum over time != final != peak) and the actual Fortran omitted-E format.
+The helper is imported exactly as the benchmark harness imports it (the conftest puts `benchmarks/legacy_sediment` on `sys.path`), so these
+tests exercise the actual committed file on a clean checkout: no git-ignored candidate, no `.git`, no external baseline source is needed and
+nothing here skips. The real saved Plot 1 reference ledger and the published Numba output are for the root to run; the data here are small
+synthetic ledgers with distinct class and time values, persistent mobile storage (sum over time != final != peak) and the actual Fortran
+omitted-E token format. The last test locks the five untouched functions and the comparison constants to their immutable pre-adoption
+SHA-256 / literal values (copied from `agent_handoffs/tasks/candidate_adoption/unchanged_helper_functions.json`), so the adoption of the
+corrected Plot 1 section cannot have altered `compare_runs`, `map_stats`, `injection_check`, `build_engine` or `_rel`.
 Written without being run."""
 from __future__ import annotations
 
+import hashlib
 import inspect
 import re
 from pathlib import Path
 
-import compare_legacy_sediment as ORIGINAL  # the frozen benchmark helper, read-only (conftest puts benchmarks/legacy_sediment on sys.path)
+import compare_legacy_sediment as C  # the SHIPPED benchmark helper (conftest puts benchmarks/legacy_sediment on sys.path)
 import numpy as np
 import pytest
+import sources as S  # the read-only sources module the helper binds as `C.S`
 
 ROOT = Path(__file__).resolve().parents[2]
-CANDIDATE_PATH = ROOT / "agent_handoffs" / "tasks" / "gpu_sediment" / "golden_candidate" / "compare_legacy_sediment.py"
-
-if not CANDIDATE_PATH.is_file():  # git-ignored local candidate: absent in a clean checkout, so skip the module rather than fail to collect
-    pytest.skip(f"the experimental local golden-helper candidate is absent (not adopted, git-ignored): {CANDIDATE_PATH}",
-                allow_module_level=True)
-
-
-def _load():
-    import importlib.util
-    import sys
-
-    spec = importlib.util.spec_from_file_location("compare_legacy_sediment_golden_candidate", CANDIDATE_PATH)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
-C = _load()
-SUBNORMAL = 1.9762625833649862e-323  # the token the original `float()` parser failed on: `1.9762625833649862-323`
+HELPER_PATH = ROOT / "benchmarks" / "legacy_sediment" / "compare_legacy_sediment.py"
+SUBNORMAL = 1.9762625833649862e-323  # the token the pre-adoption `float()` parser failed on: `1.9762625833649862-323`
 TIMES = np.array([10.0, 20.0, 30.0, 40.0, 50.0])  # distinct, not 1..5: a time-alignment error cannot hide
 NEW_PROFILE = np.array([1.0, 3.0, 5.0, 4.0, 2.0])  # persistent stock: final 2 != peak 5 != sum over time 15 (times the class factor)
 OLD_PROFILE = np.array([0.0, 1.0, 3.0, 5.0, 4.0])  # the previous step's stock
+
+#: immutable pre-adoption pins of the functions the golden correction must NOT have touched (sha256 of `inspect.getsource(fn)`, utf-8)
+UNCHANGED_SOURCE_SHA256 = {
+    "_rel": "337a7c7d82144278dfee3515bf8206142e128c787997bce6fb7ccc30dbd695c6",
+    "map_stats": "77034673742964adb6e713361b417d079c994397ef64fd319d9546ac84247777",
+    "compare_runs": "e3c6e6c91f5883ebc2c028118ad0cf2a7b0c918ff7e22bd83462f2cab73e4b93",
+    "build_engine": "d362ee6eacd1b3db79f8f3621a92002dc07150660d8556c43df7b32163cec905",
+    "injection_check": "9e8654461dc73b468a91c469d6fa368d8b03484ff8fd05dd785ecd6a00d0f27e",
+}
+#: the pre-adoption comparison constants, literal (the source pins and comparison bounds of the helper are unchanged by the adoption)
+BASELINE_CONSTANTS = {
+    "FLAG_TOTAL_REL": 0.01,
+    "FLAG_SIGN_FRACTION": 0.01,
+    "A1_COLUMNS": ("pickup_kg", "deposition_active_kg", "deposition_pit_kg", "deposition_ring_kg", "deposition_inactive_kg",
+                   "effective_clip_source_kg", "old_mobile_kg", "new_mobile_kg", "mobile_terminal_kg", "cn_export_kg",
+                   "endpoint_export_kg", "outlet_flux_kg_s", "erased_deposition_kg"),
+    "PER_STEP_KG": ("pickup_kg", "deposition_active_kg", "deposition_pit_kg", "deposition_ring_kg", "deposition_inactive_kg",
+                    "effective_clip_source_kg", "cn_export_kg", "endpoint_export_kg"),
+    "N_CLASSES_PLOT": 6,
+}
 
 
 def fmt(value: float) -> str:
@@ -98,10 +101,24 @@ def data_rows(lines):
     return [i for i, ln in enumerate(lines) if ln.strip() and not ln.startswith("#")]
 
 
+# ---- the shipped helper is the one under test ----------------------------------------------------------------------------------------
+def test_the_helper_under_test_is_the_shipped_benchmark_file():
+    assert Path(C.__file__).resolve() == HELPER_PATH, C.__file__
+    assert HELPER_PATH.is_file()
+    assert C.S is S  # the helper binds the same read-only sources module the harness uses
+    for name in ("fortran_number", "parse_fortran_ledger", "plot1_golden", "LEDGER_DAT_WIDTH"):
+        assert hasattr(C, name), name
+    params = inspect.signature(C.plot1_golden).parameters
+    assert set(params) == {"a1_npz", "fortran_ledger_dat", "partial_steps", "time_atol_s"}
+    assert params["partial_steps"].kind is inspect.Parameter.KEYWORD_ONLY and params["partial_steps"].default is None
+    assert params["time_atol_s"].kind is inspect.Parameter.KEYWORD_ONLY and params["time_atol_s"].default == 0.0
+    assert C.LEDGER_DAT_WIDTH == 14
+
+
 # ---- the parser ----------------------------------------------------------------------------------------------------------------------
-def test_the_original_float_parser_fails_on_the_real_token_and_the_candidate_keeps_the_subnormal():
+def test_the_plain_float_parser_fails_on_the_real_token_and_the_shipped_helper_keeps_the_subnormal():
     with pytest.raises(ValueError):
-        float("1.9762625833649862-323")  # the confirmed failure of the original helper
+        float("1.9762625833649862-323")  # the confirmed failure of the pre-adoption helper, which used float() on every token
     value = C.fortran_number("1.9762625833649862-323")
     assert value == SUBNORMAL and 0.0 < value < 2.2250738585072014e-308  # subnormal, not erased to zero
     assert fmt(SUBNORMAL) == "1.9762625833649862-323"  # the test format is the real one
@@ -354,7 +371,7 @@ def relabel(fn):
                                        ("fractional", lambda k: f"{k}.5"), ("all_equal", lambda k: "1"), ("doubled", lambda k: str(2 * k)),
                                        ("zero_based_and_one", lambda k: str(0 if k == 1 else k))])
 def test_class_ids_must_be_exactly_1_to_6_in_every_iteration(tmp_path, label, fn):
-    """Arbitrary ascending labels (2..7, 1.5..6.5, 2,4,..12) used to pass the old `strictly ascending` check although the NPZ class axis is 1..6."""
+    """Arbitrary ascending labels (2..7, 1.5..6.5, 2,4,..12) used to pass a `strictly ascending` check although the NPZ class axis is 1..6."""
     dat = write_dat(tmp_path / f"{label}.dat", a1_ledger(), mutate=relabel(fn))
     with pytest.raises(ValueError, match="expected class IDs"):
         C.parse_fortran_ledger(dat)
@@ -416,10 +433,13 @@ def test_per_class_peak_times_come_from_each_runs_own_time_axis_and_the_compared
 
 
 # ---- nothing else changed -----------------------------------------------------------------------------------------------------------
-def test_every_other_function_constant_and_the_main_comparison_are_unchanged_from_the_frozen_helper():
-    for name in ("_rel", "map_stats", "compare_runs", "build_engine", "injection_check"):
-        assert inspect.getsource(getattr(C, name)) == inspect.getsource(getattr(ORIGINAL, name)), name
-    for name in ("FLAG_TOTAL_REL", "FLAG_SIGN_FRACTION", "A1_COLUMNS", "PER_STEP_KG", "N_CLASSES_PLOT"):
-        assert getattr(C, name) == getattr(ORIGINAL, name), name
-    assert C.S is ORIGINAL.S  # the same read-only sources module
-    assert inspect.getsource(C.plot1_golden) != inspect.getsource(ORIGINAL.plot1_golden)  # the one intended change
+def test_every_other_function_and_constant_is_unchanged_from_the_immutable_pre_adoption_pins():
+    """The five untouched functions are locked to the SHA-256 of their `inspect.getsource` text recorded before the adoption, and the
+    comparison constants to their literal values; the pre-adoption helper itself is NOT shipped (its archive is a local task artifact)."""
+    for name, digest in UNCHANGED_SOURCE_SHA256.items():
+        actual = hashlib.sha256(inspect.getsource(getattr(C, name)).encode("utf-8")).hexdigest()
+        assert actual == digest, f"{name}: source changed ({actual} != pinned {digest})"
+    for name, value in BASELINE_CONSTANTS.items():
+        assert getattr(C, name) == value, name
+    assert isinstance(C.A1_COLUMNS, tuple) and isinstance(C.PER_STEP_KG, tuple) and len(C.A1_COLUMNS) == 13
+    assert C.N_CLASSES_PLOT == 6 and C.FLAG_TOTAL_REL == 0.01 and C.FLAG_SIGN_FRACTION == 0.01  # the comparison bounds are unchanged

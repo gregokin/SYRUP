@@ -3,8 +3,8 @@
 **Current status (commit of 2026-10-08): see [`../legacy_gpu/current_status.md`](../legacy_gpu/current_status.md).** The Numba full Chastre
 2700 s bisection and Newton references have COMPLETED from immutable inputs (single-core loops 5736.873890 s and 5673.070882 s, source/input/post-run
 guards passed, archives independently pinned); both pass every same-root GPU comparison at the unchanged bounds and were compared with the completed
-original-Fortran reference (observations, including an open recession-water investigation). Numba is absent from the current MAPLE environments, so
-the check runs and timings below are historical and were not rerun for the commit.
+original-Fortran reference (observations, including an open recession-water investigation). Numba and llvmlite were restored to both MAPLE environments for adoption regression (see the linked status).
+The check runs and large-domain timings below remain historical.
 
 Executed status (documentation correction D1; historical): the code was implemented by a file-only writer and has since been **executed and verified by the
 root (Codex)**; the sections titled "not yet executed" below are historical authoring notes, superseded by this paragraph. Root-recorded results
@@ -66,10 +66,9 @@ the default; the departure of `previous` from the original is a standing qualifi
 Environment (this machine; same as the Chastre water benchmarks):
 
 ```bash
-source agent_handoffs/tasks/phase7_matched_benchmark/gpu_env.sh
-source benchmarks/chastre/env.sh
 export PATH=/home/okin/MAPLE/.venv/bin:$PATH
 export CUDA_VISIBLE_DEVICES=''
+source benchmarks/chastre/env.sh
 ```
 
 ```bash

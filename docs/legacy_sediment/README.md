@@ -6,7 +6,9 @@ MAHLERAN application) and was compared with both completed CPU Numba references:
 final mobile -0.0001070%, gram-scale class-5 pit/clip differences (+42.57% / +6.43% of tiny Fortran values), and a native surface-water surplus of
 +24.952426 m3 after rain ends at 2641 s whose routine-level cause is NOT yet demonstrated (the original stale-inflow/bracket behaviour is suspected; SYRUP's
 closed budget is kept and the suspected defect is not copied). These are observations, not an acceptance. Chastre has zero outlets, so its zero export is
-vacuous. The golden-helper candidate referenced under "Plot 1" below is NOT adopted (see `current_status.md` section 7).
+vacuous. After the commit, the corrected golden helper was integrated into `compare_legacy_sediment.py` (exact pinned candidate bytes, uncommitted;
+only the Plot 1 section changed, see "Plot 1" below); the shipped helper passed its regression suite and was checked against the saved real Plot1 ledger; final review passed
+(`current_status.md` sections 7 and 9).
 
 Executed status (documentation correction D1; historical): the harness was written by a file-only author; the **root (Codex) has since built and run it** with
 ordinary gfortran 13.3 against the original MAHLERAN routines from 15 pinned source files (it is not the MAHLERAN application). Root-recorded checks
@@ -62,8 +64,9 @@ bracket behaviour; its budget is reported, never claimed conservative. Fixed com
 ## Commands (Codex)
 
 ```bash
-source agent_handoffs/tasks/phase7_matched_benchmark/gpu_env.sh; source benchmarks/chastre/env.sh
-export PATH=/home/okin/MAPLE/.venv/bin:$PATH; export CUDA_VISIBLE_DEVICES=''
+export PATH=/home/okin/MAPLE/.venv/bin:$PATH
+export CUDA_VISIBLE_DEVICES=''
+source benchmarks/chastre/env.sh
 # tests (a configured compiler that fails is a FAILURE; only an unconfigured toolchain skips)
 python -m pytest tests/legacy_sediment -q
 # build both variants
@@ -111,7 +114,19 @@ and warm costs, report `LOOP_SECONDS` (with diagnostics), `KERNEL_SECONDS` (diag
 
 Plot 1 uses infiltration model 2 (Hawkins/pavement), which this glue does not reproduce (`inputs_from_legacy_case` refuses it).
 Its reference is the existing real-application ledger (`outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat`):
-`compare_legacy_sediment.plot1_golden(a1_ledger.npz, ledger.dat)`.
+`compare_legacy_sediment.plot1_golden(a1_ledger.npz, ledger.dat, *, partial_steps=None, time_atol_s=0.0)`.
+
+The shipped helper (integrated 2026-10-08, uncommitted, regression verified) parses the ledger strictly: `fortran_number` accepts the
+gfortran omitted-`E` three-digit exponent (`1.9762625833649862-323` is kept as a subnormal, not erased) and refuses non-finite or malformed
+tokens; `parse_fortran_ledger` validates 14 tokens per line, iterations 1..steps with six consecutive rows, class IDs EXACTLY 1..6 in every
+iteration, and a time that is identical within an iteration and strictly increasing. `plot1_golden` requires the NPZ `ledger (steps, 13, 6)`,
+`columns` and `t_s`, all finite; refuses storms of unequal length unless `partial_steps` is declared (then the report is labelled partial with
+both lengths); demands an exact time axis by default (a positive `time_atol_s` is an explicit, labelled caller choice; bool/NaN/Inf/negative
+values are refused before any file is read). The report separates `columns` (transfer kg per step summed over the compared steps: pickup,
+active deposition, clip source, CN export, per class and total) from `storage` (the old/new mobile INVENTORIES as final and peak values with
+their times, per class and class-summed, never summed over time). `compare_runs`, `map_stats`, `injection_check`, `build_engine` and `_rel`
+are unchanged and pinned by `tests/legacy_sediment/test_plot1_golden.py` (renamed during adoption).
+The shipped helper was compared with all 5,400 saved real Plot1 steps: exact time alignment, with the same new-mobile peak time (1,201 s).
 
 ## Outputs of one run
 

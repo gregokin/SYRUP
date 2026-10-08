@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any
 
@@ -232,26 +233,145 @@ def injection_check(cap: dict, engine, *, nr2: int, nc2: int, af: float, dx_mm: 
     return out
 
 
-def plot1_golden(a1_npz, fortran_ledger_dat) -> dict[str, Any]:
+# --- Plot 1 golden: the saved real-application ledger (corrected helper; see agent_handoffs/tasks/gpu_sediment/golden_candidate_report.md) ---
+LEDGER_DAT_WIDTH = 14  # iter t class pickup dep_active dep_outside clip old new cn endpoint cellflux resid internal
+#: a plain or exponent-bearing Fortran real, or the gfortran form that DROPS the `E` when the exponent has three digits (`1.97-323`)
+_FORTRAN_REAL = re.compile(r"^(?P<mant>[+-]?(?:\d+\.?\d*|\.\d+))(?:(?P<exp>[eEdD][+-]?\d+)|(?P<omitted>[+-]\d{3}))?$")
+
+
+def fortran_number(token: str) -> float:
+    """One token of the original application's ledger as a finite float. Accepts plain, `E`/`D` exponent and the omitted-`E` three-digit
+    exponent (`1.9762625833649862-323`, a subnormal that is kept, not erased); rejects overflow asterisks, `NaN`, `Infinity`, empty and
+    malformed tokens and any value that is not finite."""
+    match = _FORTRAN_REAL.match(token)
+    if match is None:
+        raise ValueError(f"not a Fortran real token: {token!r}")
+    if match["exp"]:
+        text = match["mant"] + "e" + match["exp"][1:]
+    elif match["omitted"]:
+        text = match["mant"] + "e" + match["omitted"]
+    else:
+        text = match["mant"]
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError(f"the Fortran real {token!r} is not finite")
+    return value
+
+
+def parse_fortran_ledger(path, *, n_classes: int = 6) -> dict[str, Any]:
+    """Parse the real-application ledger into `data (steps, n_classes, 14)`, with the iteration, class and time columns VALIDATED (no silent
+    reshape): every line has 14 valid finite tokens; the iterations run 1..steps with `n_classes` consecutive rows each; the class column
+    is EXACTLY the class IDs 1..n_classes in every iteration (the NPZ class axis is implicitly classes 1..n_classes); the time is identical
+    within an iteration and strictly increasing."""
+    rows: list[list[float]] = []
+    for number, line in enumerate(Path(path).read_text().splitlines(), start=1):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        tokens = line.split()
+        if len(tokens) != LEDGER_DAT_WIDTH:
+            raise ValueError(f"line {number}: {len(tokens)} tokens, expected {LEDGER_DAT_WIDTH}")
+        try:
+            rows.append([fortran_number(t) for t in tokens])
+        except ValueError as exc:
+            raise ValueError(f"line {number}: {exc}") from exc
+    if not rows:
+        raise ValueError("the ledger holds no data rows")
+    flat = np.array(rows, dtype=np.float64)
+    if flat.shape[0] % n_classes:
+        raise ValueError(f"{flat.shape[0]} rows are not a whole number of iterations of {n_classes} classes (truncated or misordered ledger)")
+    steps = flat.shape[0] // n_classes
+    iteration = flat[:, 0]
+    if not np.array_equal(iteration, np.repeat(np.arange(1, steps + 1, dtype=np.float64), n_classes)):
+        raise ValueError("the iteration column is not 1..steps with the classes of one iteration on consecutive rows")
+    data = flat.reshape(steps, n_classes, LEDGER_DAT_WIDTH)
+    classes = data[:, :, 2]
+    expected_classes = np.arange(1, n_classes + 1, dtype=np.float64)  # the NPZ class axis is implicitly grain classes 1..n_classes
+    if not np.all(classes == expected_classes):
+        raise ValueError(f"the class column is not the expected class IDs 1..{n_classes} in ascending order in every iteration "
+                         "(shifted, fractional, repeated or reordered labels are refused)")
+    times = data[:, :, 1]
+    if not np.all(times == times[:, :1]):
+        raise ValueError("the time differs between the classes of one iteration")
+    t = times[:, 0]
+    if steps > 1 and not np.all(np.diff(t) > 0):
+        raise ValueError("the time is not strictly increasing with the iteration")
+    return {"data": data, "t_s": t, "classes": classes[0].tolist(), "steps": int(steps)}
+
+
+def plot1_golden(a1_npz, fortran_ledger_dat, *, partial_steps: int | None = None, time_atol_s: float = 0.0) -> dict[str, Any]:
     """A1 Plot 1 `legacy_ledger.npz` versus the existing real-application ledger `syrup_sediment_ledger.dat` (phase7b audit hook:
-    columns iter t class pickup dep_active dep_outside clip old new cn endpoint cellflux resid internal)."""
-    rows = [ln.split() for ln in Path(fortran_ledger_dat).read_text().splitlines() if ln.strip() and not ln.startswith("#")]
-    data = np.array([[float(t) for t in r] for r in rows])
-    if data.shape[1] != 14:
-        raise ValueError("unexpected ledger width")
-    steps = int(data[:, 0].max())
-    data = data.reshape(steps, N_CLASSES_PLOT, 14)
-    npz = np.load(a1_npz)
-    led = npz["ledger"]
-    m = min(steps, led.shape[0])
+    columns iter t class pickup dep_active dep_outside clip old new cn endpoint cellflux resid internal).
+
+    * The ledger is parsed strictly (`parse_fortran_ledger`); the NPZ must carry `ledger (steps, 13, 6)`, the matching `columns` and the `t_s`
+      array, all finite; the class count, the column schema and the time arrays must match. Equal numbers of steps are REQUIRED unless the caller
+      declares `partial_steps = m` (then only the first m steps are compared and the report says `partial_comparison: true` with both lengths).
+      `time_atol_s` is the allowed absolute difference between the two time axes: a scalar finite non-negative number validated BEFORE any
+      comparison (bool, NaN, +-Inf, negative or non-numeric values are refused). The default 0.0 demands EXACT axes (the matched runs use
+      integer one-second steps); a positive tolerance is an explicit caller choice and is labelled in the report.
+    * `columns` holds the TRANSFER columns (pickup, active deposition, clip source, CN export), kg per step, summed over the compared steps.
+    * `storage` holds the mobile INVENTORIES (old and new mobile): per class and class-summed FINAL value, PEAK value and the time of the peak,
+      never a sum over time (a stock is not additive over steps); the time of each class's peak (first tie) is reported per class from the
+      actual time axes."""
+    if isinstance(time_atol_s, (bool, np.bool_)) or not isinstance(time_atol_s, (int, float, np.integer, np.floating)) \
+            or not math.isfinite(float(time_atol_s)) or float(time_atol_s) < 0.0:
+        raise ValueError(f"time_atol_s must be a finite non-negative number, got {time_atol_s!r}")
+    time_atol_s = float(time_atol_s)
+    ref = parse_fortran_ledger(fortran_ledger_dat, n_classes=N_CLASSES_PLOT)
+    data, t_f, ref_steps = ref["data"], ref["t_s"], ref["steps"]
+    with np.load(a1_npz) as npz:
+        for key in ("ledger", "t_s", "columns"):
+            if key not in npz.files:
+                raise ValueError(f"the NPZ lacks {key!r}")
+        led, t_a, columns = np.asarray(npz["ledger"]), np.asarray(npz["t_s"], dtype=np.float64), [str(c) for c in npz["columns"]]
+    if columns != list(A1_COLUMNS):
+        raise ValueError("the NPZ ledger columns differ from the A1 column set")
+    if led.ndim != 3 or led.shape[1] != len(A1_COLUMNS) or led.shape[2] != N_CLASSES_PLOT:
+        raise ValueError(f"the NPZ ledger has shape {led.shape}, expected (steps, {len(A1_COLUMNS)}, {N_CLASSES_PLOT})")
+    if t_a.shape != (led.shape[0],):
+        raise ValueError("the NPZ t_s does not have one entry per ledger step")
+    if not np.isfinite(led).all() or not np.isfinite(t_a).all():
+        raise ValueError("the NPZ ledger or its time axis holds non-finite values")
+    a1_steps = led.shape[0]
+    if partial_steps is None:
+        if a1_steps != ref_steps:
+            raise ValueError(f"the storms have different lengths (reference {ref_steps}, NPZ {a1_steps}); declare partial_steps for a partial comparison")
+        m = ref_steps
+    else:
+        if isinstance(partial_steps, bool) or not isinstance(partial_steps, int) or not 1 <= partial_steps <= min(ref_steps, a1_steps):
+            raise ValueError(f"partial_steps must be an int in [1, {min(ref_steps, a1_steps)}], got {partial_steps!r}")
+        m = partial_steps
+    time_diff = float(np.max(np.abs(t_f[:m] - t_a[:m])))
+    if time_diff > time_atol_s:
+        raise ValueError(f"the time axes disagree by {time_diff:g} s (> {time_atol_s:g} s) over the compared steps")
     names = {"pickup_kg": 3, "deposition_active_kg": 4, "effective_clip_source_kg": 6, "old_mobile_kg": 7, "new_mobile_kg": 8,
              "cn_export_kg": 9}
-    out = {"steps_compared": m, "columns": {}}
-    for name, col in names.items():
-        f = data[:m, :, col]
+    out: dict[str, Any] = {
+        "steps_compared": m, "partial_comparison": partial_steps is not None, "reference_steps": ref_steps, "syrup_steps": a1_steps,
+        "classes": ref["classes"], "max_abs_time_difference_s": time_diff, "time_atol_s": time_atol_s,
+        "time_axes": "exact" if time_atol_s == 0.0 else f"within the explicitly requested absolute tolerance {time_atol_s:g} s",
+        "columns": {}, "storage": {},
+        "note": "columns = per-step transfer kg summed over the compared steps and classes; storage = mobile inventories (final / peak), never summed over time"}
+    for name in ("pickup_kg", "deposition_active_kg", "effective_clip_source_kg", "cn_export_kg"):
+        f = data[:m, :, names[name]]
         a = led[:m, A1_COLUMNS.index(name), :]
         out["columns"][name] = {"fortran_total": float(f.sum()), "syrup_total": float(a.sum()),
-                                "total_relative": _rel(float(f.sum()), float(a.sum()))}
+                                "total_relative": _rel(float(f.sum()), float(a.sum())),
+                                "fortran_total_by_class": f.sum(axis=0).tolist(), "syrup_total_by_class": a.sum(axis=0).tolist()}
+    for name in ("old_mobile_kg", "new_mobile_kg"):
+        f = data[:m, :, names[name]]
+        a = led[:m, A1_COLUMNS.index(name), :]
+        fs, as_ = f.sum(axis=1), a.sum(axis=1)  # class-summed inventory at each step
+        pf, pa = int(np.argmax(fs)), int(np.argmax(as_))
+        out["storage"][name] = {
+            "fortran_final_by_class": f[-1].tolist(), "syrup_final_by_class": a[-1].tolist(),
+            "fortran_final_total": float(fs[-1]), "syrup_final_total": float(as_[-1]),
+            "final_total_relative": _rel(float(fs[-1]), float(as_[-1])), "final_time_s": float(t_f[m - 1]),
+            "fortran_peak_by_class": f.max(axis=0).tolist(), "syrup_peak_by_class": a.max(axis=0).tolist(),
+            "fortran_peak_total": float(fs[pf]), "syrup_peak_total": float(as_[pa]),
+            "peak_total_relative": _rel(float(fs[pf]), float(as_[pa])),
+            "fortran_peak_time_s": float(t_f[pf]), "syrup_peak_time_s": float(t_a[pa]),
+            "fortran_peak_time_by_class_s": [float(t_f[i]) for i in f.argmax(axis=0)],  # first tie, each axis its own actual times
+            "syrup_peak_time_by_class_s": [float(t_a[i]) for i in a.argmax(axis=0)]}
     return out
 
 
