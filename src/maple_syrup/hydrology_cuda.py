@@ -10,7 +10,8 @@ that is constant in a fixed-terrain replay:
 
 Both column laws (`fixed_ksat`, `pavement_hawkins`: Smith-Parlange capacity, linear drainage, saturation return), the
 legacy old-flux branches (complete > no run-on > partial), the coherent donor sums, the Courant/old-flux checks, the
-ordered `[0, R]` bisection (the very device root search of `routing_cuda`), the storage identity and every per-cell and
+ordered `[0, R]` bisection (the very device root search of `routing_cuda`; `control.root_solver == "newton"` selects the
+safeguarded Newton variant of the same step kernels, `routing_newton_cuda`, same equation and checks), the storage identity and every per-cell and
 global balance check of `routing._route` are evaluated on the device. Nothing here imports Numba or CuPy at import
 time; `prepare_cuda_hydrology` needs CuPy and a device and never falls back to NumPy/Numba (`CudaUnavailableError`).
 
@@ -82,7 +83,7 @@ from typing import Any
 
 import numpy as np
 
-from maple_syrup import routing_cuda
+from maple_syrup import routing_cuda, routing_newton_cuda
 from maple_syrup.hydrology_numba import (
     _COLUMN_INPUT_MASK,
     _COLUMN_MESSAGES,
@@ -103,6 +104,7 @@ from maple_syrup.routing import (
     BALANCE_RTOL,
     RouteStep,
     RoutingError,
+    _check_root_solver,
     _check_step_options,
 )
 from maple_syrup.routing_cuda import CudaUnavailableError
@@ -124,6 +126,7 @@ __all__ = [
     "kernel_provenance",
     "kernel_source",
     "launch_count",
+    "load_newton_kernels",
     "prepare_cuda_hydrology",
     "prepared_column_step",
     "prepared_coupled_step",
@@ -728,9 +731,18 @@ extern "C" __global__ void maple_syrup_storm_report(
 }
 """
 
-_SOURCE = (routing_cuda.bisect_device_source()
-           + _HYDRO_BODY.replace("__STEP_ARGS__", _STEP_ARGS.strip()).replace("__STEP_FWD__", _STEP_FWD.strip())
-           + _STORM_BODY)
+_HYDRO_TEXT = _HYDRO_BODY.replace("__STEP_ARGS__", _STEP_ARGS.strip()).replace("__STEP_FWD__", _STEP_FWD.strip())
+_SOURCE = routing_cuda.bisect_device_source() + _HYDRO_TEXT + _STORM_BODY  # the default (bisection) module: unchanged
+
+# The Newton variant (explicit, `control.root_solver == "newton"`): the SAME step kernels with the root call replaced
+# by the shared device helper of `routing_newton_cuda` (`iterations` then carries the Newton pass cap). Separate module,
+# so the default carries no extra branch; the accumulate/report kernels are the default module's.
+_BISECT_CALL = "maple_syrup_bisect(rhs, k, c, iterations)"
+_NEWTON_CALL = "maple_syrup_newton_root(rhs, k, c, iterations)"
+if _HYDRO_TEXT.count(_BISECT_CALL) != 1:  # pragma: no cover - guards the text substitution
+    raise RuntimeError("the hydrology kernel text must contain exactly one root call")
+_STEP_KERNEL_NAMES = _KERNEL_NAMES[:5]
+_SOURCE_NEWTON = routing_newton_cuda.newton_device_source() + _HYDRO_TEXT.replace(_BISECT_CALL, _NEWTON_CALL)
 
 
 class CudaHydrologyPreparationError(HydrologyPreparationError):
@@ -738,8 +750,11 @@ class CudaHydrologyPreparationError(HydrologyPreparationError):
     inconsistent masks, out-of-range or unsafe static data). Raised before any context exists."""
 
 
-def kernel_source() -> str:
-    return _SOURCE
+def kernel_source(root_solver: str = "bisection") -> str:
+    """The default (bisection) module source, or with `root_solver="newton"` the Newton step-kernel variant."""
+    if root_solver not in ("bisection", "newton"):
+        raise CudaHydrologyPreparationError(f"root_solver must be 'bisection' or 'newton', got {root_solver!r}")
+    return _SOURCE_NEWTON if root_solver == "newton" else _SOURCE
 
 
 def select_mode(max_level_width: int, mode: str = "auto") -> str:
@@ -763,24 +778,34 @@ def launch_count(level_bounds, mode: str) -> int:
 
 # --- lazy optional CuPy / kernels -----------------------------------------------------------------------------------
 _MODULE: Any = None
-_FUNCTIONS: dict[tuple[int, str], Any] = {}
+_MODULE_NEWTON: Any = None
+_FUNCTIONS: dict[tuple[int, str, bool], Any] = {}
 _LOCK = threading.Lock()
 
 
-def _function(name: str):
-    """The compiled kernel `name` for the CURRENT device (module created lazily; compilation at first load)."""
-    global _MODULE
+def _function(name: str, newton: bool = False):
+    """The compiled kernel `name` for the CURRENT device (module created lazily; compilation at first load). `newton`
+    selects the Newton step-kernel variant (separate module); the default is the unchanged bisection module."""
+    global _MODULE, _MODULE_NEWTON
     cp = routing_cuda._cupy()
     device_id = routing_cuda._current_device_id(cp)
-    key = (device_id, name)
+    key = (device_id, name, newton)
     fn = _FUNCTIONS.get(key)
     if fn is not None:
         return fn
     with _LOCK:
         try:
-            if _MODULE is None:
-                _MODULE = cp.RawModule(code=_SOURCE, options=COMPILE_OPTIONS, backend="nvrtc")
-            fn = _MODULE.get_function(name)
+            if newton:
+                if name not in _STEP_KERNEL_NAMES:
+                    raise KeyError(f"{name!r} has no Newton variant")
+                if _MODULE_NEWTON is None:
+                    _MODULE_NEWTON = cp.RawModule(code=_SOURCE_NEWTON, options=COMPILE_OPTIONS, backend="nvrtc")
+                module = _MODULE_NEWTON
+            else:
+                if _MODULE is None:
+                    _MODULE = cp.RawModule(code=_SOURCE, options=COMPILE_OPTIONS, backend="nvrtc")
+                module = _MODULE
+            fn = module.get_function(name)
             fn.attributes  # noqa: B018 - forces the module load for this device so failures surface now
         except Exception as exc:
             raise CudaUnavailableError(
@@ -790,10 +815,10 @@ def _function(name: str):
     return fn
 
 
-def _load_all() -> dict[str, dict[str, int]]:
+def _load_all(newton: bool = False) -> dict[str, dict[str, int]]:
     attributes = {}
-    for name in _KERNEL_NAMES:
-        fn = _function(name)
+    for name in (_STEP_KERNEL_NAMES if newton else _KERNEL_NAMES):
+        fn = _function(name, True) if newton else _function(name)  # the default call shape is unchanged
         attrs = dict(fn.attributes)
         limit = int(attrs.get("max_threads_per_block", 0))
         need = REDUCE_THREADS if name.endswith(("reduce", "report")) else max(FUSED_THREADS, CELL_THREADS)
@@ -804,10 +829,35 @@ def _load_all() -> dict[str, dict[str, int]]:
     return attributes
 
 
+_NEWTON_ATTRIBUTES: dict[int, dict[str, dict[str, int]]] = {}
+
+
+def load_newton_kernels() -> dict[str, Any]:
+    """Compile/load the Newton step-kernel variant for the CURRENT device (idempotent; startup, outside any timed
+    evolution) and return `{"seconds", "attributes"}`. Missing CuPy/device/compile failure: `CudaUnavailableError`,
+    including a kernel that cannot run the fused block size."""
+    cp = routing_cuda._cupy()
+    device_id = routing_cuda._current_device_id(cp)
+    t0 = time.perf_counter()
+    with _LOCK:
+        cached = _NEWTON_ATTRIBUTES.get(device_id)
+    if cached is None:
+        cached = _load_all(True)
+        with _LOCK:
+            _NEWTON_ATTRIBUTES[device_id] = cached
+    return {"seconds": time.perf_counter() - t0, "attributes": cached}
+
+
 def kernel_provenance() -> dict[str, Any]:
     """Source hash, options, launch structures and toolchain/device (reuses the routing provenance; no compilation)."""
     info = routing_cuda.kernel_provenance()
     info.update({
+        "newton_hydrology_source_sha256": hashlib.sha256(_SOURCE_NEWTON.encode()).hexdigest(),
+        "newton_device_source_sha256": hashlib.sha256(routing_newton_cuda.newton_device_source().encode()).hexdigest(),
+        "newton_step_kernels": list(_STEP_KERNEL_NAMES),
+        "root_solvers": {"bisection": "default module (unchanged source)",
+                         "newton": "explicit step-kernel variant; same device helper as routing_newton_cuda; "
+                                   "uninstrumented (no counters, no extra transfer)"},
         "module": "maple_syrup.hydrology_cuda",
         "hydrology_source_sha256": hashlib.sha256(_SOURCE.encode()).hexdigest(),
         "kernels": list(_KERNEL_NAMES),
@@ -1130,9 +1180,10 @@ def _dynamic(cp, array: Any, name: str, shape: tuple[int, int], error: type[Exce
     return array
 
 
-def _launch(name: str, grid: int, block: int, args: tuple) -> None:
+def _launch(name: str, grid: int, block: int, args: tuple, newton: bool = False) -> None:
     try:
-        _function(name)((grid,), (block,), args)
+        fn = _function(name, True) if newton else _function(name)  # the default call shape is unchanged
+        fn((grid,), (block,), args)
     except CudaUnavailableError:
         raise
     except Exception as exc:  # enqueue-time failure; asynchronous faults surface at the packet read
@@ -1165,22 +1216,22 @@ def _make_args(ctx: CudaHydrologyContext, h, s, r, qprev, b, *, iterations: int,
     )
 
 
-def _dispatch(ctx: CudaHydrologyContext, args: tuple, stage: int) -> None:
+def _dispatch(ctx: CudaHydrologyContext, args: tuple, stage: int, newton: bool = False) -> None:
     """Enqueue the kernels of the context's launch structure. `stage` 0 = column stage + column-flag reduction only
     (no sweep, no post), 1 = the whole coupled step."""
     grid_cells = (ctx.n_cells + CELL_THREADS - 1) // CELL_THREADS
     if ctx.mode == "fused":
-        _launch("maple_syrup_hydro_fused", 1, FUSED_THREADS, args)
+        _launch("maple_syrup_hydro_fused", 1, FUSED_THREADS, args, newton)
         return
-    _launch("maple_syrup_hydro_pre", grid_cells, CELL_THREADS, args)
+    _launch("maple_syrup_hydro_pre", grid_cells, CELL_THREADS, args, newton)
     if stage == 1:
         for b0, b1 in itertools.pairwise(ctx.level_bounds):
             m = b1 - b0
             if m:
                 _launch("maple_syrup_hydro_solve_level", (m + CELL_THREADS - 1) // CELL_THREADS, CELL_THREADS,
-                        (*args, np.int64(b0), np.int64(m)))
-        _launch("maple_syrup_hydro_post", grid_cells, CELL_THREADS, args)
-    _launch("maple_syrup_hydro_reduce", 1, REDUCE_THREADS, args)
+                        (*args, np.int64(b0), np.int64(m)), newton)
+        _launch("maple_syrup_hydro_post", grid_cells, CELL_THREADS, args, newton)
+    _launch("maple_syrup_hydro_reduce", 1, REDUCE_THREADS, args, newton)
 
 
 def prepared_coupled_step(ctx: CudaHydrologyContext, rain_rate_m_per_s: Any, state: StormState, dt_s: float,
@@ -1207,9 +1258,6 @@ def cuda_step_with_packet(ctx: CudaHydrologyContext, rain_rate_m_per_s: Any, sta
         raise StormError(f"state must be a StormState, got {type(state).__name__}")
     if not isinstance(control, StormControl):
         raise StormError(f"control must be a StormControl, got {type(control).__name__}")
-    if control.root_solver != "bisection":  # no GPU Newton: refuse before any device work (no fallback)
-        raise StormError("root_solver 'newton' is CPU-only: the prepared CUDA hydrology supports the bisection "
-                         "solver only (no GPU Newton, no fallback)")
     dt = _check_dt(dt_s)
     shape = ctx.shape
     device_id = ctx.device_id
@@ -1221,6 +1269,7 @@ def cuda_step_with_packet(ctx: CudaHydrologyContext, rain_rate_m_per_s: Any, sta
     # Scalar options are checked now but raised only AFTER the column stage (a column failure outranks them).
     option_error: RoutingError | None = None
     cr_max, iterations, root_tol = 1.0, 1, 1.0
+    root_solver, newton_cap, kernel_iterations = "bisection", 0, 1
     try:
         dt_r, cr_max, iterations, root_tol = _check_step_options(
             dt_s, control.courant_max, control.bisection_iterations, control.root_tolerance_m,
@@ -1228,19 +1277,25 @@ def cuda_step_with_packet(ctx: CudaHydrologyContext, rain_rate_m_per_s: Any, sta
         if control.implementation != "cuda":
             raise RoutingError(f"the prepared CUDA hydrology runs the CUDA kernels only; control.implementation is "
                                f"{control.implementation!r} (select the reference or the numba hydrology for it)")
+        root_solver, newton_cap = _check_root_solver(control.root_solver, control.newton_max_iterations,
+                                                     control.implementation, cp)
+        kernel_iterations = newton_cap if root_solver == "newton" else iterations
     except RoutingError as exc:
         option_error = exc
         dt_r = dt
     stage = 0 if option_error is not None else 1
+    newton = root_solver == "newton" and option_error is None
+    if newton:  # explicit variant; already loaded by `load_newton_kernels` in a storm, otherwise compiled here
+        load_newton_kernels()
 
     n = ctx.n_cells
     f64 = np.float64
     b = SimpleNamespace(**{name: cp.empty(n, dtype=f64) for name in _F64_ROWS},
                         cflag=cp.empty(n, dtype=np.uint32), rflag=cp.empty(n, dtype=np.uint32),
                         br=cp.empty(n, dtype=np.uint8), packet=cp.empty(PACKET_WORDS, dtype=np.uint64))
-    args = _make_args(ctx, h, s, r, qprev, b, iterations=iterations, stage=stage, dt=dt, dt_r=dt_r, cr_max=cr_max,
-                      root_tol=root_tol)
-    _dispatch(ctx, args, stage)
+    args = _make_args(ctx, h, s, r, qprev, b, iterations=kernel_iterations if stage else 1, stage=stage, dt=dt,
+                      dt_r=dt_r, cr_max=cr_max, root_tol=root_tol)
+    _dispatch(ctx, args, stage, newton)
     packet = b.packet
     depth_new, soil_new, rain, intake, overflow, drainage = (b.depth_new, b.soil_new, b.rain, b.intake, b.overflow,
                                                               b.drainage)
@@ -1258,7 +1313,7 @@ def cuda_step_with_packet(ctx: CudaHydrologyContext, rain_rate_m_per_s: Any, sta
     nonfinite = int(words[_P_NONFINITE])
     scalar_nonfinite = tuple(bool((nonfinite >> k) & 1) for k in range(5))
     _resolve_route(int(words[_P_ROUTE]), scalar_nonfinite, bool(words[_P_RESFAIL]), int(words[_P_Q]), cr_max,
-                   root_tol, iterations)
+                   root_tol, iterations, newton_cap if newton else 0)
 
     grid = shape
     as_f64, as_i64 = packet.view(np.float64), packet.view(np.int64)
@@ -1282,8 +1337,11 @@ def cuda_step_with_packet(ctx: CudaHydrologyContext, rain_rate_m_per_s: Any, sta
         max_constitutive_residual_m=as_f64[_P_CONS],
         max_cell_balance_residual_m=as_f64[_P_BAL],
         conservative=True,
-        bisection_iterations=iterations,
+        bisection_iterations=0 if newton else iterations,
         implementation="cuda",
+        root_solver=root_solver,
+        newton_max_iterations=newton_cap if newton else 0,
+        root_stats=None,  # uninstrumented device production: no counters are read back (documented, not zeros)
     )
     col = ColumnStep(dt, depth_new.reshape(grid), soil_new.reshape(grid), rain.reshape(grid), intake.reshape(grid),
                      overflow.reshape(grid), drainage.reshape(grid))

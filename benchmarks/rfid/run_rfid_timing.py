@@ -123,8 +123,9 @@ def main(argv=None) -> int:
     parser.add_argument("--rounds", type=int, default=3)
     parser.add_argument("--bisection-iterations", type=int, default=64)
     parser.add_argument("--root-solver", choices=("bisection", "newton"), default="bisection",
-                        help="root solver of the SYRUP legacy contenders (default bisection, unchanged); 'newton' is CPU-only and "
-                             "makes legacy_cuda fail explicitly (see benchmarks/newton_cpu/compare_cases.py)")
+                        help="root solver of the SYRUP legacy contenders (default bisection, unchanged); 'newton' selects the "
+                             "safeguarded Newton of the CPU Numba form and of legacy_cuda (CUDA Newton variant; see "
+                             "benchmarks/newton_cpu/compare_cases.py / benchmarks/gpu_newton)")
     parser.add_argument("--newton-max-iterations", type=int, default=50)
     parser.add_argument("--cfl-max", type=float, default=0.5)
     parser.add_argument("--limiter", default="off", choices=("off", "donor"))

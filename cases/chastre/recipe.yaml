@@ -1,0 +1,31 @@
+# EXPERIMENTAL Chastre 1 m terrain with RFID_2014 settings: water-only timing case (task chastre_timing).
+# Authored configuration only. Generated output goes to a NEW directory:
+#   python -m maple_syrup.chastre_case --recipe cases/chastre/recipe.yaml --output-dir <NEW dir> --plan-only
+#   python -m maple_syrup.chastre_case --recipe cases/chastre/recipe.yaml --output-dir <NEW dir>
+# Everything except the terrain, the 1 m cell size, the resized rainfall-scaling map and the tiling is the RFID_2014 case read
+# from the verified source RFID case (hydrology, captured forcing, grains, bed settings). See docs/chastre/README.md.
+schema: maple_syrup.chastre_recipe.v1
+case_name: chastre1m_rfid_water
+
+source_rfid:
+  case_dir: /home/okin/SYRUP/outputs/rfid/case   # verified with rfid_case.verify_rfid_case; its pins are bound into the new case
+
+terrain:
+  path: /home/okin/MAHLERAN/Input/DTM_Chastre_PD4way.asc   # read-only legacy input; staged verbatim into the case
+  sha256: 89ce64747abfc7e60282090ee4db80fd0361bae5427000a2e61153de45435677
+  nrows: 1395                  # including the one-cell nodata ring
+  ncols: 1606
+  cellsize_m: 1.0              # native 1 m (RFID is 0.1 m)
+  nodata_value: -9999
+  expected_n_active: 1140169   # interior cells that are not nodata
+  expected_n_sinks: 102516     # no strictly lower D4 neighbour: strict pits + flats, kept as terminal storage
+  expected_n_outlets: 0        # ring is nodata, faces closed: no export
+  expected_nz: 306             # global voxel allocation (datum offset from min active elevation; 0.1 m voxels, 0.2 m headroom)
+
+tiles:
+  rows: 32                     # MAPLE row bands compiled one at a time with the SAME global datum / nz
+  max_rss_gib: 24              # generation stops if the process peak RSS exceeds this after a tile
+
+rainfall_scaling:
+  resize: nearest_pixel_centre
+  gap_fill: nearest_valid_euclid_first_row_major

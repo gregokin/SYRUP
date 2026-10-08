@@ -1,5 +1,10 @@
 # Safeguarded Newton root solver (CPU, NumPy and Numba)
 
+> **Current availability (task gpu_newton, implemented, uncommitted):** an explicit CUDA form of the same solver now exists;
+> see [../gpu_newton/README.md](../gpu_newton/README.md). This page describes the CPU solver and its HISTORICAL measured CPU
+> results ([results.md](results.md), unchanged); statements below that Newton with `implementation="cuda"` is refused and
+> that there is no GPU Newton describe the state at the time of the CPU task and are superseded as marked.
+
 Status: implemented by Claude and independently verified and benchmarked by Codex.
 See [full-storm timings and qualifications](results.md): 2261 independent tests passed, with four intentional multiple-device skips.
 
@@ -32,8 +37,8 @@ depth, soil water, discharge and the hydrograph) bitwise.
   by `route_step` or the benchmarks), `compiled_root` / `compiled_sweep_newton` / `run_sweep` (Numba, no fastmath, no prange).
 * `hydrology_numba.prepared_coupled_step` uses a second kernel set (`_kernels("newton")`) when
   `control.root_solver == "newton"`; the default kernel set only gained a trailing, unused `stats` argument.
-* Refused explicitly, before anything is computed or mutated: Newton with `implementation="cuda"` (`route_step`,
-  `StormControl.validated`, `storm.coupled_step`, and a guard in `hydrology_cuda.cuda_step_with_packet`), Newton on a
+* Refused explicitly, before anything is computed or mutated (at the time of the CPU task this included Newton with
+  `implementation="cuda"`; that pairing is now the CUDA Newton of `../gpu_newton`): Newton with a CPU implementation on a
   non-NumPy graph, invalid solver names, `newton_max_iterations` outside `[1, 1000]`, bools, floats. There is no
   automatic switch to a different requested solver/backend. The Newton algorithm itself has the numerical bracketed
   bisection completion described below. `legacy_stale_inflow_step` (the non-conservative comparison tool) has no Newton option.
@@ -76,7 +81,7 @@ unchanged (schema string unchanged). A Newton control round-trips and resumes eq
 
 ## Not covered
 
-No GPU Newton. The existing original-routine driver is an RFID adapter (hardcoded fixed-Ksat model 1, zero pavement) while the
+(Historical: no GPU Newton at the time; see ../gpu_newton.) The existing original-routine driver is an RFID adapter (hardcoded fixed-Ksat model 1, zero pavement) while the
 actual Plot 1 columns are `pavement_hawkins` (model 2), so it would compare different hydrology; a model-2/pavement-aware
 adapter around the unchanged originals is feasible but not built in this task. Therefore
 `benchmarks/newton_cpu/compare_cases.py --case plot1` refuses the Fortran contenders; `--case rfid` runs the

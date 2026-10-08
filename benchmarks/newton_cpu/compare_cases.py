@@ -11,6 +11,8 @@ elevation/routing, no splash, WATER ONLY, full storm (defaults: Plot 1 5400 s, R
   bisection_numba   the same scheduler stepping the PREPARED compiled hydrology, bisection (the accepted CPU comparator)
   newton_numpy      as bisection_numpy with `root_solver="newton"` (vectorized per dependency level)
   newton_numba      as bisection_numba with `root_solver="newton"` (compiled per-cell safeguarded Newton)
+  bisection_cuda    the same scheduler stepping the PREPARED CUDA hydrology (water only), bisection (accepted GPU form)   -- needs CuPy+device
+  newton_cuda       the same with `root_solver="newton"` (device safeguarded Newton, routing_newton_cuda)               -- needs CuPy+device
   fortran_newton    ORIGINAL MAHLERAN routines, `iroute = 2` (native Newton-Crank-Nicolson)       -- RFID only
   fortran_bisection ORIGINAL MAHLERAN routines, `iroute = 5` (bisection-Crank-Nicolson)            -- RFID only
 
@@ -21,6 +23,13 @@ Plot 1 columns are `pavement_hawkins` (model 2 with a prescribed pavement map), 
 hydrology. `--case plot1` therefore REFUSES the Fortran contenders in this bounded task: an unsupported harness
 configuration, not an intrinsic impossibility (a model-2/pavement-aware adapter around the same unchanged original
 routines is feasible later and is NOT built here).
+CUDA contenders (task gpu_newton; excluded from the default list, name them in `--contenders`) use the SAME verified case, the
+same RunGuard (water budget with the MAPLE-derived bound, bed digest, source digests), the same first call / complete warm-up /
+balanced rounds protocol and capture final fields and the full outlet hydrograph outside every timer. `--cuda-mode
+auto|fused|split` forces the launch structure of the prepared context (recorded in the context summary). The Newton kernel
+variant is compiled/loaded in the contender's PREPARATION (recorded as `newton_kernel_load_s`), the static context is
+prepared once; neither is inside a sample. The device Newton production step reports no counters (`root_stats` None), so no
+GPU pass statistics are recorded; the `newton_numba` statistics describe the same equation on the same case.
 Reuse, not copies: the case loaders (`verify_plot1_case` / `verify_rfid_case`, `plot1_inputs` / `rfid_inputs`),
 `RunGuard` (per-sample water budget with the MAPLE-derived bound, MAPLE bed digest, source digests), `time_sample`,
 `sample_record` of benchmarks/hydraulic_candidates/compare_plot1.py, and the balanced order / summaries of
@@ -66,8 +75,10 @@ for sub in ("src", "benchmarks/hydraulic_candidates", "benchmarks/rfid"):
     sys.path.insert(0, str(ROOT / sub))
 
 SYRUP_CONTENDERS = ("bisection_numpy", "bisection_numba", "newton_numpy", "newton_numba")
+CUDA_CONTENDERS = ("bisection_cuda", "newton_cuda")  # explicit only: never in the default contender list
 FORTRAN_CONTENDERS = ("fortran_newton", "fortran_bisection")
-ALL_CONTENDERS = (*SYRUP_CONTENDERS, *FORTRAN_CONTENDERS)
+ALL_CONTENDERS = (*SYRUP_CONTENDERS, *CUDA_CONTENDERS, *FORTRAN_CONTENDERS)
+CUDA_MODES = ("auto", "fused", "split")
 IROUTE = {"fortran_newton": 2, "fortran_bisection": 5}
 ORDERS = ("balanced", "forward", "reverse")
 CASES = {"plot1": {"end_s": 5400.0, "bisection_iterations": 40}, "rfid": {"end_s": 2700.0, "bisection_iterations": 64}}
@@ -109,9 +120,11 @@ def validate_args(args) -> list[str]:
                              ("--newton-max-iterations", args.newton_max_iterations, 1000)):
         if value is not None and (isinstance(value, bool) or not 1 <= value <= hi):
             raise ValueError(f"{label} must be an int in [1, {hi}]")
+    if getattr(args, "cuda_mode", "auto") not in CUDA_MODES:
+        raise ValueError(f"--cuda-mode must be one of {CUDA_MODES}")
     if args.reference is None:
-        args.reference = next((n for n in ("bisection_numba", "bisection_numpy", "newton_numba", "newton_numpy")
-                               if n in names), names[0])
+        args.reference = next((n for n in ("bisection_numba", "bisection_numpy", "newton_numba", "newton_numpy",
+                                           "bisection_cuda", "newton_cuda") if n in names), names[0])
     if args.reference not in names:
         raise ValueError(f"--reference {args.reference!r} must be one of the selected contenders")
     return names
@@ -160,13 +173,25 @@ def build_syrup_runner(name, dt, verified, args, inputs_factory, collector=None)
     from maple_syrup import storm
 
     solver, form = name.split("_")
-    inputs = inputs_factory(verified, "numpy", with_geometry=False)
+    inputs = inputs_factory(verified, "cupy" if form == "cuda" else "numpy", with_geometry=False)
     kwargs = {"bisection_iterations": args.bisection_iterations, "root_solver": solver}
     if solver == "newton":
         kwargs["newton_max_iterations"] = args.newton_max_iterations
-    control = storm.StormControl(max_dt_s=dt, implementation="numba" if form == "numba" else "array", **kwargs).validated()
+    control = storm.StormControl(max_dt_s=dt, implementation={"numba": "numba", "cuda": "cuda"}.get(form, "array"),
+                                 **kwargs).validated()
     t0 = time.perf_counter()
-    if form == "numba":
+    cuda_context = None
+    if form == "cuda":
+        from maple_syrup import hydrology_cuda as hc
+
+        cuda_context = hc.prepare_cuda_hydrology(inputs.graph, inputs.params, mode=getattr(args, "cuda_mode", "auto"))
+        newton_load = hc.load_newton_kernels() if solver == "newton" else None
+        step_override = None  # the scheduler steps the prepared device context directly; no per-step wrapper
+        provenance = {"control": dataclasses.asdict(control), "context": cuda_context.summary(),
+                      "kernels": {**hc.kernel_provenance(), "selected_root_solver": solver},
+                      "newton_kernel_load_s": None if newton_load is None else newton_load["seconds"],
+                      "newton_counters": "not collected: the device production step is uninstrumented (root_stats None)"}
+    elif form == "numba":
         from maple_syrup import hydrology_numba as hn
 
         prepared = hn.prepare_hydrology(inputs.graph, inputs.params)
@@ -195,7 +220,8 @@ def build_syrup_runner(name, dt, verified, args, inputs_factory, collector=None)
 
     def run(end_s, snapshots):
         return cmp.run_legacy_segments(inputs.graph, inputs.params, inputs.field, inputs.schedule, inputs.depth0, inputs.soil0,
-                                       control, end_s, snapshots, args.report_every_s, xp=inputs.xp, step_override=step_override)
+                                       control, end_s, snapshots, args.report_every_s, xp=inputs.xp, step_override=step_override,
+                                       cuda_context=cuda_context)
 
     return run, record, inputs, provenance
 
@@ -266,6 +292,8 @@ def main(argv=None) -> int:
     parser.add_argument("--order", choices=ORDERS, default="balanced")
     parser.add_argument("--bisection-iterations", type=int, help="default per case: Plot 1 40, RFID 64 (pit storage needs 64)")
     parser.add_argument("--newton-max-iterations", type=int, default=50)
+    parser.add_argument("--cuda-mode", choices=CUDA_MODES, default="auto",
+                        help="launch structure of the prepared CUDA hydrology for the *_cuda contenders (default auto)")
     parser.add_argument("--no-newton-diagnostics", action="store_true")
     parser.add_argument("--fortran-build-dir", type=Path)
     parser.add_argument("--fortran-exe", type=Path)
@@ -293,7 +321,7 @@ def main(argv=None) -> int:
     from maple.core.backend import read_transfer_counters
 
     from maple_syrup import hydrology_numba as hn
-    from maple_syrup import routing_newton
+    from maple_syrup import routing_newton, routing_newton_cuda
     from maple_syrup.case_import import (
         Plot1ImportError,
         _refuse_output,
@@ -305,6 +333,11 @@ def main(argv=None) -> int:
     from maple_syrup.provenance import environment_record
     from maple_syrup.rfid_case import rfid_inputs, verify_rfid_case
 
+    if any(n in CUDA_CONTENDERS for n in names):
+        from maple.core.backend import gpu_execution_available
+
+        if not gpu_execution_available():
+            parser.error("a *_cuda contender needs CuPy and a CUDA device; none is available (no CPU substitution)")
     verify = verify_rfid_case if args.case == "rfid" else verify_plot1_case
     inputs_factory = rfid_inputs if args.case == "rfid" else plot1_inputs
     t_verify = time.perf_counter()
@@ -437,7 +470,7 @@ def main(argv=None) -> int:
 
     # ---------------- untimed Newton pass statistics ----------------
     if not args.no_newton_diagnostics:
-        for n in [x for x in live if x.startswith("newton_")]:
+        for n in [x for x in live if x.startswith("newton_") and not x.endswith("_cuda")]:
             try:
                 stats = NewtonStats()
                 run, _prep, inputs, _prov = build_syrup_runner(n, dt, verified, args, inputs_factory, collector=stats)
@@ -469,7 +502,8 @@ def main(argv=None) -> int:
             if n != ref:
                 comparisons[f"{n}_vs_{ref}"] = compare_finals(n, last, ref)
     for a, b in (("bisection_numpy", "bisection_numba"), ("newton_numpy", "newton_numba"), ("newton_numba", "bisection_numba"),
-                 ("newton_numpy", "bisection_numpy"), ("fortran_newton", "newton_numba"),
+                 ("newton_numpy", "bisection_numpy"), ("bisection_cuda", "bisection_numba"), ("newton_cuda", "newton_numba"),
+                 ("newton_cuda", "bisection_cuda"), ("fortran_newton", "newton_numba"),
                  ("fortran_bisection", "bisection_numba"), ("fortran_newton", "fortran_bisection")):
         if a in last and b in last and f"{a}_vs_{b}" not in comparisons:
             comparisons[f"{a}_vs_{b}"] = compare_finals(a, last, b)
@@ -488,6 +522,7 @@ def main(argv=None) -> int:
         "arguments": {k: (str(v) if isinstance(v, Path) else v) for k, v in vars(args).items()},
         "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "routing_newton_sha256": hashlib.sha256(Path(routing_newton.__file__).read_bytes()).hexdigest(),
+        "routing_newton_cuda_sha256": hashlib.sha256(Path(routing_newton_cuda.__file__).read_bytes()).hexdigest(),
         "environment": environment_record(), "syrup_provenance": syrup, "maple_provenance": verified.maple_provenance,
         "case_binding": dict(verified.binding), "case_checks": verified.checks, "case_verification_s": verification_s,
         "source_digests": {"start": digests_start, "end": digests_end, "stable": True},
@@ -495,7 +530,8 @@ def main(argv=None) -> int:
         "comparisons": comparisons, "memory": memory,
         "scope": ("water only, fixed terrain, no splash, one verified case, full storm; SYRUP forms close a water budget per "
                   "sample, the original Fortran routines keep their own behaviour and are not claimed conservative; "
-                  "deviations between root solvers are reported, not judged; no sediment/erosion/wind/restart/GPU claim"),
+                  "deviations between root solvers are reported, not judged; no sediment/erosion/wind/disk-restart claim; GPU "
+                  "contenders are the water-only prepared CUDA hydrology on one device"),
     }
     with (output_dir / "comparison.json").open("x") as handle:
         json.dump(payload, handle, indent=2, default=str)

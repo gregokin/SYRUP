@@ -160,7 +160,7 @@ class StormControl:
     root_tolerance_m: float = DEFAULT_ROOT_TOLERANCE_M
     implementation: str = "array"
     # Root solver of the cell equation (routing_newton.py). "bisection" is the unchanged default; "newton" is the
-    # CPU-only safeguarded Newton on the same equation. These two fields are LAST so every existing construction is
+    # safeguarded Newton on the same equation (CPU Numba/NumPy, or CUDA with implementation "cuda"). These two fields are LAST so every existing construction is
     # unchanged; the checkpoint encoding omits them at their defaults (older checkpoints stay loadable).
     root_solver: str = "bisection"
     newton_max_iterations: int = DEFAULT_NEWTON_MAX_ITERATIONS
@@ -186,9 +186,6 @@ class StormControl:
         if self.newton_max_iterations > MAX_NEWTON_ITERATIONS:
             raise StormError(f"newton_max_iterations must be an int in [1, {MAX_NEWTON_ITERATIONS}], "
                              f"got {self.newton_max_iterations!r}")
-        if self.root_solver == "newton" and self.implementation == "cuda":
-            raise StormError("root_solver 'newton' is CPU-only: implementation 'cuda' supports the bisection solver "
-                             "only (no GPU Newton, no fallback)")
         return self
 
 
@@ -310,9 +307,6 @@ def coupled_step(graph: RoutingGraph, params: ColumnParameters, rain_rate_m_per_
     from maple.core.backend import errstate
 
     if getattr(control, "implementation", None) == "cuda":
-        if getattr(control, "root_solver", "bisection") != "bisection":  # before any context is prepared
-            raise StormError("root_solver 'newton' is CPU-only: implementation 'cuda' supports the bisection solver "
-                             "only (no GPU Newton, no fallback)")
         from maple_syrup import hydrology_cuda
 
         ctx = hydrology_cuda.prepare_cuda_hydrology(graph, params)
@@ -478,6 +472,8 @@ def evolve(
             raise StormError("cuda_context must be the CudaHydrologyContext prepared for exactly this graph and "
                              "these parameters (prepare_cuda_hydrology(graph, params)); contexts own static copies "
                              "of the data and are immutable")
+        if control.root_solver == "newton":  # compile/load the Newton kernel variant now, not inside the first step
+            hydrology_cuda.load_newton_kernels()
 
     def zeros():
         return xp.zeros(shape, dtype=np.float64)

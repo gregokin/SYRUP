@@ -16,6 +16,10 @@ model, and nothing here claims speed. CPU defaults, the legacy replay, sediment 
 Requirements: CuPy and a CUDA device. **Numba is not required** and is never imported by this path. There is no
 fallback: a missing CuPy/device/compiler is an error (`CudaUnavailableError`).
 
+Root solver: the default is the bisection described here. `StormControl(root_solver="newton")` / `--root-solver newton`
+selects the explicit CUDA safeguarded Newton variant of the same step kernels (see
+[../gpu_newton/README.md](../gpu_newton/README.md)).
+
 ## Command line
 
 ```

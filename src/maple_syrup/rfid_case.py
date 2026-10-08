@@ -867,7 +867,8 @@ def rfid_routing_graph(fields: dict[str, Any], report: dict[str, Any], *, xp=Non
     friction = np.full(active.shape, float(report["hydrology"]["friction_factor"]))
     graph = build_routing_graph(dem, _ring_mask(dem.shape), friction, float(report["grid"]["cellsize_m"]),
                                 active_mask=active, nodata_value=float(report["grid"]["nodata_value"]),
-                                allow_masked_nodata=True, allow_pit_storage=True, xp=xp)
+                                allow_masked_nodata=True, allow_pit_storage=True, xp=xp,
+                                allow_flat_storage=bool(report["terrain"].get("allow_flat_storage", False)))
     for name, got in (("graph_aspect", graph.aspect), ("graph_slope", graph.slope), ("graph_pit_storage", graph.pit_storage),
                       ("graph_outlet", graph.outlet)):
         if not np.array_equal(np.asarray(got), np.asarray(fields[name])):

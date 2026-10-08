@@ -312,6 +312,17 @@ Full fixed-terrain water-only Plot 1/RFID storms save 14.3%/13.6% Numba time and
 38.1%/42.6% NumPy time. Unchanged conservation/backend bounds, full pre-edit
 default captures, wet maps and restart checks pass. Original Fortran RFID Newton
 remains faster (2.282 s versus 3.694 s) with disclosed native conservation and
-fixed-step differences. See [results](docs/newton_cpu/results.md). GPU Newton and
-a Plot 1 model-2-aware original-Fortran adapter remain follow-ups; neither is
-implemented or qualified by this task. Deferred multi-bin work remains separate.
+fixed-step differences. See [results](docs/newton_cpu/results.md). A Plot 1
+model-2-aware original-Fortran adapter remains a follow-up. Deferred multi-bin work remains separate.
+
+## GPU Newton — implemented and independently validated
+
+An explicit CUDA safeguarded Newton (same equation, same arithmetic in FP64 device intrinsics) is selectable for
+`route_step(implementation="cuda")` and the prepared resident water storm; bisection stays the default and its kernel
+sources are unchanged. See [results](docs/gpu_newton/results.md): 3168 independent checks passed plus three CLI follow-up
+checks; full Plot1/RFID storms and both launch modes meet unchanged same-solver CPU/GPU bounds. Forty-two measured storms
+completed. Fused GPU Newton takes 5.950 s on Plot1 and 6.447 s on RFID; Numba CPU remains faster on both cases.
+The existing automatic mode rule is unchanged; investigate solver-aware mode selection and larger-domain scaling next.
+GPU sediment, evolving terrain and disk restart remain unsupported; a tiny Plot1 cross-solver recession-velocity
+difference is documented separately from CPU/GPU agreement. Final Claude evidence review found no blockers;
+Codex accepted this bounded water-only task.

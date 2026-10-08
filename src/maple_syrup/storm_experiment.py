@@ -81,6 +81,7 @@ from maple_syrup.routing import (
     RoutingGraphError,
     plot1_routing_graph,
 )
+from maple_syrup.routing_newton import DEFAULT_NEWTON_MAX_ITERATIONS, ROOT_SOLVERS
 from maple_syrup.storm import (
     HYDROGRAPH_COLUMNS,
     STORM_IMPLEMENTATIONS,
@@ -133,6 +134,8 @@ def run_plot1_storm(
     mahleran_root: str | Path | None = None,
     expected_maple_root: str | Path | None = None,
     allow_maple_source_change: bool = False,
+    root_solver: str = "bisection",
+    newton_max_iterations: int = DEFAULT_NEWTON_MAX_ITERATIONS,
 ) -> StormRun:
     from maple.core.backend import (
         gpu_execution_available,
@@ -153,7 +156,8 @@ def run_plot1_storm(
     # Strict guard validation on the ORIGINAL values: no int()/float() coercion
     # of bools or non-integers before the checks.
     control = StormControl(max_dt_s=max_dt_s, min_dt_s=min_dt_s, max_retries=max_retries, max_steps=max_steps,
-                           implementation=implementation).validated()
+                           implementation=implementation, root_solver=root_solver,
+                           newton_max_iterations=newton_max_iterations).validated()
     if isinstance(max_report_rows, bool) or not isinstance(max_report_rows, int) or max_report_rows < 1:
         raise StormError(f"max_report_rows must be a positive int, got {max_report_rows!r}")
     if implementation not in STORM_IMPLEMENTATIONS:
@@ -235,8 +239,11 @@ def run_plot1_storm(
 
         prepare_before = read_transfer_counters()
         cuda_context = hydrology_cuda.prepare_cuda_hydrology(graph, params)
+        newton_load = hydrology_cuda.load_newton_kernels() if root_solver == "newton" else None
         cuda_prepare = {"timing": clock.lap(),
                         "transfer_counters": dataclasses.asdict(read_transfer_counters().delta(prepare_before))}
+        if newton_load is not None:  # startup of the explicit Newton variant, kept out of the loop
+            cuda_prepare["newton_kernel_load_s"] = newton_load["seconds"]
         evolve_extra["cuda_context"] = cuda_context
 
     # --- coupled loop: arrays stay in xp; CPU: two validating flag reads per attempt; CUDA: ONE counted packet read ---
@@ -373,9 +380,16 @@ def run_plot1_storm(
         },
         "parameters": parameter_record,
         "routing": {
-            "method": "MAHLERAN method 5 (Crank-Nicolson, bisection on [0, R], coherent old inflow)",
+            "method": ("MAHLERAN method 5 (Crank-Nicolson, safeguarded Newton with bracketed bisection completion "
+                       "on the same cell equation h + c k h^{3/2} = R, coherent old inflow)"
+                       if root_solver == "newton" else
+                       "MAHLERAN method 5 (Crank-Nicolson, bisection on [0, R], coherent old inflow)"),
             "implementation": implementation, "courant_max": control.courant_max,
             "bisection_iterations": control.bisection_iterations, "root_tolerance_m": control.root_tolerance_m,
+            **({"root_solver": "newton", "newton_max_iterations": control.newton_max_iterations,
+                "root_solver_note": "explicit safeguarded Newton on the same cell equation (routing_newton.py"
+                                    "; CUDA form routing_newton_cuda.py); bisection_iterations is validated, unused"}
+               if root_solver == "newton" else {}),
             "friction_factor": graph_summary["friction_factor_range"],
             "max_courant_old": cr_old, "max_courant_new": cr_new,
             "max_cell_balance_residual_m": float(rows["max_routing_cell_balance_residual_m"].max()),
@@ -527,6 +541,11 @@ def main(argv: list[str] | None = None) -> int:
                              "'cuda' is the explicit water-only prepared CUDA hydrology: it REQUIRES --backend cupy "
                              "and a CUDA device and never needs Numba (no fallback).")
     parser.add_argument("--backend", default="numpy", choices=("numpy", "cupy"))
+    parser.add_argument("--root-solver", default="bisection", choices=ROOT_SOLVERS,
+                        help="Cell-equation root solver (default bisection, unchanged). 'newton' is the explicit "
+                             "safeguarded Newton (CPU array/numba, or CUDA with --implementation cuda).")
+    parser.add_argument("--newton-max-iterations", type=int, default=DEFAULT_NEWTON_MAX_ITERATIONS,
+                        help="Newton pass cap per cell, 1..1000 (only meaningful with --root-solver newton).")
     parser.add_argument("--report-every-s", type=float, default=60.0, help="Hydrograph row cadence (s).")
     parser.add_argument("--min-dt-s", type=float, default=1.0 / 1024.0)
     parser.add_argument("--max-retries", type=int, default=10)
@@ -543,6 +562,7 @@ def main(argv: list[str] | None = None) -> int:
             min_dt_s=args.min_dt_s, max_retries=args.max_retries, max_steps=args.max_steps,
             mahleran_root=args.mahleran_root, expected_maple_root=args.expected_maple_root,
             allow_maple_source_change=args.allow_maple_source_change,
+            root_solver=args.root_solver, newton_max_iterations=args.newton_max_iterations,
         )
     except MapleDependencyError as exc:
         print(f"MAPLE dependency check failed: {exc}", file=sys.stderr)

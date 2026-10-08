@@ -213,10 +213,11 @@ def test_invalid_root_options_raise_before_mutation(options, impl):
         np.testing.assert_array_equal(a, b)
 
 
-def test_cuda_newton_is_refused_explicitly_without_fallback():
+def test_cuda_newton_on_a_cpu_graph_is_refused_explicitly_without_fallback():
+    # CUDA Newton exists (tests/gpu_newton); the CPU NumPy graph + "cuda" pairing is still refused, never solved on the host.
     g = GRAPHS["valley"]
     start, h_old, q_old = state(g, np.random.default_rng(1))
-    with pytest.raises(RoutingError, match="CPU-only"):
+    with pytest.raises(RoutingError, match="runs on CuPy graphs"):
         route_step(g, start, h_old, 1.0, old_discharge_m2_s=q_old, implementation="cuda", root_solver="newton")
 
 

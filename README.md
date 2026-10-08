@@ -9,7 +9,9 @@ runoff branches, and routing setup/checks around the existing ordered sweep.
 `--hydrology-implementation reference` selects the original hydrology for comparison.
 See [CPU hydrology qualification](docs/phase7h/performance.md). Water-only resident
 CUDA storms are now available through an explicit backend choice; see
-[GPU hydrology results](docs/phase4s/performance.md). GPU sediment remains unqualified.
+[GPU hydrology results](docs/phase4s/performance.md). An explicit CUDA safeguarded Newton root solver for the same
+equation is available with independently verified complete-storm [GPU Newton results](docs/gpu_newton/results.md). GPU sediment
+remains unqualified.
 
 ## Default run workflow (Phase 7f)
 
@@ -191,3 +193,10 @@ See [acceptance, performance and limitations](docs/phase5/acceptance.md) and
 This is a CPU milestone. GPU execution, full original-MAHLERAN sediment-storm
 qualification, event-stop/dry-reset/restart and wind handoff remain pending.
 The saved MAPLE snapshot and diagnostic grids are not a storm restart format.
+
+## GPU legacy benchmarks and large terrain
+
+GPU Newton hydrology and coupled GPU legacy sediment replay now have Plot 1 and large Chastre comparisons against CPU Numba,
+with a completed original-routine Fortran reference for Chastre. See [current results, timings and qualifications](docs/legacy_gpu/current_status.md).
+This fixed-composition benchmark is separate from the conservative evolving MAPLE-bed model; candidate optimizations and the
+Fortran recession-water discrepancy remain follow-ups. Use MAPLE's CPU and CuPy environments; no separate SYRUP environment is needed.

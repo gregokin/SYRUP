@@ -15,6 +15,7 @@ pytest.importorskip("maple")
 
 from maple_syrup import hydrology_numba as hn
 from maple_syrup import routing_newton as rn
+from maple_syrup.hydrology_numba import HydrologyPreparationError
 from maple_syrup.rainfall import rainfall_field
 from maple_syrup.routing import DEFAULT_NEWTON_MAX_ITERATIONS, RoutingError
 from maple_syrup.routing_numba import numba_available
@@ -46,24 +47,25 @@ def test_control_defaults_and_validation():
     for bad in ({"root_solver": "brent"}, {"root_solver": None}, {"root_solver": "newton", "newton_max_iterations": 0},
                 {"root_solver": "newton", "newton_max_iterations": True}, {"newton_max_iterations": 2.5},
                 {"root_solver": "newton", "newton_max_iterations": rn.MAX_NEWTON_ITERATIONS + 1},
-                {"root_solver": "newton", "newton_max_iterations": -1}, {"root_solver": "newton", "newton_max_iterations": "9"},
-                {"root_solver": "newton", "implementation": "cuda"}):
+                {"root_solver": "newton", "newton_max_iterations": -1}, {"root_solver": "newton", "newton_max_iterations": "9"}):
         with pytest.raises(StormError):
             StormControl(**bad).validated()
+    assert StormControl(root_solver="newton", implementation="cuda").validated().implementation == "cuda"
     top = StormControl(root_solver="newton", newton_max_iterations=rn.MAX_NEWTON_ITERATIONS).validated()
     assert top.newton_max_iterations == rn.MAX_NEWTON_ITERATIONS
 
 
-def test_cuda_newton_is_refused_before_anything_is_prepared_or_mutated():
+def test_cuda_newton_with_a_cpu_graph_is_refused_before_any_step_or_mutation():
     g = make_graph(valley_full(6, 5), ff=5.0)
     params, s0 = soil(g, 1e-6)
     state = initial_state(g, np.zeros(g.shape), s0)
     before = [a.copy() for a in (state.depth_m, state.soil_water_m, state.discharge_m2_s)]
     rate = np.full(g.shape, 1e-5)
     control = StormControl(implementation="cuda", root_solver="newton")  # deliberately not validated()
-    with pytest.raises(StormError, match="CPU-only"):
+    refusals = (RoutingError, HydrologyPreparationError)  # CuPy missing, or a NumPy graph given to the device context
+    with pytest.raises(refusals):
         coupled_step(g, params, rate, state, 1.0, control)
-    with pytest.raises(StormError, match="CPU-only"):
+    with pytest.raises(refusals):
         evolve(g, params, rainfall_field(*g.shape), schedule_from([0.0, 10.0], [36.0]), state, 10.0, control,
                report_every_s=5.0)
     for a, b in zip((state.depth_m, state.soil_water_m, state.discharge_m2_s), before, strict=True):

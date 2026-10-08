@@ -1,0 +1,35 @@
+diff --git a/src/maple/case_tools/validators/compiled_case.py b/src/maple/case_tools/validators/compiled_case.py
+--- a/src/maple/case_tools/validators/compiled_case.py
++++ b/src/maple/case_tools/validators/compiled_case.py
+@@ -249,9 +249,26 @@
+         bound_kg = summation_error_bound_kg(n_cells, capacity_kg)
+-        identity_gap = abs(requested - (actual + residual + shortfall))
++        import math
++
++        # The receipt identity requested = actual + residual + shortfall is evaluated as ONE compensated signed sum of the
++        # reported per-cell operands (math.fsum is exactly rounded). Subtracting four independently rounded aggregate
++        # scalars lets cancellation of terms ~1e8 kg leave a spurious ordinary-arithmetic gap of a few ULP of the total on a
++        # balanced receipt. The bound is UNCHANGED and a real signed imbalance beyond it is still refused.
++        identity_gap = abs(
++            math.fsum(
++                value
++                for array, sign in (
++                    (deposit_result.requested_total_mass_kg, 1.0),
++                    (deposit_result.actual_total_mass_kg, -1.0),
++                    (deposit_result.numerical_residual_total_mass_kg, -1.0),
++                    (deposit_result.shortfall_total_mass_kg, -1.0),
++                )
++                for value in (sign * element for element in np.asarray(array, dtype=np.float64).ravel().tolist())
++            )
++        )
+         if identity_gap > bound_kg:
+             violations.append(
+-                "initial-fill mass reconciliation: requested "
+-                f"({requested} kg) != actual + residual + shortfall "
+-                f"({actual + residual + shortfall} kg), gap {identity_gap} kg exceeds the "
+-                f"FP64 summation-error bound {bound_kg} kg for {n_cells} cells"
++                "initial-fill mass reconciliation (compensated signed per-cell sum): requested "
++                f"({requested} kg) != actual + residual + shortfall "
++                f"({actual + residual + shortfall} kg by ordinary scalar sums), compensated gap {identity_gap} kg "
++                f"exceeds the FP64 summation-error bound {bound_kg} kg for {n_cells} cells"
+             )

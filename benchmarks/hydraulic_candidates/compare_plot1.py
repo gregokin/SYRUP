@@ -182,8 +182,10 @@ def build_runner(name: str, dt: float, verified, args, *, inputs_factory=None, s
             from maple_syrup import hydrology_cuda as hc
 
             cuda_context = hc.prepare_cuda_hydrology(inputs.graph, inputs.params)
+            newton_load = hc.load_newton_kernels() if control.root_solver == "newton" else None  # startup, not a sample
             provenance = {"control": dataclasses.asdict(control), "context": cuda_context.summary(),
-                          "kernels": hc.kernel_provenance()}
+                          "kernels": hc.kernel_provenance(),
+                          "newton_kernel_load_s": None if newton_load is None else newton_load["seconds"]}
         else:
             from maple_syrup import hydrology_numba as hn
 
@@ -305,15 +307,18 @@ class RunGuard:
     """Per-run integrity check: the MAPLE bed digest and the SYRUP/MAPLE source digests recorded BEFORE a run must equal their
     values after every sample, and every sample's water budget must close. Everything here runs outside the timers."""
 
-    def __init__(self, inputs, package_dirs, label: str):
+    def __init__(self, inputs, package_dirs, label: str, bed_digest=None):
         from maple_syrup.column_experiment import (
             _bed_digest,
             _source_digests,
         )
 
-        self._bed, self._sources = _bed_digest, _source_digests
+        # `bed_digest` (optional `callable(case) -> str`): a case without in-memory bed arrays supplies its own persisted-bed
+        # digest; the default is the unchanged MAPLE array digest
+        self._custom_bed = bed_digest is not None
+        self._bed, self._sources = (_bed_digest if bed_digest is None else bed_digest), _source_digests
         self.inputs, self.dirs, self.label = inputs, package_dirs, label
-        self.bed_before, self.sources_before = _bed_digest(inputs.case), _source_digests(*package_dirs)
+        self.bed_before, self.sources_before = self._bed(inputs.case), _source_digests(*package_dirs)
 
     def validate(self, raw, end_s: float) -> dict:
         host, maps, finals = collect(raw, self.inputs)
@@ -323,8 +328,10 @@ class RunGuard:
             raise RuntimeError(f"{self.label}: the MAPLE bed changed during a water-only run; no output written")
         if sources_after != self.sources_before:
             raise RuntimeError(f"{self.label}: SYRUP/MAPLE source changed during the run; no output written")
-        return {"host": host, "maps": maps, "finals": finals, "budget": budget,
-                "guard": {"budget_closed": True, "bed_unchanged": True, "sources_stable": True, "bed_digest": bed_after}}
+        guard = {"budget_closed": True, "bed_unchanged": True, "sources_stable": True, "bed_digest": bed_after}
+        if self._custom_bed:
+            guard["bed_digest_kind"] = "custom callback (persisted artifacts), not an in-memory bed array digest"
+        return {"host": host, "maps": maps, "finals": finals, "budget": budget, "guard": guard}
 
 
 def compare(ref, other, ref_maps, maps):
@@ -374,8 +381,9 @@ def main(argv=None) -> int:
     parser.add_argument("--cfl-max", type=float, default=0.5)
     parser.add_argument("--limiter", default="off", choices=("off", "donor"))
     parser.add_argument("--root-solver", choices=("bisection", "newton"), default="bisection",
-                        help="root solver of the CPU legacy contender (default bisection, unchanged); 'newton' is CPU-only and "
-                             "makes legacy_cuda fail explicitly (see benchmarks/newton_cpu/compare_cases.py for the matched comparison)")
+                        help="root solver of the legacy contenders (default bisection, unchanged); 'newton' selects the "
+                             "safeguarded Newton of the CPU Numba form and of legacy_cuda (CUDA Newton variant; see "
+                             "benchmarks/newton_cpu/compare_cases.py / benchmarks/gpu_newton for the matched comparison)")
     parser.add_argument("--newton-max-iterations", type=int, default=50)
     parser.add_argument("--no-legacy-single-event", action="store_true",
                         help="skip the extra snapshot-free single-event timing of legacy contenders")
