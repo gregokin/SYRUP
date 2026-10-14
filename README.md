@@ -10,8 +10,7 @@ runoff branches, and routing setup/checks around the existing ordered sweep.
 See [CPU hydrology qualification](docs/phase7h/performance.md). Water-only resident
 CUDA storms are now available through an explicit backend choice; see
 [GPU hydrology results](docs/phase4s/performance.md). An explicit CUDA safeguarded Newton root solver for the same
-equation is available with independently verified complete-storm [GPU Newton results](docs/gpu_newton/results.md). GPU sediment
-remains unqualified.
+equation is available with independently verified complete-storm [GPU Newton results](docs/gpu_newton/results.md). Conservative GPU sediment is implemented and small-case qualified; large-domain qualification remains in progress. See the [conservative water usage and status](docs/conservative_water_usage.md).
 
 ## Default run workflow (Phase 7f)
 
@@ -50,20 +49,26 @@ and [measured comparisons](docs/hydraulic_candidates/results.md).
 These are water-only experiments; local-inertial velocity and full-storm backend
 sensitivity require further work before erosion coupling. Existing defaults remain unchanged.
 
-## Current water workflow
+## Current conservative water component
+
+The reviewed CPU/Numba and GPU/CUDA water runtime uses the actual evolving MAPLE bed, conservative grain-specific detachment/transport/deposition, terrain and routing updates, explicit event completion/dry-reset accounting, and same-backend checkpoints. Resident-window storage keeps deep voxels in MAPLE's immutable host store. The legacy replay remains the default benchmark workflow; select the conservative entry points explicitly.
+
+[Usage and executed results](docs/conservative_water_usage.md) describe the current working source and remaining large-GPU qualification. [The tracked MAPLE dependency recipe](docs/maple_water_dependency_recipe.md) reconstructs the exact shared runtime from its pinned upstream Git revision and water patch, then uses the tested bundle/cache metadata overlay. No MAPLE wind implementation is copied into SYRUP.
+
+Status (2026-10-14; CW-E48 independently accepted bounded adoption, uncommitted): the working tree carries the reviewed SYRUP 5f runtime with the MAPLE 24c runtime recipe. Full small conservative CPU/GPU storms and wet restarts have passed. On rotated Chastre, a 300-second wet GPU slice and its exact fresh-process restart from its own 240-second checkpoint have passed; this is a bounded slice, not a full-storm fit. Current Plot1 CPU/GPU comparison keeps 89 strict failed records, and the earlier rotated Chastre CPU/GPU comparison keeps four/seven, as qualified physical agreement. Full large-storm qualification remains open. Wind–water invocation, splash and ecological processes are outside this work.
+
+## Earlier explicit characteristic benchmark workflow
 
 The commands in this and the following historical sections that name
-`run_characteristic_benchmark.py` select the explicit multi-bin model.
+`run_characteristic_benchmark.py` select the explicit multi-bin model with fixed elevation and routing for the MAHLERAN comparison. These results are separate from the evolving-bed conservative runners described above.
 
 Storm completion/restart, matched MAHLERAN benchmarking, characteristic sediment
 transport and CPU optimizations are implemented. The benchmark retains fixed
 terrain/routing and excludes splash. Water/class budgets pass; remaining legacy
 sediment timing/composition and raw-peak limitations are documented in
-[Phase 7b acceptance](docs/phase7b/acceptance.md). Full coupled GPU storms and
-wind–water event integration remain open; individual kernels have actual-GPU
-verification.
+[Phase 7b acceptance](docs/phase7b/acceptance.md). Later conservative GPU storm results are described above; wind–water event integration remains open.
 
-The selected optimized MAPLE dependency is the isolated package `72310c49…`,
+For this historical benchmark, the selected optimized MAPLE dependency is the isolated package `72310c49…`,
 built from accepted `d3d007024…` plus the small shared allocation patch. Live
 MAPLE is unchanged. See [Phase 7d setup and results](docs/phase7d/optimization.md)
 for reconstruction, exact hashes and validation. After preparing that snapshot:
@@ -190,16 +195,16 @@ coarsest and finest timesteps; water and sediment budgets close.
 See [acceptance, performance and limitations](docs/phase5/acceptance.md) and
 [comparison figure](docs/phase5/storm_comparison.svg).
 
-This is a CPU milestone. GPU execution, full original-MAHLERAN sediment-storm
+At this historical CPU milestone, GPU execution, full original-MAHLERAN sediment-storm
 qualification, event-stop/dry-reset/restart and wind handoff remain pending.
 The saved MAPLE snapshot and diagnostic grids are not a storm restart format.
 
 ## GPU legacy benchmarks and large terrain
 
 GPU Newton hydrology and coupled GPU legacy sediment replay now have Plot 1 and large Chastre comparisons against CPU Numba,
-with a completed original-routine Fortran reference for Chastre. See [current results, timings and qualifications](docs/legacy_gpu/current_status.md).
+with a completed original-routine Fortran reference for Chastre. These are frozen-terrain legacy-replay comparisons, separate from the evolving MAPLE-bed water component. See [current results, timings and qualifications](docs/legacy_gpu/current_status.md).
 The validated lazy flow-probability CUDA source (P2) and the corrected Plot 1 golden comparison helper have been integrated into the
-tree as their exact pinned candidate bytes (uncommitted); the production CPU/GPU regression and full Plot1 checks passed; final read-only review passed. This fixed-composition legacy replay (fixed composition, unlimited supply, explicit clipping source, fixed terrain and
+tree as their exact pinned candidate bytes; the production CPU/GPU regression and full Plot1 checks passed; final read-only review passed. This fixed-composition legacy replay (fixed composition, unlimited supply, explicit clipping source, fixed terrain and
 routing, no direct splash, wet rain-assisted detachment retained) is separate from the conservative evolving MAPLE-bed model and is not
-a conservative complete-event, restart or wind-handoff model. The Fortran recession-water discrepancy remains an independent follow-up.
+a conservative complete-event, restart or wind-handoff model. By user instruction, the Fortran recession-water discrepancy is retained as a documented reference limitation, without further native investigation.
 Use MAPLE's CPU and CuPy environments; no separate SYRUP environment is needed.

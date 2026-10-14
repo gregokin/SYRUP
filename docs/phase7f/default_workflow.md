@@ -18,6 +18,8 @@ and legacy sediment transport remain compiled.
 | `... --transport-scheme characteristic` or `upwind` | conservative MAPLE-exchange model (explicit) |
 | `benchmarks/phase7b/run_characteristic_benchmark.py` | opt-in historic/specialist multi-bin tool, unchanged |
 
+The characteristic benchmark fixes elevation and routing for the matched MAHLERAN comparison. Its completion/restart results are distinct from the newer evolving-bed conservative runners, `maple_syrup.event_experiment` and `maple_syrup.windowed_experiment`; see [current usage and qualification](../conservative_water_usage.md). The legacy default remains unchanged.
+
 Dispatch happens in `benchmark_experiment.main` before its parser runs (local
 import, no circular execution). `run_plot1_matched_benchmark` and the other
 conservative APIs are unchanged.

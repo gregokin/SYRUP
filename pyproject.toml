@@ -31,6 +31,16 @@ dev = [
 numba = [
     "numba>=0.61",
 ]
+# CW-E5: `maple_syrup.dependency_bundle` (the CW-E2 delivery helper, never the
+# model runtime) imports `packaging.version.Version` / `InvalidVersion` and
+# `packaging.requirements.Requirement` to validate canonical PEP 440 versions
+# and compare normalized Requires-Dist metadata. 23 is a conservative floor
+# (strict, LegacyVersion-free parsing since 22); only 26.3 (MAPLE .venv and
+# .venv-cupy) has been exercised. This declares a third-party requirement of
+# the helper; the bundle itself carries the MAPLE project only, not packages.
+dependency-delivery = [
+    "packaging>=23",
+]
 
 [project.scripts]
 maple-syrup-probe = "maple_syrup.probe:main"
@@ -41,12 +51,22 @@ maple-syrup-sediment = "maple_syrup.sediment_experiment:main"
 maple-syrup-event = "maple_syrup.event_experiment:main"
 maple-syrup-benchmark = "maple_syrup.benchmark_experiment:main"
 maple-syrup-legacy = "maple_syrup.legacy_experiment:main"
+# CW-E5: explicit conservative resident-window runner (same as
+# `python -m maple_syrup.windowed_experiment`); never a default workflow.
+maple-syrup-windowed = "maple_syrup.windowed_experiment:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 # Phase suites are collected by default; the older port_feasibility/
-# experiment keeps its own invocation.
-testpaths = ["tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5", "tests/phase6", "tests/phase7", "tests/phase7b", "tests/phase7f"]
+# experiment keeps its own invocation. CW-E5 adds the four general
+# conservative-water suites (no frozen-snapshot oracle paths); the historical
+# task families (cw_b*, cw_e2, cw_f2, ...) are run explicitly, see
+# docs/conservative_water_usage.md. ORDER MATTERS: these suites and
+# tests/phase2 have non-package `conftest.py` files, which pytest's default
+# prepend import mode registers under the one module name `conftest` (the
+# last loaded wins). phase2 tests run `from conftest import PLOT1_DIR`, so the
+# conservative suites are listed BEFORE phase2 to keep phase2's conftest last.
+testpaths = ["tests/conservative_water", "tests/conservative_csr", "tests/conservative_csr_event", "tests/conservative_pits", "tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5", "tests/phase6", "tests/phase7", "tests/phase7b", "tests/phase7f"]
 pythonpath = ["src"]

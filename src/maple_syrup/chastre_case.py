@@ -104,6 +104,8 @@ __all__ = [
     "load_chastre_recipe",
     "nearest_resize",
     "plan_only",
+    "rotated_source_indices",
+    "rotation_mapping",
     "tile_bands",
     "verify_chastre_case",
 ]
@@ -123,6 +125,14 @@ HASH_CHUNK = 1 << 24
 PEAK_FACTOR_ASSUMPTION = 10.0  # ASSUMED compile + load + check peak as a multiple of one tile's voxel array (a plan estimate)
 DISK_FACTOR = 1.5  # plan-only refuses when free bytes < DISK_FACTOR x the estimated state size
 _CLASS_COUNT = 6
+# CW-R1: optional rotated-grid descriptor under `rainfall_scaling.rotation` (absent in native recipes, whose path is unchanged).
+ROTATION_SCHEMA = "maple_syrup.chastre_rotation.v1"
+ROTATION_SAMPLING = "inverse_nearest_cell_floor_higher_index_at_exact_edges"
+_ROTATION_KEYS = {"schema", "original_recipe", "original_terrain_sha256", "axis_vector_cells", "interior_origin_numerators",
+                  "sampling"}
+# CW-R1c1: OPTIONAL `elevation_sampling` in the rotation descriptor (absent = nearest, the R1 behaviour). Only the ELEVATION
+# changes in bilinear mode; the mask and the rainfall keep the nearest source cell.
+ELEVATION_SAMPLING_MODES = ("nearest", "bilinear_full_valid_support_nearest_fallback")
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -231,7 +241,11 @@ def load_chastre_recipe(path: str | Path) -> ChastreRecipe:
     limit = tiles["max_rss_gib"]
     if isinstance(limit, bool) or not isinstance(limit, (int, float)) or not math.isfinite(limit) or limit <= 0:
         raise Plot1ImportError("recipe: tiles.max_rss_gib must be a finite number > 0")
-    scaling = _keys(raw["rainfall_scaling"], {"resize", "gap_fill"}, "rainfall_scaling")
+    if isinstance(raw["rainfall_scaling"], dict) and "rotation" in raw["rainfall_scaling"]:  # CW-R1 opt-in only
+        scaling = _keys(raw["rainfall_scaling"], {"resize", "gap_fill", "rotation"}, "rainfall_scaling")
+        _validate_rotation(scaling["rotation"])
+    else:
+        scaling = _keys(raw["rainfall_scaling"], {"resize", "gap_fill"}, "rainfall_scaling")
     if scaling["resize"] != "nearest_pixel_centre" or scaling["gap_fill"] != "nearest_valid_euclid_first_row_major":
         raise Plot1ImportError("recipe: rainfall_scaling must be nearest_pixel_centre / nearest_valid_euclid_first_row_major")
     return ChastreRecipe(raw=raw, path=path.resolve(), sha256=_sha256_bytes(payload))
@@ -283,6 +297,231 @@ def nearest_resize(array: np.ndarray, shape: tuple[int, int]) -> tuple[np.ndarra
     rows = nearest_index(array.shape[0], shape[0])
     cols = nearest_index(array.shape[1], shape[1])
     return np.ascontiguousarray(array[rows][:, cols]), rows, cols
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# CW-R1: OPTIONAL rotated grid (recipe opt-in `rainfall_scaling.rotation`; native recipes never reach this code)
+# --------------------------------------------------------------------------------------------------------------------
+_HEX64 = re.compile(r"[0-9a-f]{64}")
+
+
+def _is_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _validate_rotation(rotation: Any) -> dict[str, Any]:
+    """Static validation of the rotation descriptor (pins and the original files are checked by `rotation_mapping`)."""
+    optional = {"elevation_sampling"} if isinstance(rotation, dict) and "elevation_sampling" in rotation else set()
+    rotation = _keys(rotation, _ROTATION_KEYS | optional, "rainfall_scaling.rotation")
+    if optional and rotation["elevation_sampling"] not in ELEVATION_SAMPLING_MODES:
+        raise Plot1ImportError(f"recipe: rainfall_scaling.rotation.elevation_sampling must be one of "
+                               f"{list(ELEVATION_SAMPLING_MODES)}")
+    if rotation["schema"] != ROTATION_SCHEMA:
+        raise Plot1ImportError(f"recipe: rainfall_scaling.rotation.schema must be {ROTATION_SCHEMA!r}")
+    original = _keys(rotation["original_recipe"], {"path", "sha256"}, "rainfall_scaling.rotation.original_recipe")
+    if not isinstance(original["path"], str) or not original["path"]:
+        raise Plot1ImportError("recipe: rainfall_scaling.rotation.original_recipe.path must be a non-empty string")
+    for label, value in (("original_recipe.sha256", original["sha256"]),
+                         ("original_terrain_sha256", rotation["original_terrain_sha256"])):
+        if not (isinstance(value, str) and _HEX64.fullmatch(value)):
+            raise Plot1ImportError(f"recipe: rainfall_scaling.rotation.{label} must be 64 lowercase hexadecimal characters")
+    for key in ("axis_vector_cells", "interior_origin_numerators"):
+        value = rotation[key]
+        if not (isinstance(value, list) and len(value) == 2 and all(_is_int(v) for v in value)):
+            raise Plot1ImportError(f"recipe: rainfall_scaling.rotation.{key} must be a list of two integers")
+    a, b = rotation["axis_vector_cells"]
+    if not (a > 0 and -a < b <= a) or math.gcd(a, b) != 1:
+        raise Plot1ImportError("recipe: rainfall_scaling.rotation.axis_vector_cells must be the PRIMITIVE integer +u axis "
+                               "(a, b) with a > 0 and -a < b <= a (angle in (-45, 45] degrees)")
+    if rotation["sampling"] != ROTATION_SAMPLING:
+        raise Plot1ImportError(f"recipe: rainfall_scaling.rotation.sampling must be {ROTATION_SAMPLING!r}")
+    return rotation
+
+
+def rotated_source_indices(axis: Any, origin_numerators: Any, shape: tuple[int, int],
+                           ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
+    """SOUTH-FIRST source FULL-grid `(rows, cols)` (int64, NOT bounds-checked) of every target INTERIOR cell centre.
+
+    Frame: source cell-edge coordinates, x = column edge, y = row edge (south-first), origin = the lower-left corner of the
+    source FULL grid (ring included), unit = one source cell. Target +u axis = (a, b) / L, +v axis = (-b, a) / L with
+    L = sqrt(a^2 + b^2) (float64); target interior lower-left corner (u0, v0) = (nu / L, nv / L). Target interior cell
+    (r, c) (south-first) has its centre at u = u0 + c + 1/2, v = v0 + r + 1/2, mapped to x = (a u - b v) / L,
+    y = (b u + a v) / L, evaluated in IEEE float64 in exactly this order. The selected source cell is
+    (floor(y), floor(x)): the unit square containing the point, so a centre exactly on a cell edge goes to the HIGHER
+    index -- the same convention as `nearest_index`. The record counts centres within 1e-9 cell of an edge."""
+    a, b = (int(v) for v in axis)
+    nu, nv = (int(v) for v in origin_numerators)
+    ny, nx = (int(v) for v in shape)
+    if ny < 1 or nx < 1:
+        raise Plot1ImportError("rotated grid: the target shape must be positive")
+    length = math.sqrt(float(a * a + b * b))
+    u = (nu / length + (np.arange(nx, dtype=np.float64) + 0.5))[None, :]
+    v = (nv / length + (np.arange(ny, dtype=np.float64) + 0.5))[:, None]
+    x = (a * u - b * v) / length
+    y = (b * u + a * v) / length
+    rows, cols = np.floor(y).astype(np.int64), np.floor(x).astype(np.int64)
+    edge = np.minimum(np.minimum(x - cols, cols + 1 - x), np.minimum(y - rows, rows + 1 - y))
+    record = {"n_centres_within_1e-9_of_a_source_edge": int(np.count_nonzero(edge < 1e-9)),
+              "minimum_distance_to_a_source_edge_cells": float(edge.min())}
+    return rows, cols, record
+
+
+def rotated_source_coordinates(axis: Any, origin_numerators: Any, shape: tuple[int, int]) -> tuple[np.ndarray, np.ndarray]:
+    """CW-R1c1: the continuous source cell-edge coordinates `(x, y)` of every target interior centre, computed with EXACTLY
+    the expressions and operation order of `rotated_source_indices` (whose floors are the nearest source cells;
+    `rotation_mapping` asserts that equality)."""
+    a, b = (int(v) for v in axis)
+    nu, nv = (int(v) for v in origin_numerators)
+    ny, nx = (int(v) for v in shape)
+    if ny < 1 or nx < 1:
+        raise Plot1ImportError("rotated grid: the target shape must be positive")
+    length = math.sqrt(float(a * a + b * b))
+    u = (nu / length + (np.arange(nx, dtype=np.float64) + 0.5))[None, :]
+    v = (nv / length + (np.arange(ny, dtype=np.float64) + 0.5))[:, None]
+    return (a * u - b * v) / length, (b * u + a * v) / length
+
+
+def bilinear_source_elevation(source_sf: np.ndarray, x: np.ndarray, y: np.ndarray, nearest: np.ndarray, nodata: float,
+                              ) -> tuple[np.ndarray, np.ndarray]:
+    """CW-R1c1 bilinear elevation on FULL valid support, else the nearest value. Returns `(elevation, used_bilinear)`.
+
+    Source pixel CENTRES sit at integer pixel-centre coordinates px = x - 1/2, py = y - 1/2 (source cell (r, c) has its
+    centre at x = c + 1/2, y = r + 1/2). With i0 = floor(py), j0 = floor(px), fy = py - i0, fx = px - j0 (all FP64) the
+    four surrounding centres are (i0, j0), (i0, j0 + 1), (i0 + 1, j0), (i0 + 1, j0 + 1). Where ALL FOUR are inside the
+    source grid and none is nodata, and the target cell is active under the nearest mask, the elevation is the NESTED
+    linear form of the same bilinear surface (CW-R1c2; IEEE FP64, exactly this order):
+        row0 = z00 + fx * (z01 - z00); row1 = z10 + fx * (z11 - z10); z = row0 + fy * (row1 - row0)
+    which returns a constant support EXACTLY (every difference is +0.0; the CW-R1c1 weighted sum
+    ((w00 z00 + w01 z01) + w10 z10) + w11 z11 did not: e.g. 155.54 -> 155.54000000000002 on a constant 155.54 support).
+    Otherwise the target keeps `nearest` unchanged (the nearest source value, or nodata where the nearest mask is
+    inactive): nodata is never blended, the mask is never moved or filled, and nothing is renormalized. The nearest
+    containing cell is always one of the four centres, so full support implies an active nearest cell."""
+    px, py = x - 0.5, y - 0.5
+    j0, i0 = np.floor(px).astype(np.int64), np.floor(py).astype(np.int64)
+    fx, fy = px - j0, py - i0
+    nrows, ncols = source_sf.shape
+    inside = (i0 >= 0) & (i0 + 1 < nrows) & (j0 >= 0) & (j0 + 1 < ncols)
+    ic, jc = np.clip(i0, 0, nrows - 2), np.clip(j0, 0, ncols - 2)
+    z00, z01 = source_sf[ic, jc], source_sf[ic, jc + 1]
+    z10, z11 = source_sf[ic + 1, jc], source_sf[ic + 1, jc + 1]
+    support = inside & (z00 != nodata) & (z01 != nodata) & (z10 != nodata) & (z11 != nodata)
+    row0 = z00 + fx * (z01 - z00)
+    row1 = z10 + fx * (z11 - z10)
+    blended = row0 + fy * (row1 - row0)
+    used = support & (nearest != nodata)
+    return np.where(used, blended, nearest), used
+
+
+def sample_source_cells(source_sf: np.ndarray, rows: np.ndarray, cols: np.ndarray, nodata: float,
+                        ) -> tuple[np.ndarray, np.ndarray]:
+    """Inverse nearest-neighbour sampling: `source_sf[rows, cols]` where the index is inside the source grid, `nodata`
+    outside. No interpolation, fill or smoothing: every output is a source value at its exact index. Returns
+    `(sampled, inside)`."""
+    nrows, ncols = source_sf.shape
+    inside = (rows >= 0) & (rows < nrows) & (cols >= 0) & (cols < ncols)
+    sampled = np.full(rows.shape, float(nodata), dtype=np.float64)
+    sampled[inside] = source_sf[rows[inside], cols[inside]]
+    return sampled, inside
+
+
+def rotation_mapping(recipe: ChastreRecipe, target_interior: np.ndarray) -> dict[str, Any]:
+    """Re-derive the rotated grid of a CW-R1 recipe and REQUIRE that the staged target terrain IS it.
+
+    Pins: the original recipe file (sha256), which must itself be NATIVE (nested rotations refused), name the same RFID
+    source and carry the pinned original terrain sha256; the original terrain file is stream-hashed against that pin and
+    read with the original recipe's header checks; cellsize and nodata must equal the target's and the original ring must be
+    nodata. The target interior must equal the inverse-nearest sampling of the original FULL grid exactly (values AND
+    nodata), so elevation and mask share one source index per cell. Returns the source indices, the original interior
+    shape and a provenance record (the affine to the original projected coordinates included)."""
+    raw = recipe.raw
+    rotation, terrain = raw["rainfall_scaling"]["rotation"], raw["terrain"]
+    nodata = float(terrain["nodata_value"])
+    original = load_chastre_recipe(rotation["original_recipe"]["path"])
+    if original.sha256 != rotation["original_recipe"]["sha256"]:
+        raise Plot1ImportError(f"rotation: original recipe sha256 {original.sha256} != the pin "
+                               f"{rotation['original_recipe']['sha256']}")
+    if "rotation" in original.raw["rainfall_scaling"]:
+        raise Plot1ImportError("rotation: the original recipe is itself rotated; nested rotations are refused")
+    if original.raw["source_rfid"] != raw["source_rfid"]:
+        raise Plot1ImportError("rotation: the original recipe names a different RFID source")
+    oterrain = original.raw["terrain"]
+    if oterrain["sha256"] != rotation["original_terrain_sha256"]:
+        raise Plot1ImportError("rotation: the original recipe's terrain sha256 differs from original_terrain_sha256")
+    if float(oterrain["cellsize_m"]) != float(terrain["cellsize_m"]) or float(oterrain["nodata_value"]) != nodata:
+        raise Plot1ImportError("rotation: cellsize / nodata differ from the original terrain")
+    opath = Path(oterrain["path"])
+    digest = stream_sha256(opath)
+    if digest != oterrain["sha256"]:
+        raise Plot1ImportError(f"rotation: original terrain sha256 {digest} != the pin {oterrain['sha256']}")
+    oheader, original_sf = _read_terrain(opath, oterrain)
+    if not np.all(original_sf[_ring_mask(original_sf.shape)] == nodata):
+        raise Plot1ImportError("rotation: the original terrain ring is not nodata")
+    rows, cols, edge = rotated_source_indices(rotation["axis_vector_cells"], rotation["interior_origin_numerators"],
+                                              target_interior.shape)
+    sampled, inside = sample_source_cells(original_sf, rows, cols, nodata)
+    mode = rotation.get("elevation_sampling")  # CW-R1c1: None (R1 recipes) or "nearest" -> the nearest elevation
+    if mode in (None, "nearest"):
+        expected_elevation, used_bilinear = sampled, None
+    else:
+        x, y = rotated_source_coordinates(rotation["axis_vector_cells"], rotation["interior_origin_numerators"],
+                                          target_interior.shape)
+        if not (np.array_equal(np.floor(y).astype(np.int64), rows) and np.array_equal(np.floor(x).astype(np.int64), cols)):
+            raise Plot1ImportError("internal error: the bilinear coordinates do not floor to the nearest source cells")
+        expected_elevation, used_bilinear = bilinear_source_elevation(original_sf, x, y, sampled, nodata)
+    if not np.array_equal(np.asarray(target_interior, dtype=np.float64), expected_elevation):
+        if used_bilinear is None:
+            raise Plot1ImportError("rotation: the staged target terrain is not the inverse-nearest sampling of the pinned "
+                                   "original terrain under this descriptor")
+        raise Plot1ImportError(f"rotation: the staged target terrain is not the {mode} sampling of the pinned original "
+                               "terrain under this descriptor")
+    active = sampled != nodata
+    a, b = rotation["axis_vector_cells"]
+    nu, nv = rotation["interior_origin_numerators"]
+    length = math.sqrt(float(a * a + b * b))
+    cs, xll, yll = float(oterrain["cellsize_m"]), float(oheader["xllcorner"]), float(oheader["yllcorner"])
+    u_full, v_full = nu / length - 1.0, nv / length - 1.0  # target FULL-grid lower-left corner (ring included)
+    original_active = original_sf[1:-1, 1:-1] != nodata
+    unique_sources = np.unique(rows[active] * original_sf.shape[1] + cols[active]).size
+    record = {
+        "schema": ROTATION_SCHEMA, "sampling": ROTATION_SAMPLING,
+        "original_recipe": {"path": str(original.path), "sha256": original.sha256},
+        "original_terrain": {"path": str(opath), "sha256": digest, "shape_with_ring": list(original_sf.shape),
+                             "xllcorner": xll, "yllcorner": yll, "cellsize_m": cs},
+        "axis_vector_cells": [int(a), int(b)], "interior_origin_numerators": [int(nu), int(nv)],
+        "angle_deg_ccw_from_original_east": math.degrees(math.atan2(b, a)),
+        "affine_target_full_grid_local_to_original_projected": {
+            "definition": "X = X0 + A11 U + A12 V, Y = Y0 + A21 U + A22 V; (U, V) = target FULL-grid local coordinates in "
+                          "metres from its lower-left corner (ring included), U along the rotated columns, V along the "
+                          "rotated rows; the target ESRI header uses this LOCAL frame (xllcorner = yllcorner = 0), "
+                          "NOT geographic east/north and NOT the original projection",
+            "X0": xll + cs * (a * u_full - b * v_full) / length, "Y0": yll + cs * (b * u_full + a * v_full) / length,
+            "A11": a / length, "A12": -b / length, "A21": b / length, "A22": a / length},
+        "target_interior_shape": list(target_interior.shape),
+        "n_target_active": int(active.sum()), "n_original_active": int(original_active.sum()),
+        "n_target_centres_outside_original_grid": int((~inside).sum()),
+        "n_distinct_original_cells_sampled": int(unique_sources),
+        "edge_precision": edge, "float_model": "IEEE-754 float64, operation order as in rotated_source_indices",
+        "interpolation": "none (no interpolation across nodata, no fill, smoothing, carving, jitter or renormalization)",
+    }
+    if mode is not None:  # CW-R1c1: recorded only when the descriptor names a mode (R1 nearest reports are unchanged)
+        record["elevation_sampling"] = {"mode": mode,
+                                        "mask": "nearest source cell (unchanged)", "rainfall": "nearest source cell (unchanged)"}
+        if used_bilinear is not None:
+            diff = expected_elevation[active] - sampled[active]
+            record["interpolation"] = ("elevation only: standard bilinear on full valid 4-centre support, else the nearest "
+                                       "value; never across nodata; no fill, smoothing, carving, jitter or renormalization")
+            record["elevation_sampling"].update({
+                "definition": "see maple_syrup.chastre_case.bilinear_source_elevation (px = x - 1/2, py = y - 1/2; "
+                              "NESTED: row0 = z00 + fx (z01 - z00), row1 = z10 + fx (z11 - z10), "
+                              "z = row0 + fy (row1 - row0) in IEEE FP64; constant support preserved exactly)",
+                "n_bilinear": int(used_bilinear.sum()), "n_nearest_fallback": int(active.sum() - used_bilinear.sum()),
+                "elevation_range_active_m": [float(expected_elevation[active].min()),
+                                             float(expected_elevation[active].max())],
+                "minus_nearest_min_m": float(diff.min()), "minus_nearest_max_m": float(diff.max()),
+                "minus_nearest_rms_m": float(np.sqrt(np.mean(diff * diff))),
+                "minus_nearest_max_abs_m": float(np.abs(diff).max())})
+    return {"rows": rows, "cols": cols, "active": active, "original_interior_shape": original_active.shape,
+            "record": record}
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -435,6 +674,8 @@ def audit_chastre(recipe: ChastreRecipe, terrain_path: str | Path, source: Verif
     n_active = int(active.sum())
     if n_active != terrain["expected_n_active"]:
         raise Plot1ImportError(f"{n_active} active cells, the recipe expects {terrain['expected_n_active']}")
+    rotation = raw["rainfall_scaling"].get("rotation")  # CW-R1 opt-in; None for every native recipe
+    mapping = rotation_mapping(recipe, interior) if rotation is not None else None
 
     # --- source RFID (verified by the caller): hydrology report, composition, scaling map, density ---
     sreport, sfields = source.report, source.fields
@@ -458,8 +699,16 @@ def audit_chastre(recipe: ChastreRecipe, terrain_path: str | Path, source: Verif
     if not (src_scale[src_active] > 0.0).all():
         raise Plot1ImportError("a valid RFID source cell has a non-positive rainfall scale")
     filled, fill_record = fill_source_gaps(src_scale, src_active)
-    resized, row_index, col_index = nearest_resize(filled, (ny, nx))
-    scale = np.where(active, resized, 0.0)
+    if mapping is None:
+        resized, row_index, col_index = nearest_resize(filled, (ny, nx))
+        scale = np.where(active, resized, 0.0)
+    else:  # CW-R1: the NATIVE Chastre resize, then sampled with the terrain's own source cell of every target cell
+        resized, row_index, col_index = nearest_resize(filled, mapping["original_interior_shape"])
+        if not np.array_equal(mapping["active"], active):
+            raise Plot1ImportError("internal error: the rotated mask differs from the terrain mask")
+        oy, ox = mapping["original_interior_shape"]
+        rotated = resized[np.clip(mapping["rows"] - 1, 0, oy - 1), np.clip(mapping["cols"] - 1, 0, ox - 1)]
+        scale = np.where(active, rotated, 0.0)
     if not (scale[active] > 0.0).all():
         raise Plot1ImportError("an active Chastre cell received a non-positive rainfall scale")
     if not np.isin(resized, filled).all():
@@ -540,6 +789,26 @@ def audit_chastre(recipe: ChastreRecipe, terrain_path: str | Path, source: Verif
                      "not a MAPLE CompiledCase: not wind-ready, not evolving-bed-ready",
                      "not a Chastre flood prediction; rainfall is the stretched RFID pattern"],
     }
+    if mapping is not None:  # CW-R1 additions only; native reports and sidecars are unchanged
+        record = mapping["record"]
+        fields["rotation_source_row"] = np.ascontiguousarray(mapping["rows"])
+        fields["rotation_source_col"] = np.ascontiguousarray(mapping["cols"])
+        report["grid"]["rotated_frame"] = {
+            "angle_deg_ccw_from_original_east": record["angle_deg_ccw_from_original_east"],
+            "affine": record["affine_target_full_grid_local_to_original_projected"],
+            "orientation": "rotated LOCAL grid: columns along +u, rows along +v (south-first arrays, north-first file); "
+                           "NOT geographic east/north"}
+        report["rainfall_scaling"].update({
+            "resize": "the native Chastre case's nearest-pixel-centre resize to the ORIGINAL interior "
+                      f"{list(mapping['original_interior_shape'])}, then sampled with the terrain's own inverse-nearest "
+                      "source cell of every rotated cell (same index as the elevation and mask); no new stretching",
+            "native_resize_shape": list(mapping["original_interior_shape"]),
+            "distinct_values_target": int(np.unique(scale[active]).size),
+            "rotation": record,
+            "disclosure": "the stretched RFID pattern of the native Chastre case, carried with the terrain onto the rotated "
+                          "grid; it is not Chastre rainfall"})
+        report["not_done"] = report["not_done"] + [
+            "rotated/resampled terrain: no numerical, hydrological or Fortran equivalence to the unrotated Chastre case"]
     return ChastreAudit(definition=definition, fields=fields, report=report)
 
 

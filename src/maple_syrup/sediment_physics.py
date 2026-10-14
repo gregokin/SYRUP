@@ -472,17 +472,28 @@ def plot1_sediment_parameters(*, xp: ModuleType | None = None, **overrides: Any)
 class PhysicsGrid:
     """Static per-cell terrain the laws need, placed once in namespace
     `xp`: `slope` (dimensionless, legacy post-edge-rule) and `active`
-    (bool), both `(ny, nx)`; `cell_area_m2`."""
+    (bool), both `(ny, nx)`; `cell_area_m2`.
+
+    `terminal` (CW-C2, default None so every existing construction is
+    unchanged): the `(ny, nx)` bool mask, in `xp`, of the graph's opt-in
+    terminal-storage cells (`routing.PIT_STORAGE`: active strict pits and,
+    when allowed, flat sinks, with zero slope and conveyance). The wet laws
+    are still evaluated there on the actual holdings (rain-assisted pickup
+    included, limited by MAPLE), but the cell is a settle cell: its resident
+    and arriving mobile load returns to the bed through the genuine
+    deposition demand of the same step. This initial model has no pond
+    suspension residence, no spill and no overtopping at terminal storage."""
 
     shape: tuple[int, int]
     cell_area_m2: float
     slope: Any
     active: Any
     xp: ModuleType
+    terminal: Any = None
 
 
 def physics_grid(slope: np.ndarray, active: np.ndarray, cell_area_m2: float, *,
-                 xp: ModuleType | None = None) -> PhysicsGrid:
+                 xp: ModuleType | None = None, terminal: np.ndarray | None = None) -> PhysicsGrid:
     from maple.core.backend import freeze, to_device
 
     s = np.array(slope, dtype=np.float64)
@@ -493,15 +504,28 @@ def physics_grid(slope: np.ndarray, active: np.ndarray, cell_area_m2: float, *,
         raise SedimentPhysicsError("slope must be finite and >= 0 on active cells")
     area = _positive(cell_area_m2, "cell_area_m2")
     namespace = np if xp is None else xp
+    placed_terminal = None
+    if terminal is not None:
+        t = np.array(terminal, dtype=np.bool_)
+        if t.shape != s.shape:
+            raise SedimentPhysicsError(f"terminal mask shape {t.shape} != grid shape {s.shape}")
+        if np.any(t & ~a) or np.any(t & (s != 0.0)):
+            raise SedimentPhysicsError("terminal-storage cells must be active with zero slope")
+        if t.any():  # an all-False mask is the strict grid: no terminal array, identical settle arithmetic
+            placed_terminal = freeze(to_device(np.ascontiguousarray(t), namespace))
     return PhysicsGrid(shape=tuple(s.shape), cell_area_m2=area,
                        slope=freeze(to_device(np.ascontiguousarray(s), namespace)),
-                       active=freeze(to_device(np.ascontiguousarray(a), namespace)), xp=namespace)
+                       active=freeze(to_device(np.ascontiguousarray(a), namespace)), xp=namespace,
+                       terminal=placed_terminal)
 
 
 def physics_grid_from_graph(graph: Any) -> PhysicsGrid:
     """`PhysicsGrid` from a `maple_syrup.routing.RoutingGraph` (its final
-    slope, active mask, dx^2 and namespace)."""
-    return physics_grid(graph.slope, graph.active, graph.dx_m * graph.dx_m, xp=graph.xp)
+    slope, active mask, dx^2, namespace and, for an opt-in pit-storage
+    graph, its terminal-storage mask)."""
+    pit = getattr(graph, "pit_storage", None)
+    terminal = None if pit is None or not np.any(pit) else np.asarray(pit, dtype=np.bool_)
+    return physics_grid(graph.slope, graph.active, graph.dx_m * graph.dx_m, xp=graph.xp, terminal=terminal)
 
 
 # --- d50 ----------------------------------------------------------------------------------
@@ -843,6 +867,10 @@ def sediment_physics_step(
         # diffuse with zero rain energy (L -> 0, boundary), dry cells.
         no_capacity = (conc_class & ~capacity) | (diffuse_class & ~(kf3 > 0.0))
         settle = xp.broadcast_to(~wet[..., None], (ny, nx, nc)) | no_capacity
+        if grid.terminal is not None:
+            # Opt-in terminal storage (CW-C2): the cell has no directed downslope path, so its mobile load (own
+            # pickup of this step included) is deposited through MAPLE; the laws above are unchanged otherwise.
+            settle = settle | grid.terminal[..., None]
         law_defined = law & ~no_capacity & (L_law > 0.0)
         rate = xp.where(law_defined, 1.0 / xp.where(law_defined, L_law, 1.0), 0.0)
         decayed = recession_velocity(previous_sediment_velocity_m_s, dt,

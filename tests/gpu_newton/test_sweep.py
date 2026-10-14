@@ -241,9 +241,16 @@ def test_default_bisection_kernel_sources_are_the_accepted_baseline_text():
     from maple_syrup import hydrology_cuda as hc
 
     sha = lambda t: hashlib.sha256(t.encode()).hexdigest()
-    assert sha(routing_cuda.kernel_source()) == BASELINE_SHA["level"]
-    assert sha(routing_cuda.block_kernel_source()) == BASELINE_SHA["block"]
-    assert sha(hc.kernel_source()) == BASELINE_SHA["hydrology"]
+    # CW-B15: the ONLY change to the accepted texts is the exact zero-conveyance branch (one per text). Reverting
+    # that branch must reproduce the accepted baseline digests exactly.
+    b15_old = "    if (rhs > 0.0) {\n"
+    b15_new = ("    if (rhs > 0.0 && k == 0.0 && rhs <= 1.7976931348623157e+308) {\n"
+               "        lo = rhs;\n"
+               "    } else if (rhs > 0.0) {\n")
+    for name, text in (("level", routing_cuda.kernel_source()), ("block", routing_cuda.block_kernel_source()),
+                       ("hydrology", hc.kernel_source())):
+        assert text.count(b15_new) == 1 and b15_old not in text, name
+        assert sha(text.replace(b15_new, b15_old)) == BASELINE_SHA[name], name
     assert "newton" not in hc.kernel_source().lower() and "newton" not in routing_cuda.kernel_source().lower()
 
 

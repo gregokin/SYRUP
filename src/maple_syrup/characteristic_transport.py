@@ -1,9 +1,11 @@
 """Characteristic mobile-sediment transport with bounded phase bins (Phase 7b candidate kernel).
 
-Candidate replacement for the lateral operator `T` of the Phase 1 contract
-(docs/phase1/interface_contract.md section 4.1). NOT yet wired into the
-event, checkpoint or completion drivers: `sediment_transport.transport_step`
-remains the production operator until the event integration is reviewed.
+Lateral operator `T` of the Phase 1 contract (docs/phase1/interface_contract.md
+section 4.1). Historically a candidate; it is now wired into the event, checkpoint
+and completion drivers as the default `transport_scheme="characteristic"` (dense
+storage here, sparse CSR storage in `characteristic_sparse`), while
+`sediment_transport.transport_step` remains the explicitly selected "upwind"
+comparison scheme (CW-B73 documentation correction).
 Same `TransportStep` contract, same MAPLE face layout, same request
 semantics; this kernel adds a SYRUP-owned sub-cell position state.
 
@@ -530,6 +532,15 @@ def characteristic_step(
     checks.forbid(true_flag(inactive3 & (M != 0.0)), "mobile_before_kg must be 0 on inactive cells")
     checks.forbid(true_flag(inactive3 & (P != 0.0)), "pickup_kg must be 0 on inactive cells")
     checks.forbid(true_flag(inactive3 & (V != 0.0)), "sediment_velocity_m_s must be 0 on inactive cells")
+    terminal_flat = getattr(network, "terminal_flat", None)
+    if terminal_flat is not None:
+        # CW-C2 opt-in terminal storage: the same rule as `sediment_transport.transport_step`. A terminal cell is a
+        # deposition location (its receiver index is itself, it has no out-face); every class there must be a settle
+        # cell so resident and arriving packets become deposition requests, never motionless "in-flight" mass.
+        # Refused for every implementation (array, numba) before any kernel runs; nothing physical changes.
+        checks.forbid(true_flag(terminal_flat[:, None] & ~S),
+                      "terminal-storage cells must be settle cells for every class (their load is deposited "
+                      "through MAPLE)")
 
     dx = network.dx_m
     dt_sub = dt / n_sub

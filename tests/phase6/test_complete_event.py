@@ -185,7 +185,12 @@ def test_final_rerouting_that_reactivates_flow_refuses_dry_handoff(monkeypatch):
     original_commit = module._commit_and_reroute
 
     def commit_with_reactivated_flow(*a, **k):
+        # CW-B104: a terminal commit reroutes (and so publishes a post-commit routing / discharge) only on a net
+        # displacement >= the threshold; offset the held routing source by 1 m so this genuinely is a rerouting
+        # commit, keeping the guard under test reachable.
+        k = {**k, 'routing_source_m': k['routing_source_m'] - 1.0}
         result = original_commit(*a, **k)
+        assert result.rerouted
         # Simulate a post-commit routing result outside the stopping criterion.
         # Exercise the terminal transaction guard, not an alternative solver.
         q = result.storm.discharge_m2_s.copy()

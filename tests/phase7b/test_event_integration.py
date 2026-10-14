@@ -181,12 +181,19 @@ def test_reconciliation_failure_publishes_nothing(monkeypatch):
     mobile = wet.bed.water.mobile_mass_by_cell_class_kg.copy()
     active = wet.bed.active_layer.mass_kg.copy()
 
-    def refuse(step, actual, xp):
+    refused = []
+
+    def refuse(reconcile_inputs, actual, xp):
+        refused.append(type(reconcile_inputs).__name__)
         raise SedimentEventError("forced reconciliation refusal")
 
-    monkeypatch.setattr(sediment_event, "reconcile_phase", refuse)
+    # The event driver steps through the accounting form, which (CW-B65) reconciles through the private
+    # `_reconcile_phase_inputs` body after releasing the complete kernel result; the public `reconcile_phase`
+    # wrapper is only the full step's entry, so intercepting it would never reach the driver.
+    monkeypatch.setattr(sediment_event, "_reconcile_phase_inputs", refuse)
     with pytest.raises(SedimentEventError, match="forced reconciliation refusal"):
         run(inputs, schedule, 10.0, cadence=10.0, state=wet)
+    assert refused == ["_PhaseReconcileInputs"]
     np.testing.assert_array_equal(wet.phase.fraction, f)
     np.testing.assert_array_equal(wet.phase.position_m, x)
     np.testing.assert_array_equal(wet.bed.water.mobile_mass_by_cell_class_kg, mobile)
@@ -283,20 +290,63 @@ def test_checkpoint_refuses_bad_phase_and_superseded_schema(tmp_path, kind):
 
 
 # --- rerouting keeps the within-cell progress -------------------------------------------------------------------
-def test_reroute_keeps_phase_progress_and_counts_steered_cells():
+# CW-E47C1: since CW-B104 routing is refreshed ONLY when the post-commit max per-cell net elevation displacement from
+# the held routing source reaches MAPLE's actual `pending_elevation_trigger_m` (default 0.00075 m, `>=`); ordinary
+# accounting commits (here every 10 s, and the final forced one) publish the bed but keep graph / network / phase
+# binding. The original 45 s / 72 mm/h valley reaches only ~5.2e-5 m and is kept as the NEGATIVE control; the same
+# actual valley under a stronger physical storm (600 mm/h for 90 s, default threshold) GENUINELY crosses it.
+REROUTE_RAIN_MM_H, REROUTE_END_S = 600.0, 90.0
+
+
+def test_accounting_commits_below_the_net_threshold_keep_the_graph_and_the_phase_progress():
     from maple.core.parameters.topographic_commit import TopographicCommitSpec
 
     bed, ctx = make_bed(valley_elevation(4, 5), commit_spec=TopographicCommitSpec(commit_interval_s=10.0))
+    assert ctx.topographic_commit_spec.pending_elevation_trigger_m == 0.00075  # MAPLE's default, unchanged
     inputs = setup(bed, ctx, south_ring=valley_elevation(5, 5)[0] - 0.01)
     state0 = inputs["state0"]
     r = run(inputs, constant_rainfall(0.0, 45.0, 72.0), 45.0, cadence=15.0)
     assert_closed(r, state0)
-    assert r.n_commits >= 1 and r.n_graph_changes >= 1
+    # commits and their accounting happen (time-only triggers), but nothing reroutes below the threshold
+    assert r.n_commits >= 1 and r.n_reroutes == 0 and r.n_net_commits == 0 and r.n_graph_changes == 0
+    assert all(not e["rerouted"] and e["net_displacement_m"] < e["reroute_threshold_m"] == 0.00075 for e in r.commit_log)
+    assert all(e["rerouted_cells"] == 0 and e["phase_steered_cells"] == 0 for e in r.commit_log)
+    assert r.phase_steered_cells_total == r.rerouted_cells_total == 0 and r.routing_source_origin == "entry"
+    assert 0.0 < r.max_unrouted_net_displacement_m < 0.00075
+    st = r.state
+    assert st.graph is state0.graph and st.network is state0.network  # graph / network binding kept
+    validate_phase_state(st.phase, st.bed.water.mobile_mass_by_cell_class_kg, st.network)
+    # the last commit was forced at 45 s with mobile mass present: positions were NOT reset to the face
+    mobile = st.bed.water.mobile_mass_by_cell_class_kg
+    moment, _ = mass_weighted_position(st)
+    assert np.any(mobile > 0.0) and np.any(moment[mobile.sum(-1) > 0.0] > 0.0)
+
+
+def test_reroute_keeps_phase_progress_and_counts_steered_cells():
+    """A GENUINE net crossing at MAPLE's default threshold on the same actual valley: the rerouting commit's net
+    displacement reaches the threshold, the non-rerouting commits stay below it, the refreshed graph is adopted and
+    the phase partition is carried over the reroute (steered cells within the rerouted ones), budgets close."""
+    from maple.core.parameters.topographic_commit import TopographicCommitSpec
+
+    bed, ctx = make_bed(valley_elevation(4, 5), commit_spec=TopographicCommitSpec(commit_interval_s=10.0))
+    assert ctx.topographic_commit_spec.pending_elevation_trigger_m == 0.00075
+    inputs = setup(bed, ctx, south_ring=valley_elevation(5, 5)[0] - 0.01)
+    state0 = inputs["state0"]
+    r = run(inputs, constant_rainfall(0.0, REROUTE_END_S, REROUTE_RAIN_MM_H), REROUTE_END_S, cadence=15.0)
+    assert_closed(r, state0)
+    rerouted = [e for e in r.commit_log if e["rerouted"]]
+    assert rerouted and r.n_reroutes == len(rerouted) and r.n_commits > len(rerouted)
+    assert all(e["net_displacement_m"] >= e["reroute_threshold_m"] == 0.00075 for e in rerouted)
+    assert all(e["net_displacement_m"] < e["reroute_threshold_m"] for e in r.commit_log if not e["rerouted"])
+    assert all(e["commit_reason"] in ("net_elevation", "maple_trigger") and not e["forced"] for e in rerouted)
+    assert r.routing_source_origin == "net_reroute" and r.routing_source_t_s == rerouted[-1]["t_s"]
+    assert r.n_graph_changes >= 1 and any(e["graph_changed"] for e in rerouted)  # the slope / receiver evidence
     assert all("phase_steered_cells" in entry for entry in r.commit_log)
     assert 0 <= r.phase_steered_cells_total <= r.rerouted_cells_total
     st = r.state
+    assert st.graph is not state0.graph and st.graph.input_sha256 == rerouted[-1]["graph_input_sha256"]
     validate_phase_state(st.phase, st.bed.water.mobile_mass_by_cell_class_kg, st.network)
-    # the last commit was forced at 45 s with mobile mass present: positions were NOT reset to the face
+    # the last commit was forced at the end with mobile mass present: positions were NOT reset to the face
     mobile = st.bed.water.mobile_mass_by_cell_class_kg
     moment, _ = mass_weighted_position(st)
     assert np.any(mobile > 0.0) and np.any(moment[mobile.sum(-1) > 0.0] > 0.0)

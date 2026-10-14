@@ -116,7 +116,9 @@ extern "C" __global__ void maple_syrup_route_level(
     const double rhs = __dadd_rn(base_lo[p], __dmul_rn(qin, c));
     const double k = k_lo[p];
     double lo = 0.0;
-    if (rhs > 0.0) {
+    if (rhs > 0.0 && k == 0.0 && rhs <= 1.7976931348623157e+308) {
+        lo = rhs;
+    } else if (rhs > 0.0) {
         double w = rhs;
         for (int it = 0; it < iterations; ++it) {
             w = __dmul_rn(w, 0.5);
@@ -140,13 +142,18 @@ extern "C" __global__ void maple_syrup_route_level(
 """
 
 
+# CW-B15: both kernel texts carry the exact zero-conveyance root (`k == 0.0` and finite `rhs > 0.0` -> `lo = rhs`,
+# same rule as routing._bisect / routing_numba); every other lane runs the unchanged iterations. The kernel texts
+# carry no comments (contract test: no '/' in the IEEE-strict source).
 # The root search shared (text for text) by the one-block sweep here and by the fused hydrology kernels.
 _BISECT_DEVICE_SOURCE = r"""
 __device__ __forceinline__ double maple_syrup_bisect(const double rhs, const double k, const double c,
                                                      const int iterations)
 {
     double lo = 0.0;
-    if (rhs > 0.0) {
+    if (rhs > 0.0 && k == 0.0 && rhs <= 1.7976931348623157e+308) {
+        lo = rhs;
+    } else if (rhs > 0.0) {
         double w = rhs;
         for (int it = 0; it < iterations; ++it) {
             w = __dmul_rn(w, 0.5);

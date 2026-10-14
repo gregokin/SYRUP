@@ -39,7 +39,11 @@ all documented in docs/phase4/routing.md:
   negative right-hand side.
 - Sinks, flats, receivers that would lose water silently, zero slopes,
   friction below the legacy floor 0.1 and nodata elevations are rejected
-  when the graph is built. There is no filling or pit storage.
+  when the graph is built (strict default). There is no filling; the only
+  exceptions are the explicit opt-ins of `build_routing_graph`
+  (`allow_pit_storage` / `allow_flat_storage` terminal storage, and
+  `allow_masked_nodata`), see "OPT-IN terminal storage" below. No spill or
+  overtopping exists.
 
 Two implementations of the ordered sweep share everything else:
 `implementation="array"` (default; MAPLE NumPy/CuPy namespace, one Python
@@ -675,13 +679,23 @@ def _donor_sum(values_lo, position, mask, xp):
     return total
 
 
+#: Largest finite FP64 value: `rhs <= _DBL_MAX` is the finite-positive test of the exact zero-conveyance root
+#: (False for +inf and NaN), written identically in routing_numba and routing_cuda.
+_DBL_MAX = 1.7976931348623157e308
+
+
 def _bisect(lo, rhs, k, c, iterations, w, mid, t, below, xp):
     """Largest h in [0, rhs] (to 2^-iterations rhs) with h + c q(h) < rhs,
     written into `lo`. `h + c k h^{3/2}` is increasing and equals rhs at the
     root, so [0, rhs] always brackets it. The flux term is formed exactly as
     in the closure `h_new = rhs - c q(lo)`, so h_new > lo >= 0 follows from
     the accepted comparison, with no clipping. routing_numba._sweep mirrors
-    this operation sequence statement for statement."""
+    this operation sequence statement for statement.
+
+    Exact zero-conveyance root (CW-B15): where `k == 0.0` exactly and `rhs`
+    is finite and positive, `lo = rhs` (the equation reduces to h = rhs).
+    q(lo) is still formed as (sqrt(lo) lo) k = 0, so h_new = rhs is
+    unchanged and the constitutive residual h_new - lo is exactly 0."""
     lo.fill(0.0)
     xp.copyto(w, rhs)
     for _ in range(iterations):
@@ -694,6 +708,15 @@ def _bisect(lo, rhs, k, c, iterations, w, mid, t, below, xp):
         xp.add(t, mid, out=t)
         xp.less(t, rhs, out=below)
         xp.copyto(lo, mid, where=below)
+    # CW-B15: exact zero-conveyance root. Where k == 0 exactly (recognised
+    # terminal-storage cells; strict graphs refuse k == 0 on active cells) the
+    # equation is h = rhs, solved exactly instead of approached to
+    # rhs 2^-iterations. Applies only to finite rhs > 0; every k > 0 cell,
+    # rhs <= 0 and non-finite rhs keep the bisection result above unchanged.
+    xp.equal(k, 0.0, out=below)
+    below &= rhs > 0.0
+    below &= rhs <= _DBL_MAX
+    xp.copyto(lo, rhs, where=below)
 
 
 def _sweep_array(graph, base_lo, c, iterations, xp):

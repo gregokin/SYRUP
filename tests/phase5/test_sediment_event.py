@@ -436,22 +436,33 @@ def test_commits_keep_depth_reroute_from_committed_terrain_and_refresh_hydraulic
     from maple.core.parameters.topographic_commit import TopographicCommitSpec
     from maple.core.types.topographic_commit import committed_elevation_m
 
-    bed, ctx = make_bed(valley_elevation(4, 5), commit_spec=TopographicCommitSpec(commit_interval_s=10.0))
+    # CW-B104: rerouting is NET-ELEVATION ONLY (threshold = MAPLE pending_elevation_trigger_m, >=). This 45 s storm
+    # moves at most ~5e-5 m (< the 0.00075 m default), so under the default it commits but never reroutes (see
+    # tests/cw_b104). To keep exercising the reroute machinery this fixture sets an EXPLICITLY LABELLED tiny
+    # threshold (1e-9 m; a test fixture value, not a production threshold): commits whose net displacement from the
+    # held routing source reaches it reroute.
+    bed, ctx = make_bed(valley_elevation(4, 5), commit_spec=TopographicCommitSpec(commit_interval_s=10.0,
+                                                                                    pending_elevation_trigger_m=1e-9))
     inputs = setup(bed, ctx, south_ring=valley_elevation(5, 5)[0] - 0.01)
     state0 = inputs["state0"]
     r = run(inputs, constant_rainfall(0.0, 45.0, 72.0), 45.0, cadence=15.0)  # rain through the end: pending exchange at 45 s
     closure, bc = assert_closed(r, state0)
     assert r.n_commits >= 5 and r.n_graph_changes >= 1 and len(r.commit_log) == r.n_commits
     times = [c["t_s"] for c in r.commit_log]
-    assert times == sorted(times) and 10.0 in times and times[-1] == 45.0 and r.commit_log[-1]["forced"]
-    assert r.n_forced_commits == 1
+    # (the labelled 1e-9 m fixture value is also MAPLE's pending trigger, so MAPLE commits at every accepted step,
+    # including 45 s, and the forced final commit finds nothing pending; C1 asserted one forced commit at 45 s)
+    assert times == sorted(times) and 10.0 in times and times[-1] == 45.0 and not r.commit_log[-1]["forced"]
+    assert r.n_forced_commits == 0 and r.n_reroutes >= 1 and r.commit_log[-1]["rerouted"]
     for entry in r.commit_log:
         assert entry["depth_unchanged"] and entry["displaced_water_volume_m3"] == 0.0
-        assert entry["graph_changed"] == (entry["max_abs_committed_elevation_change_m"] > 0.0)
+        assert entry["rerouted"] == (entry["net_displacement_m"] >= 1e-9)  # CW-B104: net-only, >=
+        assert entry["graph_changed"] <= entry["rerouted"]
         assert entry["n_outlets"] == 1 and entry["outlets_changed"] == 0
         assert any(stage.startswith("water_callback") for stage in entry["commit_stage_log"])
-    # the final graph is exactly what the committed terrain implies (fixed ring, interior delta)
+    # the final graph is exactly what the committed terrain implies (fixed ring, interior delta): the last commit
+    # (45 s) rerouted here, so the held routing source IS the final committed elevation
     st = r.state
+    np.testing.assert_array_equal(st.routing_source_elevation_m, committed_elevation_m(st.bed.committed_topography))
     z = st.terrain.initial_full_elevation_m.copy()
     z[1:-1, 1:-1] += np.asarray(committed_elevation_m(st.bed.committed_topography)) - st.terrain.initial_committed_elevation_m
     rebuilt = build_routing_graph(z, st.terrain.export_receiver_full, st.terrain.friction_factor, st.terrain.dx_m,
@@ -496,7 +507,11 @@ def test_forced_final_commit_only_when_exchange_is_pending():
     assert np.any(r.state.bed.ledger.pending_bed_mass_change_kg)  # pending, honestly unpublished
     forced = run(inputs, constant_rainfall(0.0, 30.0, 72.0), 30.0,
                  control=SedimentEventControl(commit=False, force_final_commit=True), cadence=30.0)
-    assert forced.n_commits == forced.n_forced_commits == 1 and forced.state.graph is not state0.graph
+    # CW-B104: the forced final commit is an accounting commit; it reroutes only on a net displacement >= the threshold
+    # (here < 0.00075 m), so the graph object, discharge and routing source are the accepted ones (C1: rebuilt)
+    assert forced.n_commits == forced.n_forced_commits == 1 and forced.state.graph is state0.graph
+    assert forced.n_reroutes == 0 and forced.commit_log[-1]["commit_reason"] == "final_forced"
+    assert forced.state.routing_source_elevation_m is state0.routing_source_elevation_m
     assert not np.any(forced.state.bed.ledger.pending_bed_mass_change_kg)
     # no rain, dry bed, nothing exchanged: the end commit is NOT forced artificially
     empty = run(inputs, constant_rainfall(0.0, 30.0, 0.0), 30.0,

@@ -95,7 +95,7 @@ from typing import Any
 
 import numpy as np
 
-from maple_syrup.routing import ASPECT_STEPS, EXPORT, RoutingGraph
+from maple_syrup.routing import ASPECT_STEPS, EXPORT, PIT_STORAGE, RoutingGraph
 
 __all__ = [
     "CELL_BALANCE_RTOL",
@@ -190,11 +190,56 @@ class TransportNetwork:
     active_host: np.ndarray
     graph_input_sha256: str
     xp: ModuleType
+    # OPT-IN terminal storage (CW-C2; defaults LAST so every existing construction is unchanged). `terminal_flat`
+    # `(n,)` bool in `xp` and `terminal_host` `(ny, nx)` bool mark the graph's PIT_STORAGE cells (strict pits and,
+    # when the graph allowed them, flat sinks): active, not outlets, aspect 0, zero slope and conveyance. They are
+    # terminal deposition locations: their receiver index is the cell itself (never sends, has no out-face, never
+    # exports) and the transport operators REQUIRE them to be settle cells, so their resident and arriving mobile
+    # load becomes a deposition request applied through MAPLE's genuine exchange. For a strict graph both are all
+    # False / None and `n_terminal` is 0.
+    terminal_flat: Any = None
+    terminal_host: np.ndarray | None = None
+    n_terminal: int = 0
+
+
+def _terminal_cells(graph: RoutingGraph, receiver: np.ndarray, active: np.ndarray, outlet: np.ndarray,
+                    aspect: np.ndarray) -> np.ndarray:
+    """The host `(n,)` mask of VALID opt-in terminal-storage cells of `graph`, refusing every inconsistent
+    encoding before any array is built: a PIT_STORAGE receiver is accepted only on a cell the graph's own
+    `pit_storage` mask flags under a pit-storage policy, and such a cell must be active, not an outlet, aspect 0,
+    slope 0 and conveyance 0; a flagged cell must carry the PIT_STORAGE receiver. Nothing else with a missing
+    receiver is accepted."""
+    from maple.core.backend import to_host
+
+    flagged = graph.pit_storage
+    pit = (np.zeros(receiver.shape, dtype=np.bool_) if flagged is None
+           else np.asarray(flagged, dtype=np.bool_).reshape(-1))
+    coded = receiver == PIT_STORAGE
+    policy = str(getattr(graph, "policy", "strict"))
+    if not pit.any() and not coded.any():
+        return pit
+    if "pit_storage=True" not in policy:
+        raise TransportError("the graph carries terminal-storage cells but its policy does not allow pit storage "
+                             f"(policy {policy!r}); refusing the inconsistent graph")
+    if np.any(coded != pit):
+        raise TransportError("the graph's PIT_STORAGE receivers and its pit_storage mask disagree; refusing")
+    if np.any(pit & ~active) or np.any(pit & outlet):
+        raise TransportError("a terminal-storage cell must be active and not an outlet; refusing")
+    if np.any(pit & (aspect != 0)):
+        raise TransportError("a terminal-storage cell must have aspect 0 (no outflow direction); refusing")
+    slope = np.asarray(graph.slope, dtype=np.float64).reshape(-1)
+    conveyance = np.asarray(to_host(graph.conveyance), dtype=np.float64).reshape(-1)
+    if np.any(pit & (slope != 0.0)) or np.any(pit & (conveyance != 0.0)):
+        raise TransportError("a terminal-storage cell must have zero slope and zero conveyance; refusing")
+    return pit
 
 
 def transport_network(graph: RoutingGraph) -> TransportNetwork:
     """Build the transport connectivity from a routing graph (host work
-    once; runtime arrays placed with `to_device`)."""
+    once; runtime arrays placed with `to_device`). Opt-in terminal-storage
+    cells (`routing.PIT_STORAGE`, see `_terminal_cells`) receive their
+    donors' crossings and keep them; every other active non-outlet cell
+    must have a receiver."""
     from maple.core.backend import freeze, to_device
 
     if not isinstance(graph, RoutingGraph):
@@ -205,13 +250,18 @@ def transport_network(graph: RoutingGraph) -> TransportNetwork:
     active = np.asarray(graph.active, dtype=np.bool_).reshape(-1)
     outlet = np.asarray(graph.outlet, dtype=np.bool_).reshape(-1)
     aspect = np.asarray(graph.aspect, dtype=np.int64).reshape(-1)
-    internal = active & ~outlet
+    terminal = _terminal_cells(graph, receiver, active, outlet, aspect)
+    internal = active & ~outlet & ~terminal
     if np.any(internal & (receiver < 0)):
         raise TransportError("internal error: an active non-outlet cell has no receiver")
     if np.any(outlet & (receiver != EXPORT)):
         raise TransportError("internal error: an outlet cell does not export")
+    if np.any(internal & ~active[np.clip(receiver, 0, n - 1)]):
+        raise TransportError("internal error: a receiver is not an active cell")
+    if np.any(internal & terminal[np.clip(receiver, 0, n - 1)] & (aspect == 0)):
+        raise TransportError("internal error: a cell routes into terminal storage without an outflow direction")
     self_index = np.arange(n, dtype=np.int64)
-    receiver_index = np.where(internal, receiver, self_index)
+    receiver_index = np.where(internal, receiver, self_index)  # terminal cells, outlets, inactive: themselves
 
     rows, cols = np.divmod(self_index, nx)
     # Out-face of every active cell from its aspect (routing.ASPECT_STEPS:
@@ -232,11 +282,15 @@ def transport_network(graph: RoutingGraph) -> TransportNetwork:
     if faces_y.size and (faces_y.min() < 0 or faces_y.max() > ny):
         raise TransportError("internal error: y face index out of range")
 
+    if np.any(terminal & (is_x | is_y)):
+        raise TransportError("internal error: a terminal-storage cell has an out-face")
+
     xp = graph.xp
 
     def runtime(a, dtype):
         return freeze(to_device(np.ascontiguousarray(np.asarray(a, dtype=dtype)), xp))
 
+    n_terminal = int(terminal.sum())
     return TransportNetwork(
         shape=(ny, nx), dx_m=graph.dx_m, n_cells=n, n_active=int(active.sum()),
         receiver_index=runtime(receiver_index, np.int64),
@@ -249,6 +303,9 @@ def transport_network(graph: RoutingGraph) -> TransportNetwork:
         outlet_host=freeze(outlet.reshape(ny, nx).copy()),
         active_host=freeze(active.reshape(ny, nx).copy()),
         graph_input_sha256=graph.input_sha256, xp=xp,
+        terminal_flat=runtime(terminal, np.bool_) if n_terminal else None,
+        terminal_host=freeze(terminal.reshape(ny, nx).copy()) if n_terminal else None,
+        n_terminal=n_terminal,
     )
 
 
@@ -390,6 +447,11 @@ def transport_step(
     S = settle_mask.reshape(n, nc)
     checks.forbid(true_flag(inactive3 & (M != 0.0)), "mobile_kg must be 0 on inactive cells")
     checks.forbid(true_flag(inactive3 & (V != 0.0)), "sediment_velocity_m_s must be 0 on inactive cells")
+    if network.terminal_flat is not None:
+        # Terminal storage is a deposition location: the physics marks it as a settle cell (PhysicsGrid.terminal).
+        # A caller-supplied mask that leaves it mobile would keep motionless mass "in flight" there; refused.
+        checks.forbid(true_flag(network.terminal_flat[:, None] & ~S),
+                      "terminal-storage cells must be settle cells (their load is deposited through MAPLE)")
 
     dx = network.dx_m
     dt_sub = dt / n_sub
@@ -542,6 +604,24 @@ def water_demand_from_transport(step: TransportStep, requested_pickup_kg: Any, *
     water=WaterState(depth, T(M)), ...)` after publishing
     `step.mobile_after_transfer_kg` as the mobile pool (interface contract
     section 4.1, steps 2-4)."""
+    if not isinstance(step, TransportStep):
+        raise TransportError("step must be a TransportStep")
+    return _demand_of_transport_fields(step, requested_pickup_kg, hydraulic_diagnostics)
+
+
+def _water_demand_from_accounting_transport(step: Any, requested_pickup_kg: Any):
+    """CW-B93 PRIVATE: `water_demand_from_transport` for the CUDA CSR private accounting record
+    (`characteristic_sparse._TransportAccountingStep`): the SAME validation and the SAME `WaterProcessDemand`
+    (removal, deposition, export and all four face fields, identical objects) from the record's fields."""
+    from maple_syrup.characteristic_sparse import _TransportAccountingStep
+
+    if not isinstance(step, _TransportAccountingStep):
+        raise TransportError("step must be the private CUDA CSR accounting transport record")
+    return _demand_of_transport_fields(step, requested_pickup_kg, None)
+
+
+def _demand_of_transport_fields(step: Any, requested_pickup_kg: Any, hydraulic_diagnostics: Any):
+    """The one demand constructor (the original body of `water_demand_from_transport` after its type check)."""
     from maple.aeolian.flux.face_flux import FaceFluxResult
     from maple.core.backend import (
         MixedArrayNamespaceError,
@@ -553,8 +633,6 @@ def water_demand_from_transport(step: TransportStep, requested_pickup_kg: Any, *
     )
     from maple.water.interfaces import WaterProcessDemand
 
-    if not isinstance(step, TransportStep):
-        raise TransportError("step must be a TransportStep")
     pool = step.mobile_after_transfer_kg
     if not is_array(requested_pickup_kg) or tuple(requested_pickup_kg.shape) != tuple(pool.shape) \
             or requested_pickup_kg.dtype != np.float64:

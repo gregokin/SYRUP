@@ -59,16 +59,25 @@ def test_legacy_array_steps_store_water_in_the_pit_and_close_the_budget():
 
 @pytest.mark.parametrize("implementation", ["array", pytest.param("numba", marks=NUMBA)])
 def test_deep_pit_needs_enough_bisection_halvings_not_a_wider_tolerance(implementation):
-    """Conveyance 0 makes the exact root the right-hand side; 40 halvings leave rhs 2^-40 > the unchanged 1e-11 m root
-    tolerance above ~10 m. The tolerance is NOT relaxed: more halvings (an existing control) are used."""
+    """Conveyance 0 makes the exact root the right-hand side. Before CW-B15, 40 halvings left rhs 2^-40 > the unchanged
+    1e-11 m root tolerance above ~10 m and the default refused this 20 m pond. CW-B15 returns the exact root h = rhs at
+    k == 0 (finite rhs > 0), so the DEFAULT 40 iterations now pass with the tolerance NOT relaxed, bit-identically to
+    64 iterations. A k > 0 cell still needs enough halvings: an explicit too-small count is still refused."""
     _, g, params, depth, soil = make_case(depth_pit=20.0, depth_up=0.0)
     state = initial_state(g, depth, soil)
     rate = np.zeros(g.shape)
-    with pytest.raises(RoutingError, match="bisection did not reach root_tolerance_m"):
-        coupled_step(g, params, rate, state, 0.5, StormControl(max_dt_s=0.5, implementation=implementation))
+    default = coupled_step(g, params, rate, state, 0.5, StormControl(max_dt_s=0.5, implementation=implementation))
+    assert default.route.bisection_iterations == 40
     ok = coupled_step(g, params, rate, state, 0.5, StormControl(max_dt_s=0.5, implementation=implementation,
                                                                 bisection_iterations=64))
     assert float(ok.state.depth_m[PIT]) == 20.0 and float(ok.state.discharge_m2_s[PIT]) == 0.0
+    for name in ("depth_m", "discharge_m2_s", "soil_water_m"):
+        assert np.array_equal(np.asarray(getattr(default.state, name)), np.asarray(getattr(ok.state, name))), name
+    assert float(default.route.flow_depth_m[PIT]) == 20.0 and default.route.max_constitutive_residual_m == 0.0
+    _, g, params, depth, soil = make_case(depth_pit=20.0, depth_up=3.0e-3)  # wet k > 0 cells draining into the pit
+    with pytest.raises(RoutingError, match="bisection did not reach root_tolerance_m"):
+        coupled_step(g, params, rate, initial_state(g, depth, soil), 0.5,
+                     StormControl(max_dt_s=0.5, implementation=implementation, bisection_iterations=5))
 
 
 @NUMBA

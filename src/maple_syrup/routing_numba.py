@@ -100,6 +100,8 @@ def _sweep(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterations,
                 t = t + mid
                 if t < rhs:
                     lo = mid
+            if k == 0.0 and rhs > 0.0 and rhs <= 1.7976931348623157e308:
+                lo = rhs  # CW-B15 exact zero-conveyance root (routing._bisect)
             q = np.sqrt(lo)
             q = q * lo
             q = q * k
@@ -118,6 +120,9 @@ def _sweep_batched(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterati
     iterations OUTER and the independent cells INNER over contiguous scratch, with exactly the `_sweep`
     multiply sequence and the strict `<` test; (3) `q = (sqrt(lo) * lo) * k` for every cell, always the
     same formula.
+
+    Exact zero-conveyance root (CW-B15, same rule as `routing._bisect` and `_sweep`): a cell with `k == 0.0`
+    and finite `rhs > 0.0` takes `lo = rhs` and skips the iterations; every other cell is unchanged.
 
     Only cells with `rhs > 0.0` enter the root iterations. For `not (rhs > 0.0)` (+-0, negative, -inf,
     NaN) `_sweep` provably leaves `lo = +0.0`: rhs = +-0 gives mid = +0, t = +0 and `0 < rhs` is False;
@@ -150,7 +155,9 @@ def _sweep_batched(bounds, k_lo, donor_position, donor_mask, base_lo, c, iterati
             qin_new_lo[p] = qin
             rhs_lo[p] = rhs
             flow_lo[p] = 0.0
-            if rhs > 0.0:
+            if rhs > 0.0 and k_lo[p] == 0.0 and rhs <= 1.7976931348623157e308:
+                flow_lo[p] = rhs  # CW-B15 exact zero-conveyance root; never enters the iterations
+            elif rhs > 0.0:
                 idx[m] = p
                 r_s[m] = rhs
                 k_s[m] = k_lo[p]

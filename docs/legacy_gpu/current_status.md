@@ -1,4 +1,4 @@
-# Legacy sediment replay (CPU Numba, CUDA, original-Fortran reference): current status (commit of 2026-10-08 plus the uncommitted candidate adoption)
+# Legacy sediment replay (CPU Numba, CUDA, original-Fortran reference): current status
 
 This page is the single current statement for the work documented in `docs/legacy_native` (A1, CPU Numba driver), `docs/legacy_sediment`
 (A2, original-routine Fortran harness) and `docs/legacy_gpu` (B1 to B3, resident CUDA driver). The other pages keep their executed history;
@@ -7,12 +7,12 @@ read from the evidence files named in each section. Evidence lives under `agent_
 therefore NOT part of the committed tree; the committed docs summarize the results; raw evidence remains local. No full-storm benchmark or GPU test was rerun for the commit. The documentation author ran nothing;
 Codex executed the CPU verification recorded in section 8.
 
-**Adoption status (2026-10-08, changes not yet committed):** both validated candidates are integrated into the production source.
+**Adoption status (2026-10-08, committed and pushed as `b6b7f23`):** both validated candidates are integrated into the production source.
 Codex verified their source hashes, CPU and GPU regression suites, clean-source tests, and four fresh full Plot1 GPU storms.
 The new storms match the saved CPU references at unchanged bounds and reproduce both each other and the archived P2 outputs bitwise.
 Final read-only Claude review completed with no confirmed source or test defect; Codex accepted both adoptions. Section 9 records the adoption checks.
 
-## 1. What is committed, and what is now integrated (uncommitted, regression verified)
+## 1. Committed implementation and verified candidate adoption
 
 Committed at `5821d19`:
 
@@ -24,7 +24,7 @@ Committed at `5821d19`:
   (`benchmarks/legacy_gpu/compare_cpu_gpu.py`), the record-strategy microbenchmark and the kernel-event profiler, with their tests.
 * The ORIGINAL benchmark helper `benchmarks/legacy_sediment/compare_legacy_sediment.py` (its known defects are listed in section 7 as history).
 
-Integrated after the commit, uncommitted (the exact pinned candidate bytes, no other source change; see section 9):
+Integrated and committed at `b6b7f23` (the exact pinned candidate bytes; see section 9):
 
 * `src/maple_syrup/legacy_native_cuda.py` is now the P2 lazy flow-detachment-probability source (the one changed `sg_laws` block; pinned
   SHA-256 `584db1b7…2bbe9`, replacing the B3C1 root `11f219a9…5701c`). Compile options, tolerances, per-class/flag/speed behaviour and
@@ -121,7 +121,7 @@ difference -0.000234 m3, maximum depth difference 1.12e-7 m). At 2700 s the Fort
 28,563.198926 m3, a native surplus of +24.952426 m3 (about 0.0873%), maximum depth difference 0.00115858 m. The derived native whole-storm
 residual is -24.952426 m3 (a surplus), whereas the Numba residual is about -4.12e-9 m3 inside its unchanged MAPLE-derived bound of
 2.49258 m3. Rain, soil and drainage integrals match. The discrepancy is confined to the recession after rain ends, but the responsible
-original routing branch (stale-inflow, bracket or rain-off handling) has NOT been demonstrated. This is an open investigation; SYRUP's
+original routing branch (stale-inflow, bracket or rain-off handling) has NOT been demonstrated. By user direction this is a documented reference limitation; investigation is outside the current water-component work. SYRUP's
 closed water budget is retained and the suspected legacy defect is not copied.
 
 ## 6. Environments
@@ -234,5 +234,9 @@ the per-solver strict comparisons, clean-source checks and the final review. Fin
 
 Final review: independent Claude session `305c629f-8f47-46f6-ae72-c07409cd8e1c` found no confirmed source/test defect.
 Codex corrected the two stale documentation statements, qualified the nanogram-scale class peak timing, and refreshed the active handoff prompt.
-Source/test changes are accepted; commit and push remain separate from this adoption request. Future intentional numerical changes require
+Source/test changes are accepted and were subsequently committed and pushed at user request as `b6b7f23`. Future intentional numerical changes require
 reviewing and updating the provenance assertions rather than weakening behavioral tests.
+
+## 10. User-directed next work (2026-10-08)
+
+The original Fortran recession-water surplus is retained as a documented comparison limitation; the user explicitly chose not to investigate it. Work now proceeds on the [conservative CPU/GPU water component](../conservative_water/implementation.md): actual evolving MAPLE bed integration, memory-bounded exchange, complete GPU events/restart and performance/physics qualification. These are implementation requirements, not capabilities established by the accepted legacy replay.
