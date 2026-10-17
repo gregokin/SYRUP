@@ -1,0 +1,239 @@
+{
+  "task": "masy02a_integrate_20261017",
+  "utc": "2026-10-17T21:56:13.196360+00:00",
+  "status": "accepted_uncommitted_compatibility_only",
+  "head": "e519ea62da81e6f14b7af39cb89f14281f27e461",
+  "patch_sha256": "943a434f1644a605570f7a6157f60a8c37bb9404455f7b1e28adb8b514f2d278",
+  "baseline_syrup_source_sha256": "b2c8be7378c135f6b54acb2e28f5d7e2821efe6aa03495e09d3f0934b515062a",
+  "final_syrup_source_sha256": "fc789e240f7b0061e9ac80bc9078b7fe42d302fc8309ee5746073455f7f9f6bb",
+  "current_maple_commit": "5b1a052e1b9a9edfed0760152aac2a743813e79a",
+  "reference_maple_root": "/home/okin/SYRUP/outputs/dependencies/content_cache/7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71/source",
+  "dirty_preservation": {
+    "baseline_files": 28,
+    "byte_exact": 27,
+    "sole_intentional_prior_file_delta": "pyproject.toml: prepend tests/masy_compat; all other bytes unchanged",
+    "baseline_manifest": {
+      "AGENTS.md": "58b8bb3f2380759a48e012983b659c34870e10df29c2a2fa30344b0786c9d6e8",
+      "claude.md": "58f4bdab03d46cfbfaca26a8b19d7d5398126c1879fb095f85aba1497057ace3",
+      "docs/splash_and_overflow/README.md": "45679ea72dab04c9754984b63342a6dcef197d007cce895e5240cfcbe600924e",
+      "docs/splash_and_overflow/pond_checkpoint.md": "045a94f8b1621200d288c3c6ac8a08cbe9748f2deab31ee88f8c2a936f667f14",
+      "docs/splash_and_overflow/pond_event.md": "c324421a15aa6e1452b7646408f8702ac77159c832a3bebac61dd448f2f649d3",
+      "pyproject.toml": "1ea7ebcc02783fb275dcb824556c6cf946ddf05b039c876389b893990116b4b5",
+      "src/maple_syrup/pond_bed.py": "02a672a08398651175d4960f38b7d6390d4a6583946827a90dd4072569f9b4a4",
+      "src/maple_syrup/pond_checkpoint.py": "1d5ec1397d386386145a1e4f4267d8197f890df44337e12519e550b7a3198a53",
+      "src/maple_syrup/pond_event.py": "67c0b68c330688ed4f2a8ecb63e0da004b33fd28267b23034036e6edcc8a7724",
+      "src/maple_syrup/splash.py": "3a3b5697b7e28497c9f650f237e4bbe2e9f7d80bf3b2a5cdfe66fcb934e3ec33",
+      "water_extension_scope.md": "02824180f5a071645578631cf94c059e5315544c44cc73a7e98692adc9ad3e5d",
+      "docs/pond_windowed/README.md": "3baece4823855bce3bbe00fdbf7696a38a7a844dc0fa3f2fa9369ee205e7bdb2",
+      "docs/pond_windowed/acceptance.json": "e13c088383745edcabe33082a07c786235c07dccf910c5970f89afbed096a795",
+      "docs/pond_windowed/checkpoint.md": "655288bddd4fbcb7a7467c3e1506a723d345c03003d40ca2ccac1f31774b5cbd",
+      "docs/pond_windowed/core.md": "a722f4025abdaee45d0f55877a29c08f07107339d56951afe35976a4d26f4a3f",
+      "docs/pond_windowed/qualification.md": "cb09eb267adfb46f209596e5a3f737792d44050171c3d15f80ec68baf54b074b",
+      "tests/pond_windowed/conftest.py": "fbac87fce1d7bfac69ae6ccc1a31437f8bb48e783900947ab216eba363b7f9ec",
+      "tests/pond_windowed/test_pond_windowed_physics.py": "0e8c073d3166be51895e22d6cae7c2f2e5b6d906fcd453ae9b5b4b1093e86e10",
+      "tests/pond_windowed/test_pond_windowed_storage.py": "9aeae96503edeb0dc50776893888d9d5414c3ec88c53902d40290744d44caf0c",
+      "tests/pond_windowed/windowed_helpers.py": "f3ec83b2b9e72db255b1d8e1c5b2440c1d67c743f4cc184cbf4b8824b9ae6bf4",
+      "tests/pond_windowed_checkpoint/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests/pond_windowed_checkpoint/test_complete.py": "9a292dd786f2e915dae4e295d676a959d1823256fd558807ef663c34c31f482e",
+      "tests/pond_windowed_checkpoint/test_cuda.py": "3c451417fd93976b141986f706c2cdbb1c587160e0e6ee655f95d69101da9bfe",
+      "tests/pond_windowed_checkpoint/test_pending_and_versions.py": "e8d9c8404d97eb9d925a24320be5d5faf6790d3a9030f1d9fdfd02fb17ad6d76",
+      "tests/pond_windowed_checkpoint/test_refusals.py": "af81791b164928a5aef0a1b5efa0d09ebc75551abfd2c4ab6ac37b47af503b56",
+      "tests/pond_windowed_checkpoint/test_roundtrip.py": "98c19eb5c6e50a70e3d1846f5bed07634339110def85c0fefa19c8ed29277a5e",
+      "tests/pond_windowed_checkpoint/test_schema_separation.py": "67e0e70c4afb52d4b93a3806a20d66372eb88d490e24d2518d6dc22629288eed",
+      "tests/pond_windowed_checkpoint/wfixture.py": "9c80898a9644564e58b80787c0a0756b63c8c3759b8d76a81da04a73d1d2c50a"
+    }
+  },
+  "checks": {
+    "accepted_current": {
+      "passed": 186,
+      "skipped": 13,
+      "failed": 0,
+      "errors": 0,
+      "seconds": 9.982,
+      "source": {
+        "maple_syrup_tree_sha256": "fc789e240f7b0061e9ac80bc9078b7fe42d302fc8309ee5746073455f7f9f6bb",
+        "maple_syrup_n_files": 63,
+        "maple_package_sha256": "97b3df72336e6313e8d89d0b7b20784b9a0f001e30a4fc3035360e6de6068612",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+      },
+      "metadata": {
+        "accepted": false,
+        "error_type": "MapleDependencyError",
+        "reason": "imported maple at /home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/current_maple_5b1a052e/src/maple is not inside the editable install root 'file:///home/okin/MAPLE' recorded by the `maple` distribution; another copy is shadowing it on sys.path"
+      },
+      "required_api_count": 36,
+      "executable": "/home/okin/MAPLE/.venv/bin/python",
+      "argv": [
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/pytest_child.py",
+        "/tmp/syrup-masy02a-final-c2-20261017",
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/current_maple_5b1a052e",
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/accepted_current",
+        "tests/masy_compat",
+        "tests/phase5/test_sediment_bed.py",
+        "tests/phase1/test_dependency.py::test_every_missing_api_element_is_reported_together",
+        "tests/pond_event"
+      ]
+    },
+    "accepted_reference": {
+      "passed": 701,
+      "skipped": 99,
+      "failed": 0,
+      "errors": 0,
+      "seconds": 52.775,
+      "source": {
+        "maple_syrup_tree_sha256": "fc789e240f7b0061e9ac80bc9078b7fe42d302fc8309ee5746073455f7f9f6bb",
+        "maple_syrup_n_files": 63,
+        "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+      },
+      "metadata": {
+        "accepted": true,
+        "source_kind": "editable_working_tree",
+        "source_root": "/home/okin/SYRUP/outputs/dependencies/content_cache/7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71/source"
+      },
+      "required_api_count": 36,
+      "executable": "/home/okin/MAPLE/.venv/bin/python",
+      "argv": [
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/pytest_child.py",
+        "/tmp/syrup-masy02a-final-c2-20261017",
+        "/home/okin/SYRUP/outputs/dependencies/content_cache/7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71/source",
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/accepted_reference",
+        "tests/masy_compat",
+        "tests/phase5/test_sediment_bed.py",
+        "tests/phase1",
+        "tests/pond_windowed",
+        "tests/pond_windowed_checkpoint",
+        "tests/pond_event",
+        "tests/pond_checkpoint",
+        "tests/phase6/test_checkpoint.py",
+        "tests/conservative_water/test_checkpoint_backend.py",
+        "tests/conservative_water/test_windowed_snapshot_refusals.py",
+        "tests/splash_spill",
+        "tests/pond",
+        "tests/pond_transport",
+        "tests/pond_friction"
+      ]
+    },
+    "accepted_gpu": {
+      "passed": 799,
+      "skipped": 1,
+      "failed": 0,
+      "errors": 0,
+      "seconds": 185.561,
+      "source": {
+        "maple_syrup_tree_sha256": "fc789e240f7b0061e9ac80bc9078b7fe42d302fc8309ee5746073455f7f9f6bb",
+        "maple_syrup_n_files": 63,
+        "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+      },
+      "metadata": {
+        "accepted": true,
+        "source_kind": "editable_working_tree",
+        "source_root": "/home/okin/SYRUP/outputs/dependencies/content_cache/7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71/source"
+      },
+      "required_api_count": 36,
+      "executable": "/home/okin/MAPLE/.venv-cupy/bin/python",
+      "argv": [
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/pytest_gpu_child.py",
+        "/tmp/syrup-masy02a-final-c2-20261017",
+        "/home/okin/SYRUP/outputs/dependencies/content_cache/7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71/source",
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/accepted_gpu",
+        "tests/masy_compat",
+        "tests/phase5/test_sediment_bed.py",
+        "tests/phase1",
+        "tests/pond_windowed",
+        "tests/pond_windowed_checkpoint",
+        "tests/pond_event",
+        "tests/pond_checkpoint",
+        "tests/phase6/test_checkpoint.py",
+        "tests/conservative_water/test_checkpoint_backend.py",
+        "tests/conservative_water/test_windowed_snapshot_refusals.py",
+        "tests/splash_spill",
+        "tests/pond",
+        "tests/pond_transport",
+        "tests/pond_friction"
+      ]
+    },
+    "adopted_current": {
+      "passed": 186,
+      "skipped": 13,
+      "failed": 0,
+      "errors": 0,
+      "seconds": 9.624,
+      "source": {
+        "maple_syrup_tree_sha256": "fc789e240f7b0061e9ac80bc9078b7fe42d302fc8309ee5746073455f7f9f6bb",
+        "maple_syrup_n_files": 63,
+        "maple_package_sha256": "97b3df72336e6313e8d89d0b7b20784b9a0f001e30a4fc3035360e6de6068612",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+      },
+      "metadata": {
+        "accepted": false,
+        "error_type": "MapleDependencyError",
+        "reason": "imported maple at /home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/current_maple_5b1a052e/src/maple is not inside the editable install root 'file:///home/okin/MAPLE' recorded by the `maple` distribution; another copy is shadowing it on sys.path"
+      },
+      "required_api_count": 36,
+      "executable": "/home/okin/MAPLE/.venv/bin/python",
+      "argv": [
+        "agent_handoffs/tasks/masy02a_integrate_20261017/pytest_child.py",
+        "/home/okin/SYRUP",
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/current_maple_5b1a052e",
+        "/home/okin/SYRUP/agent_handoffs/tasks/masy02a_integrate_20261017/adopted_current",
+        "tests/masy_compat",
+        "tests/phase5/test_sediment_bed.py",
+        "tests/phase1/test_dependency.py::test_every_missing_api_element_is_reported_together",
+        "tests/pond_event"
+      ]
+    }
+  },
+  "default_collection_tests": 1733,
+  "production_files": [
+    "src/maple_syrup/dependency.py",
+    "src/maple_syrup/sediment_bed.py"
+  ],
+  "test_files": [
+    "tests/masy_compat/conftest.py",
+    "tests/masy_compat/masy_compat_support.py",
+    "tests/masy_compat/test_dense_callers.py",
+    "tests/masy_compat/test_dense_classifier.py",
+    "tests/masy_compat/test_native_spy_isolation.py",
+    "tests/masy_compat/test_pond_bed_classifier.py",
+    "tests/masy_compat/test_pond_windowed_compat.py"
+  ],
+  "documentation_files": [
+    "docs/masy_dense_compatibility.md",
+    "docs/masy02a_integration.md",
+    "docs/masy02a_acceptance.json"
+  ],
+  "configuration_files": [
+    "pyproject.toml"
+  ],
+  "file_sha256_except_self": {
+    "src/maple_syrup/dependency.py": "6a4ed5d5c484c135589b75cb15a3504d832d3ef788d92e21d1e0195c64e5d518",
+    "src/maple_syrup/sediment_bed.py": "0015f7fe8c502093d4699a0b0d0ddea1286c5d013214095f6eaacb34a98278c7",
+    "tests/masy_compat/conftest.py": "3139e4721965e212ee9aad4cfaef32cf33a04b0cff03c1c8bd6d2e3c9b898f26",
+    "tests/masy_compat/masy_compat_support.py": "0127d8fb4fb0c2821a7a83ebafd76ef0a0564bff12fc41941cfea1cd613dc922",
+    "tests/masy_compat/test_dense_callers.py": "f89bf5a983010add9f085f1259470185b05955cc9d9568844c50dd899419d523",
+    "tests/masy_compat/test_dense_classifier.py": "25266db8d98648b6b653f1ba587d910066fd41805a47e9c5b0082e21e803c9db",
+    "tests/masy_compat/test_native_spy_isolation.py": "75ba40732880d501ad91518193d9c3eb5819c2c173a69ca1d5405ea176e04001",
+    "tests/masy_compat/test_pond_bed_classifier.py": "54786cc1790e3b0ee592b20f980faf68784001d54c38a77dd70c85148f42a410",
+    "tests/masy_compat/test_pond_windowed_compat.py": "81b1fa6c3823e2411d920c3310a2bb609aca919d3481124db3e1ce47c4c5a6f2",
+    "docs/masy_dense_compatibility.md": "7de9689989f37d0ad7a5451d9ed63f064dcfbb204b91346618c150f8b637b016",
+    "docs/masy02a_integration.md": "c122b6cec3cefb2ed6deeb707579fb77ffb59175e5753deda1e1cf271cee654c",
+    "pyproject.toml": "669ab913fd6247617d9a64d7c23fc71cbbecd2c409df01700149cab1bc3f94fc"
+  },
+  "production_delta_beyond_reviewed_patch": "sediment_bed._maple_voxel_class uses literal key membership, removes obsolete marker; dependency.py exact incoming bytes. No physics or guards changed.",
+  "known_limitations": [
+    "Current MAPLE lacks CompactSedimentLedgerState: both existing checkpoint registries still refuse; pre-existing 20 phase6 failures retained in raw C1 logs.",
+    "Live current MAPLE expected-root metadata check still refuses source_root None; frozen current shadowing mismatch also refuses. No metadata qualification accepted.",
+    "Canonical native class objects only; subclasses/foreign objects raise base BedIntegrationError.",
+    "Checkpoint source identity remains strict; no migration accepted.",
+    "No wind/water adapters or coupled simulation acceptance. No full-storm/performance qualification by these regressions."
+  ],
+  "claude_session": "67ce33b5-497a-4d91-8709-ee77b034218a",
+  "authors_status": "All exited/reaped; no background writer or follow-on job",
+  "active_jobs_preserved": true,
+  "upstream_source_modified": false,
+  "committed": false,
+  "pushed": false,
+  "coupled_simulation_accepted": false
+}

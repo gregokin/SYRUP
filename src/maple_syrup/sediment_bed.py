@@ -607,10 +607,41 @@ def commit_bed(state: BedState, context: BedContext, graph: RoutingGraph,
                      rerouted=rerouted, routing_source_m=source, net_displacement_m=net)
 
 
-def is_windowed_bed(state: BedState) -> bool:
-    from maple.core.types.voxel import WindowedVoxelColumnState
+MAPLE_VOXEL_MODULE = 'maple.core.types.voxel'
 
-    return isinstance(state.voxel_column, WindowedVoxelColumnState)
+
+def _maple_voxel_class(module, name: str, *, required: bool):
+    """The class object `module` binds to `name`. Only TRUE absence from the module namespace (no module
+    `__getattr__` synthesis; decided by key membership, never by comparing the bound value) of an optional class
+    returns None; a required absence raises AttributeError and a present non-class binding (None, a number, a function,
+    any arbitrary object, ...) raises -- it never masquerades as absence."""
+    namespace = vars(module)
+    if name not in namespace:
+        if required:
+            raise AttributeError(f'{module.__name__} lacks required {name}')
+        return None
+    value = namespace[name]
+    if not isinstance(value, type):
+        raise BedIntegrationError(f'{module.__name__}.{name} is present but not a class: {value!r}')
+    return value
+
+
+def is_windowed_bed(state: BedState) -> bool:
+    """True for exactly the WindowedVoxelColumnState class object exposed by maple.core.types.voxel, False for exactly
+    its VoxelColumnState; any other column type (subclass, duck type, foreign) raises BedIntegrationError. Authority
+    is the identity of the class objects the public module binds (re-exports pass; definition names are not checked).
+    Only true absence of the optional windowed class is tolerated; an import failure of the module propagates."""
+    import importlib
+
+    maple_voxel = importlib.import_module(MAPLE_VOXEL_MODULE)  # ImportError propagates
+    windowed_type = _maple_voxel_class(maple_voxel, 'WindowedVoxelColumnState', required=False)
+    dense_type = _maple_voxel_class(maple_voxel, 'VoxelColumnState', required=True)
+    column_type = type(state.voxel_column)
+    if windowed_type is not None and column_type is windowed_type:
+        return True
+    if column_type is dense_type:
+        return False
+    raise BedIntegrationError(f'unsupported bed representation {column_type.__module__}.{column_type.__qualname__}')
 
 
 def bed_by_cell_class(state: BedState):

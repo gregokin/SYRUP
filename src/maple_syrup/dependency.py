@@ -91,6 +91,20 @@ REQUIRED_MAPLE_API: tuple[ApiRequirement, ...] = (
     ),
     ApiRequirement("maple.core.parameters.water_coupling", "MAHLERAN_1_2_1_CLASS_DIAMETERS_M"),
     ApiRequirement("maple.core.types.voxel", "zeros_voxel_column_state"),
+    # The Dense bed representation and helpers of `sediment_bed` (classifier, inventory, already-committed); the
+    # classifier itself enforces that the bound `VoxelColumnState` is a genuine class.
+    ApiRequirement("maple.core.types.voxel", "VoxelColumnState"),
+    ApiRequirement(
+        "maple.aeolian.flux.step", "bed_inventory_by_class_kg",
+        parameters=("voxel_column", "active_layer"),
+    ),
+    ApiRequirement(
+        "maple.surface.topographic_commit.commit", "is_already_committed",
+        parameters=(
+            "ledger", "committed_state", "voxel_column", "active_layer", "geometry",
+            "mass_resolution_kg", "current_time_s",
+        ),
+    ),
     ApiRequirement(
         "maple.surface.voxels", "deposit_surface_mixture_batch",
         parameters=("column", "request_by_class_kg", "geometry", "mass_resolution_kg"),
