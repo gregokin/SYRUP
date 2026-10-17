@@ -280,10 +280,36 @@ extern "C" __global__ void maple_syrup_exp_reduce(
 // One face of the staggered grid. type 0 closed, 1 interior, 2 open outlet (sign = outward direction, donor = interior side).
 // flag bits written per face: 1 non-finite old flux, 2 non-zero old flux on a closed face, 4 old flux into the domain on an
 // open face.
+// Opt-in implicit quadratic friction: signed root of q + alpha |q| q = qs, alpha = dt f / (8 hf^2) (hf > 0), same operations in
+// the same order as `experimental_hydrology.implicit_quadratic_friction_flux`. qs = 0 returns qs; a non-finite qs or an
+// overflowing D returns NaN (refused by the existing non-finite flag, like the CPU forms).
+__device__ __forceinline__ double implicit_quadratic_flux(const double qs, const double hf, const double fric, const double dt)
+{
+    if (qs == 0.0) return qs;
+    if (!isfinite(qs)) return nan_value();
+    const double coefficient = __dmul_rn(__dmul_rn(dt, fric), 0.5);
+    const double b = __dmul_rn(__dsqrt_rn(coefficient), __dsqrt_rn(fabs(qs)));
+    const double m = hf > b ? hf : b;
+    const double n = hf > b ? b : hf;
+    const double r = __ddiv_rn(n, m);
+    const double d = __dmul_rn(m, __dsqrt_rn(__dadd_rn(1.0, __dmul_rn(r, r))));
+    if (!isfinite(d)) return nan_value();
+    const double t = __ddiv_rn(hf, d);
+    const double w1 = __dadd_rn(1.0, t);
+    double q;
+    if (t >= 0.5) {
+        q = __dmul_rn(qs, __ddiv_rn(__dmul_rn(2.0, t), w1));
+    } else {  // t may have underflowed against a huge qs: scale by 1/D before h
+        q = __dmul_rn(__dmul_rn(__ddiv_rn(qs, d), hf), __ddiv_rn(2.0, w1));
+    }
+    if (!isfinite(q)) return nan_value();
+    return q;
+}
+
 __device__ __forceinline__ void li_face(
     const int type, const long long A, const long long B, const int sign, const double zmax, const double fric,
     const double kb, const double q_old, const double* z, const double* h, const double dt, const double dx,
-    const double g, double* q_out, double* hf_out, unsigned char* flag_out)
+    const double g, const int implicit_friction, double* q_out, double* hf_out, unsigned char* flag_out)
 {
     unsigned char flag = 0;
     if (!isfinite(q_old)) flag |= 1;
@@ -299,11 +325,15 @@ __device__ __forceinline__ void li_face(
         if (hf1 > 0.0) {
             const double grad = __ddiv_rn(__dsub_rn(etaB, etaA), dx);
             const double num = __dsub_rn(q_old, __dmul_rn(__dmul_rn(__dmul_rn(g, hf1), dt), grad));
-            double fr = 0.0;
-            if (q_old != 0.0) {
-                fr = __ddiv_rn(__dmul_rn(__dmul_rn(dt, __ddiv_rn(fric, 8.0)), fabs(q_old)), __dmul_rn(hf1, hf1));
+            if (implicit_friction != 0) {
+                q = implicit_quadratic_flux(num, hf1, fric, dt);
+            } else {
+                double fr = 0.0;
+                if (q_old != 0.0) {
+                    fr = __ddiv_rn(__dmul_rn(__dmul_rn(dt, __ddiv_rn(fric, 8.0)), fabs(q_old)), __dmul_rn(hf1, hf1));
+                }
+                q = __ddiv_rn(num, __dadd_rn(1.0, fr));
             }
-            q = __ddiv_rn(num, __dadd_rn(1.0, fr));
         }
     } else if (type == 2) {
         const double hd = sign > 0 ? h[A] : h[B];
@@ -319,7 +349,8 @@ __device__ __forceinline__ void li_face(
 extern "C" __global__ void maple_syrup_li_face_x(
     const long long ny, const long long nx, const double* z, const double* h_c, const signed char* ftype,
     const double* zmax, const double* fric, const double* kb, const signed char* fsign, const double* q_old,
-    double* q_new, double* hf_row, unsigned char* fflag, const double dt, const double dx, const double g)
+    double* q_new, double* hf_row, unsigned char* fflag, const double dt, const double dx, const double g,
+    const int implicit_friction)
 {
     const long long f = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
     if (f >= ny * (nx + 1)) return;
@@ -327,14 +358,15 @@ extern "C" __global__ void maple_syrup_li_face_x(
     const long long j = f - i * (nx + 1);
     const long long A = j >= 1 ? i * nx + (j - 1) : -1;
     const long long B = j < nx ? i * nx + j : -1;
-    li_face((int)ftype[f], A, B, (int)fsign[f], zmax[f], fric[f], kb[f], q_old[f], z, h_c, dt, dx, g,
+    li_face((int)ftype[f], A, B, (int)fsign[f], zmax[f], fric[f], kb[f], q_old[f], z, h_c, dt, dx, g, implicit_friction,
             &q_new[f], &hf_row[f], &fflag[f]);
 }
 
 extern "C" __global__ void maple_syrup_li_face_y(
     const long long ny, const long long nx, const double* z, const double* h_c, const signed char* ftype,
     const double* zmax, const double* fric, const double* kb, const signed char* fsign, const double* q_old,
-    double* q_new, double* hf_row, unsigned char* fflag, const double dt, const double dx, const double g)
+    double* q_new, double* hf_row, unsigned char* fflag, const double dt, const double dx, const double g,
+    const int implicit_friction)
 {
     const long long f = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
     if (f >= (ny + 1) * nx) return;
@@ -342,7 +374,7 @@ extern "C" __global__ void maple_syrup_li_face_y(
     const long long j = f - i * nx;
     const long long A = i >= 1 ? (i - 1) * nx + j : -1;
     const long long B = i < ny ? i * nx + j : -1;
-    li_face((int)ftype[f], A, B, (int)fsign[f], zmax[f], fric[f], kb[f], q_old[f], z, h_c, dt, dx, g,
+    li_face((int)ftype[f], A, B, (int)fsign[f], zmax[f], fric[f], kb[f], q_old[f], z, h_c, dt, dx, g, implicit_friction,
             &q_new[f], &hf_row[f], &fflag[f]);
 }
 
@@ -760,6 +792,9 @@ class CudaHydraulicSolver:
         if method == "explicit" and control.limiter != "off":
             raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method; the explicit "
                                              "method is positive by its CFL bound")
+        if method == "explicit" and control.friction_treatment != "lagged":
+            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; the explicit "
+                                             "kinematic wave has no momentum friction")
         routing_cuda._cupy()  # CuPy must be importable (no fallback)
         if context is None:
             context = prepare_experimental_cuda(method, graph, params, geometry=geometry, mode=mode)
@@ -781,7 +816,7 @@ class CudaHydraulicSolver:
 
     @staticmethod
     def _current_seal(ctx: Any, control: Any) -> tuple:
-        return (ctx.method, ctx.shape, ctx.dx_m, control.cfl_max, control.limiter, id(ctx))
+        return (ctx.method, ctx.shape, ctx.dx_m, control.cfl_max, control.limiter, control.friction_treatment, id(ctx))
 
     @property
     def xp(self):
@@ -822,6 +857,8 @@ class CudaHydraulicSolver:
                                              "sealed at construction; refusing before any launch")
         if ctx.method == "explicit" and control.limiter != "off":
             raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method")
+        if ctx.method == "explicit" and control.friction_treatment != "lagged":
+            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method")
         return cp, ctx, control
 
     # -- state ------------------------------------------------------------------------------------------------------
@@ -850,7 +887,8 @@ class CudaHydraulicSolver:
 
     def describe(self) -> dict[str, Any]:
         return {"method": self.method, "implementation": self.implementation,
-                "control": {"cfl_max": self.control.cfl_max, "limiter": self.control.limiter},
+                "control": {"cfl_max": self.control.cfl_max, "limiter": self.control.limiter,
+                            "friction_treatment": self.control.friction_treatment},
                 "cfl_kind": CFL_NAMES[self.method], "context": self.context.summary(),
                 "kernels": kernel_provenance(), "transfer_scope": TRANSFER_SCOPE, "qualification": QUALIFICATION_STATUS}
 
@@ -935,14 +973,15 @@ class CudaHydraulicSolver:
         packet = cp.empty(PACKET_WORDS, dtype=np.uint64)
         f64, i64, i32 = np.float64, np.int64, np.int32
         limiter = control.limiter == "donor"
+        implicit = control.friction_treatment == "implicit_quadratic"  # `control` comes from `_guard` (sealed value)
         _launch("maple_syrup_li_face_x", _blocks(nxf), ELEMENT_THREADS,
                 (i64(ny), i64(nx), z, h_c, ctx.array("fx_type"), ctx.array("fx_zmax"), ctx.array("fx_fric"),
                  ctx.array("fx_kb"), ctx.array("fx_sign"), state.qx_m2_s, qx_new, hfx, fflag_x, f64(dt), f64(dx),
-                 f64(GRAVITY_M_S2)))
+                 f64(GRAVITY_M_S2), i32(1 if implicit else 0)))
         _launch("maple_syrup_li_face_y", _blocks(nyf), ELEMENT_THREADS,
                 (i64(ny), i64(nx), z, h_c, ctx.array("fy_type"), ctx.array("fy_zmax"), ctx.array("fy_fric"),
                  ctx.array("fy_kb"), ctx.array("fy_sign"), state.qy_m2_s, qy_new, hfy, fflag_y, f64(dt), f64(dx),
-                 f64(GRAVITY_M_S2)))
+                 f64(GRAVITY_M_S2), i32(1 if implicit else 0)))
         if limiter:
             _launch("maple_syrup_li_phi", _blocks(n), ELEMENT_THREADS,
                     (i64(ny), i64(nx), qx_new, qy_new, h_c, phi, outv_row, f64(dtdx_area), f64(area),

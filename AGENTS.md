@@ -1,5 +1,11 @@
 # SYRUP project instructions
 
+## Direct splash and depression overflow — 2026-10-17
+
+User authorized implementing direct rainfall splash and real flats/depressions/filling/overflow with Claude, using a Chastre subset. The explicit `maple_syrup.pond_event.PondEvent` is the integrated alternative: local-inertial hydraulics with implicit quadratic Darcy–Weisbach friction, MAHLERAN-derived splash and wet laws, multi-face characteristic sediment, actual evolving MAPLE dense bed, native conservation and source-bound restart. This supersedes splash deferral for this opt-in path only. Existing legacy benchmark/method-5/no-splash defaults remain unchanged.
+
+Read `docs/splash_and_overflow/README.md`, `qualification.md` and `acceptance.json` for actual test status/source pair and limits. Dense beds, square cells, avalanching disabled; real positive-drop normal-flow outlets only. Windowed beds, stage/backwater boundaries and fused multi-face GPU transport remain follow-ups. Small native Chastre tests are bounded wet integrations, not complete full-catchment storms or performance/scaling proof. Pond suspension/explicit flow-end settlement and post-hydrology splash splitting are documented choices. Preserve net-elevation-only refresh and actual MAPLE supply/accounting. No new commit/push was authorized by this request.
+
 ## Current scope clarification — 2026-09-29
 
 The project is now named **MAPLE-SYRUP (Sediment Yield, Runoff, and Uptake by Plants)**. It is a water extension dependent on actual MAPLE infrastructure, not a standalone framework or copied/forked aeolian model. Wind physics stays in MAPLE and MAPLE-SYRUP invokes MAPLE. Use its computational, configuration/file, physical-state and other relevant infrastructure. Earlier suggestions of importing/synchronizing copied wind implementations are superseded. Track dependency provenance and compatibility instead.

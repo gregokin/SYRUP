@@ -1,0 +1,437 @@
+{
+  "schema": "syrup-splash-overflow-qualification/1",
+  "status": "accepted_bounded_opt_in_implementation_uncommitted",
+  "utc": "2026-10-17T20:39:12.805094+00:00",
+  "task": "splash_spill_20261017",
+  "baseline_syrup_git_head": "9fabdca60bd9cd7c5b358d5cbf620dbd3209d93a",
+  "accepted_source_pair": {
+    "maple_syrup_tree_sha256": "6ad9d457e8c53ee19ce658f4375f10feb614f3ea6b123bf5c4ce2aece6248c90",
+    "maple_syrup_n_files": 63,
+    "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+    "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+  },
+  "maple_dependency": {
+    "bundle_id": "7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71",
+    "bundle_manifest_sha256": "ace93e315e0f701f7c847d5f81bedde9ff2f2f4904a939172a822d840c98d1d1",
+    "original_git_and_dirty_patch_origin": {
+      "dirty_snapshot_note": "E4 independently verified 322/324packagefiles exact Git; exactly experiment/orchestrator.py andsurface/voxels/transfer.py recorded dirty. Originalpackage reconstruction andpatch hashes retained. CW-E46: runtime-only ancestry continues M94 -> B106C1 -> B107; the full-project nonruntime ancestry (B97 1272-file freeze, B106C1 / B107 full manifests) belongs to bundle b8fa43a3 and is not claimed by this runtime artifact.",
+      "kind": "exact local Gitcommit plus recorded dirty package snapshot and subsequent isolated patches",
+      "revision": "74dd3e79d9a7df85244355439e3a4a762abb9273",
+      "revision_absence_reason": null
+    },
+    "note": "Content/package identity governs. This is the verified runtime snapshot with recorded patches, not a mutable live MAPLE HEAD or claim of a clean origin."
+  },
+  "tests": {
+    "accepted_cpu": {
+      "tests": 465,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 84,
+      "passed": 381
+    },
+    "accepted_gpu_environment": {
+      "tests": 465,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 465
+    },
+    "existing_hydraulics_cpu": {
+      "tests": 134,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 7,
+      "passed": 127
+    },
+    "existing_sediment_initial_isolated_run": {
+      "tests": 188,
+      "failures": 0,
+      "errors": 10,
+      "skipped": 4,
+      "passed": 174
+    },
+    "existing_cases_with_recipe": {
+      "tests": 14,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13
+    },
+    "unchanged_baseline_velocity_assertion": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 0
+    }
+  },
+  "adopted_default_test_collection_count": 1470,
+  "new_test_command": "python -m pytest tests/splash_spill tests/pond tests/pond_transport tests/pond_friction tests/pond_event tests/pond_checkpoint -q",
+  "environments": {
+    "cpu": "/home/okin/MAPLE/.venv",
+    "cuda": "/home/okin/MAPLE/.venv-cupy",
+    "device": "GPU0 / GTX1080Ti",
+    "pool_limit_bytes": 9092045209,
+    "source_imports": "Exact runtime_envs_accepted.json locally; frozen accepted src plus content-cache MAPLE editable and source/src"
+  },
+  "source_stages": {
+    "R3": {
+      "syrup_package_sha256": "3b3aaa02c51a5ef3ebe9e198c4e2e15a9214d1dae6da2eea05b9087dfeb40ed6",
+      "cpu_and_gpu_end_s": 300,
+      "four_same_backend_fresh_restarts": "120->300 and240->300, allstate arrays/metadata bitexact"
+    },
+    "C5": {
+      "syrup_package_sha256": "5b770eda99d1686c02338585e60bd5aac5bf9cc08ddbf316d4242c00ea96ddd8",
+      "native_cpu": {
+        "source": {
+          "maple_syrup_tree_sha256": "5b770eda99d1686c02338585e60bd5aac5bf9cc08ddbf316d4242c00ea96ddd8",
+          "maple_syrup_n_files": 63,
+          "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+        },
+        "end_s": 300.0,
+        "water_closes": true,
+        "class_sediment_closes": true,
+        "accepted_steps": 1200,
+        "rejected_attempts": 0,
+        "geometry_refreshes": 1,
+        "native_commits": 34,
+        "loop_wall_s_including_startup_and_checkpoints": 126.17685243499,
+        "setup_wall_s": 0.5048815939808264,
+        "max_face_froude": 0.20243721577477955,
+        "rain_m3": 8.191999999999975,
+        "water_export_m3": 0.02195233933862481,
+        "sediment_export_kg": 0.15669128985583763,
+        "mobile_kg_at_stop": 229.31470645683183,
+        "storm_complete": false
+      },
+      "native_gpu": {
+        "source": {
+          "maple_syrup_tree_sha256": "5b770eda99d1686c02338585e60bd5aac5bf9cc08ddbf316d4242c00ea96ddd8",
+          "maple_syrup_n_files": 63,
+          "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+        },
+        "end_s": 300.0,
+        "water_closes": true,
+        "class_sediment_closes": true,
+        "accepted_steps": 1200,
+        "rejected_attempts": 0,
+        "geometry_refreshes": 1,
+        "native_commits": 34,
+        "loop_wall_s_including_startup_and_checkpoints": 257.994618930039,
+        "setup_wall_s": 1.355953165970277,
+        "max_face_froude": 0.20243721577477955,
+        "rain_m3": 8.191999999999974,
+        "water_export_m3": 0.021952339338624807,
+        "sediment_export_kg": 0.15669128985583766,
+        "mobile_kg_at_stop": 229.31470645683186,
+        "storm_complete": false
+      },
+      "comparisons": {
+        "numba/r3_physics": {
+          "arrays": 84,
+          "different_arrays": [],
+          "metadata_differences": {},
+          "new_diagnostic_keys": [
+            "state.counters.max_transport_substeps_used"
+          ],
+          "all_prior_fields_bitexact": true,
+          "current_source_restart": false
+        },
+        "numba/restart240": {
+          "arrays": 84,
+          "different_arrays": [],
+          "metadata_differences": {},
+          "new_diagnostic_keys": [],
+          "all_prior_fields_bitexact": true,
+          "current_source_restart": true
+        },
+        "cuda/r3_physics": {
+          "arrays": 89,
+          "different_arrays": [],
+          "metadata_differences": {},
+          "new_diagnostic_keys": [
+            "state.counters.max_transport_substeps_used"
+          ],
+          "all_prior_fields_bitexact": true,
+          "current_source_restart": false
+        },
+        "cuda/restart240": {
+          "arrays": 89,
+          "different_arrays": [],
+          "metadata_differences": {},
+          "new_diagnostic_keys": [],
+          "all_prior_fields_bitexact": true,
+          "current_source_restart": true
+        }
+      },
+      "difference_from_R3": "Diagnostic audit corrections and actual-executed-substep counter; all prior physical state and metadata bitexact"
+    },
+    "accepted_C6": {
+      "native_cpu": {
+        "source": {
+          "maple_syrup_tree_sha256": "6ad9d457e8c53ee19ce658f4375f10feb614f3ea6b123bf5c4ce2aece6248c90",
+          "maple_syrup_n_files": 63,
+          "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+        },
+        "end_s": 150.0,
+        "water_closes": true,
+        "class_sediment_closes": true,
+        "accepted_steps": 600,
+        "rejected_attempts": 0,
+        "geometry_refreshes": 0,
+        "native_commits": 20,
+        "loop_wall_s_including_startup_and_checkpoints": 66.8798590360093,
+        "setup_wall_s": 0.5221032199915498,
+        "max_face_froude": 0.20243721577477955,
+        "rain_m3": 5.119999999999974,
+        "water_export_m3": 0.003043246048368147,
+        "sediment_export_kg": 0.017125089624518367,
+        "mobile_kg_at_stop": 201.4071433602737,
+        "storm_complete": false
+      },
+      "native_gpu": {
+        "source": {
+          "maple_syrup_tree_sha256": "6ad9d457e8c53ee19ce658f4375f10feb614f3ea6b123bf5c4ce2aece6248c90",
+          "maple_syrup_n_files": 63,
+          "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+        },
+        "end_s": 150.0,
+        "water_closes": true,
+        "class_sediment_closes": true,
+        "accepted_steps": 600,
+        "rejected_attempts": 0,
+        "geometry_refreshes": 0,
+        "native_commits": 20,
+        "loop_wall_s_including_startup_and_checkpoints": 135.11502721701981,
+        "setup_wall_s": 1.1532168950070627,
+        "max_face_froude": 0.20243721577477955,
+        "rain_m3": 5.119999999999973,
+        "water_export_m3": 0.003043246048368147,
+        "sediment_export_kg": 0.017125089624518357,
+        "mobile_kg_at_stop": 201.40714336027386,
+        "storm_complete": false
+      },
+      "comparisons": {
+        "numba/C5_checkpoint120_physics": {
+          "all_payload_values_bitexact": true,
+          "arrays": 94,
+          "all_state_metadata_bitexact": true,
+          "source_receipts_intentionally_different": true,
+          "note": "Comparison only; no checkpoint source-binding bypass or migration"
+        },
+        "numba/restart120_to150": {
+          "arrays": 84,
+          "all_state_values_and_metadata_bitexact": true
+        },
+        "cuda/C5_checkpoint120_physics": {
+          "all_payload_values_bitexact": true,
+          "arrays": 94,
+          "all_state_metadata_bitexact": true,
+          "source_receipts_intentionally_different": true,
+          "note": "Comparison only; no checkpoint source-binding bypass or migration"
+        },
+        "cuda/restart120_to150": {
+          "arrays": 89,
+          "all_state_values_and_metadata_bitexact": true
+        }
+      },
+      "difference_from_C5": "Only a pure raw-spatial-summation audit error bound/helper/docs; no physical arithmetic, state, counters, clock or checkpoint format change",
+      "no_unexecuted_run_claim": "Exact C6 has150s native runs and own120->150fresh continuations.300s+actualrefresh runs belong to R3/C5. Both versions' checkpoint120 all94 payload values and full state metadata are byteexact; no foreign-source checkpoint load/migration."
+    }
+  },
+  "backend_comparison_accepted150s": {
+    "physical_qualified": true,
+    "fields_compared": 89,
+    "hydraulic_rtol_atol": [
+      2e-12,
+      1e-14
+    ],
+    "sediment_rtol_atol": [
+      1e-10,
+      1e-14
+    ],
+    "discrete_fields_exact": true,
+    "diagnostic_uniform_screen_failures_preserved": [
+      {
+        "field": "state.sediment.numerical_residual_kg",
+        "kind": "diagnostic",
+        "bitexact": false,
+        "policy_pass": false,
+        "rtol": 1e-10,
+        "atol": 1e-14,
+        "max_abs_finite": 1.336735349829106e-13
+      }
+    ],
+    "diagnostic_disposition": "The absolute cumulative numerical-residual diagnostic fails the uniform physical-field screen; strict failure preserved. It does not enter physical mass or tolerance; native water/bed/mobile budgets close independently. Backend content/topology hashes may differ because their physical held source differs at FP64 rounding; same-backend restart comparisons are separately bitexact."
+  },
+  "completion": {
+    "source": {
+      "maple_syrup_tree_sha256": "6ad9d457e8c53ee19ce658f4375f10feb614f3ea6b123bf5c4ce2aece6248c90",
+      "maple_syrup_n_files": 63,
+      "maple_package_sha256": "24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce",
+      "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+    },
+    "cases": [
+      {
+        "case": "lake",
+        "backend": "numpy",
+        "t_s": 1.0,
+        "water_closes": true,
+        "sediment_closes": true,
+        "terminal_kg": 0.05,
+        "surface_removed_m3": 0.00075,
+        "soil_removed_m3": 0.09000000000000002,
+        "gpu_complete_checkpoint_bitexact": false
+      },
+      {
+        "case": "lake",
+        "backend": "cuda",
+        "t_s": 1.0,
+        "water_closes": true,
+        "sediment_closes": true,
+        "terminal_kg": 0.05,
+        "surface_removed_m3": 0.00075,
+        "soil_removed_m3": 0.09,
+        "gpu_complete_checkpoint_bitexact": true
+      },
+      {
+        "case": "infiltrated",
+        "backend": "numpy",
+        "t_s": 3.0,
+        "water_closes": true,
+        "sediment_closes": true,
+        "terminal_kg": 0.0,
+        "surface_removed_m3": 0.0,
+        "soil_removed_m3": 0.09307963903567987,
+        "gpu_complete_checkpoint_bitexact": false
+      },
+      {
+        "case": "infiltrated",
+        "backend": "cuda",
+        "t_s": 3.0,
+        "water_closes": true,
+        "sediment_closes": true,
+        "terminal_kg": 0.0,
+        "surface_removed_m3": 0.0,
+        "soil_removed_m3": 0.09307963903567987,
+        "gpu_complete_checkpoint_bitexact": true
+      }
+    ],
+    "cpu_gpu_receipts_match": true,
+    "scope": "Manufactured actual-native small cases; not full Chastre storm completion",
+    "pool_limit_bytes": 9092045209
+  },
+  "original_fortran_splash": {
+    "scope": "Final candidate compared to archived actual original-Fortran execution; interior only, conservative tail differs",
+    "module_sha256": "03a040f4f2dfb7c7cf34a1be581f96459a104edd022016d4afc208844bb5e411",
+    "original_stdout_sha256": "c63bc0cb7f3f388fb8729abf36767c2a70131dff16af9803241fd62a31f88a56",
+    "rtol": 2e-05,
+    "atol": 1e-14,
+    "checks": [
+      {
+        "aspect": 0,
+        "interior_pass": true,
+        "max_difference_kg": 9.149755175741348e-09,
+        "new_closed_budget_residual_kg": [
+          0.0,
+          0.0,
+          1.1102230246251565e-16,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "aspect": 1,
+        "interior_pass": true,
+        "max_difference_kg": 9.149755175741348e-09,
+        "new_closed_budget_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "aspect": 2,
+        "interior_pass": true,
+        "max_difference_kg": 9.149755175741348e-09,
+        "new_closed_budget_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "aspect": 3,
+        "interior_pass": true,
+        "max_difference_kg": 9.149755175741348e-09,
+        "new_closed_budget_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "aspect": 4,
+        "interior_pass": true,
+        "max_difference_kg": 9.149755175741348e-09,
+        "new_closed_budget_residual_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ]
+  },
+  "wet_default_bitexact": {
+    "cases": 12,
+    "fields": 288,
+    "evidence": "event_physics_default_r0.json"
+  },
+  "native_commit_bitexact": {
+    "physical_arrays": 23,
+    "evidence": "native_commit_parity_r0.json"
+  },
+  "input_identity": {
+    "recipe": "chastre_subset.json",
+    "all1156_native_elevations_and_four_initial_datums_independently_verified": true,
+    "strict_pits": 118,
+    "flat_minima_disjoint_from_strict_pits": 118,
+    "no_strictly_lower_native_neighbor": 236
+  },
+  "existing_regression": "Phase5 finalvelocity-output assertion at test_sediment_experiment.py:189 fails identically on unchanged baseline; oldtest/driver not modified. Initial10case setup errors were missing isolated recipe, then rerun with it.",
+  "review": {
+    "mode": "Bounded Claude source-only isolated writers and readonly reviewer; Codex independent source/reproducer/test review",
+    "last_readonly_session": "a211f9c2-0743-4441-9d9a-384705c8ce4a",
+    "root_dispositions": "root_acceptance_review.md locally",
+    "no_actual_terrain_or_checkpoint_arrays_shared_with_claude": true
+  },
+  "limits": [
+    "Dense square-cell bed, avalanching disabled; windowed integration unqualified/refused",
+    "Explicit normal-flow outlets need actual positive exterior bed drop; no stage/backwater/zero-drop outlet law",
+    "Local inertia, scalar face drag and scalar sediment progress are documented alternatives/approximations, not universal MAHLERAN identity",
+    "No separate time-based pond settling; explicit flow-end settlement required for significant motionless mobile load",
+    "Cropped synthetic-forcing wet integrations, not completed full-Chastre storms or matched RFID calibration",
+    "GPU correctness demonstrated on small cases; array sediment scatter/launch overhead remains; no large-domain speedup/peak-memory claim",
+    "No vegetation growth, full ecohydrology/ET, nutrients, tracers or wind scheduling"
+  ],
+  "default_workflows_unchanged": true,
+  "committed": false,
+  "pushed": false
+}

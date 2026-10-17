@@ -36,6 +36,17 @@ Darcy-Weisbach (NOT Manning). For a face between cells A (west/south) and B (eas
     h'   = h_c - (dt/dx) ( (qx'_east - qx'_west) + (qy'_north - qy'_south) )   (the SAME face arrays on both sides)
 
 Check: steady uniform flow (eta slope = -S) gives (f/8) q^2/h^2 = g h S, i.e. v^2 = 8 g h S / f, the legacy law.
+OPT-IN `HydraulicControl.friction_treatment = "implicit_quadratic"` (default "lagged" = the update above, bit-identical to
+before): with q* = q - g h_f dt grad(eta) the friction is evaluated at the NEW flux, `q' + alpha |q'| q' = q*`,
+`alpha = dt f / (8 h_f^2)`, solved in closed form by `implicit_quadratic_friction_flux` (stable signed root, no cancellation, no
+overflow of alpha/q*, no h^2 underflow). Motivation (root-measured on a real 32x32 crop, scalar findings): the lagged form
+uses q_old = 0 on a first wetting, so its friction denominator is 1 and the first flux is the frictionless impulse
+q* = -g h dt grad(eta), a velocity g S dt independent of how thin the film is (Fr ~185 at h ~ 2e-7 m). The implicit form
+damps that impulse by the friction of the flux it produces (|q'| <= |q*|, sign kept, energy-dissipative); the steady law is
+the same (the fixed point of both forms is q = sign(S) sqrt(8 g S / f) h^(3/2) for every dt). It is a NEW time
+discretisation of the same empirical Darcy-Weisbach (MAHLERAN-like tau = rho f u^2 / 8) friction, not a Fortran routing
+identity and not full advective inertia; no depth/slope/Froude/velocity floor or clip is introduced and the outlet normal-flow
+face is unchanged. Not run by its author.
 Friction source: Darcy-Weisbach friction slope f q|q|/(8 g h^3) (Kirstetter et al., arXiv:1609.04711 eq. 10) contributes
 (f/8) q|q|/h^2 to the unit-width momentum balance; the Wflow local-inertial documentation (Manning, Deltares) provides the
 staggered continuity/gravity-wave CFL pattern. The semi-implicit update and the boundary below are OUR adaptation, not an
@@ -87,6 +98,7 @@ from maple_syrup.routing import (
 
 __all__ = [
     "DEFAULT_CFL_MAX",
+    "FRICTION_TREATMENTS",
     "LIMITERS",
     "LIMITER_SAFETY",
     "METHODS",
@@ -101,6 +113,7 @@ __all__ = [
     "HydraulicStepRejected",
     "LocalInertialGeometry",
     "advance_time",
+    "implicit_quadratic_friction_flux",
     "build_local_inertial_geometry",
     "check_dt_cap",
     "check_state_time",
@@ -114,6 +127,7 @@ __all__ = [
 
 METHODS = ("explicit", "local_inertial")
 LIMITERS = ("off", "donor")
+FRICTION_TREATMENTS = ("lagged", "implicit_quadratic")
 DEFAULT_CFL_MAX = 0.5
 _EPS = float(np.finfo(np.float64).eps)
 # Retained fraction margin of a limited donor: the chain divide/multiply/scale/gather/subtract of the limiter accumulates up
@@ -173,10 +187,15 @@ def _real(value: Any, name: str, error=ExperimentalHydrologyError) -> float:
 
 @dataclass(frozen=True)
 class HydraulicControl:
-    """Numerical options of a hydraulic solver (not of the driver): the CFL bound and the optional positivity limiter."""
+    """Numerical options of a hydraulic solver (not of the driver): the CFL bound, the optional positivity limiter and the
+    local-inertial friction time discretisation (`friction_treatment`, LAST so positional constructors are unchanged):
+    "lagged" (the default, the original `q' = q* / (1 + dt (f/8) |q_old| / h_f^2)`) or the opt-in "implicit_quadratic"
+    (friction evaluated at the NEW flux, `q' + alpha |q'| q' = q*`; see `implicit_quadratic_friction_flux`). It belongs to the
+    local-inertial method; the explicit method refuses "implicit_quadratic"."""
 
     cfl_max: float = DEFAULT_CFL_MAX
     limiter: str = "off"
+    friction_treatment: str = "lagged"
 
     def validated(self) -> HydraulicControl:
         cfl = _real(self.cfl_max, "cfl_max")
@@ -188,6 +207,9 @@ class HydraulicControl:
                 f"by this value), got {self.cfl_max!r}")
         if self.limiter not in LIMITERS:
             raise ExperimentalHydrologyError(f"limiter must be one of {LIMITERS}, got {self.limiter!r}")
+        if not isinstance(self.friction_treatment, str) or self.friction_treatment not in FRICTION_TREATMENTS:
+            raise ExperimentalHydrologyError(
+                f"friction_treatment must be one of {FRICTION_TREATMENTS}, got {self.friction_treatment!r}")
         return self
 
 
@@ -566,18 +588,58 @@ def validate_hydraulic_state(xp: ModuleType, state: Any, *, method: str, shape: 
 
 
 # --- local-inertial face update (vectorised NumPy; the CUDA kernels evaluate the same expressions) -----------------------
+def implicit_quadratic_friction_flux(q_star: np.ndarray, h_face: np.ndarray, fric: np.ndarray, dt: float) -> np.ndarray:
+    """The signed root `q'` of `q' + alpha |q'| q' = q*`, `alpha = dt f / (8 h^2)` (Darcy-Weisbach friction at the NEW flux).
+
+    Closed form `q' = 2 q* / (1 + sqrt(1 + 4 alpha |q*|))`; multiplying numerator and denominator by h and using
+    `4 alpha |q*| h^2 = dt f |q*| / 2 = b^2` gives `q' = q* w`, `w = 2 h / (h + D)`, `D = sqrt(h^2 + b^2)`, `b = sqrt(dt f / 2)
+    sqrt|q*|` (units: h, b, D in m). Evaluation (only `+ - * /` and `sqrt`, identical in the Numba and CUDA kernels):
+    `b` is a product of two square roots (no `dt f |q*|` overflow, no `h^2` underflow), `D = m sqrt(1 + (n/m)^2)` with `m = max(h, b)`,
+    `n = min(h, b)` (hypot-style: `n/m <= 1`), `t = h / D <= 1`, `w = 2 t / (1 + t)`. No subtraction of nearby quantities occurs.
+    The product is ordered by `t`: for `t >= 1/2` `q' = q* (2t/(1+t))`; for `t < 1/2` `q' = ((q*/D) h) (2/(1+t))`, because `t` can
+    underflow (h = 1e-200 against a D ~ 1e150) while `q*` is huge, and `q* t` would then be a false zero. Consequences:
+    `|q'| <= |q*|` up to a rounding and the sign is kept (exact odd symmetry), `q* = 0` returns `q*` unchanged, `b = 0` gives
+    `w = 1` exactly, a huge `alpha` gives `w ~ 2 h / b` with no overflow. The result is correct and finite whenever the TRUE root
+    is a normal FP64 number and `q*/D` does not overflow (`q*/D <= sqrt|q*| / sqrt(dt f / 2)` since `D >= b`, so overflow needs
+    `dt f` below ~1e-308 or a denormal `h`). Anything else -- a non-finite `q*`, an overflowing `D`, `q*/D` or result -- returns
+    NaN so the caller's existing non-finite check REFUSES the step (never a silent zero or wrong finite value). `h_face` must
+    be > 0 wherever the result is used (the caller masks dry faces)."""
+    with np.errstate(all="ignore"):
+        coefficient = (dt * fric) * 0.5
+        b = np.sqrt(coefficient) * np.sqrt(np.abs(q_star))
+        bigger = h_face > b
+        m = np.where(bigger, h_face, b)
+        n = np.where(bigger, b, h_face)
+        r = n / m
+        d = m * np.sqrt(1.0 + (r * r))
+        t = h_face / d
+        w1 = 1.0 + t
+        near = q_star * ((2.0 * t) / w1)  # t >= 1/2: friction moderate, t cannot have underflowed
+        far = ((q_star / d) * h_face) * (2.0 / w1)  # t < 1/2: scale q* by 1/D BEFORE h so a tiny t never zeroes a huge q*
+        q = np.where(t >= 0.5, near, far)
+        q = np.where(np.isfinite(q_star) & np.isfinite(d) & np.isfinite(q), q, np.nan)
+        return np.where(q_star == 0.0, q_star, q)
+
+
 def local_inertial_face_flux(ftype: np.ndarray, zmax: np.ndarray, fric: np.ndarray, kb: np.ndarray, sign: np.ndarray,
                              q_old: np.ndarray, h_a: np.ndarray, h_b: np.ndarray, eta_a: np.ndarray, eta_b: np.ndarray,
-                             dt: float, dx: float) -> tuple[np.ndarray, np.ndarray]:
+                             dt: float, dx: float, friction_treatment: str = "lagged") -> tuple[np.ndarray, np.ndarray]:
     """New signed unit flux and face depth on a set of faces (A = west/south side, B = east/north side).
-    type 1: the semi-implicit Darcy-Weisbach local-inertial update; type 2: the normal-flow outlet; type 0: zero."""
+    type 1: the Darcy-Weisbach local-inertial update (`friction_treatment` "lagged": semi-implicit with the OLD flux in the
+    friction, the original arithmetic unchanged; "implicit_quadratic": friction at the NEW flux, see
+    `implicit_quadratic_friction_flux`); type 2: the normal-flow outlet; type 0: zero."""
+    if friction_treatment not in FRICTION_TREATMENTS:
+        raise ExperimentalHydrologyError(f"friction_treatment must be one of {FRICTION_TREATMENTS}, got {friction_treatment!r}")
     with np.errstate(all="ignore"):
         top = np.where(eta_a > eta_b, eta_a, eta_b)
         hf1 = np.maximum(top - zmax, 0.0)
         grad = (eta_b - eta_a) / dx
         numerator = q_old - (((GRAVITY_M_S2 * hf1) * dt) * grad)
-        friction = np.where(q_old != 0.0, ((dt * (fric / 8.0)) * np.abs(q_old)) / (hf1 * hf1), 0.0)
-        q1 = np.where(hf1 > 0.0, numerator / (1.0 + friction), 0.0)
+        if friction_treatment == "lagged":
+            friction = np.where(q_old != 0.0, ((dt * (fric / 8.0)) * np.abs(q_old)) / (hf1 * hf1), 0.0)
+            q1 = np.where(hf1 > 0.0, numerator / (1.0 + friction), 0.0)
+        else:
+            q1 = np.where(hf1 > 0.0, implicit_quadratic_friction_flux(numerator, hf1, fric, dt), 0.0)
         donor = np.where(sign > 0, h_a, h_b)
         q_out = (np.sqrt(donor) * donor) * kb
         q2 = np.where(sign > 0, q_out, -q_out)
@@ -617,6 +679,9 @@ class CpuHydraulicSolver:
         if method == "explicit" and control.limiter != "off":
             raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method; the explicit "
                                              "method is positive by its CFL bound")
+        if method == "explicit" and control.friction_treatment != "lagged":
+            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; the explicit "
+                                             "kinematic wave has no momentum friction")
         if tuple(params.shape) != tuple(graph.shape) or not np.array_equal(params.active_mask, graph.active):
             raise ExperimentalHydrologyError("column parameters must match the graph shape and active mask")
         self.method, self.graph, self.params, self.control = method, graph, params, control
@@ -657,7 +722,8 @@ class CpuHydraulicSolver:
 
     def describe(self) -> dict[str, Any]:
         return {"method": self.method, "implementation": self.implementation,
-                "control": {"cfl_max": self.control.cfl_max, "limiter": self.control.limiter},
+                "control": {"cfl_max": self.control.cfl_max, "limiter": self.control.limiter,
+                            "friction_treatment": self.control.friction_treatment},
                 "cfl_kind": CFL_NAMES[self.method], "geometry": None if self.geometry is None else self.geometry.summary(),
                 "transfer_scope": TRANSFER_SCOPE, "qualification": QUALIFICATION_STATUS}
 
@@ -757,10 +823,10 @@ class CpuHydraulicSolver:
         eta = g.z + hc
         qx, hfx = local_inertial_face_flux(
             g.fx_type, g.fx_zmax, g.fx_fric, g.fx_kb, g.fx_sign, qx_old, _zero_pad_cols(hc, True), _zero_pad_cols(hc, False),
-            _zero_pad_cols(eta, True), _zero_pad_cols(eta, False), dt, dx)
+            _zero_pad_cols(eta, True), _zero_pad_cols(eta, False), dt, dx, self.control.friction_treatment)
         qy, hfy = local_inertial_face_flux(
             g.fy_type, g.fy_zmax, g.fy_fric, g.fy_kb, g.fy_sign, qy_old, _zero_pad_rows(hc, True), _zero_pad_rows(hc, False),
-            _zero_pad_rows(eta, True), _zero_pad_rows(eta, False), dt, dx)
+            _zero_pad_rows(eta, True), _zero_pad_rows(eta, False), dt, dx, self.control.friction_treatment)
         limited_cells, limited_volume = 0, 0.0
         with np.errstate(all="ignore"):
             if self.control.limiter == "donor":

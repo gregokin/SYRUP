@@ -202,12 +202,44 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
         return flags
 
     @jit
+    def implicit_flux(qs, hf, fric, dt):
+        """Signed root of q + alpha |q| q = qs (`experimental_hydrology.implicit_quadratic_friction_flux`, same operations in
+        the same order; hf > 0). qs = 0 returns qs; a non-finite qs or an overflowing D returns NaN (refused by the caller's
+        non-finite flag)."""
+        if qs == 0.0:
+            return qs
+        if not np.isfinite(qs):
+            return np.nan
+        coefficient = (dt * fric) * 0.5
+        b = np.sqrt(coefficient) * np.sqrt(abs(qs))
+        if hf > b:
+            m = hf
+            n = b
+        else:
+            m = b
+            n = hf
+        r = n / m
+        d = m * np.sqrt(1.0 + (r * r))
+        if not np.isfinite(d):
+            return np.nan
+        t = hf / d
+        w1 = 1.0 + t
+        if t >= 0.5:
+            q = qs * ((2.0 * t) / w1)
+        else:  # t may have underflowed against a huge qs: scale by 1/D before h
+            q = ((qs / d) * hf) * (2.0 / w1)
+        if not np.isfinite(q):
+            return np.nan
+        return q
+
+    @jit
     def local_kernel(ny, nx, hc, z, active, fx_type, fx_zmax, fx_fric, fx_kb, fx_sign, fy_type, fy_zmax, fy_fric, fy_kb,
-                     fy_sign, qx_old, qy_old, dt, dx, dt_over_dx, dtdx_area, area, rtol, donor_limiter,
+                     fy_sign, qx_old, qy_old, dt, dx, dt_over_dx, dtdx_area, area, rtol, donor_limiter, implicit_friction,
                      qx, qy, hfx, hfy, h_new, speed, fvx, fvy, ox, oy, scratch, maxima, counts):
         """Local inertia on flat arrays: x faces (ny, nx+1), y faces (ny+1, nx), cells (ny, nx), all row-major. `scratch`
         rows: 0 h_new - h_c, 1 balance scale, 2 limiter phi, 3 limited-volume operand. maxima: balance residual, max h_f on the
-        x faces, max h_f on the y faces. counts[0] = limited cells."""
+        x faces, max h_f on the y faces. counts[0] = limited cells. `implicit_friction` selects the opt-in implicit
+        quadratic face friction (False: the original lagged arithmetic, untouched)."""
         flags = np.int64(0)
         nxf = nx + 1
         max_hfx = -np.inf
@@ -250,7 +282,10 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
                         else:
                             fr = 0.0
                         if hf1 > 0.0:
-                            q = numerator / (1.0 + fr)
+                            if implicit_friction:
+                                q = implicit_flux(numerator, hf1, fx_fric[f], dt)
+                            else:
+                                q = numerator / (1.0 + fr)
                         hf = hf1
                     else:
                         donor = h_a if fx_sign[f] > 0 else h_b
@@ -301,7 +336,10 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
                         else:
                             fr = 0.0
                         if hf1 > 0.0:
-                            q = numerator / (1.0 + fr)
+                            if implicit_friction:
+                                q = implicit_flux(numerator, hf1, fy_fric[g], dt)
+                            else:
+                                q = numerator / (1.0 + fr)
                         hf = hf1
                     else:
                         donor = h_a if fy_sign[g] > 0 else h_b
@@ -406,7 +444,7 @@ def _build_kernels(numba: Any) -> SimpleNamespace:
         maxima[2] = max_hfy
         return flags
 
-    return SimpleNamespace(explicit=explicit_kernel, local=local_kernel)
+    return SimpleNamespace(explicit=explicit_kernel, local=local_kernel, implicit_flux=implicit_flux)
 
 
 def _kernels() -> SimpleNamespace:
@@ -436,6 +474,8 @@ def kernel_provenance() -> dict[str, Any]:
         "module": "maple_syrup.experimental_numba",
         "module_sha256": hashlib.sha256(here.read_bytes()).hexdigest(),
         "kernels": ["explicit_kernel", "local_kernel"],
+        "friction_treatments": "local_kernel branches per launch on `implicit_friction` (lagged = original arithmetic; "
+                               "implicit_quadratic = device-style `implicit_flux`, + - * / and sqrt only)",
         "column": "hydrology_numba.prepared_column_step on a HydrologyContext prepared once (no infiltration formula here)",
         "hydrology_numba_sha256": hashlib.sha256(here.with_name("hydrology_numba.py").read_bytes()).hexdigest(),
         "numba_options": {"fastmath": False, "parallel": False, "nogil": True, "boundscheck": False,
@@ -599,8 +639,8 @@ class NumbaHydraulicSolver(CpuHydraulicSolver):
     def _current_seal(self) -> tuple:
         ctx, hyd = self._context, self._hydrology
         ctl = self.control
-        return (ctx.method, ctx.shape, ctx.dx_m, ctx.n_cells, ctx.n_active, ctl.cfl_max, ctl.limiter, id(ctx), id(hyd),
-                hyd.shape, hyd.n_cells, hyd.dx_m, hyd.model_code)
+        return (ctx.method, ctx.shape, ctx.dx_m, ctx.n_cells, ctx.n_active, ctl.cfl_max, ctl.limiter, ctl.friction_treatment,
+                id(ctx), id(hyd), hyd.shape, hyd.n_cells, hyd.dx_m, hyd.model_code)
 
     def _guard(self, method: str) -> tuple[NumbaExperimentalContext, hn.HydrologyContext, float, str]:
         """BEFORE any compiled call: type, identity and fingerprint checks of everything a kernel indexes, and that the public
@@ -627,6 +667,9 @@ class NumbaHydraulicSolver(CpuHydraulicSolver):
         if (hyd.active.shape != (n,) or hyd.conveyance.shape != (n,) or hyd.column_static.shape != (n, 6)
                 or hyd.n_cells != n or hyd.shape != ctx.shape):
             raise ExperimentalHydrologyError("the column context's arrays do not match the lateral context; refusing")
+        if ctx.method == "explicit" and self.control.friction_treatment != "lagged":
+            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; refusing before any "
+                                             "compiled call")
         return ctx, hyd, float(self.control.cfl_max), str(self.control.limiter)
 
     def _column(self, rain_rate_m_per_s: Any, state: HydraulicState, dt_s: float) -> ColumnStep:
@@ -702,11 +745,12 @@ class NumbaHydraulicSolver(CpuHydraulicSolver):
         maxima = np.empty(3, dtype=np.float64)
         counts = np.zeros(1, dtype=np.int64)
         donor = limiter == "donor"
+        implicit = self.control.friction_treatment == "implicit_quadratic"  # sealed: `_guard` checked the seal just above
         a = ctx.array
         flags = int(_kernels().local(
             ny, nx, hc, a("z"), a("active"), a("fx_type"), a("fx_zmax"), a("fx_fric"), a("fx_kb"), a("fx_sign"), a("fy_type"),
             a("fy_zmax"), a("fy_fric"), a("fy_kb"), a("fy_sign"), qx_old, qy_old, dt, dx, dt_over_dx, dtdx_area, area,
-            BALANCE_RTOL, donor, qx, qy, hfx, hfy, h_new, speed, fvx, fvy, ox, oy, scratch, maxima, counts))
+            BALANCE_RTOL, donor, implicit, qx, qy, hfx, hfy, h_new, speed, fvx, fvy, ox, oy, scratch, maxima, counts))
         limited_cells, limited_volume = 0, 0.0
         with np.errstate(all="ignore"):
             if donor:

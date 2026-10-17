@@ -1,0 +1,55 @@
+{
+  "purpose": "Qualification recipe only; not a model configuration schema or matched RFID/MAHLERAN storm",
+  "terrain": {
+    "source": "MAHLERAN/Input/DTM_Chastre_PD4way.asc",
+    "source_sha256": "89ce64747abfc7e60282090ee4db80fd0361bae5427000a2e61153de45435677",
+    "crop_npz_sha256": "29d2ce950ee97c5207cc4097fa7ade47d57d877f6b2d48d920436f53fa95b8c7",
+    "orientation": "south-first",
+    "halo_origin_row_col": [416, 512],
+    "active_origin_row_col": [417, 513],
+    "active_shape": [32, 32],
+    "dx_m": 1.0,
+    "outlet_row_col_dr_dc": [[30, 31, 0, 1]],
+    "outlet_real_drop_m": 0.02,
+    "other_boundaries": "closed",
+    "conditioning": "none; common vertical datum shift only",
+    "datum_shift_m": 146.07
+  },
+  "bed": {
+    "authority": "actual dense MAPLE native voxels, active layer, availability and accounting",
+    "class_fractions": [0.10, 0.15, 0.25, 0.25, 0.15, 0.10],
+    "bulk_density_kg_m3": 1250.0,
+    "particle_density_kg_m3": 2650.0,
+    "voxel_dz_m": 0.1,
+    "n_voxels": 8,
+    "active_layer_thickness_m": 0.002,
+    "avalanching": false
+  },
+  "forcing": {
+    "rain_mm_h": 120.0,
+    "rain_start_s": 0.0,
+    "rain_end_s": 240.0,
+    "integration_end_s": 300.0,
+    "infiltration_model": "fixed_ksat",
+    "ksat_m_s": 0.000001,
+    "suction_m": 0.01,
+    "theta_sat": 0.4,
+    "soil_thickness_m": 0.3,
+    "drainage_parameter": 0.0,
+    "initial_surface_water_m": 0.0,
+    "initial_soil_water_m": 0.0
+  },
+  "numerics": {
+    "friction": 21.45,
+    "friction_treatment": "implicit_quadratic",
+    "max_dt_s": 0.25,
+    "min_dt_s": 0.00000095367431640625,
+    "max_steps": 20000,
+    "max_retries": 30,
+    "phase_bins": 8,
+    "splash_inverse_distance_per_m": [9.844, 7.464, 8.184, 8.386, 27.17, 679.2],
+    "native_reroute_net_elevation_trigger_m": 0.00075,
+    "checkpoints_s": [120, 240],
+    "dry_reset": false
+  }
+}

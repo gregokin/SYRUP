@@ -135,10 +135,12 @@ __all__ = [
     "REGIME_CODES",
     "REYNOLDS_CONCENTRATED",
     "REYNOLDS_TRANSITIONAL",
+    "DryRaindropDemand",
     "PhysicsGrid",
     "SedimentPhysicsError",
     "SedimentPhysicsParameters",
     "SedimentPhysicsStep",
+    "dry_raindrop_pickup_demand",
     "exponential_mean_from_median",
     "median_diameter_m",
     "median_from_exponential_mean",
@@ -669,6 +671,134 @@ def _rain_energy(params: SedimentPhysicsParameters, intensity_mm_h: Any, rain_ra
     return xp.where(raining, ke, 0.0)
 
 
+def _class_fractions(active_layer_mass_kg: Any, xp: ModuleType) -> tuple[Any, Any]:
+    """Per-cell holdings total and class fractions (0 on empty cells); the
+    composition rule of `sediment_physics_step`, shared with the dry law."""
+    total = xp.sum(active_layer_mass_kg, axis=-1)
+    fractions = active_layer_mass_kg / xp.where(total > 0.0, total, 1.0)[..., None]
+    fractions = xp.where((total > 0.0)[..., None], fractions, 0.0)
+    return total, fractions
+
+
+def _raindrop_law(params: SedimentPhysicsParameters, slope: Any, d3: Any, fractions: Any, rain_mm_s: Any,
+                  intensity_mm_h: Any, veg_percent: Any, raining: Any, raindrop_cells: Any, xp: ModuleType):
+    """`raindrop_detachment.for` 24-120 as a depth RATE (m/s) per cell and class, zero outside
+    `raindrop_cells`. `d3` is the `(ny, nx, 1)` surface depth: the exp(-spq d_cm) attenuation (87-95) is
+    evaluated on it as given, so a dry cell (d = 0) is attenuated by exactly exp(0) = 1 and no wet depth is
+    ever invented. Shared verbatim by the wet step and the dry-splash demand. Must be called inside the
+    caller's `errstate`. Returns `(ke, energy_term, x_kg_m2, depth_rate, capped, cap_rate)`."""
+    nc = params.n_classes
+    ref = params.reference_interval_s
+    rho = params.particle_density_kg_m3
+    ke = _rain_energy(params, intensity_mm_h, rain_mm_s, veg_percent, raining, xp)  # J m^-2 mm^-1
+    # 69-72 with the 268 pre-scaling: spa/1200 * (1200 ke r2)^spb * (100 S)^spc,
+    # kg m^-2 per reference interval.
+    energy_term = xp.maximum(ke * rain_mm_s * _LEGACY_QUANSAH_SCALE, 0.0)[..., None]
+    slope_term = (slope * 100.0)[..., None]
+    x_kg_m2 = (params.d_raindrop_a / _LEGACY_QUANSAH_SCALE) * energy_term ** params.d_raindrop_b \
+        * slope_term ** params.d_raindrop_c
+    # 82-85: x2 (up/downslope data), / density -> depth per reference interval; here
+    # a depth RATE (m/s) = 2 X / rho / ref.
+    raindrop_depth_rate = 2.0 * x_kg_m2 / rho / ref
+    # 87-95: exp(-spq d_cm) under standing water.
+    raindrop_depth_rate = raindrop_depth_rate * xp.exp(-params.d_attenuation * (d3 * 100.0))
+    raindrop_depth_rate = xp.maximum(raindrop_depth_rate, 0.0)  # 96-98
+    if params.raindrop_composition_scaling == "fraction":
+        raindrop_depth_rate = raindrop_depth_rate * fractions
+    # 103-109: cap for phi 2 only (legacy quirk), tptable = f hs / dt -> f hs / ref.
+    cap_rate = fractions * params.d_raindrop_max / ref
+    phi2 = xp.zeros((1, 1, nc), dtype=np.bool_)
+    if nc >= 2:
+        phi2[0, 0, 1] = True
+    raindrop_capped = raindrop_cells[..., None] & phi2 & (raindrop_depth_rate > cap_rate)
+    raindrop_depth_rate = xp.where(raindrop_capped, cap_rate, raindrop_depth_rate)
+    # 110-112: zero if the class is absent; 117-120: exp(grav_propn) = 1.
+    raindrop_depth_rate = xp.where(fractions > 0.0, raindrop_depth_rate, 0.0)
+    raindrop_depth_rate = xp.where(raindrop_cells[..., None], raindrop_depth_rate, 0.0)
+    return ke, energy_term, x_kg_m2, raindrop_depth_rate, raindrop_capped, cap_rate
+
+
+@dataclass(frozen=True, eq=False)
+class DryRaindropDemand:
+    """Result of `dry_raindrop_pickup_demand`: `requested_pickup_kg`
+    `(ny, nx, n_classes)` raindrop pickup DEMAND over `dt_s` on the dry
+    splash cells (active, surface depth exactly 0, local rain > 0), zero
+    elsewhere; `dry_cells` the `(ny, nx)` bool mask of those cells;
+    `legacy_cap_applied` the phi-2 `hs` cap mask. Demand only: never
+    removed inventory, never capped by holdings or availability here."""
+
+    dt_s: float
+    requested_pickup_kg: Any
+    dry_cells: Any
+    legacy_cap_applied: Any
+
+
+def dry_raindrop_pickup_demand(
+    params: SedimentPhysicsParameters,
+    grid: PhysicsGrid,
+    depth_m: Any,
+    rain_rate_m_per_s: Any,
+    vegetation_cover_fraction: Any,
+    active_layer_mass_kg: Any,
+    dt_s: float,
+) -> DryRaindropDemand:
+    """The wet model's own raindrop-detachment law (`_raindrop_law`: same
+    energy, vegetation, Quansah, composition, phi-2 cap and 1 s reference
+    rate x `dt_s` scaling) evaluated on DRY cells only. Wet cells are
+    excluded (the wet step already picks them up), so nothing is counted
+    twice, and no depth is faked: dry cells carry depth 0 and the
+    attenuation is exp(0) = 1. Pure; raises `SedimentPhysicsError` before
+    returning anything on invalid input."""
+    from maple.core.backend import (
+        DeferredChecks,
+        errstate,
+        finite_flag,
+        negative_flag,
+        true_flag,
+    )
+
+    xp = params.xp
+    if not isinstance(grid, PhysicsGrid) or grid.xp is not xp:
+        raise SedimentPhysicsError("grid must be a PhysicsGrid in the parameters' namespace")
+    ny, nx = grid.shape
+    nc = params.n_classes
+    dt = _positive(dt_s, "dt_s")
+    cell = {"depth_m": depth_m, "rain_rate_m_per_s": rain_rate_m_per_s,
+            "vegetation_cover_fraction": vegetation_cover_fraction}
+    cls = {"active_layer_mass_kg": active_layer_mass_kg}
+    _require_grid_arrays(cell, (ny, nx), xp)
+    _require_grid_arrays(cls, (ny, nx, nc), xp)
+    checks = DeferredChecks()
+    for name, array in {**cell, **cls}.items():
+        checks.require(finite_flag(array), f"{name} must be finite everywhere")
+        checks.forbid(negative_flag(array), f"{name} must be >= 0 everywhere")
+    checks.forbid(true_flag(vegetation_cover_fraction > 1.0), "vegetation_cover_fraction must be <= 1")
+    active = grid.active
+    with errstate(xp=xp, all="ignore"):
+        dry_cells = active & (depth_m == 0.0) & (rain_rate_m_per_s > 0.0)
+        raining = active & (rain_rate_m_per_s > 0.0)
+        total, fractions = _class_fractions(active_layer_mass_kg, xp)
+        rain_mm_s = rain_rate_m_per_s * 1000.0
+        intensity_mm_h = rain_rate_m_per_s * 3.6e6
+        veg_percent = vegetation_cover_fraction * 100.0
+        ke, energy_term, x_kg_m2, depth_rate, capped, cap_rate = _raindrop_law(
+            params, grid.slope, depth_m[..., None], fractions, rain_mm_s, intensity_mm_h, veg_percent, raining,
+            dry_cells, xp)
+        requested = depth_rate * (grid.cell_area_m2 * params.particle_density_kg_m3 * dt)
+    checks.require(finite_flag(total), "active_layer_mass_kg per-cell total overflowed FP64 (unsupported holdings)")
+    for name, array in (("rain energy term", energy_term), ("raindrop law mass", x_kg_m2),
+                        ("cap rate", cap_rate), ("requested_pickup_kg", requested)):
+        checks.require(finite_flag(array), f"dry raindrop {name} is non-finite (input outside the supported "
+                                           "FP64 domain; refused, not clipped)")
+    checks.forbid(negative_flag(requested), "dry raindrop demand produced a negative pickup")
+    try:
+        checks.resolve()
+    except ValueError as exc:
+        raise SedimentPhysicsError(str(exc)) from None
+    return DryRaindropDemand(dt_s=dt, requested_pickup_kg=requested, dry_cells=dry_cells,
+                             legacy_cap_applied=capped & dry_cells[..., None])
+
+
 def sediment_physics_step(
     params: SedimentPhysicsParameters,
     grid: PhysicsGrid,
@@ -679,8 +809,17 @@ def sediment_physics_step(
     active_layer_mass_kg: Any,
     previous_sediment_velocity_m_s: Any,
     dt_s: float,
+    *,
+    shear_slope: Any = None,
+    stream_power_slope: Any = None,
 ) -> SedimentPhysicsStep:
     """One evaluation of the wet MAHLERAN laws on the current state.
+
+    `shear_slope` / `stream_power_slope` (optional `(ny, nx)` FP64 >= 0, default None): the slope used for the
+    shear velocity `u* = sqrt(g h S)` and for the stream power `rho g h v S`. None (default) is the legacy
+    uniform-flow estimate, i.e. `grid.slope`, with exactly the original arithmetic. The raindrop law always
+    keeps the topographic `grid.slope`. A caller with unsteady or flat flow (the pond event) supplies the
+    friction slope `f u^2 / (8 g h)` here; this module only applies it, it derives nothing.
 
     `depth_m`, `velocity_m_s` (water, from the routing step), `rain_rate_m_per_s`
     and `vegetation_cover_fraction` (0..1) are `(ny, nx)`;
@@ -708,6 +847,10 @@ def sediment_physics_step(
             "vegetation_cover_fraction": vegetation_cover_fraction}
     cls = {"active_layer_mass_kg": active_layer_mass_kg,
            "previous_sediment_velocity_m_s": previous_sediment_velocity_m_s}
+    if shear_slope is not None:
+        cell["shear_slope"] = shear_slope
+    if stream_power_slope is not None:
+        cell["stream_power_slope"] = stream_power_slope
     _require_grid_arrays(cell, (ny, nx), xp)
     _require_grid_arrays(cls, (ny, nx, nc), xp)
 
@@ -728,19 +871,19 @@ def sediment_physics_step(
 
     with errstate(xp=xp, all="ignore"):
         # --- composition from current holdings --------------------------------
-        total = xp.sum(active_layer_mass_kg, axis=-1)
-        fractions = active_layer_mass_kg / xp.where(total > 0.0, total, 1.0)[..., None]
-        fractions = xp.where((total > 0.0)[..., None], fractions, 0.0)
+        total, fractions = _class_fractions(active_layer_mass_kg, xp)
         d50 = median_diameter_m(fractions, params.d_diameter[0, 0])  # (ny, nx), m
         d50 = xp.where(active, d50, float(params.diameter_m[-1]))
 
         # --- hydraulic variables (route_sediment 89-95, SI) --------------------
         wet = active & (depth_m > 0.0)
         raining = active & (rain_rate_m_per_s > 0.0)
-        ustar = xp.sqrt(GRAVITY_M_S2 * depth_m * slope)  # m/s
+        shear_s = slope if shear_slope is None else shear_slope
+        power_s = slope if stream_power_slope is None else stream_power_slope
+        ustar = xp.sqrt(GRAVITY_M_S2 * depth_m * shear_s)  # m/s
         reynolds = velocity_m_s * depth_m / params.kinematic_viscosity_m2_s
         # diffuse 31-32, conc 42-43, susp 22-23: rho_w g d v S in W m^-2.
-        stream_power = 1000.0 * GRAVITY_M_S2 * depth_m * velocity_m_s * slope
+        stream_power = 1000.0 * GRAVITY_M_S2 * depth_m * velocity_m_s * power_s
         rain_mm_s = rain_rate_m_per_s * 1000.0
         intensity_mm_h = rain_rate_m_per_s * 3.6e6
         veg_percent = vegetation_cover_fraction * 100.0
@@ -763,31 +906,8 @@ def sediment_physics_step(
                                        xp.where(wet, REGIME_CODES["wet_no_law"], REGIME_CODES["dry"])))))
 
         # --- raindrop detachment (raindrop_detachment.for) ---------------------
-        ke = _rain_energy(params, intensity_mm_h, rain_mm_s, veg_percent, raining, xp)  # J m^-2 mm^-1
-        # 69-72 with the 268 pre-scaling: spa/1200 * (1200 ke r2)^spb * (100 S)^spc,
-        # kg m^-2 per reference interval.
-        energy_term = xp.maximum(ke * rain_mm_s * _LEGACY_QUANSAH_SCALE, 0.0)[..., None]
-        slope_term = (slope * 100.0)[..., None]
-        x_kg_m2 = (params.d_raindrop_a / _LEGACY_QUANSAH_SCALE) * energy_term ** params.d_raindrop_b \
-            * slope_term ** params.d_raindrop_c
-        # 82-85: x2 (up/downslope data), / density -> depth per reference interval; here
-        # a depth RATE (m/s) = 2 X / rho / ref.
-        raindrop_depth_rate = 2.0 * x_kg_m2 / rho / ref
-        # 87-95: exp(-spq d_cm) under standing water (all raindrop cells are wet here).
-        raindrop_depth_rate = raindrop_depth_rate * xp.exp(-params.d_attenuation * (d3 * 100.0))
-        raindrop_depth_rate = xp.maximum(raindrop_depth_rate, 0.0)  # 96-98
-        if params.raindrop_composition_scaling == "fraction":
-            raindrop_depth_rate = raindrop_depth_rate * fractions
-        # 103-109: cap for phi 2 only (legacy quirk), tptable = f hs / dt -> f hs / ref.
-        cap_rate = fractions * params.d_raindrop_max / ref
-        phi2 = xp.zeros((1, 1, nc), dtype=np.bool_)
-        if nc >= 2:
-            phi2[0, 0, 1] = True
-        raindrop_capped = raindrop_cells[..., None] & phi2 & (raindrop_depth_rate > cap_rate)
-        raindrop_depth_rate = xp.where(raindrop_capped, cap_rate, raindrop_depth_rate)
-        # 110-112: zero if the class is absent; 117-120: exp(grav_propn) = 1.
-        raindrop_depth_rate = xp.where(fractions > 0.0, raindrop_depth_rate, 0.0)
-        raindrop_depth_rate = xp.where(raindrop_cells[..., None], raindrop_depth_rate, 0.0)
+        ke, energy_term, x_kg_m2, raindrop_depth_rate, raindrop_capped, cap_rate = _raindrop_law(
+            params, slope, d3, fractions, rain_mm_s, intensity_mm_h, veg_percent, raining, raindrop_cells, xp)
 
         # --- flow detachment (flow_detachment.for 18-47) ------------------------
         theta = (ustar ** 2)[..., None] / (params.sigma * GRAVITY_M_S2 * params.d_diameter)

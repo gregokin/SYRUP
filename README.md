@@ -4,6 +4,12 @@
 
 Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.md`.
 
+An explicit [splash and depression-overflow event](docs/splash_and_overflow/README.md)
+adds direct rainfall splash, local-inertial pond filling/overflow, conservative
+multi-face sediment transport, evolving native MAPLE beds and source-bound
+restart on CPU/GPU. It is small-domain qualified and currently requires a dense
+bed; legacy replay and existing run defaults retain their previous behavior.
+
 The CPU legacy replay also prepares fixed hydrology data and compiles infiltration,
 runoff branches, and routing setup/checks around the existing ordered sweep.
 `--hydrology-implementation reference` selects the original hydrology for comparison.
