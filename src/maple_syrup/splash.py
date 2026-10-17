@@ -704,7 +704,7 @@ class SplashExchangeAudit:
         out = {}
         for name in self.__dataclass_fields__:
             value = getattr(self, name)
-            if name == "mobile_change_by_cell_class_kg":
+            if name == "mobile_change_by_cell_class_kg" or value is None:  # None: windowed pickup view lacks bed change
                 continue
             out[name] = float(value) if name == "numerical_residual_scalar_kg" else float(value.sum())
         return out
@@ -750,7 +750,13 @@ def apply_splash_exchange(state: Any, context: Any, params: SplashParameters, gr
     from maple.surface.voxels._numerics import summation_error_bound_kg
     from maple.water.interfaces import WaterProcessDemand
 
-    from maple_syrup.sediment_bed import apply_bed_demand, with_water
+    from maple_syrup.sediment_bed import (
+        apply_bed_demand,
+        apply_bed_pickup_transport_deposit,
+        is_windowed_bed,
+        paired_transaction_entry,
+        with_water,
+    )
 
     xp = grid.xp
     ny, nx = grid.shape
@@ -781,14 +787,43 @@ def apply_splash_exchange(state: Any, context: Any, params: SplashParameters, gr
         raise SplashError(str(exc)) from None
 
     zeros = xp.zeros((ny, nx, nc), dtype=np.float64)
-    bed1, pickup = apply_bed_demand(state, context, WaterProcessDemand(requested_pickup_kg, zeros))
-    splash = splash_redistribute(params, grid, pickup.actual_removal_by_cell_class_kg, implementation=implementation)
-    landed = splash.deposition_kg + splash.export_edge_cell_kg
-    bed2 = with_water(bed1, context, bed1.water.depth_m, old_mobile + landed)
-    demand = WaterProcessDemand(
-        requested_removal_by_cell_class_kg=zeros, requested_deposition_by_cell_class_kg=splash.deposition_kg,
-        face_flux=splash.face_flux(), boundary_export_by_cell_class_kg=splash.export_edge_cell_kg)
-    bed3, deposit = apply_bed_demand(bed2, context, demand)
+    if is_windowed_bed(state):
+        # Resident-window bed: the SAME pickup -> redistribution of the ACTUAL pickup -> deposit/export sequence through
+        # MAPLE's private paired transaction (post-pickup storage stays private; no full repeated column processing).
+        # `pickup` is then MAPLE's `PickupView`: it carries every pickup attribute the event and this audit read
+        # (actual/requested removal, shortfalls, pickup residuals) but NOT `bed_change_by_class_kg`, so the two audit
+        # fields derived from it stay None (unavailable, never fabricated). A MAPLE without the paired entry is an
+        # unsupported dependency (no silent two-call downgrade).
+        entry = paired_transaction_entry()
+        if entry is None:
+            raise SplashError("the bound MAPLE dependency has no paired windowed transaction; the windowed splash "
+                              "exchange is unsupported on it")
+        base_depth = state.water.depth_m
+        bed0 = with_water(state, context, base_depth)  # same water; MAPLE validates it again
+        holder = [WaterProcessDemand(requested_pickup_kg, zeros)]  # single-use handoff, popped by MAPLE
+        captured: list = []
+
+        def between(view):
+            red = splash_redistribute(params, grid, view.actual_removal_by_cell_class_kg, implementation=implementation)
+            captured.append(red)
+            landed_ = red.deposition_kg + red.export_edge_cell_kg
+            demand_ = WaterProcessDemand(
+                requested_removal_by_cell_class_kg=zeros, requested_deposition_by_cell_class_kg=red.deposition_kg,
+                face_flux=red.face_flux(), boundary_export_by_cell_class_kg=red.export_edge_cell_kg)
+            return base_depth, old_mobile + landed_, demand_
+
+        pickup, bed3, deposit = apply_bed_pickup_transport_deposit(bed0, context, holder, between, entry=entry)
+        splash = captured.pop()
+        landed = splash.deposition_kg + splash.export_edge_cell_kg  # the same expression the callback published
+    else:
+        bed1, pickup = apply_bed_demand(state, context, WaterProcessDemand(requested_pickup_kg, zeros))
+        splash = splash_redistribute(params, grid, pickup.actual_removal_by_cell_class_kg, implementation=implementation)
+        landed = splash.deposition_kg + splash.export_edge_cell_kg
+        bed2 = with_water(bed1, context, bed1.water.depth_m, old_mobile + landed)
+        demand = WaterProcessDemand(
+            requested_removal_by_cell_class_kg=zeros, requested_deposition_by_cell_class_kg=splash.deposition_kg,
+            face_flux=splash.face_flux(), boundary_export_by_cell_class_kg=splash.export_edge_cell_kg)
+        bed3, deposit = apply_bed_demand(bed2, context, demand)
 
     mobile_after = bed3.water.mobile_mass_by_cell_class_kg
     change = mobile_after - old_mobile
@@ -806,7 +841,8 @@ def apply_splash_exchange(state: Any, context: Any, params: SplashParameters, gr
     native_exp = deposit.boundary_export_by_class_kg
     mobile_before = old_mobile.sum(axis=(0, 1))
     mobile_after_c = mobile_after.sum(axis=(0, 1))
-    net_bed = pickup.bed_change_by_class_kg + deposit.bed_change_by_class_kg
+    pickup_bed_change = getattr(pickup, "bed_change_by_class_kg", None)  # None: windowed PickupView (documented)
+    net_bed = None if pickup_bed_change is None else pickup_bed_change + deposit.bed_change_by_class_kg
     audit = SplashExchangeAudit(
         requested_pickup_by_class_kg=pickup.requested_removal_by_class_kg,
         actual_pickup_by_class_kg=pickup.actual_removal_by_class_kg,
@@ -818,7 +854,8 @@ def apply_splash_exchange(state: Any, context: Any, params: SplashParameters, gr
         unapplied_deposit_by_class_kg=dep_req - native_dep, unapplied_export_by_class_kg=exp_req - native_exp,
         mobile_before_by_class_kg=mobile_before, mobile_after_by_class_kg=mobile_after_c,
         mobile_change_by_class_kg=mobile_after_c - mobile_before, net_bed_change_by_class_kg=net_bed,
-        conservation_residual_by_class_kg=(net_bed + (mobile_after_c - mobile_before)) + native_exp,
+        conservation_residual_by_class_kg=(None if net_bed is None
+                                           else (net_bed + (mobile_after_c - mobile_before)) + native_exp),
         numerical_residual_scalar_kg=float(deposit.numerical_residual_scalar_kg),
         mobile_change_by_cell_class_kg=change)
     return SplashExchange(bed=bed3, pickup=pickup, deposit=deposit, splash=splash, audit=audit)

@@ -4,6 +4,8 @@ This opt-in water event adds direct rainfall splash and hydraulic filling/overfl
 
 The new event couples rainfall/infiltration, local-inertial face flows, MAHLERAN-derived wet detachment and splash, grain-specific sediment speed/distance, native supply-limited pickup, deposition, and boundary export. It supports NumPy, Numba hydraulics, and CUDA hydraulics/splash with CuPy-resident sediment exchange. No wind physics is copied; wind scheduling belongs to MASY.
 
+Subsequent storage extension: [native windowed pond beds](../pond_windowed/README.md) adds bounded resident windows and explicit deep-store publication/checkpoint support. The original acceptance below records the preceding dense-bed milestone.
+
 ## What changes physically
 
 * Water moves according to free-surface gradients through D4 faces. Depressions retain water, adjacent wet surfaces can level, and flow can cross a real lip once the water surface overtops it. The terrain is neither filled nor tilted to manufacture drainage. Static escape levels are diagnostics and completion gates, **not** the hydraulic solver.

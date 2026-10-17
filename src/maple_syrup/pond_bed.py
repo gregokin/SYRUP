@@ -39,21 +39,32 @@ from maple_syrup.sediment_bed import (
     BedIntegrationError,
     BedState,
     apply_bed_demand,
+    apply_bed_pickup_transport_deposit,
+    bed_already_committed,
     current_routing_surface_m,
+    deep_storage_is_default,
     is_windowed_bed,
     net_routing_displacement_m,
+    paired_transaction_entry,
+    pending_journal_records,
+    publish_bed_storage,
     reroute_threshold_m,
+    validate_deep_storage,
     with_water,
 )
 
 __all__ = [
     "NativeCommit",
     "PondBedError",
+    "bed_committed_at",
     "committed_displacement_m",
     "gate_displacement_m",
     "native_commit",
+    "pending_journal_records",
     "physical_full_source",
     "pickup_transport_deposit",
+    "publish_bed_storage",
+    "require_paired_entry",
     "require_supported_bed",
     "reroute_threshold_m",
     "steepest_d4_descent",
@@ -67,12 +78,41 @@ class PondBedError(BedIntegrationError):
     """Unsupported or invalid bed for the pond event. Raised before anything is mutated."""
 
 
-def require_supported_bed(state: BedState, context: BedContext) -> None:
-    """Dense actual-MAPLE bed with disabled avalanching and the solver-owned depth rule; refuse anything else."""
+def require_paired_entry():
+    """MAPLE's private paired pickup -> transport -> deposit entry. A MAPLE without it (an older dependency) is an
+    UNSUPPORTED dependency for the windowed pond event: there is no silent two-call downgrade. Any other import or
+    attribute failure propagates from `paired_transaction_entry` unchanged."""
+    entry = paired_transaction_entry()
+    if entry is None:
+        raise PondBedError("the bound MAPLE dependency has no paired windowed transaction "
+                           "(maple.water.windowed_transaction); the windowed pond event is unsupported on it")
+    return entry
+
+
+def require_supported_bed(state: BedState, context: BedContext, *, allow_windowed: bool = False) -> None:
+    """Actual-MAPLE bed with disabled avalanching and the solver-owned depth rule; refuse anything else.
+
+    `allow_windowed=False` (the default, so callers that only understand dense beds, e.g. `pond_checkpoint`, keep refusing
+    a windowed bed before anything is read) refuses a resident-window bed. `allow_windowed=True` accepts it after the
+    read-only windowed checks: trusted height packets present, a valid positive journal cap, the context's deep-chunk
+    encoding against the bed's store (`validate_deep_storage`). A DENSE bed refuses any windowed-only context option."""
     if not isinstance(state, BedState) or not isinstance(context, BedContext):
         raise PondBedError("state and context must be the actual sediment_bed BedState / BedContext")
-    if is_windowed_bed(state):
-        raise PondBedError("windowed beds are unqualified for the pond event; use a dense bed (refused before mutation)")
+    windowed = is_windowed_bed(state)
+    if windowed and not allow_windowed:
+        raise PondBedError("windowed beds are unqualified for this caller; use a dense bed (refused before mutation)")
+    if not windowed and (context.window_max_journal_records is not None or not deep_storage_is_default(context)):
+        raise PondBedError("windowed journal / deep-storage options are not supported on a dense bed")
+    if windowed:
+        cap = context.window_max_journal_records
+        if cap is not None and (isinstance(cap, bool) or not isinstance(cap, int) or cap < 1):
+            raise PondBedError(f"window_max_journal_records must be None or a positive int, got {cap!r}")
+        if state.voxel_column.height_packet is None:
+            raise PondBedError("the windowed pond bed needs the maintained height (prefix) packets; none are bound")
+        try:
+            validate_deep_storage(context, state)
+        except BedIntegrationError as exc:
+            raise PondBedError(str(exc)) from None
     if bool(getattr(context.avalanching_spec, "enabled", False)):
         raise PondBedError("avalanching must be explicitly disabled for the pond event (its mass exchange over a "
                            "static pond topology is unqualified)")
@@ -107,21 +147,31 @@ def native_commit(state: BedState, context: BedContext, time_s: float, *, force:
     from maple.surface.topographic_commit.triggers import evaluate_commit_triggers
     from maple.water.commit_callback import make_water_depth_commit_callback
 
-    require_supported_bed(state, context)
+    require_supported_bed(state, context, allow_windowed=True)
     if not isinstance(force, bool):
         raise PondBedError("force must be bool")
     trigger = evaluate_commit_triggers(state.ledger, state.committed_topography, context.geometry, time_s,
                                        context.topographic_commit_spec)
     if not force and not trigger.should_commit:
         return NativeCommit(state, False, trigger)
+    # Windowed: exactly the pieces `sediment_bed.commit_bed` selects (the STAGED commit keeps MAPLE's unpublished journal
+    # pending; the windowed water callback; trusted height packets). No graph and no deep read.
+    extra: dict[str, Any] = {}
+    if is_windowed_bed(state):
+        from maple.surface.topographic_commit.windowed_commit import stage_windowed_topography
+        from maple.water.windowed_commit_callback import make_windowed_water_depth_commit_callback
+
+        commit_topography = stage_windowed_topography  # noqa: F811
+        make_water_depth_commit_callback = make_windowed_water_depth_commit_callback  # noqa: F811
+        extra = {"trusted_packet": True}
     avalanche, avalanche_box = make_availability_aware_avalanche_callback(
         context.avalanching_spec, state.sediment_availability, context.initial_available_fraction)
     water, water_box = make_water_depth_commit_callback(
         state.water, context.geometry, committed_elevation_m(state.committed_topography),
-        depth_update_rule=context.depth_update_rule)
+        depth_update_rule=context.depth_update_rule, **extra)
     result = commit_topography(state.ledger, state.committed_topography, state.voxel_column, state.active_layer,
                                context.geometry, context.mass_resolution_kg, time_s,
-                               avalanche_callback=avalanche, water_callback=water)
+                               avalanche_callback=avalanche, water_callback=water, **extra)
     water_box.publish()  # local box only
     xp = array_namespace(state.water.depth_m)
     if (not water_box.ran or water_box.depth_update.rule != "constant_depth"
@@ -203,14 +253,72 @@ def pickup_transport_deposit(state: BedState, context: BedContext, depth_m: Any,
     1. publish the solver `depth_m`, MAPLE pickup of `requested_pickup_kg` (capped by holdings and availability);
     2. `transport(pickup_result)` returns `(mobile_after_transfer_kg, deposit_demand)` from the ACTUAL pickup;
     3. publish `(depth_m, mobile_after_transfer)`, MAPLE deposition/export of `deposit_demand`.
-    Returns `(bed, pickup_result, deposit_result)`; an exception anywhere leaves `state` untouched (immutable)."""
+    Returns `(bed, pickup_result, deposit_result)`; an exception anywhere leaves `state` untouched (immutable).
+
+    WINDOWED bed: the same three steps run through MAPLE's private paired transaction (`require_paired_entry`; no
+    two-call downgrade), which keeps the post-pickup storage private. `pickup_result` is then MAPLE's `PickupView`
+    (the actual removal per cell/class and the class / scalar accounting reductions; it has no bed objects), which is
+    everything `transport` and the event read of a pickup. The returned bed may carry MAPLE's unpublished journal."""
     from maple.water import WaterProcessDemand
 
-    require_supported_bed(state, context)
+    require_supported_bed(state, context, allow_windowed=True)
     zeros = state.water.mobile_mass_by_cell_class_kg * 0.0
+    if is_windowed_bed(state):
+        entry = require_paired_entry()
+        bed = with_water(state, context, depth_m)
+        holder = [WaterProcessDemand(requested_pickup_kg, zeros)]  # single-use handoff, popped by MAPLE
+
+        def between(view):
+            mobile_after_transfer, demand = transport(view)
+            return depth_m, mobile_after_transfer, demand
+
+        view, bed, deposit = apply_bed_pickup_transport_deposit(bed, context, holder, between, entry=entry)
+        return bed, view, deposit
     bed = with_water(state, context, depth_m)
     bed, pickup = apply_bed_demand(bed, context, WaterProcessDemand(requested_pickup_kg, zeros))
     mobile_after_transfer, demand = transport(pickup)
     bed = with_water(bed, context, depth_m, mobile_after_transfer)
     bed, deposit = apply_bed_demand(bed, context, demand)
     return bed, pickup, deposit
+
+
+# --- storage / commit state ----------------------------------------------------------------------
+def bed_committed_at(state: BedState, context: BedContext, time_s: float) -> bool:
+    """Whether the bed's ACCOUNTING is already committed at `time_s` (MAPLE's `is_already_committed` conditions: same
+    time, empty ledger, exact baselines).
+
+    Dense and published windowed beds: `sediment_bed.bed_already_committed` (unchanged). A windowed bed carrying an
+    UNPUBLISHED journal: MAPLE's public query deliberately never blesses it, and this function does not bypass that guard
+    (no twin column, no cleared marker). It answers a NARROWER, accounting-only question on the ACTUAL pending column
+    with MAPLE's own validators and the same conditions `is_windowed_already_committed` applies after its published
+    guard: committed time equal, empty ledger, shared reconciliation context valid, active layer exactly the committed
+    baseline, declared column fold exactly the committed voxel baseline, cheap column check (which validates the pending
+    binding) and the active-layer validator. This is NOT a durability statement: a True answer never means the state is
+    published or restartable, and the returned bed keeps its journal."""
+    if not is_windowed_bed(state) or state.voxel_column.pending_deep is None:
+        return bed_already_committed(state, context, time_s)
+    from maple.core.backend import any_true
+    from maple.core.types.topographic_commit import validate_committed_topography_state
+    from maple.coupling.sediment_ledger.validation import validate_ledger_state
+    from maple.surface.active_layer.validation import check_active_layer_state
+    from maple.surface.topographic_commit.commit import ledger_is_empty, validate_reconciliation_context
+    from maple.surface.voxels.windowed_inventory import check_windowed_column_cheap, column_mass_by_class_kg
+
+    column, ledger, committed = state.voxel_column, state.ledger, state.committed_topography
+    validate_ledger_state(ledger)
+    validate_committed_topography_state(committed)
+    if committed.last_commit_time_s != time_s or not ledger_is_empty(ledger):
+        return False
+    validate_reconciliation_context(
+        ledger, column, state.active_layer, context.geometry, committed_state=committed, reconciliation_baseline=None,
+        current_time_s=time_s, operation="pond bed_committed_at (accounting only)",
+        ledger_shape=ledger.pending_bed_mass_change_kg.shape)
+    layer, baseline_layer = state.active_layer.mass_kg, committed.committed_active_layer_mass_by_class_kg
+    if layer.shape != baseline_layer.shape or any_true(layer != baseline_layer):
+        return False
+    fold, baseline = column_mass_by_class_kg(column), committed.committed_voxel_mass_by_class_kg
+    if fold.shape != baseline.shape or any_true(fold != baseline):
+        return False
+    check_windowed_column_cheap(column, context.geometry)
+    check_active_layer_state(state.active_layer, context.geometry, context.mass_resolution_kg)
+    return True

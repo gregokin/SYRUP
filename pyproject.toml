@@ -68,5 +68,5 @@ where = ["src"]
 # prepend import mode registers under the one module name `conftest` (the
 # last loaded wins). phase2 tests run `from conftest import PLOT1_DIR`, so the
 # conservative suites are listed BEFORE phase2 to keep phase2's conftest last.
-testpaths = ["tests/splash_spill", "tests/pond", "tests/pond_transport", "tests/pond_friction", "tests/pond_event", "tests/pond_checkpoint", "tests/conservative_water", "tests/conservative_csr", "tests/conservative_csr_event", "tests/conservative_pits", "tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5", "tests/phase6", "tests/phase7", "tests/phase7b", "tests/phase7f"]
+testpaths = ["tests/pond_windowed", "tests/pond_windowed_checkpoint", "tests/splash_spill", "tests/pond", "tests/pond_transport", "tests/pond_friction", "tests/pond_event", "tests/pond_checkpoint", "tests/conservative_water", "tests/conservative_csr", "tests/conservative_csr_event", "tests/conservative_pits", "tests/phase1", "tests/phase2", "tests/phase3", "tests/phase4", "tests/phase5", "tests/phase6", "tests/phase7", "tests/phase7b", "tests/phase7f"]
 pythonpath = ["src"]

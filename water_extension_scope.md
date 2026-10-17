@@ -69,3 +69,8 @@ It proposes an Eulerian mobile-pool deposition law rather than water parcels: fo
 The temporal basis of pickup must be specified and calibrated; an explicit entrainment timescale is one option, not an already-approved new parameter. We should not claim legacy calibration transfers unchanged. Regime transitions and local detach/redeposit turnover also need explicit handling and tests.
 
 No decision in this document authorizes removing a desired physical process. These categories distinguish a proposed complete storm-erosion target, smaller implementation milestones, and optional full-MAHLERAN subsystems for the user to assess.
+
+
+## Windowed pond storage — 2026-10-17
+
+User requested commit/push of the accepted splash/depression milestone (done at `e519ea62`), then connection to native windowed storage. The opt-in `PondEventControl(bed_storage="windowed")` now connects paired native wet/splash exchange, staged accounting, net-only hydraulic refresh, bounded journal publication and source-bound resident-window checkpoints. See [docs/pond_windowed/README.md](docs/pond_windowed/README.md) and its qualification record for exact executed status and limits. Legacy benchmark/method-5 defaults stay unchanged. The earlier initial splash deferral and dense-only pond limitation are superseded for this explicitly selected event. Phase arrays remain dense; no whole-Chastre coupled memory fit or new wind implementation is claimed. Original limits, actual MAPLE authority and net-elevation-only routing still apply. No post-integration commit/push is inferred from the preceding commit/push request.

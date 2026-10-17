@@ -222,14 +222,13 @@ actual D4 face gross/net, native deposit) and asserts deposit == removal, mobile
 
 ## Explicit limits
 
-* Dense bed only; a windowed bed, enabled avalanching, a non-`constant_depth` rule, exchange history or journal options
-  are refused before mutation.
+* Dense is the default. [Windowed native beds](../pond_windowed/README.md) are explicitly supported by `bed_storage="windowed"`; enabled avalanching, a non-`constant_depth` rule and exchange history remain refused.
 * Splash/transport are instantaneous redistribution and array transport; Numba is hydraulics only; the CUDA path runs
   hydraulics, physics, transport and the explicit CUDA splash sweeps on the device.
 * The legacy graph builder needs friction >= 0.1 (inherited from the metadata graph of `pond_hydraulics`).
 * `evolve` checks the retry bounds per step and the step bound per call; a restart is a new call from the returned state.
 * The depth-change quiet criterion is a conservative sum of per-step maxima, not a per-cell net history.
-* Disk checkpoint/continuation is implemented separately in [pond_checkpoint](pond_checkpoint.md). Not implemented: windowed beds, avalanching, external sediment inflow,
+* Disk checkpoint/continuation is implemented separately in [pond_checkpoint](pond_checkpoint.md). Not implemented: avalanching, external sediment inflow,
   periodic boundaries, stage-controlled outlets, wind.
 
 ## Tests (`tests/pond_event`)

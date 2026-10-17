@@ -72,7 +72,17 @@ config / forcing identities. The solver, `PhaseState`, physics grid, splash grid
 it (`PondEvent._runtime`); a checkpoint module can serialise the state and rebuild with the same config. State and history
 are bounded (no per-step arrays; the commit log is capped).
 
-LIMITS. Dense bed only (windowed refused before mutation). Avalanching disabled. Hydraulics are the experimental
+RESIDENT-WINDOW BED (opt-in: `PondEventControl(bed_storage="windowed")`, documentation docs/pond_windowed/core.md). The wet
+transaction and the dry splash exchange run through MAPLE's paired windowed transaction (pickup -> transport -> deposit in one
+frame; an older MAPLE without it is an unsupported dependency, never downgraded); commits are MAPLE's staged windowed commit
+with trusted height packets; the geometry gate reads only the height packets (no deep read, no densification). Deep storage
+publication is separate from physics: `deep_publication="step"` publishes after every accepted step (default), `"boundary"`
+carries MAPLE's valid unpublished journal through accepted steps and publishes at a high-water mark, at the return of
+`evolve`, in `finalize`, in `publish_storage`, and in the single flush before a recognised append-cap retry of the same
+physical step (`evolve`). A public `step` may return a state carrying that pending journal; it is valid, but not restartable
+until published. Dense mode is untouched.
+
+LIMITS. Dense bed, or an actual windowed bed (see above). Avalanching disabled. Hydraulics are the experimental
 local-inertial ALTERNATIVE (not method-5/6); its velocity is unqualified for erosion and reported, not clipped. The pond
 transport is the array implementation (backend "numba" is hydraulics only; "cuda" runs hydraulics, physics, transport and
 the explicit CUDA splash on the device). Splash is instantaneous redistribution with explicit supplied inverse distances;
@@ -106,11 +116,14 @@ from maple_syrup.infiltration import ColumnParameters
 from maple_syrup.pond_bed import (
     NativeCommit,
     PondBedError,
+    bed_committed_at,
     committed_displacement_m,
     gate_displacement_m,
     native_commit,
+    pending_journal_records,
     physical_full_source,
     pickup_transport_deposit,
+    require_paired_entry,
     require_supported_bed,
     reroute_threshold_m,
     steepest_d4_descent,
@@ -135,12 +148,19 @@ from maple_syrup.pond_transport import (
 from maple_syrup.rainfall import RainfallSchedule
 from maple_syrup.sediment_bed import (
     BedContext,
+    BedIntegrationError,
     BedState,
     apply_bed_demand,
-    bed_already_committed,
     bed_inventory,
     check_routing_source,
+    deep_storage_record,
+    is_carried_append_cap_refusal,
+    is_windowed_bed,
+    journal_recognizer_source,
     publish_bed_storage,
+    require_typed_journal_capacity_error,
+    resolved_journal_cap,
+    validate_deep_storage,
     with_water,
 )
 from maple_syrup.sediment_physics import (
@@ -172,6 +192,8 @@ __all__ = [
 SCHEMA = "maple_syrup.pond_event.v1"
 SLOPE_CHOICES = ("friction", "topographic")
 SPLASH_IMPLEMENTATIONS = ("array", "cuda", "auto")
+BED_STORAGES = ("dense", "windowed")
+DEEP_PUBLICATIONS = ("step", "boundary")
 _REJECTIONS_KEPT = 100
 
 
@@ -241,6 +263,18 @@ class PondEventControl:
     stream_power_slope: str = "friction"
     froude_reference: float = 0.5
     max_commit_log: int = 100
+    # Resident-window bed options (defaults LAST; `repr=False` so every dense configuration digest is byte-identical to
+    # the earlier one; a NON-default value is appended to the digest explicitly, see `_control_identity`).
+    #  - `bed_storage`: "dense" (default) or "windowed" (an actual MAPLE `WindowedVoxelColumnState` bed; declared, never
+    #    inferred, so a dense event can never silently accept a windowed context option).
+    #  - `deep_publication`: WHEN MAPLE's pending deep journal becomes a new deep-store version. "step" (default) =
+    #    after every accepted step (historical dense-compatible durability). "boundary" = the journal is CARRIED through
+    #    accepted steps and published only at `deep_publication_high_water_records`, at the return of `evolve`, in
+    #    `finalize`, in the explicit `publish_storage`, and in the single flush before a recognised append-cap retry.
+    #    Physical state, commits and clocks are identical; only deep-file durability (versions) differs.
+    bed_storage: str = field(default="dense", repr=False)
+    deep_publication: str = field(default="step", repr=False)
+    deep_publication_high_water_records: int | None = field(default=None, repr=False)
 
     def validated(self) -> PondEventControl:
         if self.backend not in ("numpy", "numba", "cuda"):
@@ -262,6 +296,18 @@ class PondEventControl:
             if getattr(self, name) not in SLOPE_CHOICES:
                 raise PondEventError(f"{name} must be one of {SLOPE_CHOICES}")
         _positive(self.froude_reference, "froude_reference")
+        if self.bed_storage not in BED_STORAGES:
+            raise PondEventError(f"bed_storage must be one of {BED_STORAGES}, got {self.bed_storage!r}")
+        if self.deep_publication not in DEEP_PUBLICATIONS:
+            raise PondEventError(f"deep_publication must be one of {DEEP_PUBLICATIONS}, got {self.deep_publication!r}")
+        hw = self.deep_publication_high_water_records
+        if self.deep_publication == "boundary":
+            if self.bed_storage != "windowed":
+                raise PondEventError("deep_publication 'boundary' needs bed_storage 'windowed'")
+            if isinstance(hw, bool) or not isinstance(hw, int) or hw < 1:
+                raise PondEventError("deep_publication 'boundary' needs deep_publication_high_water_records, a positive int")
+        elif hw is not None:
+            raise PondEventError("deep_publication_high_water_records is an option of deep_publication 'boundary'")
         return self
 
 
@@ -331,6 +377,12 @@ class PondCounters:
     n_faces_above_froude_reference: int = 0
     # largest transport substep count actually EXECUTED by an accepted step (0 iff none): a host diagnostic, no history
     max_transport_substeps_used: int = 0
+    # Resident-window storage counters (all 0 for a dense bed): deep-store versions this event published (every
+    # publication: per step, high-water, return, finalize, explicit, flush), the subset that were the single flush before
+    # a recognised append-cap retry, and the largest pending journal (records) carried by any accepted state.
+    n_storage_publications: int = 0
+    n_journal_flushes: int = 0
+    max_carried_records: int = 0
     commit_log: tuple = ()
 
 
@@ -434,6 +486,9 @@ class PondStepRecord:
     # per-step cell/class mobile balance (max residual / max MAPLE bound, kg) and the four native numerical residuals
     balance: dict = field(default_factory=dict)
     numerical_residuals: dict = field(default_factory=dict)
+    # windowed beds: {"pending_records": records the RETURNED state carries unpublished, "published": whether this step
+    # published its journal ('step' policy)}; empty for a dense bed
+    storage: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True, eq=False)
@@ -460,6 +515,9 @@ class PondEvolveResult:
     min_accepted_dt_s: float
     max_accepted_dt_s: float
     last_record: PondStepRecord | None
+    # windowed beds: publications this call made, by reason (`high_water`, `flush`, `return`) and the largest pending
+    # journal carried by an accepted state of the call; empty for a dense bed
+    storage: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True, eq=False)
@@ -546,7 +604,10 @@ class PondEvent:
         shape = topology.shape
         if (context.geometry.ny, context.geometry.nx) != shape or context.geometry.dx_m != topology.dx_m:
             raise PondEventError("bed context geometry does not match the topology (shape, dx)")
-        require_supported_bed_context(context)
+        require_supported_bed_context(context, self.control)
+        self.windowed = self.control.bed_storage == "windowed"
+        if self.windowed:
+            require_paired_entry()  # unsupported MAPLE dependency: refused at construction, never downgraded
         # exact physical class checks (as the old _check_event_inputs): diameters in order and the particle density
         diameters = np.array([c.diameter_m for c in context.grain_classes.classes], dtype=np.float64)
         if not np.array_equal(diameters, _host(sediment.diameter_m)):
@@ -571,6 +632,7 @@ class PondEvent:
         self.config_sha256 = _digest(
             topology.identity_sha256, *col, repr(sediment.summary()), None if splash is None else repr(splash.summary()),
             veg, self.forcing_sha256, repr(self.control), repr(self.policy), context.mass_resolution_kg,
+            *_control_identity(self.control, context),
             # the FULL native context: class ids / order / diameters / densities / aggregate flags, geometry (dx, dy, dz,
             # bulk density, active layer, boundaries), commit and avalanche specs, depth rule, initial availability
             tuple((c.class_id, c.diameter_m, c.particle_density_kg_m3, c.is_aggregate)
@@ -649,6 +711,7 @@ class PondEvent:
         topo, hyd, datum = state.topology, state.hydraulic, state.datum
         if topo.shape != self.shape:
             raise PondEventError("state topology shape differs from the event's")
+        self._check_bed(state.bed)
         try:
             check_routing_source(state.held_source_m, self.shape, xp)
         except Exception as exc:
@@ -710,6 +773,29 @@ class PondEvent:
             raise PondEventError(f"phase state invalid: {exc}") from None
         return rt
 
+    def _check_bed(self, bed: BedState) -> None:
+        """Bed-level support checks of a bed handed to this event (initial state, full state validation): the shared
+        `pond_bed.require_supported_bed` (windowed allowed only when the control declares `bed_storage="windowed"`), the
+        declared storage against the bed's actual type, and for a windowed bed MAPLE's cheap column check (header,
+        geometry, class ids, generation AND manifest digest, pending-journal binding) and a carried journal within the
+        actual cap. One batched flag read; nothing is mutated, published or deep-read."""
+        require_supported_bed(bed, self.context, allow_windowed=self.windowed)
+        if is_windowed_bed(bed) != self.windowed:
+            raise PondBedError(f"the bed is {'windowed' if is_windowed_bed(bed) else 'dense'} but the control declares "
+                               f"bed_storage={self.control.bed_storage!r}")
+        if not self.windowed:
+            return
+        from maple.surface.voxels.windowed_inventory import check_windowed_column_cheap
+
+        try:
+            check_windowed_column_cheap(bed.voxel_column, self.context.geometry,
+                                        class_ids=tuple(c.class_id for c in self.context.grain_classes.classes))
+        except (ValueError, TypeError) as exc:
+            raise PondBedError(f"windowed bed: {exc}") from None
+        carried, cap = pending_journal_records(bed), resolved_journal_cap(self.context)
+        if carried > cap:
+            raise PondBedError(f"the bed carries {carried} pending journal records, above the actual cap {cap}")
+
     # -- initial state ----------------------------------------------------------------------------------
     def initial_state(self, bed: BedState, soil_water_m: Any, *, t_s: float = 0.0) -> PondEventState:
         """Event state from an ACTUAL MAPLE bed (its `water.depth_m` is the initial surface depth, its mobile pool the
@@ -719,7 +805,7 @@ class PondEvent:
         from maple.core.types.topographic_commit import committed_elevation_m
 
         context, xp = self.context, self.xp
-        require_supported_bed(bed, context)
+        self._check_bed(bed)
         if array_namespace(bed.water.depth_m) is not xp:
             raise PondEventError("the bed is not in the event namespace (no host/device fallback)")
         topology = self._initial_topology
@@ -1049,6 +1135,14 @@ class PondEvent:
             n_phase_canonicalized=sl.n_phase_canonicalized + reconcile["n_canonicalized"] + n_canon,
             n_phase_remnants=sl.n_phase_remnants + reconcile["n_rounding_remnants"],
             n_native_calls=sl.n_native_calls + 2 + (2 if did_splash else 0))
+        # 7. resident-window storage (LAST operation of the candidate: every geometry / transport / balance / metric check
+        # above has passed). 'step' publishes this step's journal as a new deep-store version; 'boundary' CARRIES the
+        # valid unpublished journal in the returned state (published later by evolve / publish_storage / finalize).
+        # Ordering rule: ALL host work (counters, record, state construction) is done on the UNPUBLISHED bed first; the
+        # deep-store version is written only after it, as the very last operation, so no late host error can leave a
+        # speculative version behind. `published` is therefore the decision, executed at the end.
+        carried = pending_journal_records(bed) if self.windowed else 0
+        published = bool(carried and self.control.deep_publication == "step")
         stats = diag.stats
         c = state.counters
         log = c.commit_log
@@ -1065,7 +1159,8 @@ class PondEvent:
             max_face_froude=max(c.max_face_froude, stats["max_face_froude"]),
             n_faces_above_froude_reference=c.n_faces_above_froude_reference + stats["n_faces_above_froude_reference"],
             max_transport_substeps_used=max(c.max_transport_substeps_used, int(holder["n_sub"])),
-            commit_log=log)
+            n_storage_publications=c.n_storage_publications + int(published),
+            max_carried_records=max(c.max_carried_records, carried), commit_log=log)
         new_state = replace(
             state, hydraulic=hyd_next, bed=bed, sediment_velocity_m_s=physics.sediment_velocity_m_s,
             phase_fraction=reconciled.fraction, phase_position_m=reconciled.position_m, topology=topology,
@@ -1082,13 +1177,16 @@ class PondEvent:
             quiet=quiet, balance=balance,
             numerical_residuals={"pickup": abs(pickup.numerical_residual_scalar_kg),
                                  "deposit": abs(deposit.numerical_residual_scalar_kg),
-                                 "splash_pickup": sp_resid_pick, "splash_deposit": sp_resid_dep})
+                                 "splash_pickup": sp_resid_pick, "splash_deposit": sp_resid_dep},
+            storage={"pending_records": 0 if published else carried, "published": published} if self.windowed else {})
+        if published:  # the last operation of the candidate
+            new_state = replace(new_state, bed=publish_bed_storage(bed, ctx))
         self._blessed.add(new_state)  # built here from validated pieces
         return PondCoupledStep(state=new_state, record=record)
 
     # -- bounded evolve ------------------------------------------------------------------------------------
     def evolve(self, state: PondEventState, end_s: float, *, stop_when_quiet: bool = False,
-               max_steps: int | None = None) -> PondEvolveResult:
+               max_steps: int | None = None, publish_at_return: bool = True) -> PondEvolveResult:
         """Advance to `end_s` by accepted steps of at most `control.time.max_dt_s`. The rain schedule is split EXACTLY at
         every discontinuity (`RainfallSchedule.next_edge_s` / `rate_after_m_per_s`; the rate is never averaged); a
         step that ends on an edge or on `end_s` snaps its time to it. A native `HydraulicStepRejected` or
@@ -1107,7 +1205,7 @@ class PondEvent:
         resumed = check_dt_cap(state.hydraulic.next_dt_cap_s)
         cap = ctl.max_dt_s if resumed is None else min(max(resumed, ctl.min_dt_s), ctl.max_dt_s)
         t_start = t
-        n_acc = n_rej = 0
+        n_acc = n_rej = n_flush = n_high_water = 0
         rejections: list[dict] = []
         stop = None
         dt_min, dt_max = math.inf, 0.0
@@ -1126,13 +1224,18 @@ class PondEvent:
             snap = dt == remaining
             retries = 0
             result = None
+            flushed = False  # at most ONE carried-journal flush per accepted step
             while result is None:
                 if not t + dt > t:
                     stop = "time_resolution"
                     break
+                flush_now = False
                 try:
                     result = self.step(state, rate, dt, t_end_s=piece_end if snap else None)
                 except (HydraulicStepRejected, TransportStepRejected) as exc:
+                    # A genuine physical rejection (also of the redo that follows a storage flush: the capacity refusal can
+                    # precede the transport) enters the ordinary bounded adaptation; the flush itself changed no dt,
+                    # retry count or rejection record, and it is never repeated for this accepted step.
                     retries += 1
                     n_rej += 1
                     if len(rejections) < _REJECTIONS_KEPT:
@@ -1144,6 +1247,23 @@ class PondEvent:
                         stop = "min_dt"
                         break
                     dt, snap = dt * 0.5, False
+                except ValueError as exc:
+                    # Bounded flush / retry (windowed beds): ONLY the native append-cap refusal (source-qualified typed
+                    # `JournalCapacityError` with consistent counts, or the pinned M94 message) raised while the PREVIOUS
+                    # accepted state carries a journal, and only before any flush of this accepted step. Anything else
+                    # (an unrelated ValueError, a step too large for a CLEAN journal, malformed counts) propagates. Only
+                    # a scalar flag is set here: the flush and the redo run after the handler exits.
+                    if (flushed or not self.windowed
+                            or not is_carried_append_cap_refusal(exc, self.context, pending_journal_records(state.bed))):
+                        raise
+                    flush_now = True
+                if flush_now:
+                    # Publish the PREVIOUS validated accepted state (explicitly a prior-state flush, not a candidate
+                    # publication), then redo the SAME attempt: same state clock, rate, dt and snap; rejection counters,
+                    # retries and the adaptive cap are untouched.
+                    state = self._publish(state, "flush")
+                    n_flush += 1
+                    flushed = True
             if result is None:
                 break
             if retries:
@@ -1157,14 +1277,53 @@ class PondEvent:
             n_acc += 1
             dt_min, dt_max = min(dt_min, dt), max(dt_max, dt)
             last = result.record
+            if self.windowed and self.control.deep_publication == "boundary":
+                # high-water boundary: the accepted state carries a valid journal; publish it (storage only) when it
+                # reached the mark. Hydraulic geometry, ledgers and clocks are untouched by the publication.
+                if pending_journal_records(state.bed) >= self.control.deep_publication_high_water_records:
+                    state = self._publish(state, "high_water")
+                    n_high_water += 1
         counters = replace(state.counters, n_rejected_attempts=state.counters.n_rejected_attempts + n_rej)
         state = replace(state, counters=counters)
         self._blessed.add(state)  # only a host counter changed
+        storage: dict = {}
+        if self.windowed:
+            n_return = 0
+            if publish_at_return and pending_journal_records(state.bed):
+                state = self._publish(state, "return")  # return boundary: the returned state is restartable
+                n_return = 1
+            storage = {"n_high_water_publications": n_high_water, "n_flush_publications": n_flush,
+                       "n_return_publications": n_return, "pending_records": pending_journal_records(state.bed)}
         return PondEvolveResult(
             state=state, requested_end_s=end, elapsed_s=float(t - t_start), reached_target=stop is None and t >= end,
             stop_reason=stop, quiet_ready=state.quiet.ready, n_accepted_steps=n_acc, n_rejected_attempts=n_rej,
             rejections=tuple(rejections), min_accepted_dt_s=dt_min if n_acc else 0.0, max_accepted_dt_s=dt_max,
-            last_record=last)
+            last_record=last, storage=storage)
+
+    # -- resident-window storage publication (no physics) -----------------------------------------------------
+    def _publish(self, state: PondEventState, reason: str) -> PondEventState:
+        """Publish the CARRIED journal of a VALIDATED accepted `state` as a new deep-store version (MAPLE's
+        `publish_pending_column` through `publish_bed_storage`: the context's encoding and cap options, old versions
+        retained). Storage only: hydraulic state, topology and held source, ledgers, quiet monitor, clocks and every
+        counter are unchanged except `n_storage_publications` (and `n_journal_flushes` when `reason == "flush"`, the
+        publication of a PRIOR accepted state that precedes the single retry of a capacity-refused step)."""
+        c = state.counters
+        # host bookkeeping FIRST (a malformed publicly supplied counter fails here, before any store write)
+        counters = replace(c, n_storage_publications=c.n_storage_publications + 1,
+                           n_journal_flushes=c.n_journal_flushes + int(reason == "flush"))
+        published = replace(state, bed=publish_bed_storage(state.bed, self.context), counters=counters)
+        self._blessed.add(published)  # only the storage binding of a blessed state changed
+        return published
+
+    def publish_storage(self, state: PondEventState) -> PondEventState:
+        """Explicit NO-PHYSICS publication of a state's carried journal (the checkpoint / handoff boundary). Pure; returns
+        the SAME object when there is nothing to publish (dense bed, or an already published windowed bed). The returned
+        state is bitwise the input except the bed's deep-store binding and the storage counters; a failure leaves the
+        input and every previously referenced store version unchanged."""
+        self._check_state(state)
+        if not self.windowed or not pending_journal_records(state.bed):
+            return state
+        return self._publish(state, "explicit")
 
     # -- audit ------------------------------------------------------------------------------------------------
     def _mobile_identity_bound(self, state: PondEventState, mobile: np.ndarray, vec: dict, picked: np.ndarray,
@@ -1267,7 +1426,7 @@ class PondEvent:
         mobile_bound, mobile_terms = self._mobile_identity_bound(state, mobile, vec, picked, deposited, export, n_calls)
         sediment_closes = bool(np.all(np.abs(closure_resid) <= closure_bound) and np.all(np.abs(mobile_resid) <= mobile_bound))
         gate = gate_displacement_m(state.bed, self.context, state.held_source_m, rt.active)
-        return {
+        report = {
             "schema": SCHEMA, "t_s": state.t_s, "status": state.status,
             "water": {"closes": bool(water_closes), "global_residual_m3": global_residual,
                       "global_bound_m3": closure.global_bound_m3, "max_cell_residual_m3": max_cell,
@@ -1302,6 +1461,17 @@ class PondEvent:
             "counters": {k: getattr(state.counters, k) for k in PondCounters.__dataclass_fields__ if k != "commit_log"},
             "commit_log": list(state.counters.commit_log), "quiet": state.quiet,
         }
+        if self.windowed:  # key present only for a resident-window bed (a dense audit is unchanged)
+            report["storage"] = {
+                "bed_storage": "windowed", "deep_publication": self.control.deep_publication,
+                "high_water_records": self.control.deep_publication_high_water_records,
+                "pending_journal_records": pending_journal_records(state.bed),
+                "journal_cap_records": resolved_journal_cap(self.context),
+                "deep_store_version_id": int(state.bed.voxel_column.deep_store.version_id),
+                "n_storage_publications": state.counters.n_storage_publications,
+                "n_journal_flushes": state.counters.n_journal_flushes,
+                "max_carried_records": state.counters.max_carried_records}
+        return report
 
     # -- completion -----------------------------------------------------------------------------------------------
     def finalize(self, state: PondEventState) -> PondDryHandoff:
@@ -1329,13 +1499,25 @@ class PondEvent:
         deposited = xp.zeros_like(pool)
         terminal_class = xp.zeros((self.nc,), dtype=np.float64)
         n_calls = 0
+        n_flush = n_publish = 0
         if to_bool(xp.any(pool)):
-            bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
+            flush_now = False
+            try:
+                bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
+            except ValueError as exc:
+                # the same bounded rule as `evolve`: ONLY a recognised append-cap refusal against a CARRIED journal, once
+                if not self.windowed or not is_carried_append_cap_refusal(exc, ctx, pending_journal_records(bed)):
+                    raise
+                flush_now = True
+            if flush_now:  # outside the handler: publish the prior state's journal, redo the same terminal deposition
+                bed = publish_bed_storage(bed, ctx)
+                n_flush = n_publish = 1
+                bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
             if to_bool(xp.any(bed.water.mobile_mass_by_cell_class_kg != 0)):
                 raise PondEventError("MAPLE refused terminal mobile deposition; no inventory is erased")
             deposited, terminal_class, n_calls = transfer.deposition_by_cell_class_kg, transfer.deposited_mass_by_class_kg, 1
         held, topology, rt2, refreshed, commit = state.held_source_m, state.topology, rt, False, None
-        if not bed_already_committed(bed, ctx, state.t_s):
+        if not bed_committed_at(bed, ctx, state.t_s):
             bed, held, rt2, topology, commit, refreshed, _ = self._commit_and_gate(
                 bed, held, rt, topology, state.datum, state.hydraulic, state.t_s, final=True)
         if not ledger_is_empty(bed.ledger):
@@ -1348,6 +1530,10 @@ class PondEvent:
                            n_final_commits=c.n_final_commits + int(commit is not None and commit.get("reason") == "final_forced"),
                            n_net_elevation_commits=c.n_net_elevation_commits + int(commit is not None and commit.get("reason") == "net_elevation"),
                            n_refreshes=c.n_refreshes + int(refreshed),
+                           n_storage_publications=c.n_storage_publications + n_publish,
+                           n_journal_flushes=c.n_journal_flushes + n_flush,
+                           max_carried_records=max(c.max_carried_records, pending_journal_records(state.bed),
+                                                   pending_journal_records(bed)),
                            commit_log=c.commit_log + ((commit,) if commit and commit["committed"]
                                                       and len(c.commit_log) < self.control.max_commit_log else ()))
         phase_fraction, phase_position, _ = _canonical_where_empty(xp, state.phase_fraction, state.phase_position_m,
@@ -1368,9 +1554,14 @@ class PondEvent:
                                 qx_m2_s=xp.zeros_like(settled.hydraulic.qx_m2_s),
                                 qy_m2_s=xp.zeros_like(settled.hydraulic.qy_m2_s))
         dry_bed = with_water(bed, ctx, xp.zeros_like(h))
-        dry_bed = publish_bed_storage(dry_bed, ctx)
-        water = replace(settled.water, reset_depth=xp.array(h, copy=True), reset_soil=xp.array(soil, copy=True))
-        dry = replace(settled, hydraulic=dry_hydraulic, bed=dry_bed, water=water,
+        # All host work and audits run on the UNPUBLISHED dry bed; the final publication is the last operation, so a failed
+        # check never leaves a speculative deep version. (The final audit's "storage" block is completed after the
+        # successful publication below, so the returned receipt is truthful.)
+        publishing = bool(pending_journal_records(dry_bed))
+        water =replace(settled.water, reset_depth=xp.array(h, copy=True), reset_soil=xp.array(soil, copy=True))
+        dry_counters = replace(settled.counters,
+                               n_storage_publications=settled.counters.n_storage_publications + int(publishing))
+        dry = replace(settled, hydraulic=dry_hydraulic, bed=dry_bed, water=water, counters=dry_counters,
                       sediment_velocity_m_s=xp.zeros_like(settled.sediment_velocity_m_s), quiet=PondQuiet(), status="dry")
         final_audit = self.audit(dry)
         if not (final_audit["water"]["closes"] and final_audit["sediment"]["closes"]):
@@ -1382,6 +1573,17 @@ class PondEvent:
             "terminal_deposition_by_class_kg": _host(terminal_class).tolist(),
             "pre_terminal_audit": pre, "final_audit": final_audit,
             "final_commit": commit, "geometry_refreshed_at_final": refreshed}
+        if publishing:  # a completed handoff never carries an unpersisted deep journal; last operation
+            dry = replace(dry, bed=publish_bed_storage(dry.bed, ctx))
+            if pending_journal_records(dry.bed):
+                raise PondEventError("the completed handoff still carries an unpublished deep journal")
+            self._blessed.add(dry)  # only the storage binding of an audited state changed
+            # Truthful receipt WITHOUT moving the expensive / refusable checks after the write: the audit above was taken
+            # on the unpublished bed; the publication changes exactly two audited storage facts (everything else in the
+            # block, the counters included, was already computed for the published state), so they are updated only now,
+            # after the publication succeeded. `final_audit["storage"] == audit(dry)["storage"]`.
+            final_audit["storage"]["pending_journal_records"] = pending_journal_records(dry.bed)
+            final_audit["storage"]["deep_store_version_id"] = int(dry.bed.voxel_column.deep_store.version_id)
         return PondDryHandoff(dry_state=dry, pre_reset_surface_m=h, pre_reset_soil_m=soil,
                               terminal_deposition_kg=deposited, accounting=accounting)
 
@@ -1395,16 +1597,60 @@ class PondEvent:
             "water and sediment were not reset")
 
 
-def require_supported_bed_context(context: BedContext) -> None:
-    """Context-only part of `pond_bed.require_supported_bed` (constructor time, no bed yet)."""
+def _control_identity(control: PondEventControl, context: BedContext) -> tuple:
+    """Digest parts of the resident-window options: EMPTY for every dense default (so every dense digest is unchanged)."""
+    if control.bed_storage == "dense":
+        return ()
+    return (("windowed", control.deep_publication, control.deep_publication_high_water_records,
+             context.window_max_journal_records, deep_storage_record(context)),)
+
+
+def require_supported_bed_context(context: BedContext, control: PondEventControl | None = None) -> None:
+    """Context-only part of `pond_bed.require_supported_bed` (constructor time, no bed yet), plus the windowed policy
+    checks that need no state: all raised BEFORE any event array exists.
+
+    Dense (the default control): windowed journal / deep-storage options are refused. Windowed: the journal cap and the
+    deep-chunk encoding options are validated against the bound MAPLE source; for `deep_publication == "boundary"` the
+    high-water mark must lie below the ACTUAL journal cap (`resolved_journal_cap`) and the bound MAPLE package must be a
+    source whose append-cap refusal the recognizer knows (M94 pinned message or the accepted typed
+    `JournalCapacityError`, checked structurally)."""
     if bool(getattr(context.avalanching_spec, "enabled", False)):
         raise PondBedError("avalanching must be explicitly disabled for the pond event")
     if context.depth_update_rule != "constant_depth":
         raise PondBedError("the pond event requires constant_depth")
     if context.record_exchange_history is not False:
         raise PondBedError("record_exchange_history is not supported by the pond event")
-    if getattr(context, "window_max_journal_records", None) is not None:
-        raise PondBedError("windowed journal options are not supported (dense bed only)")
+    windowed = control is not None and control.bed_storage == "windowed"
+    if not windowed:
+        if getattr(context, "window_max_journal_records", None) is not None:
+            raise PondBedError("windowed journal options are not supported (dense bed only)")
+        try:
+            validate_deep_storage(context)
+        except BedIntegrationError as exc:
+            raise PondBedError(str(exc)) from None
+        if context.deep_chunk_encoding != "full" or context.deep_overlay_max_bytes is not None:
+            raise PondBedError("windowed deep-storage options are not supported (dense bed only)")
+        return
+    cap = context.window_max_journal_records
+    if cap is not None and (isinstance(cap, bool) or not isinstance(cap, int) or cap < 1):
+        raise PondBedError(f"window_max_journal_records must be None or a positive int, got {cap!r}")
+    try:
+        validate_deep_storage(context)
+        if control.deep_publication == "boundary":
+            journal_cap = resolved_journal_cap(context)
+            if not control.deep_publication_high_water_records < journal_cap:
+                raise PondBedError(f"deep_publication_high_water_records {control.deep_publication_high_water_records} "
+                                   f"must be below the actual MAPLE journal cap {journal_cap}")
+            recognizer = journal_recognizer_source()
+            if recognizer is None:
+                raise PondBedError("deep_publication 'boundary' recognizes only the pinned M94 append-cap refusal or the "
+                                   "accepted typed JournalCapacityError source; the bound MAPLE package is neither")
+            if recognizer == "typed_journal_capacity_error":
+                require_typed_journal_capacity_error()
+    except BedIntegrationError as exc:
+        if isinstance(exc, PondBedError):
+            raise
+        raise PondBedError(str(exc)) from None
 
 
 # --- composite mobile balance (pure error propagation) -------------------------------------------------

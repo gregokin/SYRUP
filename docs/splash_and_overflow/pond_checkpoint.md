@@ -184,3 +184,8 @@ saved generation; adaptive cap and rain knots through `evolve`; audits equal; no
 before payload read, identity, backend, event binding independent of `config_sha256`, byte bound, every typed corruption
 kind, swapped snapshot, no overwrite, failed-write cleanup, non-mutation), `test_cuda.py` (CuPy restart; honest skip without a
 device; cross-backend refusal both ways).
+
+
+## Windowed extension
+
+The preceding schema `/1` is the dense format. [Windowed pond checkpoints](../pond_windowed/checkpoint.md) use distinct schema `maple-syrup-pond-checkpoint/2`, native resident snapshots and exact immutable external deep-store references, with the same source/backend guards and original 1 GiB resident-plus-companion bound. Pending journals must be explicitly published before save; save never publishes or reroutes.

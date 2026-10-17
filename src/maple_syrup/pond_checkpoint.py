@@ -8,8 +8,10 @@ defaults are not changed, and it does not (and must not) decode this format.
 
 PUBLIC API
     save_pond_checkpoint(path, state_or_handoff, event, identity, *, max_bytes=DEFAULT_MAX_CHECKPOINT_BYTES) -> Path
-    load_pond_checkpoint(path, event, expected_identity, *, allow_complete=False, max_bytes=DEFAULT_MAX_CHECKPOINT_BYTES)
+    load_pond_checkpoint(path, event, expected_identity, *, allow_complete=False, max_bytes=DEFAULT_MAX_CHECKPOINT_BYTES,
+                         expected_bed_storage=None)
         -> PondEventState (wet) | PondDryHandoff (complete; only with `allow_complete=True`)
+    (dense beds write `SCHEMA`, resident-window beds `WINDOWED_SCHEMA`; the loader dispatches on the manifest schema)
     pond_checkpoint_source_pair() -> dict   (the package digests recorded in, and required of, every checkpoint)
 
 LAYOUT (a NEW sibling directory, never an overwrite)
@@ -56,7 +58,20 @@ loaded only by an event of the same array backend AND the same hydraulic backend
 through MAPLE's counted `to_host` / `to_device` (and the native snapshot writer's own conversion). The topology, datum and the
 host class-total anchors of the sediment ledger stay on the host.
 
-Nothing here was run by its author (file-only tools); the root executes `tests/pond_checkpoint`.
+WINDOWED BED (schema `WINDOWED_SCHEMA`, `maple-syrup-pond-checkpoint/2`; documentation: docs/pond_windowed/checkpoint.md).
+A state whose bed is the actual resident-window `WindowedVoxelColumnState` is written under its OWN schema, never as dense:
+the same three files, but `maple_state.npz` is MAPLE's `save_windowed_state_snapshot` (resident window, base, deep prefix
+metadata, height packets, active layer, availability, water) and the manifest adds `bed_storage = "windowed"` and a
+`deep_storage` record (deep-chunk option, store format, physical / logical manifest digests, header digest, store directory,
+generation, window geometry). The deep store itself is referenced, never copied: the checkpoint is NOT a portable archive and
+the referenced immutable version must be retained. Only a PUBLISHED column can be saved (MAPLE's own rule); a column with a
+pending deep journal is refused before any file is written, with a request to publish the accepted storage state explicitly.
+Neither save nor load publishes, commits, reroutes, resets or touches a deep-store file. `max_bytes` bounds the summed
+uncompressed companion + resident native snapshot, not the externally referenced deep chunks. The dense schema `/1`, its
+files and its checks are unchanged, and the two loaders never decode each other's payloads.
+
+Nothing here was run by its author (file-only tools); the root executes `tests/pond_checkpoint` and
+`tests/pond_windowed_checkpoint`.
 """
 
 from __future__ import annotations
@@ -99,13 +114,21 @@ from maple_syrup.pond_event import (
 from maple_syrup.pond_hydraulics import build_pond_hydraulics
 from maple_syrup.pond_network import PondTopology, build_pond_topology
 from maple_syrup.pond_transport import face_network_from_pond_topology, validate_phase
-from maple_syrup.sediment_bed import BedState, bound_maple_package_digest, reroute_threshold_m
+from maple_syrup.sediment_bed import (
+    BedIntegrationError,
+    BedState,
+    bound_maple_package_digest,
+    check_deep_storage_options,
+    is_windowed_bed,
+    reroute_threshold_m,
+)
 
 __all__ = [
     "DEFAULT_MAX_CHECKPOINT_BYTES",
     "MANIFEST_NAME",
     "PAYLOADS",
     "SCHEMA",
+    "WINDOWED_SCHEMA",
     "PondCheckpointError",
     "load_pond_checkpoint",
     "pond_checkpoint_source_pair",
@@ -113,11 +136,21 @@ __all__ = [
 ]
 
 SCHEMA = "maple-syrup-pond-checkpoint/1"
+WINDOWED_SCHEMA = "maple-syrup-pond-checkpoint/2"
 MANIFEST_NAME = "pond_checkpoint.json"
 PAYLOADS = ("maple_state.npz", "pond_continuation.npz")
 MAX_MANIFEST_BYTES = 32 * 1024**2
 MANIFEST_KEYS = frozenset({"schema", "identity", "status", "array_backend", "hydraulic_backend", "source", "binding",
                            "binding_sha256", "files", "payload", "manifest_sha256"})
+WINDOWED_MANIFEST_KEYS = MANIFEST_KEYS | {"bed_storage", "deep_storage"}
+STORAGES = ("dense", "windowed")
+# the deep-version record of a windowed manifest (plain JSON scalars only)
+DEEP_RECORD_KEYS = frozenset({"deep_chunk_encoding", "deep_overlay_max_bytes", "store_format_version",
+                              "physical_manifest_digest", "logical_manifest_digest", "header_digest", "store_dir",
+                              "generation", "n_voxels", "window_voxels", "chunk_columns", "n_chunks", "class_ids",
+                              "packet_terms"})
+_MAX_INDEX = 2**31 - 1
+_MAX_NATIVE_META_BYTES = 8 * 1024**2  # the native snapshot's one Unicode scalar (provenance, store path, class ids)
 PAYLOAD_KEYS = frozenset({"scalars", "arrays", "native", "accounting"})
 STATUSES = ("wet", "complete")
 BACKENDS = ("numpy", "cupy")
@@ -280,8 +313,8 @@ def _canon_into(h: Any, value: Any, depth: int = 0) -> None:
         _refuse(f"identity digest: unsupported value type {type(value).__qualname__}")
 
 
-def _digest_of(*values: Any) -> str:
-    h = hashlib.sha256(SCHEMA.encode("utf-8"))
+def _digest_of(*values: Any, schema: str = SCHEMA) -> str:
+    h = hashlib.sha256(schema.encode("utf-8"))
     for value in values:
         _canon_into(h, value)
     return h.hexdigest()
@@ -301,12 +334,13 @@ def _initial_topology(event: PondEvent) -> PondTopology:
     return top
 
 
-def _binding(event: PondEvent) -> dict:
+def _binding(event: PondEvent, schema: str = SCHEMA) -> dict:
     """Everything the continuation depends on that is NOT in the checkpoint, bound independently of
-    `event.config_sha256` (which may omit native bed-context fields). All arrays hashed by value."""
+    `event.config_sha256` (which may omit native bed-context fields). All arrays hashed by value. The windowed schema adds
+    the bed storage and the context's deep-chunk option (also inside the context digest) as explicit fields."""
     top = _initial_topology(event)
-    return {
-        "schema": SCHEMA,
+    binding = {
+        "schema": schema,
         "event_state_schema": POND_EVENT_SCHEMA,
         "array_backend": event.xp.__name__,
         "hydraulic_backend": event.control.backend,
@@ -315,15 +349,26 @@ def _binding(event: PondEvent) -> dict:
         "phase_bins": int(event.control.phase_bins),
         "event_config_sha256": event.config_sha256,
         "event_forcing_sha256": event.forcing_sha256,
-        "context_sha256": _digest_of(event.context),
-        "column_sha256": _digest_of(event.column),
-        "sediment_sha256": _digest_of(event.sediment),
-        "splash_sha256": None if event.splash is None else _digest_of(event.splash),
-        "schedule_sha256": _digest_of(event.schedule),
-        "options_sha256": _digest_of(event.veg, event.rain_scale, event.control, event.policy),
+        "context_sha256": _digest_of(event.context, schema=schema),
+        "column_sha256": _digest_of(event.column, schema=schema),
+        "sediment_sha256": _digest_of(event.sediment, schema=schema),
+        "splash_sha256": None if event.splash is None else _digest_of(event.splash, schema=schema),
+        "schedule_sha256": _digest_of(event.schedule, schema=schema),
+        "options_sha256": _digest_of(event.veg, event.rain_scale, event.control, event.policy, schema=schema),
         "initial_topology": {"identity_sha256": top.identity_sha256, "source_sha256": top.source_sha256,
                              "topology_sha256": top.topology_sha256, "generation": int(top.generation)},
     }
+    if schema == WINDOWED_SCHEMA:
+        ctx = event.context
+        binding["bed_storage"] = "windowed"
+        ctl = event.control
+        binding["control_storage"] = {"bed_storage": getattr(ctl, "bed_storage", "dense"),
+                                      "deep_publication": getattr(ctl, "deep_publication", "step"),
+                                      "deep_publication_high_water_records": getattr(
+                                          ctl, "deep_publication_high_water_records", None)}
+        binding["deep_storage_option"] = {"deep_chunk_encoding": ctx.deep_chunk_encoding,
+                                          "deep_overlay_max_bytes": ctx.deep_overlay_max_bytes}
+    return binding
 
 
 # --- array specification --------------------------------------------------------------------------------------------
@@ -739,7 +784,7 @@ def _rebuild_topology(event: PondEvent, source_full: np.ndarray, generation: int
     return dataclasses.replace(fresh, generation=generation)
 
 
-def _native_checks(bed: BedState, event: PondEvent, t_s: float) -> None:
+def _native_checks(bed: BedState, event: PondEvent, t_s: float, storage: str = "dense") -> None:
     """The native MAPLE validators on the bed (in its namespace), including the ledger reconciliation at the state clock."""
     from maple.core.types.topographic_commit import validate_committed_topography_state
     from maple.coupling.sediment_ledger.validation import validate_ledger_state
@@ -755,8 +800,16 @@ def _native_checks(bed: BedState, event: PondEvent, t_s: float) -> None:
     ctx = event.context
     shape = (ctx.geometry.ny, ctx.geometry.nx, len(ctx.grain_classes.classes))
     try:
-        require_supported_bed(bed, ctx)
-        check_active_layer_voxel_partition(bed.active_layer, bed.voxel_column, ctx.geometry, ctx.mass_resolution_kg)
+        # explicit in both directions: the core's default is `is_windowed_bed(bed)`, so a dense checkpoint pins False
+        require_supported_bed(bed, ctx, allow_windowed=(storage == "windowed"))
+        if is_windowed_bed(bed):
+            # the actual MAPLE streamed per-chunk / prefix rederivation (save / load boundaries only, never a physical step);
+            # it needs a published column and reads the deep store, writing nothing
+            from maple.surface.voxels.windowed_snapshot import validate_windowed_partition
+
+            validate_windowed_partition(bed.voxel_column, bed.active_layer, ctx.geometry, ctx.mass_resolution_kg)
+        else:
+            check_active_layer_voxel_partition(bed.active_layer, bed.voxel_column, ctx.geometry, ctx.mass_resolution_kg)
         check_sediment_availability_state(bed.sediment_availability, bed.active_layer, ctx.mass_resolution_kg)
         if validate_ledger_state(bed.ledger) != shape or validate_committed_topography_state(bed.committed_topography) != shape:
             _refuse("native ledger / committed topography geometry mismatch")
@@ -905,9 +958,26 @@ def _validate_handoff(event: PondEvent, state: PondEventState, handoff: PondDryH
     del arrays
 
 
-def _validate_state(event: PondEvent, state: Any, handoff: PondDryHandoff | None) -> tuple[dict, dict, PondTopology]:
+def _require_published(bed: Any) -> None:
+    """A windowed bed must be PUBLISHED (no pending deep journal): MAPLE's snapshot requires it and a checkpoint never
+    publishes, canonicalizes or deletes a journal. Reads metadata only; no file is touched."""
+    from maple.surface.voxels.windowed_pending import require_published_column
+
+    try:
+        require_published_column(bed.voxel_column, operation="SYRUP pond checkpoint")
+    except (ValueError, TypeError) as exc:
+        raise PondCheckpointError(
+            f"the windowed bed cannot be checkpointed: {exc}. Explicitly publish the accepted storage state first (the "
+            "event path, PondEvent.publish_storage(state), which also advances the publication counter); a checkpoint "
+            "never publishes, canonicalizes "
+            "or deletes a pending deep journal. Nothing was written.") from None
+
+
+def _validate_state(event: PondEvent, state: Any, handoff: PondDryHandoff | None,
+                    storage: str = "dense") -> tuple[dict, dict, PondTopology]:
     """FULL independent validation of a state (or the dry state of a handoff). Never calls `event.step`, never consults the
-    event's runtime cache for its own checks. Returns `(arrays, scalars, fresh_topology)`."""
+    event's runtime cache for its own checks. Returns `(arrays, scalars, fresh_topology)`. `storage` is the checkpoint's bed
+    storage ("dense" or "windowed"); a bed of the other kind is refused (no cross-storage conversion)."""
     from maple.core.backend import array_namespace, to_bool, to_host
 
     xp, ctx = event.xp, event.context
@@ -958,7 +1028,15 @@ def _validate_state(event: PondEvent, state: Any, handoff: PondDryHandoff | None
     bed = state.bed
     if not isinstance(bed, BedState) or array_namespace(bed.water.depth_m) is not xp:
         _refuse("the bed is not an actual MAPLE BedState in the event namespace")
-    _native_checks(bed, event, scalars["t_s"])
+    if is_windowed_bed(bed) != (storage == "windowed"):
+        _refuse(f"the bed storage ({'windowed' if is_windowed_bed(bed) else 'dense'}) is not the checkpoint's ({storage}); "
+                "no cross-storage conversion exists")
+    if getattr(event.control, "bed_storage", "dense") != storage:
+        _refuse(f"the event control's bed_storage ({getattr(event.control, 'bed_storage', 'dense')!r}) is not the "
+                f"checkpoint's ({storage!r}); a windowed checkpoint needs a PondEventControl(bed_storage='windowed')")
+    if storage == "windowed":
+        _require_published(bed)
+    _native_checks(bed, event, scalars["t_s"], storage)
     if not to_bool(xp.array_equal(bed.water.depth_m, hyd.depth_m)):
         _refuse("native water depth differs from the hydraulic depth")
     active_dev = xp.asarray(fresh.active)
@@ -1102,6 +1180,36 @@ def _npy_preflight(path: Path, sizes: dict[str, int], table: dict | None) -> Non
         raise PondCheckpointError(f"{path.name}: malformed .npy header or archive: {exc}") from None
 
 
+def _audit_array_table(table: Any, specs: dict, sizes: dict[str, int], limit: int) -> None:
+    """The companion's declared array table against the schema specification and the archive directory (declared dtype /
+    shape, summed declared bytes within `limit`, member size = declared bytes + a bounded `.npy` header, same member set).
+    Metadata only: nothing is expanded."""
+    if not isinstance(table, dict) or not set(specs) <= set(table):
+        _refuse("array table is missing required arrays")
+    declared = 0
+    for name, rec in table.items():
+        if not isinstance(name, str) or not isinstance(rec, dict) or set(rec) != {"dtype", "shape"}:
+            _refuse("malformed array table entry")
+        if not _dtype_ok(rec["dtype"]) or not isinstance(rec["shape"], list) or len(rec["shape"]) > _MAX_NDIM \
+                or any(type(n) is not int or n < 0 for n in rec["shape"]):
+            _refuse(f"array {name}: dtype / shape not allowed")
+        count = math.prod(rec["shape"])
+        nbytes = count * np.dtype(rec["dtype"]).itemsize
+        declared += nbytes
+        if declared > limit:
+            _refuse("declared array bytes exceed the bounded uncompressed size")
+        size = sizes.get(name + ".npy")
+        if size is None or not (nbytes < size <= nbytes + 4096):
+            _refuse(f"array {name}: archive member size does not match the declared dtype / shape")
+        if name in specs:
+            shape, dtype, _sign, _loc = specs[name]
+            got = tuple(rec["shape"])
+            if rec["dtype"] != dtype or len(got) != len(shape) or any(w is not None and w != g for w, g in zip(shape, got, strict=True)):
+                _refuse(f"array {name}: declared dtype / shape differ from the schema (expected {dtype} {shape}, got {rec['dtype']} {got})")
+    if set(sizes) != {n + ".npy" for n in table}:
+        _refuse("companion archive members differ from the array table")
+
+
 def _max_bytes(value: Any) -> int:
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or int(value) < 1:
         _refuse(f"max_bytes must be a positive integer byte bound, got {value!r}")
@@ -1151,6 +1259,275 @@ def _read_manifest(path: Path) -> dict:
     return data
 
 
+# --- windowed bed: deep-version record, native snapshot expectations, load ----------------------------------------------
+def _check_deep_record(rec: Any, event: PondEvent, limit: int | None = None) -> dict:
+    """Exact, typed check of the manifest's `deep_storage` record against the event's native context (the deep-chunk option
+    must be EXACTLY the context's: no cross-encoding or bound change). Pure value checks: no file is opened."""
+    ctx = event.context
+    if not isinstance(rec, dict) or set(rec) != DEEP_RECORD_KEYS:
+        _refuse(f"deep_storage record keys mismatch: {sorted(rec) if isinstance(rec, dict) else type(rec).__name__}")
+    try:
+        check_deep_storage_options(ctx.deep_chunk_encoding, ctx.deep_overlay_max_bytes)
+        check_deep_storage_options(rec["deep_chunk_encoding"], rec["deep_overlay_max_bytes"])
+    except BedIntegrationError as exc:
+        raise PondCheckpointError(f"deep-chunk storage option is invalid: {exc}") from None
+    if (rec["deep_chunk_encoding"], rec["deep_overlay_max_bytes"]) != (ctx.deep_chunk_encoding, ctx.deep_overlay_max_bytes):
+        _refuse(f"checkpoint deep storage ({rec['deep_chunk_encoding']!r}, {rec['deep_overlay_max_bytes']!r}) differs from the "
+                f"event context ({ctx.deep_chunk_encoding!r}, {ctx.deep_overlay_max_bytes!r}); a cross-encoding / bound "
+                "change is refused (no migration)")
+    fmt = rec["store_format_version"]
+    if type(fmt) is not int or fmt not in (1, 2):
+        _refuse(f"deep_storage store_format_version must be the int 1 or 2, got {fmt!r}")
+    if ctx.deep_chunk_encoding == "full" and fmt != 1:
+        _refuse("the 'full' deep-chunk context cannot continue an overlay (v2) deep version (no cross-encoding continuation)")
+    for key in ("physical_manifest_digest", "logical_manifest_digest", "header_digest"):
+        _hex(rec[key], f"deep_storage.{key}")
+    if fmt == 1 and rec["physical_manifest_digest"] != rec["logical_manifest_digest"]:
+        _refuse("a v1 deep version has equal physical and logical manifest digests")
+    if not isinstance(rec["store_dir"], str) or not rec["store_dir"] or not os.path.isabs(rec["store_dir"]):
+        _refuse("deep_storage store_dir must be an absolute path string")
+    generation = _exact_int(rec["generation"], "deep_storage.generation")
+    n_voxels = _exact_int(rec["n_voxels"], "deep_storage.n_voxels", 1)
+    window = _exact_int(rec["window_voxels"], "deep_storage.window_voxels", 1)
+    chunk = _exact_int(rec["chunk_columns"], "deep_storage.chunk_columns", 1)
+    n_chunks = _exact_int(rec["n_chunks"], "deep_storage.n_chunks", 1)
+    if max(generation, n_voxels, window, chunk, n_chunks) > _MAX_INDEX or window > n_voxels:
+        _refuse("deep_storage window / voxel / chunk counts are out of range")
+    n_cells = int(event.shape[0]) * int(event.shape[1])
+    if n_chunks != -(-n_cells // chunk):
+        _refuse("deep_storage chunk count disagrees with the grid and chunk width")
+    ids = [g.class_id for g in ctx.grain_classes.classes]
+    if rec["class_ids"] != ids:
+        _refuse("deep_storage class ordering differs from the context's grain classes")
+    # Cheap bounds on UNTRUSTED geometry, all plain integer arithmetic, BEFORE any native size function runs. The native
+    # packet size (`prefix_depth`) walks a tree whose cost grows with n_voxels * n_classes, so it is only evaluated for
+    # sizes MAPLE itself accepts (the binding refuses n_terms above QUALIFIED_MAX_TERMS), which also bounds that walk.
+    resident = int(event.shape[0]) * int(event.shape[1]) * window * len(ids) * 8  # window_kg alone, a strict lower bound
+    if limit is not None and resident > limit:
+        _refuse(f"deep_storage window geometry needs at least {resident} resident bytes, above max_bytes = {limit} "
+                "(refused from the manifest alone; nothing was read)")
+    from maple.core.backend.numpy_pairwise_order import QUALIFIED_MAX_TERMS
+
+    if n_voxels * len(ids) > QUALIFIED_MAX_TERMS:
+        _refuse(f"deep_storage n_voxels x n_classes = {n_voxels * len(ids)} exceeds the native height-packet bound "
+                f"{QUALIFIED_MAX_TERMS} (refused from the manifest alone; nothing was read)")
+    try:
+        from maple.surface.voxels.windowed_prefix import packet_terms_for
+
+        terms = packet_terms_for(n_voxels, len(ids))
+    except Exception as exc:
+        raise PondCheckpointError(f"the native prefix height-packet support is unavailable: {exc}") from None
+    if _exact_int(rec["packet_terms"], "deep_storage.packet_terms", 1) != terms:
+        _refuse("deep_storage packet_terms disagrees with the native packet size for this column")
+    return rec
+
+
+def _deep_record(column: Any, event: PondEvent) -> dict:
+    """The record of the published deep version a windowed bed is bound to (identities and geometry only; the version itself
+    stays in its external immutable store and must be retained)."""
+    from maple.surface.voxels.windowed_prefix import require_prefix_packets
+
+    ctx = event.context
+    store = column.deep_store
+    header = store.header
+    try:
+        packets = require_prefix_packets(column, operation="SYRUP pond checkpoint")
+    except (ValueError, TypeError) as exc:
+        raise PondCheckpointError(f"the windowed bed has no valid height packets: {exc}") from None
+    record = {
+        "deep_chunk_encoding": ctx.deep_chunk_encoding, "deep_overlay_max_bytes": ctx.deep_overlay_max_bytes,
+        "store_format_version": int(store.format_version), "physical_manifest_digest": str(store.manifest_digest),
+        "logical_manifest_digest": str(store.logical_manifest_digest), "header_digest": str(header.digest()),
+        "store_dir": str(Path(store.store_dir).resolve()), "generation": int(store.version_id),
+        "n_voxels": int(column.n_voxels), "window_voxels": int(header.window_voxels),
+        "chunk_columns": int(header.chunk_columns), "n_chunks": int(store.n_chunks),
+        "class_ids": [str(c) for c in header.class_ids], "packet_terms": int(packets.packet_terms),
+    }
+    return _check_deep_record(record, event)
+
+
+def _windowed_provenance(deep: dict) -> dict:
+    return {"bed_storage": "windowed", "physical_manifest_digest": deep["physical_manifest_digest"],
+            "logical_manifest_digest": deep["logical_manifest_digest"]}
+
+
+def _native_expected(event: PondEvent, deep: dict) -> dict[str, tuple[tuple[int, ...], str]]:
+    """Name -> (shape, dtype string) of every array member of MAPLE's windowed snapshot, derived from the event's grid and
+    the validated deep record alone (so the preflight needs nothing from the payload)."""
+    ny, nx = int(event.shape[0]), int(event.shape[1])
+    nc, w, p = int(event.nc), deep["window_voxels"], deep["packet_terms"]
+    cell, cc = (ny, nx), (ny, nx, nc)
+    return {"window_kg": ((ny, nx, w, nc), "<f8"), "base": (cell, "<i4"), "deep_by_class_kg": (cc, "<f8"),
+            "deep_total_kg": (cell, "<f8"), "deep_room_kg": (cell, "<f8"), "prefix_packet": ((ny, nx, p), "<f8"),
+            "active_mass_kg": (cc, "<f8"), "available_mass_kg": (cc, "<f8"), "bound_mass_kg": (cc, "<f8"),
+            "water_depth_m": (cell, "<f8"), "mobile_mass_kg": (cc, "<f8")}
+
+
+def _native_expected_nbytes(expected: dict) -> int:
+    return sum(math.prod(shape) * np.dtype(dtype).itemsize for shape, dtype in expected.values())
+
+
+def _windowed_resident_nbytes(bed: BedState, deep: dict, ident: dict) -> int:
+    """Uncompressed bytes of the RESIDENT native snapshot: window, base, deep prefix metadata, height packets, active layer,
+    availability and water arrays, the one Unicode metadata scalar (4 bytes per character) and a `.npy` header allowance per
+    member. Nothing proportional to cells x voxels x classes: the deep store is not counted (it is referenced)."""
+    column = bed.voxel_column
+    arrays = [column.window_kg, column.base, column.deep_by_class_kg, column.deep_total_kg, column.deep_room_kg,
+              column.height_packet.packet, bed.active_layer.mass_kg, bed.sediment_availability.available_mass_kg,
+              bed.sediment_availability.bound_mass_kg, bed.water.depth_m, bed.water.mobile_mass_by_cell_class_kg]
+    chars = 2048 + len(deep["store_dir"]) + len(json.dumps(ident)) + sum(len(c) + 4 for c in deep["class_ids"])
+    return sum(int(a.nbytes) for a in arrays) + 4 * chars + 512 * (len(arrays) + 1)
+
+
+def _read_npy_header(member: Any, label: str) -> tuple[tuple, bool, np.dtype]:
+    from numpy.lib import format as npf
+
+    version = npf.read_magic(member)
+    if version == (1, 0):
+        return npf.read_array_header_1_0(member, max_header_size=_MAX_NPY_HEADER)
+    if version in ((2, 0), (3, 0)):
+        return npf.read_array_header_2_0(member, max_header_size=_MAX_NPY_HEADER)
+    raise PondCheckpointError(f"{label}: unsupported .npy version {version}")
+
+
+def _windowed_snapshot_preflight(path: Path, sizes: dict[str, int], expected: dict) -> None:
+    """Bounded header audit of MAPLE's windowed snapshot BEFORE anything is expanded: exactly the native member set, the
+    generic size arithmetic and dtype-kind rule of `_npy_preflight` (no object / structured data), then every array member's
+    dtype and shape against the grid-derived expectation, and the one `metadata` member a 0-d Unicode scalar of bounded size."""
+    names = {n + ".npy" for n in (*expected, "metadata")}
+    if set(sizes) != names:
+        _refuse(f"{path.name}: windowed snapshot members {sorted(sizes)} differ from the native layout {sorted(names)}")
+    _npy_preflight(path, sizes, None)
+    try:
+        with zipfile.ZipFile(path) as archive:
+            for info in archive.infolist():
+                name = info.filename[: -len(".npy")]
+                with archive.open(info) as member:
+                    shape, fortran, dtype = _read_npy_header(member, f"{path.name}:{info.filename}")
+                if fortran:
+                    _refuse(f"{path.name}:{info.filename}: not C-ordered")
+                if name == "metadata":
+                    if dtype.kind != "U" or tuple(shape) != () or dtype.itemsize > _MAX_NATIVE_META_BYTES:
+                        _refuse(f"{path.name}: metadata must be one bounded 0-d Unicode scalar, got {dtype} {shape}")
+                    continue
+                want_shape, want_dtype = expected[name]
+                if tuple(shape) != want_shape or dtype.str != want_dtype:
+                    _refuse(f"{path.name}:{info.filename}: header {dtype.str} {tuple(shape)} differs from the expected "
+                            f"{want_dtype} {want_shape}; refused before any allocation")
+    except PondCheckpointError:
+        raise
+    except (ValueError, EOFError, OSError, zipfile.BadZipFile, SyntaxError, TypeError, KeyError) as exc:
+        raise PondCheckpointError(f"{path.name}: malformed .npy header or archive: {exc}") from None
+
+
+def _check_windowed_snapshot(snapshot: Any, data: dict, deep: dict) -> None:
+    """The loaded native snapshot must be restartable, validated, bound to THIS manifest, and its deep version must be exactly
+    the recorded one (format, physical / logical identities, header, store directory, generation, geometry)."""
+    from maple.core.types.voxel import WindowedVoxelColumnState
+
+    keys = {"voxel_column", "active_layer", "sediment_availability", "water", "time_s", "step", "validated", "restartable",
+            "is_diagnostic", "provenance"}
+    if not isinstance(snapshot, dict) or set(snapshot) != keys:
+        _refuse("windowed MAPLE snapshot fields differ from the native layout")
+    if snapshot["validated"] is not True or snapshot["restartable"] is not True or snapshot["is_diagnostic"] is not False:
+        _refuse("invalid MAPLE windowed snapshot (not validated / restartable, or diagnostic)")
+    wanted = {"syrup_pond_checkpoint_schema": WINDOWED_SCHEMA, "requires_companion": True, "identity": data["identity"],
+              "binding_sha256": data["binding_sha256"], "array_backend": data["array_backend"],
+              "hydraulic_backend": data["hydraulic_backend"], "status": data["status"], **_windowed_provenance(deep)}
+    if snapshot["provenance"] != wanted:
+        _refuse("MAPLE windowed snapshot provenance is not bound to this manifest")
+    column = snapshot["voxel_column"]
+    if not isinstance(column, WindowedVoxelColumnState) or column.pending_deep is not None:
+        _refuse("the snapshot column is not a published WindowedVoxelColumnState")
+    store, header = column.deep_store, column.deep_store.header
+    if (int(store.format_version) != deep["store_format_version"]
+            or store.manifest_digest != deep["physical_manifest_digest"]
+            or store.logical_manifest_digest != deep["logical_manifest_digest"]
+            or header.digest() != deep["header_digest"]
+            or str(Path(store.store_dir).resolve()) != deep["store_dir"]
+            or int(store.version_id) != deep["generation"] or int(column.generation) != deep["generation"]
+            or int(column.n_voxels) != deep["n_voxels"] or int(column.window_kg.shape[2]) != deep["window_voxels"]
+            or int(header.chunk_columns) != deep["chunk_columns"] or int(store.n_chunks) != deep["n_chunks"]
+            or [str(c) for c in header.class_ids] != deep["class_ids"]
+            or column.height_packet is None or int(column.height_packet.packet_terms) != deep["packet_terms"]):
+        _refuse("the loaded deep-store version is not the one recorded in the manifest (identity, format, geometry or "
+                "store location differ)")
+
+
+def _load_windowed(root: Path, data: dict, event: PondEvent, expected: dict, allow_complete: bool, limit: int):
+    """Windowed (`WINDOWED_SCHEMA`) load: the dense order of checks, with the windowed manifest keys and deep-version record,
+    all validated BEFORE a payload is opened; the grid-derived native layout is bounded and header-audited before MAPLE's
+    `load_windowed_state_snapshot` (which streams the full partition validation) is called with the caller's remaining bound."""
+    from maple.surface.voxels.windowed_snapshot import load_windowed_state_snapshot
+
+    if set(data) != WINDOWED_MANIFEST_KEYS:
+        _refuse(f"manifest keys mismatch: missing {sorted(WINDOWED_MANIFEST_KEYS - set(data))}, "
+                f"unknown {sorted(set(data) - WINDOWED_MANIFEST_KEYS)}")
+    if _hex(data["manifest_sha256"], "manifest_sha256") != _seal_manifest(data)["manifest_sha256"]:
+        _refuse("manifest hash mismatch (the manifest was modified)")
+    if data["identity"] != expected:
+        _refuse("checkpoint case / source / config identity differs from the expected identity")
+    if data["source"] != pond_checkpoint_source_pair():
+        _refuse("source pair mismatch: the imported maple_syrup / maple packages differ from the ones that wrote the "
+                "checkpoint (refused before any payload is read)")
+    if data["array_backend"] not in BACKENDS or data["hydraulic_backend"] not in ("numpy", "numba", "cuda"):
+        _refuse("manifest records an unsupported backend")
+    if data["array_backend"] != event.xp.__name__:
+        _refuse(f"cross-backend load refused: written by the {data['array_backend']!r} array backend, event is "
+                f"{event.xp.__name__!r} (cross-backend migration is not qualified)")
+    if data["hydraulic_backend"] != event.control.backend:
+        _refuse(f"hydraulic backend mismatch: written with {data['hydraulic_backend']!r}, event uses "
+                f"{event.control.backend!r} (numpy and numba are not interchangeable here)")
+    if data["status"] not in STATUSES:
+        _refuse(f"unknown checkpoint status {data['status']!r}")
+    if data["status"] == "complete" and not allow_complete:
+        _refuse("a completed event cannot resume or repeat its dry reset (load with allow_complete=True to read the handoff)")
+    if data["bed_storage"] != "windowed":
+        _refuse(f"bed_storage {data['bed_storage']!r} is not 'windowed' under the windowed schema")
+    binding = _binding(event, WINDOWED_SCHEMA)
+    if data["binding"] != binding or data["binding_sha256"] != _sha256_text(_json_dumps(binding)):
+        diff = sorted(k for k in binding if not isinstance(data["binding"], dict) or data["binding"].get(k) != binding[k])
+        _refuse(f"event binding mismatch (static inputs differ from the ones that wrote the checkpoint): {diff}")
+    deep = _check_deep_record(data["deep_storage"], event, limit)
+    payload = data["payload"]
+    if not isinstance(payload, dict) or set(payload) != PAYLOAD_KEYS:
+        _refuse("payload keys mismatch")
+    files = data["files"]
+    if not isinstance(files, dict) or set(files) != set(PAYLOADS):
+        _refuse("payload file set mismatch")
+    native = _native_expected(event, deep)
+    if _native_expected_nbytes(native) > limit:
+        _refuse(f"the resident native snapshot needs at least {_native_expected_nbytes(native)} uncompressed bytes, above "
+                f"max_bytes = {limit} (refused from the manifest alone; nothing was read)")
+
+    for name in PAYLOADS:
+        if _hash_file(root / name, limit)[0] != _hex(files[name], f"files[{name}]"):
+            _refuse(f"checkpoint payload hash mismatch: {name}")
+    total, member_sizes = 0, {}
+    for name in PAYLOADS:
+        sizes = _zip_audit(root / name, limit, budget_used=total)
+        total += sum(sizes.values())
+        member_sizes[name] = sizes
+    specs = _specs(event, dry=data["status"] == "complete")
+    table = payload["arrays"]
+    _audit_array_table(table, specs, member_sizes[PAYLOADS[1]], limit)
+    _npy_preflight(root / PAYLOADS[1], member_sizes[PAYLOADS[1]], table)
+    _windowed_snapshot_preflight(root / PAYLOADS[0], member_sizes[PAYLOADS[0]], native)
+
+    remaining = limit - sum(member_sizes[PAYLOADS[1]].values())
+    if remaining < 1:
+        _refuse("max_bytes leaves no room for the native snapshot after the companion")
+    ctx = event.context
+    try:
+        snapshot = load_windowed_state_snapshot(root / PAYLOADS[0], geometry=ctx.geometry, grain_classes=ctx.grain_classes,
+                                                mass_resolution_kg=ctx.mass_resolution_kg, max_bytes=int(remaining))
+    except Exception as exc:
+        raise PondCheckpointError(f"MAPLE windowed snapshot cannot be loaded (is the referenced deep-store version "
+                                  f"retained and unmodified?): {exc}") from None
+    _check_windowed_snapshot(snapshot, data, deep)
+    return _restore(root, event, data, payload, table, specs, snapshot, "windowed")
+
+
 # --- save ----------------------------------------------------------------------------------------------------------------
 def save_pond_checkpoint(path: Any, state_or_handoff: Any, event: PondEvent, identity: dict, *,
                          max_bytes: int = DEFAULT_MAX_CHECKPOINT_BYTES) -> Path:
@@ -1158,7 +1535,11 @@ def save_pond_checkpoint(path: Any, state_or_handoff: Any, event: PondEvent, ide
 
     Everything is validated BEFORE the first byte is written (the same independent validation `load_pond_checkpoint` runs on
     what it reads); nothing is committed, rerouted, reset or finalised. The directory is staged as a hidden sibling and
-    renamed into place; on any failure only that staging directory is removed. `path` must not exist and its parent must."""
+    renamed into place; on any failure only that staging directory is removed. `path` must not exist and its parent must.
+
+    A state whose bed is a resident-window `WindowedVoxelColumnState` is written under `WINDOWED_SCHEMA` and must be PUBLISHED:
+    a pending deep journal is refused before any file is written (publish the accepted storage state explicitly first; this
+    function never publishes, canonicalizes or deletes a journal and never writes into the deep store)."""
     from maple.core.backend import to_host
     from maple.io.outputs.snapshot import save_state_snapshot
 
@@ -1182,7 +1563,10 @@ def save_pond_checkpoint(path: Any, state_or_handoff: Any, event: PondEvent, ide
         handoff, state, status = None, state_or_handoff, "wet"
     else:
         _refuse("save needs a PondEventState or a PondDryHandoff (a bare dry state is not a handoff and is refused)")
-    arrays, scalars, _fresh = _validate_state(event, state, handoff)
+    windowed = isinstance(state.bed, BedState) and is_windowed_bed(state.bed)
+    if windowed:
+        _require_published(state.bed)  # before any other work: a pending journal is refused with nothing read or written
+    arrays, scalars, _fresh = _validate_state(event, state, handoff, "windowed" if windowed else "dense")
 
     table: dict[str, dict] = {}
     host: dict[str, np.ndarray] = {}
@@ -1210,31 +1594,52 @@ def save_pond_checkpoint(path: Any, state_or_handoff: Any, event: PondEvent, ide
               "committed_topography": _native_encode(state.bed.committed_topography, add_native)}
     payload = {"scalars": scalars, "arrays": table, "native": native,
                "accounting": None if handoff is None else _plain_encode(handoff.accounting)}
-    binding = _binding(event)
-    manifest = {"schema": SCHEMA, "identity": ident, "status": status, "array_backend": event.xp.__name__,
+    schema = WINDOWED_SCHEMA if windowed else SCHEMA
+    binding = _binding(event, schema)
+    manifest = {"schema": schema, "identity": ident, "status": status, "array_backend": event.xp.__name__,
                 "hydraulic_backend": event.control.backend, "source": pond_checkpoint_source_pair(), "binding": binding,
                 "binding_sha256": _sha256_text(_json_dumps(binding)), "files": {}, "payload": payload}
+    bed = state.bed
+    deep = None
+    if windowed:
+        deep = _deep_record(bed.voxel_column, event)
+        manifest["bed_storage"] = "windowed"
+        manifest["deep_storage"] = deep
     try:
         _json_dumps(manifest)
     except (TypeError, ValueError) as exc:
         raise PondCheckpointError(f"manifest is not strict JSON: {exc}") from None
-    bed = state.bed
-    estimate = (sum(a.nbytes for a in host.values()) + _tree_nbytes(bed.voxel_column) + _tree_nbytes(bed.active_layer)
-                + _tree_nbytes(bed.sediment_availability) + _tree_nbytes(bed.water))
+    if windowed:
+        # RESIDENT arrays, counters and native-prefix metadata only: never the logical (cells x voxels x classes) column
+        estimate = sum(a.nbytes for a in host.values()) + _windowed_resident_nbytes(bed, deep, ident)
+    else:
+        estimate = (sum(a.nbytes for a in host.values()) + _tree_nbytes(bed.voxel_column) + _tree_nbytes(bed.active_layer)
+                    + _tree_nbytes(bed.sediment_availability) + _tree_nbytes(bed.water))
     if estimate > limit:
         _refuse(f"checkpoint needs about {estimate} uncompressed bytes, above max_bytes = {limit}; nothing was written "
                 "(the bound is a caller-explicit resource control and is never raised automatically)")
 
     staging = Path(tempfile.mkdtemp(prefix=f".{target.name}.partial-", dir=parent))
     try:
-        provenance = {"syrup_pond_checkpoint_schema": SCHEMA, "requires_companion": True, "identity": ident,
+        provenance = {"syrup_pond_checkpoint_schema": schema, "requires_companion": True, "identity": ident,
                       "binding_sha256": manifest["binding_sha256"], "array_backend": event.xp.__name__,
                       "hydraulic_backend": event.control.backend, "status": status}
-        save_state_snapshot(bed.voxel_column, bed.active_layer, scalars["t_s"], staging / PAYLOADS[0],
-                            step=scalars["counters"]["n_accepted_steps"],
-                            reason="SYRUP pond checkpoint component: companion continuation file required",
-                            geometry=event.context.geometry, mass_resolution_kg=event.context.mass_resolution_kg,
-                            sediment_availability=bed.sediment_availability, water=bed.water, provenance=provenance)
+        if windowed:
+            from maple.surface.voxels.windowed_snapshot import save_windowed_state_snapshot
+
+            provenance.update(_windowed_provenance(deep))
+            # MAPLE's own writer: re-validates (streamed) and refuses an existing target; the deep store is only referenced
+            save_windowed_state_snapshot(bed.voxel_column, bed.active_layer, scalars["t_s"], staging / PAYLOADS[0],
+                                         step=scalars["counters"]["n_accepted_steps"], geometry=event.context.geometry,
+                                         mass_resolution_kg=event.context.mass_resolution_kg,
+                                         sediment_availability=bed.sediment_availability, water=bed.water,
+                                         provenance=provenance)
+        else:
+            save_state_snapshot(bed.voxel_column, bed.active_layer, scalars["t_s"], staging / PAYLOADS[0],
+                                step=scalars["counters"]["n_accepted_steps"],
+                                reason="SYRUP pond checkpoint component: companion continuation file required",
+                                geometry=event.context.geometry, mass_resolution_kg=event.context.mass_resolution_kg,
+                                sediment_availability=bed.sediment_availability, water=bed.water, provenance=provenance)
         np.savez(staging / PAYLOADS[1], **host)
         total = 0
         audited = {}
@@ -1242,7 +1647,10 @@ def save_pond_checkpoint(path: Any, state_or_handoff: Any, event: PondEvent, ide
             audited[name] = _zip_audit(staging / name, limit, budget_used=total)
             total += sum(audited[name].values())
         _npy_preflight(staging / PAYLOADS[1], audited[PAYLOADS[1]], table)
-        _npy_preflight(staging / PAYLOADS[0], audited[PAYLOADS[0]], None)
+        if windowed:
+            _windowed_snapshot_preflight(staging / PAYLOADS[0], audited[PAYLOADS[0]], _native_expected(event, deep))
+        else:
+            _npy_preflight(staging / PAYLOADS[0], audited[PAYLOADS[0]], None)
         files = {name: _hash_file(staging / name, limit)[0] for name in PAYLOADS}
         sealed = _seal_manifest({**manifest, "files": files})
         _write_manifest(staging / MANIFEST_NAME, sealed)
@@ -1263,18 +1671,23 @@ def _write_manifest(path: Path, manifest: dict) -> None:
 
 # --- load ----------------------------------------------------------------------------------------------------------------
 def load_pond_checkpoint(path: Any, event: PondEvent, expected_identity: dict, *, allow_complete: bool = False,
-                         max_bytes: int = DEFAULT_MAX_CHECKPOINT_BYTES):
+                         max_bytes: int = DEFAULT_MAX_CHECKPOINT_BYTES, expected_bed_storage: str | None = None):
     """Restore a checkpoint into the namespace of `event` (see the module docstring for the order of checks). Returns a wet
     `PondEventState`, or a `PondDryHandoff` for a completed checkpoint when `allow_complete=True` (it is data: its dry reset
     is never replayed). `event` must be a fresh `PondEvent` built from the ORIGINAL initial topology and the same static
-    inputs; the state is bound to its held source on first use. Nothing is committed, rerouted, reset or finalised."""
-    from maple.core.backend import to_device
+    inputs; the state is bound to its held source on first use. Nothing is committed, rerouted, reset or finalised.
+
+    The checkpoint's schema selects the loader: `SCHEMA` (dense bed) or `WINDOWED_SCHEMA` (resident-window bed). A caller that
+    requires one storage passes `expected_bed_storage` ("dense" / "windowed"; default None accepts either) and any other
+    checkpoint is refused before a payload is read. Windowed loads additionally need the referenced deep-store version."""
     from maple.io.outputs.snapshot import load_state_snapshot
 
     _event_checks(event)
     limit = _max_bytes(max_bytes)
     if not isinstance(allow_complete, bool):
         _refuse("allow_complete must be a bool")
+    if expected_bed_storage is not None and expected_bed_storage not in STORAGES:
+        _refuse(f"expected_bed_storage must be None or one of {STORAGES}, got {expected_bed_storage!r}")
     expected = _canonical_identity(expected_identity)
     root = Path(path)
     if root.is_symlink() or not root.is_dir():
@@ -1287,6 +1700,14 @@ def load_pond_checkpoint(path: Any, event: PondEvent, expected_identity: dict, *
     data = _read_manifest(root)
     if data.get("schema") in ("maple-syrup-checkpoint/1", "maple-syrup-checkpoint/2"):
         _refuse("this is an event checkpoint of the accepted checkpoint module, not a pond checkpoint")
+    if data.get("schema") == WINDOWED_SCHEMA:
+        # a different payload layout: it is never decoded by the dense steps below
+        if expected_bed_storage == "dense":
+            _refuse("the checkpoint holds a windowed bed but a dense bed was expected (no cross-storage conversion)")
+        return _load_windowed(root, data, event, expected, allow_complete, limit)
+    if expected_bed_storage == "windowed":
+        _refuse("a windowed bed was expected but the checkpoint is not a windowed pond checkpoint "
+                f"(schema {data.get('schema')!r}); no cross-storage conversion exists")
     if set(data) != MANIFEST_KEYS:
         _refuse(f"manifest keys mismatch: missing {sorted(MANIFEST_KEYS - set(data))}, unknown {sorted(set(data) - MANIFEST_KEYS)}")
     if data["schema"] != SCHEMA:
@@ -1332,30 +1753,7 @@ def load_pond_checkpoint(path: Any, event: PondEvent, expected_identity: dict, *
         member_sizes[name] = sizes
     specs = _specs(event, dry=data["status"] == "complete")
     table = payload["arrays"]
-    if not isinstance(table, dict) or not set(specs) <= set(table):
-        _refuse("array table is missing required arrays")
-    declared = 0
-    for name, rec in table.items():
-        if not isinstance(name, str) or not isinstance(rec, dict) or set(rec) != {"dtype", "shape"}:
-            _refuse("malformed array table entry")
-        if not _dtype_ok(rec["dtype"]) or not isinstance(rec["shape"], list) or len(rec["shape"]) > _MAX_NDIM \
-                or any(type(n) is not int or n < 0 for n in rec["shape"]):
-            _refuse(f"array {name}: dtype / shape not allowed")
-        count = math.prod(rec["shape"])
-        nbytes = count * np.dtype(rec["dtype"]).itemsize
-        declared += nbytes
-        if declared > limit:
-            _refuse("declared array bytes exceed the bounded uncompressed size")
-        size = member_sizes[PAYLOADS[1]].get(name + ".npy")
-        if size is None or not (nbytes < size <= nbytes + 4096):
-            _refuse(f"array {name}: archive member size does not match the declared dtype / shape")
-        if name in specs:
-            shape, dtype, _sign, _loc = specs[name]
-            got = tuple(rec["shape"])
-            if rec["dtype"] != dtype or len(got) != len(shape) or any(w is not None and w != g for w, g in zip(shape, got, strict=True)):
-                _refuse(f"array {name}: declared dtype / shape differ from the schema (expected {dtype} {shape}, got {rec['dtype']} {got})")
-    if set(member_sizes[PAYLOADS[1]]) != {n + ".npy" for n in table}:
-        _refuse("companion archive members differ from the array table")
+    _audit_array_table(table, specs, member_sizes[PAYLOADS[1]], limit)
     # bounded header audit of every member of BOTH archives (native snapshot included) before anything is expanded
     _npy_preflight(root / PAYLOADS[1], member_sizes[PAYLOADS[1]], table)
     _npy_preflight(root / PAYLOADS[0], member_sizes[PAYLOADS[0]], None)
@@ -1379,6 +1777,14 @@ def load_pond_checkpoint(path: Any, event: PondEvent, expected_identity: dict, *
     if (snapshot["water"] is None or snapshot["sediment_availability"] is None or snapshot["history_store_path"]
             or any(snapshot.get(k) is not None for k in _FOREIGN_SNAPSHOT_FIELDS)):
         _refuse("MAPLE snapshot lacks water / availability or carries foreign optional state")
+    return _restore(root, event, data, payload, table, specs, snapshot, "dense")
+
+
+def _restore(root: Path, event: PondEvent, data: dict, payload: dict, table: dict, specs: dict, snapshot: dict, storage: str):
+    """Steps 4 (companion through the fixed whitelist) and 5 (reconstruction in the event namespace and the SAME independent
+    validation the writer runs) for either bed storage. `snapshot` is the already loaded and provenance-checked native
+    snapshot of that storage; every payload has been hashed, audited and preflighted before this is called."""
+    from maple.core.backend import to_device
 
     xp = event.xp
     used: set[str] = set()
@@ -1434,7 +1840,7 @@ def load_pond_checkpoint(path: Any, event: PondEvent, expected_identity: dict, *
             status="complete")
     elif payload["accounting"] is not None:
         _refuse("a wet checkpoint carries no accounting")
-    _arrays, check_scalars, _fresh = _validate_state(event, state, handoff)
+    _arrays, check_scalars, _fresh = _validate_state(event, state, handoff, storage)
     if _json_dumps(check_scalars) != _json_dumps(scalars):
         _refuse("scalars of the reconstructed state differ from the saved payload")
     return handoff if handoff is not None else state
@@ -1539,7 +1945,13 @@ def _build_state(event: PondEvent, scalars: Any, host_arrays: dict, place: Any, 
     bed = BedState(voxel_column=snapshot["voxel_column"], active_layer=snapshot["active_layer"], water=snapshot["water"],
                    ledger=ledger, committed_topography=committed, sediment_availability=snapshot["sediment_availability"])
     if xp.__name__ == "cupy":
+        host_column = bed.voxel_column
         bed = to_device_tree(bed, xp)  # counted MAPLE transfer of the whole bed tree
+        if is_windowed_bed(bed) and bed.voxel_column.height_packet is None:
+            # the derived exact height packets are not carried by the tree walk: MAPLE's counted explicit move (a copy)
+            from maple.surface.voxels.windowed_prefix import move_prefix_packets
+
+            bed = dataclasses.replace(bed, voxel_column=move_prefix_packets(bed.voxel_column, host_column, xp))
     if snapshot["time_s"] != t_s or snapshot["step"] != counters.n_accepted_steps:
         _refuse("MAPLE snapshot clock / step differ from the companion")
 
