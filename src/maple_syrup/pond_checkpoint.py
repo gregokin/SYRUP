@@ -24,8 +24,8 @@ LAYOUT (a NEW sibling directory, never an overwrite)
                             arrays and accounting. The bed voxel / active inventory is NOT repeated here.
 
 WHAT IS NOT SERIALISED: the solver, the face network, physics / splash grids, the event runtime cache, namespaces, callables,
-dataclass type names of anything but the fixed whitelist (the two MAPLE ledger types and the committed-topography state) and
-no pickle. The caller supplies the static `PondEvent` (column, sediment, schedule, rain scale, control, policy, splash,
+dataclass type names of anything but the fixed whitelist (the dense MAPLE ledger type, the compact one only where the bound
+MAPLE binds it, and the committed-topography state) and no pickle. The caller supplies the static `PondEvent` (column, sediment, schedule, rain scale, control, policy, splash,
 vegetation, ORIGINAL initial topology); the checkpoint only proves it is the same one.
 
 LOAD ORDER (nothing is trusted before the step that proves it; a refusal leaves every input and file unchanged)
@@ -93,7 +93,7 @@ from typing import Any
 import numpy as np
 
 from maple_syrup.characteristic_transport import PhaseState
-from maple_syrup.checkpoint import DEFAULT_MAX_CHECKPOINT_BYTES
+from maple_syrup.checkpoint import DEFAULT_MAX_CHECKPOINT_BYTES, _native_ledger_types
 from maple_syrup.pond_bed import (
     committed_displacement_m,
     gate_displacement_m,
@@ -692,10 +692,11 @@ def _plain_decode(value: Any, depth: int = 0, budget: list | None = None) -> Any
 
 # --- native MAPLE node codec (ledger / committed topography): fixed type whitelist -----------------------------------
 def _native_registry() -> dict:
-    from maple.core.types.sediment_ledger import CompactSedimentLedgerState, SedimentLedgerState
+    """The dense ledger, the compact ledger only where the bound MAPLE binds it (`checkpoint._native_ledger_types`, whose
+    errors propagate unchanged and are raised before any file is written), and the committed-topography state."""
     from maple.core.types.topographic_commit import CommittedTopographyState
 
-    return {t.__name__: t for t in (SedimentLedgerState, CompactSedimentLedgerState, CommittedTopographyState)}
+    return {t.__name__: t for t in (*_native_ledger_types(), CommittedTopographyState)}
 
 
 def _native_encode(value: Any, add_array: Any, depth: int = 0) -> Any:

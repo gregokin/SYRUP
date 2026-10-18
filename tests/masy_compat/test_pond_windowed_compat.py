@@ -1,8 +1,8 @@
 """MASY-02A: the strict `is_windowed_bed` classification at the newer PondEvent / checkpoint gates (bounded API checks).
 
 Dense part (runs on every MAPLE): a real native Dense pond bed passes `PondEvent.initial_state`; a dense
-`save_pond_checkpoint` / `load_pond_checkpoint` round trip runs only where MAPLE has `CompactSedimentLedgerState` (else the
-specific ImportError and no output are asserted: a pre-existing capability gap); unknown columns and Dense subclasses are refused with the
+`save_pond_checkpoint` / `load_pond_checkpoint` round trip plus continued steps runs with or without
+`CompactSedimentLedgerState` (MASY-03 prerequisite A; see docs/current_maple_checkpoint_compatibility.md); unknown columns and Dense subclasses are refused with the
 classifier's exact base `BedIntegrationError` (not the `PondBedError` subclass) by `initial_state` and by the save gate,
 which writes nothing.
 
@@ -75,29 +75,27 @@ def test_initial_state_refuses_unknown_and_subclass_columns(kind):
     _assert_exact_base_error(info)
 
 
-def _compact_ledger_class_present():
+def test_native_dense_checkpoint_round_trip_and_continuation_under_the_strict_classifier(tmp_path):
+    """A real Dense `save_pond_checkpoint` / `load_pond_checkpoint` round trip on EVERY bound MAPLE, never skipped: the
+    native ledger registry binds the compact class only where MAPLE has it (`checkpoint._native_ledger_types`), so current
+    MAPLE `5b1a052e` (no `CompactSedimentLedgerState`) saves and restores Dense beds. The restored state, and both the
+    uninterrupted and the resumed run after further real steps, are compared exactly (arrays, ledgers, counters, accounting)."""
     from maple.core.types import sediment_ledger
 
-    return 'CompactSedimentLedgerState' in vars(sediment_ledger)
-
-
-def test_native_dense_checkpoint_capability_and_round_trip_under_the_strict_classifier(tmp_path):
-    """`pond_checkpoint._native_registry` imports MAPLE's `CompactSedimentLedgerState` unconditionally (pre-existing,
-    outside this patch). Where the class is truly absent (committed MAPLE `5b1a052e`) a Dense save is blocked by exactly
-    that ImportError and writes nothing: this asserts the capability gap, it does NOT claim the pond checkpoint works there.
-    Where the class is present the real Dense save/load round trip runs."""
-    case = make_case()
+    case = make_case(pickup_kg_per_class=5e-4)
     event = case.event()
-    state = advance(event, event.initial_state(case.bed, case.soil), 2)
-    if not _compact_ledger_class_present():
-        with pytest.raises(ImportError, match='CompactSedimentLedgerState'):
-            save_pond_checkpoint(tmp_path / 'ck', state, event, IDENTITY)
-        assert list(tmp_path.iterdir()) == []
-        return
-    path = save_pond_checkpoint(tmp_path / 'ck', state, event, IDENTITY)
-    loaded = load_pond_checkpoint(path, case.event(), IDENTITY, expected_bed_storage='dense')
+    paused = advance(event, event.initial_state(case.bed, case.soil), 3)
+    assert type(paused.bed.ledger) is vars(sediment_ledger)['SedimentLedgerState']
+    path = save_pond_checkpoint(tmp_path / 'ck', paused, event, IDENTITY)
+    fresh = case.event()
+    loaded = load_pond_checkpoint(path, fresh, IDENTITY, expected_bed_storage='dense')
     assert is_windowed_bed(loaded.bed) is False
-    assert_tree_equal(state, loaded)
+    assert type(loaded.bed.ledger) is vars(sediment_ledger)['SedimentLedgerState']
+    assert_tree_equal(paused, loaded)
+    full = advance(event, paused, 3)
+    resumed = advance(fresh, loaded, 3)
+    assert resumed.counters.n_accepted_steps == paused.counters.n_accepted_steps + 3
+    assert_tree_equal(full, resumed)
 
 
 @pytest.mark.parametrize('kind', KINDS)

@@ -63,6 +63,7 @@ from maple_syrup.sediment_bed import (
     BedIntegrationError,
     BedState,
     TerrainReference,
+    _maple_voxel_class,
     check_deep_storage_options,
     check_graph_matches_routing_source,
     deep_storage_record,
@@ -176,17 +177,34 @@ _OPTIONAL_DEFAULT_FIELDS = {'BedContext': {'window_max_journal_records': None,
                             'CompletionPolicy': {'deposit_mobile_at_flow_end': False}}
 
 
+MAPLE_LEDGER_MODULE = 'maple.core.types.sediment_ledger'
+
+
+def _native_ledger_types():
+    """The native ledger classes the public MAPLE ledger module binds, shared by this module's `_registry` and
+    `pond_checkpoint._native_registry`. Same binding rule as the bed classifier (`sediment_bed._maple_voxel_class`):
+    `SedimentLedgerState` is required; `CompactSedimentLedgerState` is included only when literally present in
+    `vars(module)` (no module `__getattr__` synthesis) and then must be a class. Returns `(dense,)` or
+    `(dense, compact)`: the class objects themselves (public re-exports pass; definition names are not checked).
+
+    Nothing is caught here: an import failure of the module (ImportError or any error raised while executing it)
+    propagates unchanged, a missing Dense class raises AttributeError and a present non-class binding of either name
+    raises BedIntegrationError. Both registries are built before any checkpoint file or directory is created."""
+    import importlib
+
+    ledger = importlib.import_module(MAPLE_LEDGER_MODULE)
+    dense = _maple_voxel_class(ledger, 'SedimentLedgerState', required=True)
+    compact = _maple_voxel_class(ledger, 'CompactSedimentLedgerState', required=False)
+    return (dense,) if compact is None else (dense, compact)
+
+
 def _registry():
-    from maple.core.types.sediment_ledger import (
-        CompactSedimentLedgerState,
-        SedimentLedgerState,
-    )
     from maple.core.types.topographic_commit import CommittedTopographyState
     from maple.core.types.water import WaterState
 
     types = (CompletionPolicy, DryHandoff, EventProgress, QuietProgress,
              SedimentEventControl, SedimentEventResult, StormControl, StormState,
-             TerrainReference, SedimentLedgerState, CompactSedimentLedgerState, CommittedTopographyState, WaterState)
+             TerrainReference, *_native_ledger_types(), CommittedTopographyState, WaterState)
     return {t.__name__: t for t in types}
 
 
