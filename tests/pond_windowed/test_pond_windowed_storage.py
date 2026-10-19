@@ -143,10 +143,10 @@ def test_high_water_publishes_and_changes_nothing_physical(tmp_path):
 
 
 def test_overlay_encoding_is_logically_equal_to_full(tmp_path):
-    from maple_syrup.sediment_bed import TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST, bound_maple_package_digest
+    from maple_syrup.sediment_bed import TYPED_JOURNAL_SOURCE_DIGESTS, bound_maple_package_digest
 
-    if bound_maple_package_digest() != TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST:
-        pytest.skip("exact overlay publication needs the accepted typed MAPLE source")
+    if bound_maple_package_digest() not in TYPED_JOURNAL_SOURCE_DIGESTS:
+        pytest.skip("exact overlay publication needs an explicitly pinned typed MAPLE source")
     (tmp_path / "a").mkdir()
     (tmp_path / "b").mkdir()
     f_ev, f0 = pair(_CPU, tmp_path / "a", prepare=EXCAVATE, deep_publication="boundary", high_water=10**5)[2:]

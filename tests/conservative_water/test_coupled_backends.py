@@ -178,11 +178,95 @@ def run(inputs, schedule, end, control, *, cadence=10.0, hydraulics=None, state=
                                  report_every_s=cadence, hydraulics=hydraulics)
 
 
-def commit_valley(xp, implementation, root_solver="bisection", **kwargs):
-    """4x5 valley with interval commits every 10 s (deterministic commit times on every backend)."""
+def conservative_net_cross(bed, ctx, src, dst, *, factor=2.0):
+    """OPTIONAL native, conservative preconditioning that makes a genuine NET-elevation crossing available (test-only).
+
+    Two ACTUAL MAPLE `apply_bed_demand` calls (the same sequence `tests/pond_event/pond_helpers.move_mass` uses): a native
+    pickup of `factor * reroute_threshold_m(ctx)` of elevation (default 2 x 0.00075 m = 1.5 mm, per cell and from the
+    cell's own class mixture, capped by the real holdings) at `src`, then the deposition of EXACTLY the mass MAPLE
+    actually removed into the D4-adjacent `dst` (the matching face crossing is supplied, the pre-existing mobile pool is
+    restored). Nothing is created, erased or tidied: the per-class bed + mobile inventory is conserved within the
+    repository's own `reservoir_bound_kg`, the mobile pool returns to its value, and the input bed is not mutated.
+    The committed topography (hence the routing source an event built from this bed will hold) is unchanged; the native
+    pending ledger from both exchanges is carried forward, so the first accepted step of an event sees a per-cell net displacement of about +/- 1.5 mm >= the
+    unchanged actual threshold; the two cells have opposite signs and cannot cancel (the gate is a per-cell maximum).
+    Pass the host bed BEFORE `setup_xp` (CPU reference, device and array-on-CuPy variants all get the same state), or a
+    device bed (the arrays stay in their namespace). Returns the preconditioned bed."""
+    from maple.aeolian.flux.face_flux import FaceFluxResult
+    from maple.core.backend import array_namespace
+    from maple.core.types.topographic_commit import committed_elevation_m
+    from maple.water import WaterProcessDemand
+
+    from maple_syrup.conservation import reservoir_bound_kg
+    from maple_syrup.sediment_bed import (
+        apply_bed_demand,
+        bed_inventory,
+        current_routing_surface_m,
+        reroute_threshold_m,
+        with_water,
+    )
+
+    xp = array_namespace(bed.water.depth_m)
+    dr, dc = dst[0] - src[0], dst[1] - src[1]
+    assert abs(dr) + abs(dc) == 1, "the mass moves between D4-adjacent cells"
+    ny, nx, nc = bed.active_layer.mass_kg.shape
+    g = ctx.geometry
+    threshold = reroute_threshold_m(ctx)
+    mass = factor * threshold * g.bulk_density_kg_m3 * g.dx_m * g.dy_m
+    saved = [H(a).copy() for a in leaves(bed)]
+    mobile0 = H(bed.water.mobile_mass_by_cell_class_kg).copy()
+    before = H(bed_inventory(bed)) + mobile0.sum(axis=(0, 1))
+    layer = H(bed.active_layer.mass_kg)[src]
+    request = np.zeros((ny, nx, nc))
+    request[src] = layer / layer.sum() * mass
+    zeros = xp.zeros_like(bed.active_layer.mass_kg)
+    picked, pickup = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.asarray(request), zeros))
+    removed = H(pickup.actual_removal_by_cell_class_kg)[src].copy()
+    assert removed.sum() >= 0.99 * mass, "the native pickup must be served by the real holdings"
+    pool = mobile0.copy()
+    pool[dst] += removed
+    with_pool = with_water(picked, ctx, picked.water.depth_m, xp.asarray(pool))
+    xg, yg = np.zeros((ny, nx + 1, nc)), np.zeros((ny + 1, nx, nc))
+    xn, yn = np.zeros_like(xg), np.zeros_like(yg)
+    if dr == 0:
+        col = max(src[1], dst[1])
+        xg[src[0], col], xn[src[0], col] = removed, removed * (1.0 if dc > 0 else -1.0)
+    else:
+        row = max(src[0], dst[0])
+        yg[row, src[1]], yn[row, src[1]] = removed, removed * (1.0 if dr > 0 else -1.0)
+    flux = FaceFluxResult(x_face_crossing_mass_kg=xp.asarray(xg), y_face_crossing_mass_kg=xp.asarray(yg),
+                          x_face_net_crossing_mass_kg=xp.asarray(xn), y_face_net_crossing_mass_kg=xp.asarray(yn))
+    deposit = np.zeros((ny, nx, nc))
+    deposit[dst] = removed
+    moved, result = apply_bed_demand(with_pool, ctx, WaterProcessDemand(zeros, xp.asarray(deposit), face_flux=flux))
+    deposited = H(result.deposition_by_cell_class_kg)[dst]
+    after = H(bed_inventory(moved)) + H(moved.water.mobile_mass_by_cell_class_kg).sum(axis=(0, 1))
+    slack = reservoir_bound_kg(16, before, after, removed, deposited)
+    np.testing.assert_allclose(deposited, removed, rtol=0.0, atol=slack)
+    np.testing.assert_allclose(H(moved.water.mobile_mass_by_cell_class_kg), mobile0, rtol=0.0, atol=slack)
+    np.testing.assert_allclose(after, before, rtol=0.0, atol=slack)
+    for a, b in zip(saved, leaves(bed), strict=True):  # no alias mutation of the caller's bed
+        np.testing.assert_array_equal(a, H(b))
+    delta = H(current_routing_surface_m(moved, ctx)) - H(committed_elevation_m(moved.committed_topography))
+    assert delta[src] <= -1.5 * threshold and delta[dst] >= 1.5 * threshold  # per-cell, opposite signs
+    assert float(np.abs(delta).max()) >= threshold  # the actual net gate is met at the unchanged threshold
+    return moved
+
+
+VALLEY_NET_CROSS = ((3, 0), (3, 1))  # upper-left corner -> its east neighbour: monotone receivers are unchanged, no pit
+
+
+def commit_valley(xp, implementation, root_solver="bisection", *, net_cross=False, **kwargs):
+    """4x5 valley with interval commits every 10 s (deterministic commit times on every backend).
+
+    `net_cross=False` (default, every existing fixture): the held-routing valley. `net_cross=True`: the same valley whose
+    bed was first given the native conservative net-elevation precondition `conservative_net_cross` (host, before
+    `setup_xp`), so that a real net reroute is due at the first accepted step."""
     from maple.core.parameters.topographic_commit import TopographicCommitSpec
 
     bed, ctx = make_bed(valley_elevation(4, 5), commit_spec=TopographicCommitSpec(commit_interval_s=10.0))
+    if net_cross:
+        bed = conservative_net_cross(bed, ctx, *VALLEY_NET_CROSS)
     control = control_for(implementation, root_solver, **kwargs)
     inputs = setup_xp(bed, ctx, xp, south_ring=valley_elevation(5, 5)[0] - 0.01, control=control)
     assert int(inputs["state0"].graph.outlet.sum()) == 1
@@ -754,24 +838,35 @@ def test_runner_refuses_mixed_pairings_before_touching_the_case(tmp_path):
 @pytest.mark.parametrize("root_solver", ROOT_SOLVERS)
 def test_cuda_event_matches_the_host_sweeps_on_a_committing_valley(gpu, root_solver):
     schedule = constant_rainfall(0.0, 40.0, 72.0)  # rain, then recession; interval commits every 10 s
-    ref_inputs, ref_control = commit_valley(np, "array", root_solver)
+    # Since CW-B104 only a GENUINE net-elevation crossing refreshes the routing. The held valley of this storm stays below
+    # the threshold (net max ~4.8e-5 m), so the positive fixture is the same valley after the native conservative
+    # precondition `conservative_net_cross` (identical on the CPU reference, the device and the array-on-CuPy runs).
+    ref_inputs, ref_control = commit_valley(np, "array", root_solver, net_cross=True)
     ref = run(ref_inputs, schedule, 60.0, ref_control, cadence=20.0)
     _closure, bc = assert_closed_any(ref, ref_inputs["state0"])
     assert ref.n_commits >= 5 and ref.n_graph_changes >= 1 and bc["actual_pickup"].sum() > 0.0
     assert bc["deposition_actual"].sum() > 0.0 and bc["export_actual"].sum() > 0.0
-    dev_inputs, dev_control = commit_valley(gpu, "cuda", root_solver)
+    assert_genuine_reroutes(ref)
+    assert ref.commit_log[0]["rerouted"] and ref.commit_log[0]["net_displacement_m"] >= THRESHOLD_M  # first real step
+    assert ref.n_commits > ref.n_reroutes  # ordinary accounting commits happen too, without a reroute
+    dev_inputs, dev_control = commit_valley(gpu, "cuda", root_solver, net_cross=True)
     assert dev_inputs["state0"].graph.xp is gpu and dev_inputs["state0"].phase.xp is gpu
     hyd = CudaHydraulics()
     dev = run(dev_inputs, schedule, 60.0, dev_control, cadence=20.0, hydraulics=hyd)
     assert_closed_any(dev, dev_inputs["state0"])
     compare_events(ref, dev)
-    # lifecycle: one context per graph binding (initial + one per commit), none per attempt
-    assert hyd.n_preparations == 1 + dev.n_commits and hyd.n_binding_hits == dev.n_accepted_steps + dev.n_rejected_attempts
-    assert [e["reason"] for e in hyd.log] == ["initial"] + ["commit"] * dev.n_commits
-    assert hyd.is_bound_to(dev.state.graph, dev_inputs["column"]) and hyd.n_commits_recorded == dev.n_commits
+    assert_genuine_reroutes(dev)
+    # lifecycle: one context per graph binding (initial + one per genuine reroute), none per attempt or accounting commit
+    n = dev.n_reroutes
+    assert n >= 1 and hyd.n_preparations == 1 + n
+    assert hyd.n_binding_hits == dev.n_accepted_steps + dev.n_rejected_attempts
+    assert [e["reason"] for e in hyd.log] == ["initial"] + ["commit"] * n
+    assert [e["t_s"] for e in hyd.log][1:] == [c["t_s"] for c in dev.commit_log if c["rerouted"]]
+    assert hyd.is_bound_to(dev.state.graph, dev_inputs["column"])
+    assert hyd.n_commits_recorded == dev.n_commits  # every accounting commit still records its transfers
     ctx_summary = hyd.summary()["context"]
     assert ctx_summary["graph_input_sha256"] == dev.state.graph.input_sha256 and ctx_summary["device_resident"]
-    assert hyd.commit_device_to_host_bytes >= dev.n_commits * 20 * 8  # one committed-elevation download per commit
+    assert hyd.commit_device_to_host_bytes >= n * 20 * 8  # one committed-elevation download per genuine reroute
     # the whole terrain actually changed and the device graph follows the committed MAPLE surface
     from maple.core.types.topographic_commit import committed_elevation_m
 
@@ -780,13 +875,13 @@ def test_cuda_event_matches_the_host_sweeps_on_a_committing_valley(gpu, root_sol
     assert not np.array_equal(H(dev.state.graph.slope), H(dev_inputs["state0"].graph.slope))
     if root_solver == "bisection":
         # the generic array reference on CuPy arrays (no CUDA kernels) agrees with the host at the same bounds
-        arr_inputs, arr_control = commit_valley(gpu, "array")
+        arr_inputs, arr_control = commit_valley(gpu, "array", net_cross=True)
         arr = run(arr_inputs, schedule, 60.0, arr_control, cadence=20.0)
         assert_closed_any(arr, arr_inputs["state0"])
         compare_events(ref, arr)
     else:
         with pytest.raises(SedimentEventError, match="newton"):
-            arr_inputs, arr_control = commit_valley(gpu, "array", "newton")
+            arr_inputs, arr_control = commit_valley(gpu, "array", "newton", net_cross=True)
             run(arr_inputs, schedule, 60.0, arr_control, cadence=20.0)
 
 
@@ -876,12 +971,18 @@ def test_cuda_rejections_retry_from_the_same_state_without_re_preparation(gpu):
     inputs, r, hyd = results["cuda"]
     assert r.n_rejected_attempts > 0 and r.rejections[0]["kind"] == "RoutingStepRejected" and r.state.t_s == 16.0
     assert_closed_any(r, inputs["state0"])
-    assert hyd.n_preparations == 1 + r.n_commits and hyd.n_binding_hits == r.n_accepted_steps + r.n_rejected_attempts
+    # held routing: the (final forced) accounting commit stays far below the threshold (net ~2.6e-8 m), so it does not
+    # re-prepare; the preparation count follows the ACTUAL reroutes, never the accounting commits
+    assert_below_threshold_accounting_only(r)
+    assert hyd.n_preparations == 1 + r.n_reroutes == 1 and hyd.n_commits_recorded == r.n_commits
+    assert hyd.n_binding_hits == r.n_accepted_steps + r.n_rejected_attempts
     compare_events(results["array"][1], r)
 
 
 def test_cuda_failed_maple_call_commit_or_preparation_publishes_nothing_on_the_device(gpu, monkeypatch):
-    inputs, control = commit_valley(gpu, "cuda")
+    # net_cross=True: a genuine net crossing is due at the first accepted step, so the first commit reroutes and the
+    # lifecycle must re-prepare for the refreshed graph BEFORE that commit is published (the injected failure below)
+    inputs, control = commit_valley(gpu, "cuda", net_cross=True)
     state0 = inputs["state0"]
     saved = snapshot_any(state0)
     schedule = constant_rainfall(0.0, 30.0, 72.0)
@@ -914,10 +1015,11 @@ def test_cuda_failed_maple_call_commit_or_preparation_publishes_nothing_on_the_d
     compare_any(state0, saved)
     monkeypatch.undo()
     real_prepare = sediment_event._prepare_cuda_context
-    prepared = []
+    prepared, requested = [], []
 
     def failing_prepare(graph, column, *, mode):
-        if len(prepared) == 1:  # the first commit's re-preparation
+        requested.append(graph)
+        if len(prepared) == 1:  # the first genuine reroute's re-preparation
             raise RuntimeError("device lost (test)")
         prepared.append(1)
         return real_prepare(graph, column, mode=mode)
@@ -927,6 +1029,9 @@ def test_cuda_failed_maple_call_commit_or_preparation_publishes_nothing_on_the_d
     with pytest.raises(RuntimeError, match="device lost"):
         run(inputs, schedule, 30.0, control, cadence=30.0, hydraulics=hyd)
     compare_any(state0, saved)
+    # the failure genuinely executed at a reroute: the second request was for a REFRESHED graph, none was adopted
+    assert len(requested) == 2 and len(prepared) == 1
+    assert requested[0] is state0.graph and requested[1] is not state0.graph
     assert hyd.n_preparations == 1 and hyd.is_bound_to(state0.graph, inputs["column"])
     monkeypatch.undo()
     # the same inputs still run to completion afterwards (nothing was poisoned)
@@ -998,7 +1103,7 @@ def test_cuda_plot1_short_window_runner_matches_the_host_run(plot1_case, gpu, tm
     assert s["backend"]["pairing"]["hydraulics"] == "cuda" and s["backend"]["pairing"]["transport_implementation"] == "array"
     g = s["backend"]["gpu"]
     assert g["executed"] is True and g["memory_preflight"]["accepted"] is True
-    assert g["cuda_hydraulics"]["n_preparations"] == 1 + s["commits"]["n_commits"]
+    assert g["cuda_hydraulics"]["n_preparations"] == 1 + dev.result.n_reroutes  # one per ACTUAL reroute, not per commit
     assert g["cuda_hydraulics"]["commits"]["n_recorded"] == s["commits"]["n_commits"]
     assert g["cuda_hydraulics"]["context"]["graph_input_sha256"] == dev.state.graph.input_sha256
     assert g["device_memory"]["pool_total_bytes_after_loop"] > 0 and "no speed claim" in g["claims"]

@@ -1,0 +1,2485 @@
+{
+ "description": "Merged committed MAPLE39bcf79 shared-storage runtime, exact native source with no SYRUP patch. Reconstructed using existing guarded recipe tool: immutable main predecessor b3e8756 plus authentic Git diff to merged39; target byte-verified against direct39 Git archive. This is distinct from historical24c6 dirty-source recipe, preserved unchanged.",
+ "out_of_scope": [
+  "MAPLE tests/docs/cases/environment files",
+  "windowed wind, avalanching, creep, dynamic capacity or growth",
+  "combined MASY schedule/adapters/restart",
+  "large/fullcatchment memory fit or performance"
+ ],
+ "patch": {
+  "changed_files": [
+   "pyproject.toml",
+   "src/maple/aeolian/scheduler/state_validation.py",
+   "src/maple/core/backend/cell_reductions.py",
+   "src/maple/core/backend/numpy_pairwise_order.py",
+   "src/maple/core/backend/prefix_cell_reductions.py",
+   "src/maple/core/types/sediment_ledger.py",
+   "src/maple/core/types/voxel.py",
+   "src/maple/coupling/sediment_ledger/accumulate.py",
+   "src/maple/coupling/sediment_ledger/diagnostics.py",
+   "src/maple/coupling/sediment_ledger/validation.py",
+   "src/maple/io/outputs/snapshot.py",
+   "src/maple/surface/active_layer/windowed_exchange.py",
+   "src/maple/surface/availability/exchange.py",
+   "src/maple/surface/topographic_commit/accounting_reconciliation.py",
+   "src/maple/surface/topographic_commit/commit.py",
+   "src/maple/surface/topographic_commit/windowed_commit.py",
+   "src/maple/surface/voxels/_numerics.py",
+   "src/maple/surface/voxels/deep_store.py",
+   "src/maple/surface/voxels/transfer.py",
+   "src/maple/surface/voxels/windowed_admission.py",
+   "src/maple/surface/voxels/windowed_inventory.py",
+   "src/maple/surface/voxels/windowed_metadata_numba.py",
+   "src/maple/surface/voxels/windowed_pending.py",
+   "src/maple/surface/voxels/windowed_prefix.py",
+   "src/maple/surface/voxels/windowed_snapshot.py",
+   "src/maple/surface/voxels/windowed_transfer.py",
+   "src/maple/water/__init__.py",
+   "src/maple/water/step.py",
+   "src/maple/water/validation.py",
+   "src/maple/water/windowed_commit_callback.py",
+   "src/maple/water/windowed_step.py",
+   "src/maple/water/windowed_transaction.py"
+  ],
+  "deleted_files": [],
+  "file": "maple_b3e8756_to_39bcf79_runtime.patch",
+  "modified_files": [
+   "pyproject.toml",
+   "src/maple/aeolian/scheduler/state_validation.py",
+   "src/maple/core/types/sediment_ledger.py",
+   "src/maple/core/types/voxel.py",
+   "src/maple/coupling/sediment_ledger/accumulate.py",
+   "src/maple/coupling/sediment_ledger/diagnostics.py",
+   "src/maple/coupling/sediment_ledger/validation.py",
+   "src/maple/io/outputs/snapshot.py",
+   "src/maple/surface/availability/exchange.py",
+   "src/maple/surface/topographic_commit/accounting_reconciliation.py",
+   "src/maple/surface/topographic_commit/commit.py",
+   "src/maple/surface/voxels/_numerics.py",
+   "src/maple/surface/voxels/transfer.py",
+   "src/maple/water/__init__.py",
+   "src/maple/water/step.py",
+   "src/maple/water/validation.py"
+  ],
+  "new_files": [
+   "src/maple/core/backend/cell_reductions.py",
+   "src/maple/core/backend/numpy_pairwise_order.py",
+   "src/maple/core/backend/prefix_cell_reductions.py",
+   "src/maple/surface/active_layer/windowed_exchange.py",
+   "src/maple/surface/topographic_commit/windowed_commit.py",
+   "src/maple/surface/voxels/deep_store.py",
+   "src/maple/surface/voxels/windowed_admission.py",
+   "src/maple/surface/voxels/windowed_inventory.py",
+   "src/maple/surface/voxels/windowed_metadata_numba.py",
+   "src/maple/surface/voxels/windowed_pending.py",
+   "src/maple/surface/voxels/windowed_prefix.py",
+   "src/maple/surface/voxels/windowed_snapshot.py",
+   "src/maple/surface/voxels/windowed_transfer.py",
+   "src/maple/water/windowed_commit_callback.py",
+   "src/maple/water/windowed_step.py",
+   "src/maple/water/windowed_transaction.py"
+  ],
+  "sha256": "d5e46160a787e7b588ab8841e2fd237c29e282e21b217c4b8d563cda52dbfae3",
+  "strip": 1
+ },
+ "post_patch": {
+  "file_count": 352,
+  "files": {
+   "pyproject.toml": "8779c55d823bf610da9c9f087c7d5eaaf8d276bfbdc6fb428726e4e7c06350be",
+   "src/maple/__init__.py": "d38906e1df4a338c49184b00e8a676a224097c371e5a56eff2c057651002b0a6",
+   "src/maple/aeolian/__init__.py": "03a2bf14b95f8842b9ca05c1c575d55d057429bfb3aa184c9bfd0a4c4c5f6a85",
+   "src/maple/aeolian/cohorts/__init__.py": "44586e56bca945146a0b6dd173ad24db911119807f70d5f5a46b57c959c69af4",
+   "src/maple/aeolian/cohorts/calendar_migration.py": "ba21fd00dfaa764d3fe358a37fbd94540539c7cb9bab0a5db3c36498d0d19a37",
+   "src/maple/aeolian/cohorts/calendar_routing.py": "60825f4aecaa71b393db9145f65145dfef290a03c65395d75eea6681ae2dde24",
+   "src/maple/aeolian/cohorts/calendar_seed.py": "0a3fb12f9d9de34647fe88f91d3028cd7bc6368ecea0756020ac202419875a9c",
+   "src/maple/aeolian/cohorts/capacity.py": "3ceb6fbec8f65dac8987a1d88a28a52c6e79f340e5e537e36ff0c90e5e7aae41",
+   "src/maple/aeolian/cohorts/dispatch.py": "802243722cba00524deb556461a7cfa3db445f21368cbc49ce92d63c77da67df",
+   "src/maple/aeolian/cohorts/memory_budget.py": "b72c6c82545b28f29a1996ceac1259c3dc63fc11cc4d3d1acc393a5d6e53a637",
+   "src/maple/aeolian/cohorts/routing.py": "d3f10f0532dd54348c0bb5b2f3eb56e4f27e4774f4da471c8eb8ef89d7fdd011",
+   "src/maple/aeolian/cohorts/seed_realization.py": "3eddbc2b8adf47c8bfddca57429fa4182836a15c9de0e2b23bfeb175e016cba4",
+   "src/maple/aeolian/detachment/__init__.py": "3d52de67498dc8f5a777a3fa29893923ed7acf5e6aa68ade357ea43a57e7c59e",
+   "src/maple/aeolian/detachment/aerodynamic.py": "3e7aca431a2edcb8ab25872f062e3878401416d9ba990a5bb4ee611e62aa6787",
+   "src/maple/aeolian/detachment/apply.py": "d44d67c210b2220d8fc5a18be52493aa705f03cc2424f102b100a4c0eccfb05a",
+   "src/maple/aeolian/detachment/prescribed.py": "8faf19e7a482efcaa538c9c093efb9ab8c5a11c8504a5cf8e299e2089e73990f",
+   "src/maple/aeolian/detachment/reduced.py": "8a3a8769e57a0d72c99a827374b3113a612d9bebb6a4169c80aef8892c0144e0",
+   "src/maple/aeolian/detachment/threshold.py": "0d5a68788b81b0873e630371d6c6d6ff6bd553e6fa39ff26247ac54bc672b4c9",
+   "src/maple/aeolian/directional_sampling.py": "57b3d070353b7bf2561eac428e1f56eb17de0cf3a48af1161712c82998877d03",
+   "src/maple/aeolian/external_shear/__init__.py": "59278ff1b075d7526074ca462ca7726faf93a2cb2e794ce5b9410c574974fd2e",
+   "src/maple/aeolian/external_shear/apply.py": "0ab68a66209a4bab6cb906c10009b23bd8ae7387c97158c69b132b0f938b4bc6",
+   "src/maple/aeolian/feedback/__init__.py": "a3a9093c580a64704ec9d822c84882ba3670e4daf621d002cec55960ecbd3889",
+   "src/maple/aeolian/feedback/equilibrium.py": "2b8e05a0d8b5c17683ca6f2ecd42cb7a73c24ecc18d192978ee7e1af07dc9ebe",
+   "src/maple/aeolian/feedback/interval_overlap.py": "21d30975ca478beccd4441ebdaf2d2d10809bfe449a706d170acba2a81257bbe",
+   "src/maple/aeolian/feedback/momentum.py": "3e405c98263dde7eae71e8fec2e67d61743a4ade8df53f311a1e460c6fe15b0e",
+   "src/maple/aeolian/feedback/same_step_solver.py": "dbe0ddbca73dcbfcfb52c943193aecbeced1af2bb4153fb1cae93f7c0f3a11e6",
+   "src/maple/aeolian/feedback/stopping.py": "fd65cc759ff7ad512d59215c3a1089de731db5894f91ce73c57d40c9fdd0af26",
+   "src/maple/aeolian/feedback/trajectory.py": "d3398e7e2c19eaae309ffcf3c0693cdedabe521e756f4fae6ade92b5ad293379",
+   "src/maple/aeolian/feedback/transient.py": "86f92fe3ac40379bd1fed8f5f14fd6b59ed7a1b6f67bcc75cc953151ebdec792",
+   "src/maple/aeolian/feedback/validation.py": "7e804e098f9aaf6320afdf2909ad732034ef31e2de9d84835cefeaa96aeeb739",
+   "src/maple/aeolian/feedback/warm_start.py": "7891f9c95233b8d495800a692d1d40bba0752a4f790a1ad5861c97f90a9a3fc8",
+   "src/maple/aeolian/feedback/wind.py": "d885837dd29c0980b0005af0fb9712fdc8962f2247e3fd79610778c389e338b6",
+   "src/maple/aeolian/flux/__init__.py": "1746c47c514e06c099b31e348c7bd335a1d388c76f1c63f37dfcd6e056daa497",
+   "src/maple/aeolian/flux/boundary_inflow.py": "d65bd2b0d8ab29db400d164556b92ad330cceb89f18842a4faa7541527d938b1",
+   "src/maple/aeolian/flux/deposition.py": "d1d3abcf2c7fe1e89f058cda35c3c18bcc81651111f3902ec234c259e47c3938",
+   "src/maple/aeolian/flux/face_flux.py": "2dad9342387d4710b5e1daf2f4b68d993b2bd9d4b7f7c83fbf2f18ab9cf8f389",
+   "src/maple/aeolian/flux/routing_envelope.py": "1441f733694ab72ec016a0c2c8f6dd095b041b96b763c06fbd794af93048734a",
+   "src/maple/aeolian/flux/same_step.py": "4edd3b05b8c1c44d7283aa7550506f8eb65e0aad702f6ca55d0ddb450a75cee5",
+   "src/maple/aeolian/flux/step.py": "523d99d3cbe4bfcfb14a4ab95596acb1fccc2f2c22fba80b3a10deec563b3d62",
+   "src/maple/aeolian/flux/validation.py": "720a44dedf2d413fddcdcf1a0773ab42ef97420555c83aa98e3b70e646c32205",
+   "src/maple/aeolian/impacts/__init__.py": "55cbcdd16b98fa6f5528d613a1067d734cb4fe26bd8a31f2a5edcd9c4dcd770e",
+   "src/maple/aeolian/impacts/aggregation.py": "6fb5cdd365a28bf7f78debfbd041fa7579af0d9a70bb853df6bd76fe198c9134",
+   "src/maple/aeolian/impacts/calendar_launch_bins.py": "6191a2ee72f96993191adf8d52b1ccea0ca15236a9368b0e74fe0221c92ae444",
+   "src/maple/aeolian/impacts/comsalt_rebound.py": "d30082b443dbb39ca218a607e184e2c1987a69f8def4d212ab07003febd4a712",
+   "src/maple/aeolian/impacts/ejecta_angle.py": "fe7c2ed83aa91f7007381661becc50aee405911ea6051c68326c2fc9b1833ddc",
+   "src/maple/aeolian/impacts/ejecta_launch.py": "e92fc873a0036c835c9011133f6242a4b54d4abc5af07b0bb8faa69e0f91c110",
+   "src/maple/aeolian/impacts/ejecta_speed.py": "2413025918eb5d98a58a5a4464edba024151502bb0826d5c5a58654754d93d15",
+   "src/maple/aeolian/impacts/launch_bins.py": "1ad3147852045e1d53fcb4b52b098ec1d532947045513869ad837d1d957b229c",
+   "src/maple/aeolian/impacts/rebound.py": "5c7fd258e2ec9c8777f7d5d992b6c5b5b1e3371e02b8f0bece955cbc55921b4f",
+   "src/maple/aeolian/impacts/remap.py": "439bc76ade30158dde3d9b38fe87c8ba9a743f7dd1b223a2896c614b02f9a787",
+   "src/maple/aeolian/impacts/response.py": "cbc718df339c618b00a6a25c82363e47fb74ca98c484e8a3bd9cd0409917e7f0",
+   "src/maple/aeolian/impacts/splash.py": "8f7b7004b555fef5a4764e5b1fe5862f4f866e71c0bbe51ec17750ad8f51017e",
+   "src/maple/aeolian/impacts/validation.py": "1d0ac2af03eb9de62df0742fe988b50ba77893dcf5a9877d33e01210a563d46b",
+   "src/maple/aeolian/launch_direction.py": "22bc2417b1bc7aa1bb1564756e1a20d17aa21dadcd12f257f20df9b6aec0fcf5",
+   "src/maple/aeolian/scheduler/__init__.py": "847470fa33f05306731b6cd732927b2283aa8ad294dff702865e81ea9bcc8548",
+   "src/maple/aeolian/scheduler/accounting.py": "6f652cb80e95834090cd4b6b127c42a063caa2bd2ac83053cf5898f1e77b3267",
+   "src/maple/aeolian/scheduler/accuracy_selection.py": "eae1b7c7fb49eb52e3befb99426c0325696802cabbfeb2583a85d5a0be75049a",
+   "src/maple/aeolian/scheduler/accuracy_timestep.py": "1e616689c28c8e81521b055ff73f737c55649652e0ba389c1f4a2efec95b9d23",
+   "src/maple/aeolian/scheduler/active_layer_composition_cache.py": "549bd54ca7139a51c67ffb188686df44ccea90dae3698dadd9f18f7cc65ea872",
+   "src/maple/aeolian/scheduler/baseline.py": "5c2a69a83dba461cd61dfb1af51a98e76b937032097ef6794749dfa780ce20f1",
+   "src/maple/aeolian/scheduler/block.py": "15d55ec07f7055269b654cd56e74dd27fb2e8baf33965cc6bfcd9b7e61fcd42c",
+   "src/maple/aeolian/scheduler/cadence_envelope.py": "6b8ffe0da32fe9ca8ee6b4d9eca434ce700cfca6547fe88b3026f977d3500e2e",
+   "src/maple/aeolian/scheduler/calendar_construction.py": "82d3b2a77841d4976d2dcf6d57c0c815e80e92f4c52ad02dedf262ff877bf70a",
+   "src/maple/aeolian/scheduler/commit.py": "8bea02402f20ececbd36e27f010d178e00e644418fabb5b9f03d49ab056398c9",
+   "src/maple/aeolian/scheduler/coupled.py": "da804f8ee651d3d94cf405b23b3de3b359303c25d214ef98bbaa08b1d38b4cf4",
+   "src/maple/aeolian/scheduler/dormancy.py": "680e68ad556cd13f6467f0c237aff8a3ea9f326dce7aa153a161af1a47006f94",
+   "src/maple/aeolian/scheduler/finalization.py": "ab788f72b61b5ad19d9c907d9d0082e27e659e7d5a150997350f229c924042c4",
+   "src/maple/aeolian/scheduler/flight_support.py": "c4398cee020e7d000651e538f3474afe40213786f4d4013c8d9cdc16866219bc",
+   "src/maple/aeolian/scheduler/fluvial.py": "8f197037990c2960fc819dbc875d43ae642dee66cbb5bde501624ea1d697553e",
+   "src/maple/aeolian/scheduler/invalidation.py": "630d6ef919c73d0d28e01ecb72af5822d10d5f73daa3a66db16fb66815cc1033",
+   "src/maple/aeolian/scheduler/record.py": "dbd6ec267e20004a5346ffdd868fdc406c0df85ff548a548978d3450e86b7b8a",
+   "src/maple/aeolian/scheduler/restart_accuracy.py": "1dc8ed12ab0b478645a82db3cde325947f2e4970766633ebbd750394ee3c035a",
+   "src/maple/aeolian/scheduler/slice_trace.py": "d46ba0506e6b628ef56b66943d4ee2a7e645cc7b57c1a60fe643ce1b240003af",
+   "src/maple/aeolian/scheduler/snapshot.py": "7bb37af4106bda7dcd3b10a5968881f66fccaa9d6b775d0e4b5ae19179738193",
+   "src/maple/aeolian/scheduler/state.py": "867d98fe084313f1e5f8558f9e67854c97472cb091e80a7bc017e33dc1776b5d",
+   "src/maple/aeolian/scheduler/state_validation.py": "5c32a967c8d7426a9567b4bef641abf4ae71588dbbcb02172d063936ea85992f",
+   "src/maple/aeolian/scheduler/stationary_continuation.py": "7b757a322dc220cd39fd446dc10993e0b160cba5632a0b984c579209af31c35f",
+   "src/maple/aeolian/scheduler/topographic_wind_cache.py": "4a3ca857b91859ae925dd1c27ee3aa3aabfc7cfa7425c755af9b7b11a5b4e200",
+   "src/maple/aeolian/scheduler/validation.py": "0a91fb83ef68ad4a14816fa4c74a4eb2007bc61d7636e60abd42b5bef62ee007",
+   "src/maple/aeolian/scheduler/vegetation_cache.py": "9f1ef6a0100a5bfa29753376a5b538f783a40d0bb142678182dd5281870c0117",
+   "src/maple/aeolian/scheduler/wind_change.py": "82976383f81987b7a431b06e23aa592b5c6ac13edde05ba9aaf57861234c0e64",
+   "src/maple/aeolian/scheduler/wind_modifiers.py": "88c7b825c268a868c59b6075fb4fc2de25e8ad5ff85c5e8731ce6b01c740f800",
+   "src/maple/aeolian/scheduler/window_admission.py": "6923907cc0d7772412f9b4838c91a3411029043cfe9308900f7d957e249bf4fa",
+   "src/maple/aeolian/scheduler/window_evidence.py": "f9654e30d886a3bc06c2386c0c96b2b3bcae4ce10f49c0c660966abd00e5d5bc",
+   "src/maple/aeolian/topographic_wind/__init__.py": "0b9a019faed0564f912d5790cefbb3740578f76bdb70a58a47425af93966e131",
+   "src/maple/aeolian/topographic_wind/apply.py": "e793e7bd04d2d70d90bda748a645826d4802a13dadf69b7bf675983b21cb0c02",
+   "src/maple/aeolian/topographic_wind/continuation.py": "7bc423b24ea86ce0f707a39c578f42fbc93af465b694d48fab812a12dc5d529d",
+   "src/maple/aeolian/topographic_wind/diagnostics.py": "6c67d717926a795a93a43c8b85f5164b56c10cdb5aa00a8811d05d5b1ab39178",
+   "src/maple/aeolian/topographic_wind/separation.py": "97e0e7827947d8cd16fdfe78fd5dc137c422b003c00ca0fbb94bf99cb8e93f4c",
+   "src/maple/aeolian/topographic_wind/transfer.py": "1723d4c61e6aef5c992f2e7f9cbf1f86896c7e584ebea4ef8535bc950e8db7c0",
+   "src/maple/aeolian/trajectories/__init__.py": "75beb25ef21db870ad33d45f03015105724259341f96ab1826c07366f4307211",
+   "src/maple/aeolian/trajectories/drag.py": "96ed5a79c00b162d7ac5653d55f89add5ac4a9d4c6fb317bfd002e1cb04c3801",
+   "src/maple/aeolian/trajectories/live_wind_advance.py": "0e8faa6c2b2d852e17aab66d0c7cbbcabe5de041f4fbfe3213b846558482ce2c",
+   "src/maple/aeolian/trajectories/quantile_bins.py": "f4b0d97f4cfd1c1454552630aa1e314b54573a7a6e64ab4195fc092080058264",
+   "src/maple/aeolian/vegetation/__init__.py": "dea42324fb6c4ed8cc7c0dd89c99d92788f6a870e836fda29a97f1678524fe98",
+   "src/maple/aeolian/vegetation/apply.py": "a84f3b1b6592dc87c8595d37041e79cf37e7ee58dd6d222ec593c3427bed0b98",
+   "src/maple/aeolian/vegetation/diagnostics.py": "d1553ce3ca93c93dbe37b4b237a47ab358a83a1c4cd5d1a49374608496daeff9",
+   "src/maple/aeolian/vegetation/geometry.py": "fdaa06c993ecd9c385a0b5a56a81c71e35f7218fd268e3d396f3859fbf801364",
+   "src/maple/aeolian/vegetation/validation.py": "ed39bc1b22545ed0c3bcf2d4e46fe6fbcb2174a53ec58bf5b1acec78726d2f4b",
+   "src/maple/aeolian/vegetation/wake.py": "160a66cb0da26a9c12556173870166d35a6f056520e4b1f413afc49f6e794d87",
+   "src/maple/aeolian/vegetation/windward.py": "42932d9c5ad6f7903af5b41d2530900358190593fde0e0b998a1b6136f0914ef",
+   "src/maple/case_tools/__init__.py": "6b913ebc2586440b41d8e0baa4516ce869041b485d7418bdc014adc82a20c9d1",
+   "src/maple/case_tools/analyzers/__init__.py": "ef0d9a6b208fcb83a0dd8a3c8bf169db0e244e69369b497bbb344a5ffa8affbd",
+   "src/maple/case_tools/analyzers/conservation.py": "373ffcdfc09c5f7ddfb13a745f1ad2ed45885653aceca107b2b30844d612be5e",
+   "src/maple/case_tools/analyzers/emergent.py": "bf85969b284af8e77f3734f3f9a746e6d9903dd9592e2f63300f44fd692167f2",
+   "src/maple/case_tools/analyzers/fitting.py": "8900e528a0464021e1d87867d45473293618d9ef3a8c14baba113c65319cfb08",
+   "src/maple/case_tools/analyzers/flux_profiles.py": "0ffc55ae88ad262cd55a6bb1a271602b437da812010e54ccbbc1a2b43ac74e0e",
+   "src/maple/case_tools/analyzers/geometry.py": "343f18e255bded9d71e7df55a0b56c2ae7b1fae213a714569af30c49012ef930",
+   "src/maple/case_tools/analyzers/mode_comparison.py": "ecae98b355946cd159e511b5ff2dd39eb4d97192a0b5a61480346f8b655b56fb",
+   "src/maple/case_tools/analyzers/results.py": "bf0d4bc3762faf90d8fb717cc25f60ca758162c22c8abe5e9638e43e74484fbf",
+   "src/maple/case_tools/analyzers/splash_yield.py": "288e25ee5ccc500605d2f15e9f50b988c10bc81fa8182d3f5641425382e01bbb",
+   "src/maple/case_tools/analyzers/threshold_sweep.py": "1d1806f9b6e5949083034f9a51ba04e175f9d53aae3d4a4f5e2088c1aedabb04",
+   "src/maple/case_tools/compilers/__init__.py": "a2a9f277808ec19bcf402a21e46fd3adab82666eaaf507d0957c239eacf87c83",
+   "src/maple/case_tools/compilers/case_compiler.py": "2db21adb101f2817e12933c0da1fbb613979f0cc929c9f3c385dc54e91581252",
+   "src/maple/case_tools/compilers/voxel_allocation_preflight.py": "2d76402265555760ff62e9bb764346d02c79b04203333807f87c5e850184ace5",
+   "src/maple/case_tools/generators/__init__.py": "03a3c20e6d5ba9167eabe41881e930df1a4623bb639bc843075168f834777b39",
+   "src/maple/case_tools/generators/analytic_surfaces.py": "d6962b52451310fc9228b3a0c86695b442065ed2a3c37fab96ecdfe7caade93d",
+   "src/maple/case_tools/generators/availability.py": "8b2506acc86c22e747bbdd8ced06fa086dc0d4c19d824d96af8aa72ea46173cd",
+   "src/maple/case_tools/generators/coordinates.py": "e7128bb94ec5018218b045a28c7da810bc27d81fe3124d586112463d471f243c",
+   "src/maple/case_tools/generators/dune.py": "da8bd534a6e23df13601ad6e1b9c75a0c72a196180cff0c4863d9cf9d1d0b483",
+   "src/maple/case_tools/generators/dune_forms.py": "ae0507e0f62ceda5523eb9781643d54b54fd34f3d1b309fe3a58af8d24442229",
+   "src/maple/case_tools/generators/fields.py": "0c49f0d25fde18d66e2b49a8bc04bdbfa4076b202b937faf0f7d25b4d40530b9",
+   "src/maple/case_tools/generators/fractal_field.py": "c2f482528dfc70583871c15ace19f1fdf48e0244be822beba95d97d3a4d5f065",
+   "src/maple/case_tools/generators/grain_mixture.py": "f397d3a18daa96d7e1e66e07c23bc6b92af5bd3f76d530f8c86eb821f1692610",
+   "src/maple/case_tools/generators/mobile_seed.py": "6d6ccceeb8d37044713810117d96f56f74c1b29fc0a06d5ed34b2772a022ec55",
+   "src/maple/case_tools/generators/point_processes.py": "d0185dbf1f45875a54357270cf3c89125b8494bf45e5737a3fa630a43f5fb4d0",
+   "src/maple/case_tools/generators/random_field.py": "a87dda5a3b17da91ba0a91c7efd35ed12095e5d399be49ca1af588dbaf377c80",
+   "src/maple/case_tools/generators/seeds.py": "160009795f1f2931ee0865a409766296cd97e8a7f29f638df74083c2cd64582f",
+   "src/maple/case_tools/generators/stratigraphy.py": "69b18ae9442935d212e5879b654ba82f1f8575da6970db055278b52c6d0d9e80",
+   "src/maple/case_tools/generators/synthetic_bases.py": "c0a7bb477b4a8e2b6f6d2866f40ef40b776a439f85f1ceaaac7508ca27f607e0",
+   "src/maple/case_tools/generators/threshold_modifiers.py": "7e74635c10ea2c2d0c65c6125953b0e9fee7faa46db7b1ab49298335b8c80cef",
+   "src/maple/case_tools/generators/topography.py": "3bdef7b2844ac10d520fdbc29baf36ebdfdd270b6fa3cd3fea2f0eb71a3d1071",
+   "src/maple/case_tools/generators/vegetation.py": "aaf4bc9c06bcfded02528040e0e562f0cf08d902af0de8818d6bba10d1d5553d",
+   "src/maple/case_tools/importers/__init__.py": "bf9b92871f3ce46b52fec5fa97464eda9da05412c290d30e548b96cbf590fdc9",
+   "src/maple/case_tools/importers/field.py": "7469e38563f221c841f0b14dd830f1455b45a8acc0b93f99814f708e121cedb8",
+   "src/maple/case_tools/importers/forcing.py": "2dd60005f3eb99369ad6833767d71990eeeb3fb9bbd6ecc31c063b1a61ae4bbe",
+   "src/maple/case_tools/importers/raster_types.py": "06d3d97aaa8ac6a59d9d8a09ea28bb280955571a435812ed5458603d421f3c0c",
+   "src/maple/case_tools/importers/readers.py": "4cf74976ccf44fddd08553a1942f672f6251ea5424b9c9132f7e7c0221df11a7",
+   "src/maple/case_tools/importers/resolve.py": "6dc9eae0cea0c752437d30ac5b8115b63378eade4cbfc49f7c38a8854dbb4e37",
+   "src/maple/case_tools/importers/sediment.py": "94dfbadfd854d14bdb22e259e414460972abae9b2dc01737a7da681e09c39b5b",
+   "src/maple/case_tools/importers/vegetation.py": "3aa0b1afd815ae2ee114740464ac94a7c13bc001dd7caec47667d1f35f419166",
+   "src/maple/case_tools/observation_operators/__init__.py": "36e14e004a5af770cfe054e336e1d0c03c0fcbbbf4870113c9ab0dbdc76fc0f3",
+   "src/maple/case_tools/observation_operators/support.py": "cb8383f8b9a3c039a7aada5313f84a2e176187f86a3faead4cc935b6e09fff12",
+   "src/maple/case_tools/provenance.py": "5478bc06cfb0aa7f42646831d3a73b69cf9422c3a3b462d3b1ab3ad264e027bf",
+   "src/maple/case_tools/regression/__init__.py": "8860838216ce97908d187c1c5caaa9bc8a39069a80da135f165924b3a8adc8c7",
+   "src/maple/case_tools/regression/reference_cases.py": "305bec8b259633a90137eea9b9529927d4ac79caf4b2489b3f40f4517613d6ef",
+   "src/maple/case_tools/report.py": "095fd008b42ceb26e20537eca42fc1e01bc5149d49759adeb9cf446e028e6c46",
+   "src/maple/case_tools/scenarios/__init__.py": "e382e2ac3d361a09b510f0f2138358052e62a134841d7640085277db39f249f9",
+   "src/maple/case_tools/scenarios/definition.py": "1f2ab91b5a098931577d1ab28c8c8cb0a1b4a216b857694ada2cc881700e7d9a",
+   "src/maple/case_tools/scenarios/diagnostic_runs.py": "deac881b5998b38b3bb9d27f170cd2b620232c4f683b7f78891bc7b0ebd29780",
+   "src/maple/case_tools/scenarios/diagnostics.py": "674e4664d0ddc8b8042bbbfba383dc622674f1aa9504dc706f37c4749ec36409",
+   "src/maple/case_tools/scenarios/runner.py": "c8de6d5f000eb79e160142bdc8596d0e21c19272ffcb24acf23b51d4d8ac078c",
+   "src/maple/case_tools/sweeps/__init__.py": "458f9674f9ad495a12a050d488134ac93cbb00b554a66da89a47e44e86120ce2",
+   "src/maple/case_tools/sweeps/run.py": "64f367e8f60fbbe3db3e7ed1ae7ad8a6d37da379d34683f106de511b9e239db5",
+   "src/maple/case_tools/sweeps/spec.py": "61e79b261070bb2251882f6a26e6bf2a5518f4f5545741f3223991dd2b28fcad",
+   "src/maple/case_tools/transforms/__init__.py": "37390e8feff6a5f293327eecd8e14643b25f59bbd00ce9786885f8214ea610ee",
+   "src/maple/case_tools/transforms/combine.py": "0bb3d909734b59e7a2e023197598c8ba4710e2c4563c9ffa0da8bf1f37f00ae9",
+   "src/maple/case_tools/transforms/empirical.py": "a59608f29bda182d332d8f0eea313b52c47de1d8ba738e36fc13ff2300d452a8",
+   "src/maple/case_tools/transforms/log.py": "45bdf15736cce004fb3bfd8eaa98401c3c26456188626b8bc9df8a595883bd19",
+   "src/maple/case_tools/validators/__init__.py": "0816ec7804b309b6bac51b31ac0f7a472369725a8488fc9b83963cfcbcc7f300",
+   "src/maple/case_tools/validators/compiled_case.py": "cf9bdedb30a311f5b98265a50cb7abddf0c82698018f845d3fadcd1fc709f9fb",
+   "src/maple/case_tools/validators/imported_case.py": "6c3cd36f9420c5da06d0bd5bbefe6e0d9a3020d04b6ec55900643a58c34f1086",
+   "src/maple/cli.py": "26b0e495d392b5fc3f16578c8e73315261c8e3000e0f5d2069d4de47bc860fd0",
+   "src/maple/config.py": "3c8477925f8ab2ec710fc8d4434a298516f83327c134bfa46d9bb5ca1d59aabe",
+   "src/maple/core/__init__.py": "8fbf67082d2dfa651ede095338abb9eb9b840fb8ac3c3698755de44e3acf0e88",
+   "src/maple/core/backend/__init__.py": "541bbae44a1656a7dbc138cf72bbce229bd668cbd6afdc7972ee992be0e5ccf4",
+   "src/maple/core/backend/arrays.py": "475a210ced97c01ab5e7d5f661886e858f3e65f8c20d11503d7675bb1e8ca26e",
+   "src/maple/core/backend/cell_reductions.py": "f7816374c1848274b43be41a3d090745d1b75e268303b18c40b0bc1fbfb5d65c",
+   "src/maple/core/backend/deferred_checks.py": "6f64a03776a4856d668f72d9f94e168f62fdd18055080344099f09dcfa843c7d",
+   "src/maple/core/backend/leaves.py": "9ff0b743bcfad53daf8ab45480e43b1fd7dba14885322c093affa57dab0ff623",
+   "src/maple/core/backend/namespace.py": "9420904454d5d203e2e115d7051012c01a1639c69b90402b79c490301d38c787",
+   "src/maple/core/backend/numpy_pairwise_order.py": "a52ad515b1076309e67468a00e4ae6ae0d5bf193d6b23f786ecf4ae26b0927e4",
+   "src/maple/core/backend/prefix_cell_reductions.py": "3a4e5ae9d2d3c4fa708b4a1b0821897ef3f42dea7fa4812b2226f352054c633d",
+   "src/maple/core/backend/reductions.py": "16892f0c779768b4d21610fc5163132fac55c58357eeaef933bfaf961a880218",
+   "src/maple/core/backend/scatter.py": "a8590c4e4c5d6e53b168ca2ff7bb3b18c27ea94901a2adf571e16fbee7e9615a",
+   "src/maple/core/backend/selection.py": "af2e3b01ec50a1ef52f6fb1eac5043ce0b0c259c68872e0058355f407694cb98",
+   "src/maple/core/backend/transforms.py": "8ce2cf5cd61f196bc1e38de4f0dcc059075bbede626ddf51015c8321e570e76c",
+   "src/maple/core/boundaries/__init__.py": "b7b45cb5be9a18fa84a7bd60f86965f347bd495cff2daec2bc16d7b73c24d6d7",
+   "src/maple/core/closure.py": "5d448db02500cfa32bd1f79c078c97d420d52d83d0264f559ad206278f931baf",
+   "src/maple/core/optimization_switches.py": "22943033eb2d913b8edb7f3a5340128d84119f233de4fa87ab703ab483aea6d1",
+   "src/maple/core/parameters/__init__.py": "20a91a1193f1ebe9a3a98db1eaa7e9869c1b57c207e493a06ecff657c38a1aec",
+   "src/maple/core/parameters/aeolian_process_mode.py": "339b50202cf31f01369d1113938b1fc45205ca0755ce8b1d23526ffa9031001e",
+   "src/maple/core/parameters/aerodynamic_detachment.py": "8a79a6e1f2e267343f4301b5555f9879a0e6ab013b23eb10ce6801eb585c1ec1",
+   "src/maple/core/parameters/avalanching.py": "992e92353039983e5dd892a39a532afaa3478928c29ce84828f79a8a2a209dc2",
+   "src/maple/core/parameters/case_import.py": "29a0363d664c2bb84657dda974df9191f6f24065a0194c85f017958f94c62630",
+   "src/maple/core/parameters/case_initialization.py": "536fd72d698ed53b1ff546e3a2965bb4756e749e9886d3891c56d1adef26d547",
+   "src/maple/core/parameters/detachment_source.py": "89f160e9e951bcdc060457e2dc53bd400764e1bac8942a346eb3a9f082e571d9",
+   "src/maple/core/parameters/dormancy.py": "497d9850452ad4303bf2bed9f0f9fa432fb1ba627e4e9cc24fa6b90c6772f5fa",
+   "src/maple/core/parameters/execution.py": "509e411cfe22d7c9a470ee96ec3850f52b01e671e0882a32322d81858118047a",
+   "src/maple/core/parameters/flow_separation.py": "025e18721070edefdac338f5bb83e649bcd0da485868c47c2b23c2d91fb33e5e",
+   "src/maple/core/parameters/fluid_threshold.py": "aff1120ac986161377e48b39a03e9e54bc94d6d97775afacf88ce6d705500d6c",
+   "src/maple/core/parameters/geometry.py": "5c3ae0143c682a19755ca740b772b506f6f527ff5bca916b7819080e14f4b348",
+   "src/maple/core/parameters/grain_classes.py": "f8b4642cbcfe3220f9d28a17ceb986fb13d7ad801690f3d3e9ee2522e0e506e8",
+   "src/maple/core/parameters/impact_rebound_splash.py": "0956a32eed776206a1f342f6c2e881373b6c83b683e5ca5972ee4de782bed9f7",
+   "src/maple/core/parameters/numerics.py": "131d7914f7884085cc1c6323d409d99c26b1d42e65cf064d6a7020c9b8e9b3e6",
+   "src/maple/core/parameters/outputs_and_diagnostics.py": "09496828da949558898c379efcc78b88a825a152faf6dd7ba7465b250240c537",
+   "src/maple/core/parameters/particle_transport.py": "3d8310bdbec086a84e1629a69873fdc9fc8b0202eae0dc62a635a7583f86d521",
+   "src/maple/core/parameters/physical_window_admission.py": "e35ed04c3c3fca96f2f791c03dd9ceee577cb3304fbc89baadddc7bb7aac946a",
+   "src/maple/core/parameters/polygon_geometry.py": "e59150c673e191ef683a98c595cbfa59d8519223e8e80c3f863f3c649194de7e",
+   "src/maple/core/parameters/prescribed_detachment.py": "65c5df3657bd5f8688ad41f30380df641b955e9f133dc3fd0b96fd8259edbc52",
+   "src/maple/core/parameters/prescribed_external_shear.py": "93e204d778bf62be19c2d67a27d4fdd4e7c8f209acc53180e651835da767433f",
+   "src/maple/core/parameters/process_scheduler.py": "41e0bcb37ed3a79d8e5e99497acdb98ae12867050ff82381d7c980ba0b92545a",
+   "src/maple/core/parameters/reduced_detachment.py": "6db75ade09cfc1a87a5559a0118eb16ffa19e2a9184e2dee85b775058c526478",
+   "src/maple/core/parameters/scalar_fields.py": "c7357de1e9b9d70e7283397fa9abd500445f0879d4dc635230155922a0e3efb1",
+   "src/maple/core/parameters/stationary_continuation.py": "bcdec4cc887606b9a637450f7616fef642f88c66b1f99497706c8ed0572ec960",
+   "src/maple/core/parameters/surface_creep.py": "da2ba702c929e164bc1197f957f0b225f2edd87deafc346f21b279718bb1db7f",
+   "src/maple/core/parameters/time_and_forcing.py": "f5e03a2a23444eb76a7ed4323bbfa3edcf8db3580084fb3e04c9f51be2d9c5d8",
+   "src/maple/core/parameters/topographic_commit.py": "23312bbf468adfa53f40f0e5f383e5435566b783ceb946b410a53d4e3ee9064d",
+   "src/maple/core/parameters/topographic_wind.py": "07a6e148ac369b891e9e4351b0d19af89f82018cab7dd9c8b7057f6cac91ebf9",
+   "src/maple/core/parameters/transport_accuracy.py": "9d7f9c1f3487fc3a385c2d8feeb97ea54a6cc6a50df8b03ac94cec70c52de000",
+   "src/maple/core/parameters/vegetation_wake.py": "f4ebbe31320e99b704b4a26ca2619a063bb4dc68225d0a3c0f4cc1362531696b",
+   "src/maple/core/parameters/voxel_growth.py": "19ee75a697495185d0d1182deb9578a88fd0682d8f8004d19309de449a2c438c",
+   "src/maple/core/parameters/water_coupling.py": "c785a7e043cb767784aa40661217d50b90f1f0d2f1c08cbf615ae2b5465c404e",
+   "src/maple/core/parameters/wind_forcing.py": "fcd90112304fde34da24b9af4f924a617b879f2878e9914850ee20cb7143680c",
+   "src/maple/core/parameters/wind_grain_feedback.py": "b3be5b2efd15415fba4afdc069034de3f8da46ab02ae120951b573b546c5226c",
+   "src/maple/core/profiling.py": "b68720bf5e235454c501dd99663106e67cc4dae8cf1a4fe261e17d58e7ddb4a3",
+   "src/maple/core/types/__init__.py": "c63b5c0ca21a72225a92d8ef9f0cdf192a07e9d992a4764f40150c729022d453",
+   "src/maple/core/types/active_layer.py": "07b1a81d54a7f6117ccb3ce26bee9bb9e43cd41ea571f405e5c2f0249c260522",
+   "src/maple/core/types/cohort.py": "ba68b4d88cd920a67452bd92f7faf68137d696c47b35e4cf9d6ed84b7ec1e278",
+   "src/maple/core/types/cohort_calendar.py": "8330b98ac4df1d4e3361669ee8adc284957722be88f1ab1720c130add767ab35",
+   "src/maple/core/types/impact.py": "28e5ab0fd1076b34b9e35d684356138af880b237205758d54ae44619bfb57c46",
+   "src/maple/core/types/ledger_reconciliation.py": "5a309aff3d8f77c47e0bb6ac79ef9bd17d1216bbef907ef98626344035c1d202",
+   "src/maple/core/types/regional_wind.py": "228d04814288ad4d4079840da919ac4e09cc53a51e79dde63bd6c20f9dc4c73f",
+   "src/maple/core/types/sediment_availability.py": "c9b713265809c0d1df9db58ee1ebc8f12ac27c4874edc190c609be19f9d067a3",
+   "src/maple/core/types/sediment_ledger.py": "4e4bd1d2ca8f126ac3224d3233366af8c3d5dee5afeb4b85fd883e3cc8725003",
+   "src/maple/core/types/surface.py": "9739411b081f496631ebc5eb46ad5dcefec3a6dd4fa49e24cba1b15265620d49",
+   "src/maple/core/types/threshold_modifiers.py": "13989d899fa1be450f371be17cbf8f7231897d62ac74cccbbd18dc54ca057cd2",
+   "src/maple/core/types/topographic_commit.py": "1d2ddc4ca0f1b3c39abf855f97862f73dd451ee6a562f2a0280a69de40b52cb1",
+   "src/maple/core/types/vegetation.py": "b92ea5ae6890c3094686441e348ef40357c50ebcf1e5aee0f75bd86924f0943e",
+   "src/maple/core/types/voxel.py": "571ddb4d913e3db35eafedab2a70c2f1f8342f002b80252911e15eb339c804f4",
+   "src/maple/core/types/water.py": "a75d9a9db30b066358447be619924a8286e3330602a0d863d412bd1123dafe87",
+   "src/maple/core/types/wind.py": "4d1a0215eca766ee5d36765b077ec60bd731534152335248fed7dc4033a576c6",
+   "src/maple/core/units/__init__.py": "6164e4c1a3cb322c59d65b928dec5ffd2f2db4fdfed0cac05f53f5a5c5176b41",
+   "src/maple/core/yaml_safe.py": "c3cd43d6f768737672ac51b132cc18e667474bbd5f6d8fa05282851cbbee5e3f",
+   "src/maple/coupling/__init__.py": "8c8fb04bf2be41acc5a21a6b348b03a76cfebdbf10ac7884fc82b3da5e87f01b",
+   "src/maple/coupling/sediment_ledger/__init__.py": "27efea02d24ccc61268cc6325b562de14001b6eca6f0065ccdc04f1141766d19",
+   "src/maple/coupling/sediment_ledger/accumulate.py": "a1d99fdbdeeae07c486fc8be398398763d13aa2f73348e2a37d2ec38ccbf484b",
+   "src/maple/coupling/sediment_ledger/diagnostics.py": "2f69f1c53cc61075b172c6e026c770460330a6f12102d9db828009d5efa51e59",
+   "src/maple/coupling/sediment_ledger/validation.py": "454fcd372fe59f14cad10350f23315686569e43ef534909505c41b38c09aabf9",
+   "src/maple/coupling/water_event.py": "0cfaf6cee45e1cfecddeb944583d1291a4c581bd1e875000b15cd9a4cc7bf6cb",
+   "src/maple/experiment/__init__.py": "cc94e0e455a0060562c3697f268c3a3d2a7f00ece7b997ea1aedef1af3477efb",
+   "src/maple/experiment/_perf.py": "710cc245efe53c94e5c52e4de09f1605fce5a9022c582eb6da5526d4498b0f11",
+   "src/maple/experiment/_subprocess_wait.py": "829022dad4f7d1bb83a9752f5952bb50324d6b929263e6746ee524ee2151fb45",
+   "src/maple/experiment/apply_calibration.py": "5e5affe1d58a596170f19acf3def2505ac972112fc4550cd98fc2ff2e2860db3",
+   "src/maple/experiment/benchmark.py": "b34add007020cde9e8d48713c3ef7105943630251389d6a488ae17fc84e57b03",
+   "src/maple/experiment/calibrate_detachment.py": "51bc0df602ecb5926faf5a420d91afc6e66e5c7fc0963650b67938d8559a6fda",
+   "src/maple/experiment/calibration_case.py": "7fc4d454133db60543f0c27bd66d53406d03e36a5b873ca725cf97ef503eb942",
+   "src/maple/experiment/calibration_preset.py": "1558f8422f68233faa7f557aa727a91ae2036f491afc1f0b0ec23f17f3b3ec88",
+   "src/maple/experiment/cli.py": "01a96ec4d372bbefaf72c4dd3f708a0072efe77b1bcccac1e324d8568e4aedf4",
+   "src/maple/experiment/identity.py": "1d5c10b03ad3de1a196fdef10de01f7d81b5666d3a5306ad31c73dee04eb7603",
+   "src/maple/experiment/manifest.py": "046cf2a0f1dfb436eef6be21aad805b0b2143d466bf6810f6f03721f665f7c1c",
+   "src/maple/experiment/measurement.py": "30206fbfabceaab9ab1d23b5c8f07f2a771a44489d9208d41c34bc0ad2a3ae14",
+   "src/maple/experiment/orchestrator.py": "f4cc9d44a86a68585530ba5fd02f43664c32e5d476dfa596b0e2d57cc11f7ea7",
+   "src/maple/experiment/phase22a_probe.py": "213cb968b3d1677dc246b1d8c26a63d6d9a823ecb18ae3b2c4b1ab69c23e7831",
+   "src/maple/experiment/phase22a_qsat_wind.py": "ba916df2112674f9e33111e0d05ef27509c8b53e92a75fca8b17482b6c1cd9ca",
+   "src/maple/experiment/provenance_report.py": "fa2c7834a2c08281c5e0a6f1067c38b2f2779ee588789fd5509d355a2e4c1657",
+   "src/maple/experiment/publish.py": "c86c1f5a85258abc44a7b53ec800664923825ca1f050ea13abcd8a3229c4340e",
+   "src/maple/experiment/scheduler_adapter.py": "04c3d7d53f956743d7c17c0c315fd5aca41d595840f366db862571c848f07381",
+   "src/maple/experiment/schema.py": "fde48b0e5fe4d23fa1b3fdb4ac1f39c37157ec3264967e6efc744da9a07698ad",
+   "src/maple/experiment/stage_a.py": "9574f70249457acc73e8b309a64087913712168075f2247ddbfcb1b29f38886f",
+   "src/maple/experiment/stage_a_benchmarks.py": "42cc31a9caa9cf3846b8ce305c7716d1d37aafaffd15b3f8d4c9d48ce86f06db",
+   "src/maple/experiment/stage_b_compare.py": "8c6f4158cb2fd27f627383c0b46aca622a9c8fa4a76be7c61922810ed0a4197c",
+   "src/maple/experiment/stage_b_run.py": "8b28f5f4e4cd23428ef38fcea0fc30709f1fde1323c00130eb7534aa843f5075",
+   "src/maple/experiment/stage_b_scenarios.py": "82beef54d7f21645e9f5d42adf15db868da045df14fba2657b0567d3b1a13ad0",
+   "src/maple/experiment/stage_b_verification.py": "8203a9567cb396fb71f248c823ffba87d66f2c507138133b963a421475919888",
+   "src/maple/io/__init__.py": "6309659be6f27ef21ebd5216230f21303598340686f052afeae0b494b66a8d4e",
+   "src/maple/io/outputs/__init__.py": "0e5fe3a21460bcb0b98f8eeff94147cc9ba781f5e37f6c089e436af6319fea15",
+   "src/maple/io/outputs/_atomic_publish.py": "35d9c83c8d77caed66de65d80f0e31f6f2d4dc66b206a4897970c83b23198aa9",
+   "src/maple/io/outputs/_optional_deps.py": "e640588e21ad400350a2e7966571a8af133adeff4b6398b9c62242ff815c7838",
+   "src/maple/io/outputs/_rollback_utils.py": "f67f6dc46d512c985b033f18c6dd1eb000f2fffa6a07a3ba5e2aec4feaa53a0f",
+   "src/maple/io/outputs/conservation.py": "1eb77fcc762c4b9b1326642e3e47fc9ee76f488e8c63f36968d47ee5d46bea7a",
+   "src/maple/io/outputs/diagnostics_writer.py": "93732bdd5c15f73c6c7964cf3735381fd5337be66690e096990a455f3cfa40e8",
+   "src/maple/io/outputs/exact_validation.py": "4f0282e06b28772747e706f10efa7e899a34771a022c9f427ffa364f88e9db93",
+   "src/maple/io/outputs/history_recorder.py": "d42e72dd3e1a0c750ea113df0c8dd35d3734e73e40a34903bf1c161426133fb8",
+   "src/maple/io/outputs/phase5_lifecycle.py": "fe6b2278fcf1cbe213e528231bbbd410273514ea0ff1430ffff63530149c802e",
+   "src/maple/io/outputs/reconstruction.py": "1b400d4d61ddfc7ebe9307192ab0791556a09b4a749fd825f7fde8125cd8717b",
+   "src/maple/io/outputs/snapshot.py": "1320c4d442aea5536419ecf2a1a0ed9e75cb6458a3dc8f39a0f5bbb412c3a5b3",
+   "src/maple/io/outputs/spatial_diagnostics_writer.py": "79bc39bb3e645d6a87828fa3a895285dc55dbed8010ebb8dfd0eaf6604359651",
+   "src/maple/io/outputs/validation.py": "a85c8fd198b602fc7b6d5369c3af8b145c722ec95acb1ed838a5f1a7b11c8994",
+   "src/maple/io/outputs/visualization_schema.py": "4cae579ec8b09b6d7c97cd8d7114f59a05a1c5b49ee66bbb416b37b188bec393",
+   "src/maple/io/outputs/visualization_writer.py": "3c9add8c4140274ee7c3423e4c95a4c5a561a473fc3ef937df5e21a3cc0af335",
+   "src/maple/io/outputs/voxel_delta_log.py": "574fe4a510b55b48a201cedbfb0910579b7ed3f519cfb4e0dc2b4482c608b98a",
+   "src/maple/surface/__init__.py": "1fbec9e81b3d8494782f50dbabb715fd39656d6d16eb2719964bbad3c1eeb7a8",
+   "src/maple/surface/active_layer/__init__.py": "49e55b83104648f618a7b41a0855429995e998be89b57d1b1580d71131a0734f",
+   "src/maple/surface/active_layer/_request.py": "c787afa235cbfce3c4af7118f2a32dbfb0ae06f40a08cb3daadc76d60b77934e",
+   "src/maple/surface/active_layer/capacity.py": "f06c5e0b8a850044f8f2eeb957d4a99e68cf4d9cfc4a70b0d5288e88a476b62a",
+   "src/maple/surface/active_layer/composition.py": "14db2fd7baef042ed316b1a8838d95ad2538e925986816d6856348b38ecb8539",
+   "src/maple/surface/active_layer/diagnostics.py": "fe66b541bd03e546127666d7254bd98145966ed6b3305b68ae2e979aa76aaf24",
+   "src/maple/surface/active_layer/exchange.py": "2d58cdcdcbb67bf9f45d1e652a8f09b29b230edad3c812554ce243cfeb01ea07",
+   "src/maple/surface/active_layer/initialization.py": "2c30213cb3284e7f9c4607c9322a6f00ab1a55cb117abae5b40b3dbf211dcbbf",
+   "src/maple/surface/active_layer/validation.py": "762169c300a0c4fcd593083b303905ea86c8c72143f31bb0e582287a8a96bdeb",
+   "src/maple/surface/active_layer/windowed_exchange.py": "89cd8ce3d155af50bc0ef6ba0280728d3dc8bacac8a537756f04983185a0d5f3",
+   "src/maple/surface/availability/__init__.py": "4939ca554c78ce1f7288e6aedbd544d19c433f1fff5fc40d6ec3cd9b589269b9",
+   "src/maple/surface/availability/exchange.py": "18ff16039f4bb09e11447ab83ea7b2e845d61bdea29e694b8dc67ffaf06da565",
+   "src/maple/surface/availability/validation.py": "157591c9a730251fa0ce8877b23ef4b0875d59e6356d2c62a4e75ddc6a80d81b",
+   "src/maple/surface/avalanche/__init__.py": "3c2af70b64f5efedc29af3b16d19785c3667835d59aa667cb70bb60896b448e6",
+   "src/maple/surface/avalanche/callback.py": "3b7ac50803544dc5dad7d02bd2394ab14aa6f63a0b3a6cfec9c9bddb67876c20",
+   "src/maple/surface/avalanche/slope.py": "25f7ab4cc09961bdac3bdb8d66e60c87d9f5c32d9bbc9c8b4bbc5e0a11853777",
+   "src/maple/surface/avalanche/solver.py": "254801b512f32ebba5e3b710c1aebcbb6eeb2d8a69ff00e698db7c531394c860",
+   "src/maple/surface/avalanche/transfer.py": "866aa87fb6d19fb5b1e1bc9a6bf012131885d3d2f45b889624f03f9370db0d05",
+   "src/maple/surface/avalanche/validation.py": "42a20b94deceefa6137eda02f78df0cc9f2b90b24c36351c05a89f396f8ead52",
+   "src/maple/surface/creep/__init__.py": "f7a04b573536f9a41a4aa736fd22a8658e795e4afad7b5eb4d8a4c1ec75a4aba",
+   "src/maple/surface/creep/apply.py": "9f03cf7f9b613554df5831025e2ea76b4f01dbdab9ca7fdf73ea611529eafae8",
+   "src/maple/surface/creep/continuation.py": "cab127aa353663f3ad3960a36207c547982ab6ce31196e759f2ab1e7b5e673fb",
+   "src/maple/surface/creep/law.py": "23038ea51ddaaa2c67beb6a18fb20a1e5a9910ed41be6ca847c1d115d2164482",
+   "src/maple/surface/topographic_commit/__init__.py": "a7b3cbe24e1871c374e8929ea2f17030f1fca9305adc4a229a1695df9247f9e6",
+   "src/maple/surface/topographic_commit/accounting_reconciliation.py": "b1620b4f78a6f2d21a0cd6623acb4eba0a5c01ea8b7e5ce546ab2ca71d9a44e2",
+   "src/maple/surface/topographic_commit/commit.py": "2e129d164590d6b2b433c6e7a5b78d4f0b7904efdeac45ea2126caa8182b150b",
+   "src/maple/surface/topographic_commit/height.py": "b6035806b8dca08654d9175fe30142d0eee3cc8728e202292fad0b75f068f419",
+   "src/maple/surface/topographic_commit/initialization.py": "41fb8b2d249d30a02b0b006e6dddfd3582d46199a1c2b0981d3c1e1782f2a56e",
+   "src/maple/surface/topographic_commit/triggers.py": "01992a25c505e56e51fedcfc3aec93a2b2f7c08880fee62193e42e6cb5449c94",
+   "src/maple/surface/topographic_commit/windowed_commit.py": "a014ad1a2f26720aa60187cf0e9648d5604f00351b79af52e2701babbe6cad25",
+   "src/maple/surface/voxels/__init__.py": "d869865ad93fd173656ddc1df9ababe683bbfa63b1d52e669a2b27b8d77d498f",
+   "src/maple/surface/voxels/_numerics.py": "b1635932f23bfa6ff8c74aa52c072f796b448bd7a6454fab1e68a95ee2e40682",
+   "src/maple/surface/voxels/capacity.py": "f889af7030308862072dd36a9814c0bbac4bd477afbb5430c8e511e1383e73dc",
+   "src/maple/surface/voxels/deep_store.py": "b03d1503fd20331432de9e225e604e8049d6b71a69d992aff59e739b5d5b3a5a",
+   "src/maple/surface/voxels/diagnostics.py": "36300d6ac90618199ae9d56f8bfb3a030b540882d68d1e3af22b9002a84bc50a",
+   "src/maple/surface/voxels/growth.py": "c0d3dd69e69fd12b3eb988edcf286e0a7faed966759b9424f04e2388cf5c9160",
+   "src/maple/surface/voxels/serialization.py": "1a3c37f6c9d105b0d9d99acb6affca3fcebf62946bd5ace6e1b02c77d81d8b09",
+   "src/maple/surface/voxels/transfer.py": "6612bfa385b9ca04c768c34197536fdfd42a0ea086b585d9764c297faea77f23",
+   "src/maple/surface/voxels/windowed_admission.py": "d2c87b863f0c62aa8809c790c36e24273f193bc78478bc3ccd59b05f55b26bc1",
+   "src/maple/surface/voxels/windowed_inventory.py": "33fe2ec5806694b8e59a8eb4708e9ef9eb27e5e638095061f6c567816badc908",
+   "src/maple/surface/voxels/windowed_metadata_numba.py": "34a61589a2f79dd6cc2ce079d9ce45f4a4d4315df8e16a011507972d5e2840dc",
+   "src/maple/surface/voxels/windowed_pending.py": "106bb99d1fc8936e496b22acb1a331a6f5ca76e1c204755c6363776702b09b3c",
+   "src/maple/surface/voxels/windowed_prefix.py": "8c3465b7433f824e37e5cfba519d9f2eff78d8371db66ec8ccb6e9bdfb0133ff",
+   "src/maple/surface/voxels/windowed_snapshot.py": "fb15be4b468be2e01e448637225e233f41ef0bf7c10c36b87b6bad029ee5b34f",
+   "src/maple/surface/voxels/windowed_transfer.py": "224aa494c55841f37ec183a0b87f145303ffca3d7debf756cee41bae53b3364b",
+   "src/maple/visualization/__init__.py": "23531df377a31f325d2e7ad4d29873faabcd1c0ef2401d8de5e09e87e068a92f",
+   "src/maple/visualization/app.py": "0dcbacffd600409af9bdafe71097113c90aa3349680098bbf3af5de0ca0e6849",
+   "src/maple/visualization/cell_inspector.py": "60ddf1564d65fdbad4f2e306f74f1cd4fb5ea773f6c96f16616057b575fdb928",
+   "src/maple/visualization/cli.py": "aecf7f59277c591be07222c85f05a2b552b33a87f3a4e495dfee1ab62775ce8c",
+   "src/maple/visualization/comparison.py": "817cd3d0f8e16a03bd1cfbe4530f0953802486a746e273ffeb5a13367157f772",
+   "src/maple/visualization/conservation.py": "1639989be4597f7fa56072c30e449ba9ae664411042915aad27106206626625e",
+   "src/maple/visualization/domain_animation.py": "729ac6fd856e1d62ba061d091001517945783d82f225a057c3352d7f781032d1",
+   "src/maple/visualization/domain_maps.py": "9a0fe912649dfcd2a265662596f2f55887b10003621e4c92647c24daf1e92eb6",
+   "src/maple/visualization/explorer_controller.py": "dfe5015ff9501aef9ac222200b356c394d87aaa414e6510e54007b9d36fddce3",
+   "src/maple/visualization/open_history.py": "af1924136b58af749903ed162c42431e55f92612463170dc78353690e737e4d3",
+   "src/maple/visualization/reports.py": "127762ef2ecbd0be71c587d1eaabfa9711a9b2d7217ecb9f9cd25bc57ae6d331",
+   "src/maple/visualization/topographic_wind_maps.py": "42dae479e976d8837d6aa8d86a14db64e406f4ef5b3b2006c86c5e0b9ce7ba28",
+   "src/maple/visualization/transects.py": "8f06ef5aee28e407a6f1c8032fc0d2fca9cd46695a7f54d47cdf8b8d77d34be7",
+   "src/maple/visualization/vegetation_maps.py": "dbab20fc40e4cb764ca173970dc2831dfb94741e00c02a2dc69fcb5570571657",
+   "src/maple/water/__init__.py": "e97e721766dd641a20559a6f69b616f2186a1c6ff5363cec72881b2e4f53182c",
+   "src/maple/water/commit_callback.py": "c080ce76bc551e7d831eef20c8a80bf3648932fd72038793965d468268050dd1",
+   "src/maple/water/depth.py": "cc32ad019d76a92dd2fba14d5072921eb489b83550ee187deff008cdd4bb2f97",
+   "src/maple/water/interfaces.py": "06cecc59b6642b5507f61a36d4f708e080e116a2c5a3577bfe01c2da2cdcc932",
+   "src/maple/water/mahleran_compat.py": "a420e4fd674f9c6758ba1b5ef2cb9c40e190e91ae3ffed88d4c3d648077245c3",
+   "src/maple/water/prescribed.py": "3259cb49026a7db96586062a517a871e6bd638af7587ea23188b09edc284a88a",
+   "src/maple/water/step.py": "766bedc884e2b17b1f5fc56bf9e5ae33ae6b8e5c536347f85776e392e1a600cb",
+   "src/maple/water/validation.py": "fbf26412043d05e2e635b06eabe9fdbc1f34eaeb3276bf4c808e2da9f949aea8",
+   "src/maple/water/windowed_commit_callback.py": "cd4dd2a4a52e947972ca7842eb2c19506389c506f412f7ec276909c0545b9ca4",
+   "src/maple/water/windowed_step.py": "f4e26427c6fdd1af3958ba287680e48e229d778785645babe7d728648a7adac5",
+   "src/maple/water/windowed_transaction.py": "7ddc72a5e58cada4655a0900e31e04ed461b3f5d58401b89680fdc0087f05c01"
+  },
+  "package_source_digest": {
+   "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+   "digest_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+   "file_count": 351,
+   "root": "src/maple"
+  }
+ },
+ "pre_patch": {
+  "file_count": 336,
+  "files": {
+   "pyproject.toml": {
+    "git_blob": "9181e288e257e1896ef3b48a14c48fa4e2e66810",
+    "git_mode": "100644",
+    "sha256": "e6c7da22ee9f4bdd7876747fdfcbf694314cafd9032e3700301522b52b3fe3ae",
+    "size": 6596
+   },
+   "src/maple/__init__.py": {
+    "git_blob": "4e25ea0e4daf5b56ae06616e981e147a0ebd1845",
+    "git_mode": "100644",
+    "sha256": "d38906e1df4a338c49184b00e8a676a224097c371e5a56eff2c057651002b0a6",
+    "size": 226
+   },
+   "src/maple/aeolian/__init__.py": {
+    "git_blob": "b34a6fdadeab6e5536856c30c9d29cf0ec874b0e",
+    "git_mode": "100644",
+    "sha256": "03a2bf14b95f8842b9ca05c1c575d55d057429bfb3aa184c9bfd0a4c4c5f6a85",
+    "size": 689
+   },
+   "src/maple/aeolian/cohorts/__init__.py": {
+    "git_blob": "d48637ceb2131805c501319ccf754d8704e55958",
+    "git_mode": "100644",
+    "sha256": "44586e56bca945146a0b6dd173ad24db911119807f70d5f5a46b57c959c69af4",
+    "size": 73
+   },
+   "src/maple/aeolian/cohorts/calendar_migration.py": {
+    "git_blob": "e5f56c4944423269fae3c497b7b0f6a28552fc32",
+    "git_mode": "100644",
+    "sha256": "ba21fd00dfaa764d3fe358a37fbd94540539c7cb9bab0a5db3c36498d0d19a37",
+    "size": 32306
+   },
+   "src/maple/aeolian/cohorts/calendar_routing.py": {
+    "git_blob": "eea2ff4abb097bdca0f35fd4a55b521a60955342",
+    "git_mode": "100644",
+    "sha256": "60825f4aecaa71b393db9145f65145dfef290a03c65395d75eea6681ae2dde24",
+    "size": 54874
+   },
+   "src/maple/aeolian/cohorts/calendar_seed.py": {
+    "git_blob": "6629f2085d9df7b0578322c007c68fae623a5da1",
+    "git_mode": "100644",
+    "sha256": "0a3fb12f9d9de34647fe88f91d3028cd7bc6368ecea0756020ac202419875a9c",
+    "size": 9993
+   },
+   "src/maple/aeolian/cohorts/capacity.py": {
+    "git_blob": "aa68cfc57e04271474183ef3fc617a99a81c26a1",
+    "git_mode": "100644",
+    "sha256": "3ceb6fbec8f65dac8987a1d88a28a52c6e79f340e5e537e36ff0c90e5e7aae41",
+    "size": 97069
+   },
+   "src/maple/aeolian/cohorts/dispatch.py": {
+    "git_blob": "69b7e347134bc11548369fbeecdb0b7374dc854e",
+    "git_mode": "100644",
+    "sha256": "802243722cba00524deb556461a7cfa3db445f21368cbc49ce92d63c77da67df",
+    "size": 56033
+   },
+   "src/maple/aeolian/cohorts/memory_budget.py": {
+    "git_blob": "2389acf2c6f1b37836ef77111e1fa95b98e5fdbc",
+    "git_mode": "100644",
+    "sha256": "b72c6c82545b28f29a1996ceac1259c3dc63fc11cc4d3d1acc393a5d6e53a637",
+    "size": 100376
+   },
+   "src/maple/aeolian/cohorts/routing.py": {
+    "git_blob": "426f590860ccac65a2071c8406258c94fd37b880",
+    "git_mode": "100644",
+    "sha256": "d3f10f0532dd54348c0bb5b2f3eb56e4f27e4774f4da471c8eb8ef89d7fdd011",
+    "size": 61180
+   },
+   "src/maple/aeolian/cohorts/seed_realization.py": {
+    "git_blob": "4c15f74facfad099c55d9ee619da4a66609f3ea8",
+    "git_mode": "100644",
+    "sha256": "3eddbc2b8adf47c8bfddca57429fa4182836a15c9de0e2b23bfeb175e016cba4",
+    "size": 8971
+   },
+   "src/maple/aeolian/detachment/__init__.py": {
+    "git_blob": "04feb9494dc28685956c5169bb563813dbb52ccd",
+    "git_mode": "100644",
+    "sha256": "3d52de67498dc8f5a777a3fa29893923ed7acf5e6aa68ade357ea43a57e7c59e",
+    "size": 261
+   },
+   "src/maple/aeolian/detachment/aerodynamic.py": {
+    "git_blob": "c4b2063a800ac6aebadd8c1e9a356cdf15ab0450",
+    "git_mode": "100644",
+    "sha256": "3e7aca431a2edcb8ab25872f062e3878401416d9ba990a5bb4ee611e62aa6787",
+    "size": 10765
+   },
+   "src/maple/aeolian/detachment/apply.py": {
+    "git_blob": "b30f0cb1cbf1eff4623d3723a850360b988ad46f",
+    "git_mode": "100644",
+    "sha256": "d44d67c210b2220d8fc5a18be52493aa705f03cc2424f102b100a4c0eccfb05a",
+    "size": 7088
+   },
+   "src/maple/aeolian/detachment/prescribed.py": {
+    "git_blob": "ec81f6cc481b2f9e054b862691150a10b600a7dd",
+    "git_mode": "100644",
+    "sha256": "8faf19e7a482efcaa538c9c093efb9ab8c5a11c8504a5cf8e299e2089e73990f",
+    "size": 7294
+   },
+   "src/maple/aeolian/detachment/reduced.py": {
+    "git_blob": "095d75398c419947c5cdc079c927e07a00cb3c51",
+    "git_mode": "100644",
+    "sha256": "8a3a8769e57a0d72c99a827374b3113a612d9bebb6a4169c80aef8892c0144e0",
+    "size": 33177
+   },
+   "src/maple/aeolian/detachment/threshold.py": {
+    "git_blob": "388b9b40d1a9c619c76388bafdb7eb1e74fd36af",
+    "git_mode": "100644",
+    "sha256": "0d5a68788b81b0873e630371d6c6d6ff6bd553e6fa39ff26247ac54bc672b4c9",
+    "size": 37552
+   },
+   "src/maple/aeolian/directional_sampling.py": {
+    "git_blob": "2dbc1155799825555a9e544364189fd2ae4f00d6",
+    "git_mode": "100644",
+    "sha256": "57b3d070353b7bf2561eac428e1f56eb17de0cf3a48af1161712c82998877d03",
+    "size": 13492
+   },
+   "src/maple/aeolian/external_shear/__init__.py": {
+    "git_blob": "98dd233bdae4dd7816e7646cd20778dc7b31287f",
+    "git_mode": "100644",
+    "sha256": "59278ff1b075d7526074ca462ca7726faf93a2cb2e794ce5b9410c574974fd2e",
+    "size": 1162
+   },
+   "src/maple/aeolian/external_shear/apply.py": {
+    "git_blob": "380e8cbdff180d98540e5b4e4e04f0b11bafcc30",
+    "git_mode": "100644",
+    "sha256": "0ab68a66209a4bab6cb906c10009b23bd8ae7387c97158c69b132b0f938b4bc6",
+    "size": 15522
+   },
+   "src/maple/aeolian/feedback/__init__.py": {
+    "git_blob": "6d25bf7421c4b2256aff7a89f83887a815432a92",
+    "git_mode": "100644",
+    "sha256": "a3a9093c580a64704ec9d822c84882ba3670e4daf621d002cec55960ecbd3889",
+    "size": 1028
+   },
+   "src/maple/aeolian/feedback/equilibrium.py": {
+    "git_blob": "f6c667861aea1ca620eefa337de7835d31f51dad",
+    "git_mode": "100644",
+    "sha256": "2b8e05a0d8b5c17683ca6f2ecd42cb7a73c24ecc18d192978ee7e1af07dc9ebe",
+    "size": 79935
+   },
+   "src/maple/aeolian/feedback/interval_overlap.py": {
+    "git_blob": "a739838b83e3d5ffdfd2f8dc1206b42ccad9083e",
+    "git_mode": "100644",
+    "sha256": "21d30975ca478beccd4441ebdaf2d2d10809bfe449a706d170acba2a81257bbe",
+    "size": 12016
+   },
+   "src/maple/aeolian/feedback/momentum.py": {
+    "git_blob": "913efe47e48ebb0a3d4c1e245728d2da165c761b",
+    "git_mode": "100644",
+    "sha256": "3e405c98263dde7eae71e8fec2e67d61743a4ade8df53f311a1e460c6fe15b0e",
+    "size": 86809
+   },
+   "src/maple/aeolian/feedback/same_step_solver.py": {
+    "git_blob": "48f81098bb837a55e9f0bf8dab6e48dc3397f178",
+    "git_mode": "100644",
+    "sha256": "dbe0ddbca73dcbfcfb52c943193aecbeced1af2bb4153fb1cae93f7c0f3a11e6",
+    "size": 14979
+   },
+   "src/maple/aeolian/feedback/stopping.py": {
+    "git_blob": "49f857afecd108812d8c7a19e0cbf4b1c451bc4b",
+    "git_mode": "100644",
+    "sha256": "fd65cc759ff7ad512d59215c3a1089de731db5894f91ce73c57d40c9fdd0af26",
+    "size": 12481
+   },
+   "src/maple/aeolian/feedback/trajectory.py": {
+    "git_blob": "41b0caa978bcd52ac8fb04523d877ddffed28179",
+    "git_mode": "100644",
+    "sha256": "d3398e7e2c19eaae309ffcf3c0693cdedabe521e756f4fae6ade92b5ad293379",
+    "size": 15693
+   },
+   "src/maple/aeolian/feedback/transient.py": {
+    "git_blob": "152ea37760a9130b20f59a342617c431edaa037f",
+    "git_mode": "100644",
+    "sha256": "86f92fe3ac40379bd1fed8f5f14fd6b59ed7a1b6f67bcc75cc953151ebdec792",
+    "size": 13152
+   },
+   "src/maple/aeolian/feedback/validation.py": {
+    "git_blob": "0c526288c1158777ff235721af2eaeddc48e0c27",
+    "git_mode": "100644",
+    "sha256": "7e804e098f9aaf6320afdf2909ad732034ef31e2de9d84835cefeaa96aeeb739",
+    "size": 40377
+   },
+   "src/maple/aeolian/feedback/warm_start.py": {
+    "git_blob": "9f35291203360dd6bd658d5f593b56ee11ac5b7e",
+    "git_mode": "100644",
+    "sha256": "7891f9c95233b8d495800a692d1d40bba0752a4f790a1ad5861c97f90a9a3fc8",
+    "size": 19822
+   },
+   "src/maple/aeolian/feedback/wind.py": {
+    "git_blob": "02b1b2547f37ea10bb185a835bfdcc1a98187e82",
+    "git_mode": "100644",
+    "sha256": "d885837dd29c0980b0005af0fb9712fdc8962f2247e3fd79610778c389e338b6",
+    "size": 22088
+   },
+   "src/maple/aeolian/flux/__init__.py": {
+    "git_blob": "3de32da0c359193badc7df30b29ba8aa5d45c7b8",
+    "git_mode": "100644",
+    "sha256": "1746c47c514e06c099b31e348c7bd335a1d388c76f1c63f37dfcd6e056daa497",
+    "size": 130
+   },
+   "src/maple/aeolian/flux/boundary_inflow.py": {
+    "git_blob": "236615dd745ed6e08797a08562b6d0414d0f20b8",
+    "git_mode": "100644",
+    "sha256": "d65bd2b0d8ab29db400d164556b92ad330cceb89f18842a4faa7541527d938b1",
+    "size": 8435
+   },
+   "src/maple/aeolian/flux/deposition.py": {
+    "git_blob": "7a03e7553189d65af19cea3386a5340d0a567325",
+    "git_mode": "100644",
+    "sha256": "d1d3abcf2c7fe1e89f058cda35c3c18bcc81651111f3902ec234c259e47c3938",
+    "size": 23218
+   },
+   "src/maple/aeolian/flux/face_flux.py": {
+    "git_blob": "3f8c0f92e72ac8b0be09b68c87abd16912222e44",
+    "git_mode": "100644",
+    "sha256": "2dad9342387d4710b5e1daf2f4b68d993b2bd9d4b7f7c83fbf2f18ab9cf8f389",
+    "size": 39072
+   },
+   "src/maple/aeolian/flux/routing_envelope.py": {
+    "git_blob": "5c36e705f3d4d5c91a8599a1356ba1e79b2ad46c",
+    "git_mode": "100644",
+    "sha256": "1441f733694ab72ec016a0c2c8f6dd095b041b96b763c06fbd794af93048734a",
+    "size": 4233
+   },
+   "src/maple/aeolian/flux/same_step.py": {
+    "git_blob": "698b8db6ab5e3693101744191f8f7fc417eae3aa",
+    "git_mode": "100644",
+    "sha256": "4edd3b05b8c1c44d7283aa7550506f8eb65e0aad702f6ca55d0ddb450a75cee5",
+    "size": 15616
+   },
+   "src/maple/aeolian/flux/step.py": {
+    "git_blob": "4095dccbd195210226d078383611ba0f94828a8c",
+    "git_mode": "100644",
+    "sha256": "523d99d3cbe4bfcfb14a4ab95596acb1fccc2f2c22fba80b3a10deec563b3d62",
+    "size": 184417
+   },
+   "src/maple/aeolian/flux/validation.py": {
+    "git_blob": "1085fecd7c749fdbcb814c5e0becc547923285cb",
+    "git_mode": "100644",
+    "sha256": "720a44dedf2d413fddcdcf1a0773ab42ef97420555c83aa98e3b70e646c32205",
+    "size": 43057
+   },
+   "src/maple/aeolian/impacts/__init__.py": {
+    "git_blob": "880d3b70faef8c6e4aa1ce32efa92e6ae02d3945",
+    "git_mode": "100644",
+    "sha256": "55cbcdd16b98fa6f5528d613a1067d734cb4fe26bd8a31f2a5edcd9c4dcd770e",
+    "size": 704
+   },
+   "src/maple/aeolian/impacts/aggregation.py": {
+    "git_blob": "e56818fd76d878fe00aeda946e139ba25a1cf2e2",
+    "git_mode": "100644",
+    "sha256": "6fb5cdd365a28bf7f78debfbd041fa7579af0d9a70bb853df6bd76fe198c9134",
+    "size": 21580
+   },
+   "src/maple/aeolian/impacts/calendar_launch_bins.py": {
+    "git_blob": "68263d25a1c3bd0a466f2aacfca93068e876ba39",
+    "git_mode": "100644",
+    "sha256": "6191a2ee72f96993191adf8d52b1ccea0ca15236a9368b0e74fe0221c92ae444",
+    "size": 8584
+   },
+   "src/maple/aeolian/impacts/comsalt_rebound.py": {
+    "git_blob": "af0907fb53b7acd89ba51fbe64c8192680ad3019",
+    "git_mode": "100644",
+    "sha256": "d30082b443dbb39ca218a607e184e2c1987a69f8def4d212ab07003febd4a712",
+    "size": 50047
+   },
+   "src/maple/aeolian/impacts/ejecta_angle.py": {
+    "git_blob": "9ab5b58932a36007776a6207c795afd610a47163",
+    "git_mode": "100644",
+    "sha256": "fe7c2ed83aa91f7007381661becc50aee405911ea6051c68326c2fc9b1833ddc",
+    "size": 15738
+   },
+   "src/maple/aeolian/impacts/ejecta_launch.py": {
+    "git_blob": "b84752008b58570c88cd593198bf260f37a615c9",
+    "git_mode": "100644",
+    "sha256": "e92fc873a0036c835c9011133f6242a4b54d4abc5af07b0bb8faa69e0f91c110",
+    "size": 12003
+   },
+   "src/maple/aeolian/impacts/ejecta_speed.py": {
+    "git_blob": "8386bd11d4e83715fb4e9863994131dabc64c60f",
+    "git_mode": "100644",
+    "sha256": "2413025918eb5d98a58a5a4464edba024151502bb0826d5c5a58654754d93d15",
+    "size": 32026
+   },
+   "src/maple/aeolian/impacts/launch_bins.py": {
+    "git_blob": "75af814acea36b4d30611e2d5e03edcc0c823e66",
+    "git_mode": "100644",
+    "sha256": "1ad3147852045e1d53fcb4b52b098ec1d532947045513869ad837d1d957b229c",
+    "size": 66056
+   },
+   "src/maple/aeolian/impacts/rebound.py": {
+    "git_blob": "4c5bcc76a112fa57305cc9369c4b45444a82c9c9",
+    "git_mode": "100644",
+    "sha256": "5c7fd258e2ec9c8777f7d5d992b6c5b5b1e3371e02b8f0bece955cbc55921b4f",
+    "size": 16212
+   },
+   "src/maple/aeolian/impacts/remap.py": {
+    "git_blob": "85e18d93438f4c73496f3f8b2f7b8d6467249cf8",
+    "git_mode": "100644",
+    "sha256": "439bc76ade30158dde3d9b38fe87c8ba9a743f7dd1b223a2896c614b02f9a787",
+    "size": 22039
+   },
+   "src/maple/aeolian/impacts/response.py": {
+    "git_blob": "7de40b4541c5d4610a3928bfee07802905b1ab6e",
+    "git_mode": "100644",
+    "sha256": "cbc718df339c618b00a6a25c82363e47fb74ca98c484e8a3bd9cd0409917e7f0",
+    "size": 52546
+   },
+   "src/maple/aeolian/impacts/splash.py": {
+    "git_blob": "37aa63c1c77d0c64b34a7dab635d5ac507e9a45f",
+    "git_mode": "100644",
+    "sha256": "8f7b7004b555fef5a4764e5b1fe5862f4f866e71c0bbe51ec17750ad8f51017e",
+    "size": 26764
+   },
+   "src/maple/aeolian/impacts/validation.py": {
+    "git_blob": "3b205dc1448a6d7f2c8e186f7a5c7d43392293a7",
+    "git_mode": "100644",
+    "sha256": "1d0ac2af03eb9de62df0742fe988b50ba77893dcf5a9877d33e01210a563d46b",
+    "size": 21258
+   },
+   "src/maple/aeolian/launch_direction.py": {
+    "git_blob": "ef6aae662886fc8e3f206fe6ecb4ff01fe61dee3",
+    "git_mode": "100644",
+    "sha256": "22bc2417b1bc7aa1bb1564756e1a20d17aa21dadcd12f257f20df9b6aec0fcf5",
+    "size": 30285
+   },
+   "src/maple/aeolian/scheduler/__init__.py": {
+    "git_blob": "cd403912a1926aa01c73c361f4df14b625b9bf8e",
+    "git_mode": "100644",
+    "sha256": "847470fa33f05306731b6cd732927b2283aa8ad294dff702865e81ea9bcc8548",
+    "size": 2702
+   },
+   "src/maple/aeolian/scheduler/accounting.py": {
+    "git_blob": "e1607f60785bc81d2722e3359801bfbfdbbdf6fc",
+    "git_mode": "100644",
+    "sha256": "6f652cb80e95834090cd4b6b127c42a063caa2bd2ac83053cf5898f1e77b3267",
+    "size": 124953
+   },
+   "src/maple/aeolian/scheduler/accuracy_selection.py": {
+    "git_blob": "f06d7c5f343915ed8310ec74d7c3a326583534a1",
+    "git_mode": "100644",
+    "sha256": "eae1b7c7fb49eb52e3befb99426c0325696802cabbfeb2583a85d5a0be75049a",
+    "size": 14928
+   },
+   "src/maple/aeolian/scheduler/accuracy_timestep.py": {
+    "git_blob": "8ae7f1052b745009e5510773a598bbd0076ae71c",
+    "git_mode": "100644",
+    "sha256": "1e616689c28c8e81521b055ff73f737c55649652e0ba389c1f4a2efec95b9d23",
+    "size": 14935
+   },
+   "src/maple/aeolian/scheduler/active_layer_composition_cache.py": {
+    "git_blob": "30883672985f355e92fdfa1b0f16ccf1c2096bdb",
+    "git_mode": "100644",
+    "sha256": "549bd54ca7139a51c67ffb188686df44ccea90dae3698dadd9f18f7cc65ea872",
+    "size": 58670
+   },
+   "src/maple/aeolian/scheduler/baseline.py": {
+    "git_blob": "9f419dcafe7e47b28514a4cf42169c6e5731d7a7",
+    "git_mode": "100644",
+    "sha256": "5c2a69a83dba461cd61dfb1af51a98e76b937032097ef6794749dfa780ce20f1",
+    "size": 34884
+   },
+   "src/maple/aeolian/scheduler/block.py": {
+    "git_blob": "0ef68636489e66163e147ec47994dee3691d9cb1",
+    "git_mode": "100644",
+    "sha256": "15d55ec07f7055269b654cd56e74dd27fb2e8baf33965cc6bfcd9b7e61fcd42c",
+    "size": 34147
+   },
+   "src/maple/aeolian/scheduler/cadence_envelope.py": {
+    "git_blob": "5e6e97cdd833f73b81dc65887bf7dcde94f182b3",
+    "git_mode": "100644",
+    "sha256": "6b8ffe0da32fe9ca8ee6b4d9eca434ce700cfca6547fe88b3026f977d3500e2e",
+    "size": 17956
+   },
+   "src/maple/aeolian/scheduler/calendar_construction.py": {
+    "git_blob": "34e3110d7f2d117ce87b2cee014fd923cf480e8f",
+    "git_mode": "100644",
+    "sha256": "82d3b2a77841d4976d2dcf6d57c0c815e80e92f4c52ad02dedf262ff877bf70a",
+    "size": 29086
+   },
+   "src/maple/aeolian/scheduler/commit.py": {
+    "git_blob": "bf3bc6803684e7bdcb3d7b054d6c495cbf4a33bd",
+    "git_mode": "100644",
+    "sha256": "8bea02402f20ececbd36e27f010d178e00e644418fabb5b9f03d49ab056398c9",
+    "size": 37385
+   },
+   "src/maple/aeolian/scheduler/coupled.py": {
+    "git_blob": "eb6b0cee961fb40996c44a1a43a6463821716afa",
+    "git_mode": "100644",
+    "sha256": "da804f8ee651d3d94cf405b23b3de3b359303c25d214ef98bbaa08b1d38b4cf4",
+    "size": 123524
+   },
+   "src/maple/aeolian/scheduler/dormancy.py": {
+    "git_blob": "3156fd4cb7776633bbef1c4408cf115bd2b7595e",
+    "git_mode": "100644",
+    "sha256": "680e68ad556cd13f6467f0c237aff8a3ea9f326dce7aa153a161af1a47006f94",
+    "size": 60746
+   },
+   "src/maple/aeolian/scheduler/finalization.py": {
+    "git_blob": "60fee6fc178f080b44f7c0f4ceb360772fc2236b",
+    "git_mode": "100644",
+    "sha256": "ab788f72b61b5ad19d9c907d9d0082e27e659e7d5a150997350f229c924042c4",
+    "size": 66499
+   },
+   "src/maple/aeolian/scheduler/flight_support.py": {
+    "git_blob": "63c25b2f51467a720b131035575082b1622f89ff",
+    "git_mode": "100644",
+    "sha256": "c4398cee020e7d000651e538f3474afe40213786f4d4013c8d9cdc16866219bc",
+    "size": 29096
+   },
+   "src/maple/aeolian/scheduler/fluvial.py": {
+    "git_blob": "e5f8d8d034f65c397202c4c9e7114677aabf168f",
+    "git_mode": "100644",
+    "sha256": "8f197037990c2960fc819dbc875d43ae642dee66cbb5bde501624ea1d697553e",
+    "size": 12548
+   },
+   "src/maple/aeolian/scheduler/invalidation.py": {
+    "git_blob": "0e141eba026b0b8725e6947fa45ce14e2a2994e9",
+    "git_mode": "100644",
+    "sha256": "630d6ef919c73d0d28e01ecb72af5822d10d5f73daa3a66db16fb66815cc1033",
+    "size": 7080
+   },
+   "src/maple/aeolian/scheduler/record.py": {
+    "git_blob": "013f3265ed79db607747c71f24fdda3db9db4584",
+    "git_mode": "100644",
+    "sha256": "dbd6ec267e20004a5346ffdd868fdc406c0df85ff548a548978d3450e86b7b8a",
+    "size": 15178
+   },
+   "src/maple/aeolian/scheduler/restart_accuracy.py": {
+    "git_blob": "bee78fb20c9842b00c65c66fd29b3541fa2b9d5e",
+    "git_mode": "100644",
+    "sha256": "1dc8ed12ab0b478645a82db3cde325947f2e4970766633ebbd750394ee3c035a",
+    "size": 8493
+   },
+   "src/maple/aeolian/scheduler/slice_trace.py": {
+    "git_blob": "a78ad8b42a3cc7a6e910206bf89e5be218ee849b",
+    "git_mode": "100644",
+    "sha256": "d46ba0506e6b628ef56b66943d4ee2a7e645cc7b57c1a60fe643ce1b240003af",
+    "size": 14598
+   },
+   "src/maple/aeolian/scheduler/snapshot.py": {
+    "git_blob": "749f1cc8277b8c8b7a65833ef24715835d75d21b",
+    "git_mode": "100644",
+    "sha256": "7bb37af4106bda7dcd3b10a5968881f66fccaa9d6b775d0e4b5ae19179738193",
+    "size": 60583
+   },
+   "src/maple/aeolian/scheduler/state.py": {
+    "git_blob": "c5b4433259eb35be3f9e5f8781752c240ad104a8",
+    "git_mode": "100644",
+    "sha256": "867d98fe084313f1e5f8558f9e67854c97472cb091e80a7bc017e33dc1776b5d",
+    "size": 69727
+   },
+   "src/maple/aeolian/scheduler/state_validation.py": {
+    "git_blob": "a34a311a3c95be2be5b8665924a71c1230b340f5",
+    "git_mode": "100644",
+    "sha256": "6069fd177b577bcd830e4a5670d0f6c08ada2b6514b59b87c1f9291b75960042",
+    "size": 60978
+   },
+   "src/maple/aeolian/scheduler/stationary_continuation.py": {
+    "git_blob": "aee9df7b89c5540c26aaea2424d37425775db5c9",
+    "git_mode": "100644",
+    "sha256": "7b757a322dc220cd39fd446dc10993e0b160cba5632a0b984c579209af31c35f",
+    "size": 89124
+   },
+   "src/maple/aeolian/scheduler/topographic_wind_cache.py": {
+    "git_blob": "4d0c80d2779fced556ea516ee386dce3b47f89bb",
+    "git_mode": "100644",
+    "sha256": "4a3ca857b91859ae925dd1c27ee3aa3aabfc7cfa7425c755af9b7b11a5b4e200",
+    "size": 67292
+   },
+   "src/maple/aeolian/scheduler/validation.py": {
+    "git_blob": "c98a9fba430d7cdea46fe72bb4ef3386aed960f1",
+    "git_mode": "100644",
+    "sha256": "0a91fb83ef68ad4a14816fa4c74a4eb2007bc61d7636e60abd42b5bef62ee007",
+    "size": 48529
+   },
+   "src/maple/aeolian/scheduler/vegetation_cache.py": {
+    "git_blob": "c080b4c1879e7cbda451d5ebc5f54fa88ffb9e94",
+    "git_mode": "100644",
+    "sha256": "9f1ef6a0100a5bfa29753376a5b538f783a40d0bb142678182dd5281870c0117",
+    "size": 18265
+   },
+   "src/maple/aeolian/scheduler/wind_change.py": {
+    "git_blob": "0b690bcf2e9484150a69f75b537f7445e5f5a3d2",
+    "git_mode": "100644",
+    "sha256": "82976383f81987b7a431b06e23aa592b5c6ac13edde05ba9aaf57861234c0e64",
+    "size": 3391
+   },
+   "src/maple/aeolian/scheduler/wind_modifiers.py": {
+    "git_blob": "c03d85b8e12da525b34f38cd6dc2ae276eac2b88",
+    "git_mode": "100644",
+    "sha256": "88c7b825c268a868c59b6075fb4fc2de25e8ad5ff85c5e8731ce6b01c740f800",
+    "size": 11141
+   },
+   "src/maple/aeolian/scheduler/window_admission.py": {
+    "git_blob": "a5de8881380589f66be6f4781b757c74ac92dd04",
+    "git_mode": "100644",
+    "sha256": "6923907cc0d7772412f9b4838c91a3411029043cfe9308900f7d957e249bf4fa",
+    "size": 26533
+   },
+   "src/maple/aeolian/scheduler/window_evidence.py": {
+    "git_blob": "db34439ff4f16a2ba43a3a5fa3ec606754f5d302",
+    "git_mode": "100644",
+    "sha256": "f9654e30d886a3bc06c2386c0c96b2b3bcae4ce10f49c0c660966abd00e5d5bc",
+    "size": 61343
+   },
+   "src/maple/aeolian/topographic_wind/__init__.py": {
+    "git_blob": "4eba99a94de8d5a29fb5ad83d985668d5e6bd4e2",
+    "git_mode": "100644",
+    "sha256": "0b9a019faed0564f912d5790cefbb3740578f76bdb70a58a47425af93966e131",
+    "size": 3764
+   },
+   "src/maple/aeolian/topographic_wind/apply.py": {
+    "git_blob": "c3d4fe3177d02f95c06dd578854657c8eeca8125",
+    "git_mode": "100644",
+    "sha256": "e793e7bd04d2d70d90bda748a645826d4802a13dadf69b7bf675983b21cb0c02",
+    "size": 19609
+   },
+   "src/maple/aeolian/topographic_wind/continuation.py": {
+    "git_blob": "0cca887c577e2d1f8a7bce95ba998ed576acaeda",
+    "git_mode": "100644",
+    "sha256": "7bc423b24ea86ce0f707a39c578f42fbc93af465b694d48fab812a12dc5d529d",
+    "size": 25883
+   },
+   "src/maple/aeolian/topographic_wind/diagnostics.py": {
+    "git_blob": "e1115e1646e8199e977cc95b94874f1341c2b068",
+    "git_mode": "100644",
+    "sha256": "6c67d717926a795a93a43c8b85f5164b56c10cdb5aa00a8811d05d5b1ab39178",
+    "size": 27367
+   },
+   "src/maple/aeolian/topographic_wind/separation.py": {
+    "git_blob": "8e656c2bbac788f309f9729d0b506ae38083e8ce",
+    "git_mode": "100644",
+    "sha256": "97e0e7827947d8cd16fdfe78fd5dc137c422b003c00ca0fbb94bf99cb8e93f4c",
+    "size": 257417
+   },
+   "src/maple/aeolian/topographic_wind/transfer.py": {
+    "git_blob": "2fe870c00a30c51704780efdf39fa8b8cdb6a688",
+    "git_mode": "100644",
+    "sha256": "1723d4c61e6aef5c992f2e7f9cbf1f86896c7e584ebea4ef8535bc950e8db7c0",
+    "size": 64085
+   },
+   "src/maple/aeolian/trajectories/__init__.py": {
+    "git_blob": "a7ffd735ebb6003de447e7d7e0e3b19951e8b79a",
+    "git_mode": "100644",
+    "sha256": "75beb25ef21db870ad33d45f03015105724259341f96ab1826c07366f4307211",
+    "size": 188
+   },
+   "src/maple/aeolian/trajectories/drag.py": {
+    "git_blob": "4fce9da2ff2b4bb5880f87ec29a2625a30c236b6",
+    "git_mode": "100644",
+    "sha256": "96ed5a79c00b162d7ac5653d55f89add5ac4a9d4c6fb317bfd002e1cb04c3801",
+    "size": 45708
+   },
+   "src/maple/aeolian/trajectories/live_wind_advance.py": {
+    "git_blob": "f3ae53da03ea8238761c33117f1f7d45f78fa9f5",
+    "git_mode": "100644",
+    "sha256": "0e8faa6c2b2d852e17aab66d0c7cbbcabe5de041f4fbfe3213b846558482ce2c",
+    "size": 15728
+   },
+   "src/maple/aeolian/trajectories/quantile_bins.py": {
+    "git_blob": "1c8ee5cacb8e96c0b7b3432ddbe4b942b1dcb5d5",
+    "git_mode": "100644",
+    "sha256": "f4b0d97f4cfd1c1454552630aa1e314b54573a7a6e64ab4195fc092080058264",
+    "size": 12938
+   },
+   "src/maple/aeolian/vegetation/__init__.py": {
+    "git_blob": "3eec2ec7a476e33c7068e739d98778b6c33870d1",
+    "git_mode": "100644",
+    "sha256": "dea42324fb6c4ed8cc7c0dd89c99d92788f6a870e836fda29a97f1678524fe98",
+    "size": 4254
+   },
+   "src/maple/aeolian/vegetation/apply.py": {
+    "git_blob": "39b83bb3b5c28614c504052f06767f5ce4eb236a",
+    "git_mode": "100644",
+    "sha256": "a84f3b1b6592dc87c8595d37041e79cf37e7ee58dd6d222ec593c3427bed0b98",
+    "size": 18416
+   },
+   "src/maple/aeolian/vegetation/diagnostics.py": {
+    "git_blob": "c440a000bbee108a166fbed04586d2de36d51c5b",
+    "git_mode": "100644",
+    "sha256": "d1553ce3ca93c93dbe37b4b237a47ab358a83a1c4cd5d1a49374608496daeff9",
+    "size": 11083
+   },
+   "src/maple/aeolian/vegetation/geometry.py": {
+    "git_blob": "041f8433508d55f89a05b05d942bac6e218c8a2a",
+    "git_mode": "100644",
+    "sha256": "fdaa06c993ecd9c385a0b5a56a81c71e35f7218fd268e3d396f3859fbf801364",
+    "size": 11220
+   },
+   "src/maple/aeolian/vegetation/validation.py": {
+    "git_blob": "00f8143bf097bd009f276785a2604eae80c5952c",
+    "git_mode": "100644",
+    "sha256": "ed39bc1b22545ed0c3bcf2d4e46fe6fbcb2174a53ec58bf5b1acec78726d2f4b",
+    "size": 16789
+   },
+   "src/maple/aeolian/vegetation/wake.py": {
+    "git_blob": "1bfb537b816a237b836157176001bbcaf604445f",
+    "git_mode": "100644",
+    "sha256": "160a66cb0da26a9c12556173870166d35a6f056520e4b1f413afc49f6e794d87",
+    "size": 11812
+   },
+   "src/maple/aeolian/vegetation/windward.py": {
+    "git_blob": "655201e3bf4fcafe14b906091a3da3966e41fc48",
+    "git_mode": "100644",
+    "sha256": "42932d9c5ad6f7903af5b41d2530900358190593fde0e0b998a1b6136f0914ef",
+    "size": 10184
+   },
+   "src/maple/case_tools/__init__.py": {
+    "git_blob": "73b635ba609b2326ca4f44bef72d158f8b63d093",
+    "git_mode": "100644",
+    "sha256": "6b913ebc2586440b41d8e0baa4516ce869041b485d7418bdc014adc82a20c9d1",
+    "size": 3899
+   },
+   "src/maple/case_tools/analyzers/__init__.py": {
+    "git_blob": "9cf7ea4f77136dd9763a79bf45eae344adc3bac6",
+    "git_mode": "100644",
+    "sha256": "ef0d9a6b208fcb83a0dd8a3c8bf169db0e244e69369b497bbb344a5ffa8affbd",
+    "size": 2120
+   },
+   "src/maple/case_tools/analyzers/conservation.py": {
+    "git_blob": "3a992674122f729cc059a2df7fb2845300027c7f",
+    "git_mode": "100644",
+    "sha256": "373ffcdfc09c5f7ddfb13a745f1ad2ed45885653aceca107b2b30844d612be5e",
+    "size": 2954
+   },
+   "src/maple/case_tools/analyzers/emergent.py": {
+    "git_blob": "83eb99be1de5f42edcb7a35a250eddec4ce7a0f4",
+    "git_mode": "100644",
+    "sha256": "bf85969b284af8e77f3734f3f9a746e6d9903dd9592e2f63300f44fd692167f2",
+    "size": 70350
+   },
+   "src/maple/case_tools/analyzers/fitting.py": {
+    "git_blob": "55fa0be5645b8fe95290fc218c7345b203a8bfb8",
+    "git_mode": "100644",
+    "sha256": "8900e528a0464021e1d87867d45473293618d9ef3a8c14baba113c65319cfb08",
+    "size": 36695
+   },
+   "src/maple/case_tools/analyzers/flux_profiles.py": {
+    "git_blob": "5ec3a8b7d335e11516724363e7e6ea96e1b64872",
+    "git_mode": "100644",
+    "sha256": "0ffc55ae88ad262cd55a6bb1a271602b437da812010e54ccbbc1a2b43ac74e0e",
+    "size": 13577
+   },
+   "src/maple/case_tools/analyzers/geometry.py": {
+    "git_blob": "4bef9de61f77bd822f4825ddedabf18839d6b709",
+    "git_mode": "100644",
+    "sha256": "343f18e255bded9d71e7df55a0b56c2ae7b1fae213a714569af30c49012ef930",
+    "size": 4888
+   },
+   "src/maple/case_tools/analyzers/mode_comparison.py": {
+    "git_blob": "e5a240777374712c9aa5aa95946ddd2b2676e198",
+    "git_mode": "100644",
+    "sha256": "ecae98b355946cd159e511b5ff2dd39eb4d97192a0b5a61480346f8b655b56fb",
+    "size": 14633
+   },
+   "src/maple/case_tools/analyzers/results.py": {
+    "git_blob": "abd40fb7cdd6d0ee5394ef06ccad1cde2bbe8e72",
+    "git_mode": "100644",
+    "sha256": "bf0d4bc3762faf90d8fb717cc25f60ca758162c22c8abe5e9638e43e74484fbf",
+    "size": 16874
+   },
+   "src/maple/case_tools/analyzers/splash_yield.py": {
+    "git_blob": "d4ba3a4cb300546c86809cc6c09f3485521a0c62",
+    "git_mode": "100644",
+    "sha256": "288e25ee5ccc500605d2f15e9f50b988c10bc81fa8182d3f5641425382e01bbb",
+    "size": 16471
+   },
+   "src/maple/case_tools/analyzers/threshold_sweep.py": {
+    "git_blob": "96777beb508077146d8a877496c0d6b4b424c4c4",
+    "git_mode": "100644",
+    "sha256": "1d1806f9b6e5949083034f9a51ba04e175f9d53aae3d4a4f5e2088c1aedabb04",
+    "size": 21867
+   },
+   "src/maple/case_tools/compilers/__init__.py": {
+    "git_blob": "ccc0bf64038c8727e5d19c79f3cdf85c5d6c8f93",
+    "git_mode": "100644",
+    "sha256": "a2a9f277808ec19bcf402a21e46fd3adab82666eaaf507d0957c239eacf87c83",
+    "size": 473
+   },
+   "src/maple/case_tools/compilers/case_compiler.py": {
+    "git_blob": "35629a2cf23d47949b663bd78e584fa6b546a684",
+    "git_mode": "100644",
+    "sha256": "2db21adb101f2817e12933c0da1fbb613979f0cc929c9f3c385dc54e91581252",
+    "size": 121363
+   },
+   "src/maple/case_tools/compilers/voxel_allocation_preflight.py": {
+    "git_blob": "a7e5a7e8b1b8a1d557186d6a8b581bcc446d1f46",
+    "git_mode": "100644",
+    "sha256": "2d76402265555760ff62e9bb764346d02c79b04203333807f87c5e850184ace5",
+    "size": 8319
+   },
+   "src/maple/case_tools/generators/__init__.py": {
+    "git_blob": "24131440efc02422c13988c34580e016fe041143",
+    "git_mode": "100644",
+    "sha256": "03a3c20e6d5ba9167eabe41881e930df1a4623bb639bc843075168f834777b39",
+    "size": 324
+   },
+   "src/maple/case_tools/generators/analytic_surfaces.py": {
+    "git_blob": "d1f712b8d370527078210f678a6442abace04a3a",
+    "git_mode": "100644",
+    "sha256": "d6962b52451310fc9228b3a0c86695b442065ed2a3c37fab96ecdfe7caade93d",
+    "size": 6869
+   },
+   "src/maple/case_tools/generators/availability.py": {
+    "git_blob": "9693db32c371120e484e165cb56edf2f0dc6c5e1",
+    "git_mode": "100644",
+    "sha256": "8b2506acc86c22e747bbdd8ced06fa086dc0d4c19d824d96af8aa72ea46173cd",
+    "size": 4312
+   },
+   "src/maple/case_tools/generators/coordinates.py": {
+    "git_blob": "44d4a196f0f034d2b4bbc420bf8adbe1bf3bddb7",
+    "git_mode": "100644",
+    "sha256": "e7128bb94ec5018218b045a28c7da810bc27d81fe3124d586112463d471f243c",
+    "size": 1615
+   },
+   "src/maple/case_tools/generators/dune.py": {
+    "git_blob": "9bee26c4a089fc4feb7034f895414f0ed04d7b9e",
+    "git_mode": "100644",
+    "sha256": "da8bd534a6e23df13601ad6e1b9c75a0c72a196180cff0c4863d9cf9d1d0b483",
+    "size": 5703
+   },
+   "src/maple/case_tools/generators/dune_forms.py": {
+    "git_blob": "00ee747caf1720db693df6d23a321c85ba434dc1",
+    "git_mode": "100644",
+    "sha256": "ae0507e0f62ceda5523eb9781643d54b54fd34f3d1b309fe3a58af8d24442229",
+    "size": 14180
+   },
+   "src/maple/case_tools/generators/fields.py": {
+    "git_blob": "dc32ac79a050c2b70da32f6cd68682f04488b64f",
+    "git_mode": "100644",
+    "sha256": "0c49f0d25fde18d66e2b49a8bc04bdbfa4076b202b937faf0f7d25b4d40530b9",
+    "size": 11514
+   },
+   "src/maple/case_tools/generators/fractal_field.py": {
+    "git_blob": "b865554f8c79d4023c9577023cc3dd527c7acb1c",
+    "git_mode": "100644",
+    "sha256": "c2f482528dfc70583871c15ace19f1fdf48e0244be822beba95d97d3a4d5f065",
+    "size": 5222
+   },
+   "src/maple/case_tools/generators/grain_mixture.py": {
+    "git_blob": "ea789d5a228b6abf5d8249a58b8e0762fa4ac6dc",
+    "git_mode": "100644",
+    "sha256": "f397d3a18daa96d7e1e66e07c23bc6b92af5bd3f76d530f8c86eb821f1692610",
+    "size": 5717
+   },
+   "src/maple/case_tools/generators/mobile_seed.py": {
+    "git_blob": "6fa75eefc84ce069a2ec7e9bde4188bbcc2ae02f",
+    "git_mode": "100644",
+    "sha256": "6d6ccceeb8d37044713810117d96f56f74c1b29fc0a06d5ed34b2772a022ec55",
+    "size": 12553
+   },
+   "src/maple/case_tools/generators/point_processes.py": {
+    "git_blob": "9a798fac33b20496847f41ffb40935e45c1cab70",
+    "git_mode": "100644",
+    "sha256": "d0185dbf1f45875a54357270cf3c89125b8494bf45e5737a3fa630a43f5fb4d0",
+    "size": 7074
+   },
+   "src/maple/case_tools/generators/random_field.py": {
+    "git_blob": "0b828996681e898afe445b109895fc536de49718",
+    "git_mode": "100644",
+    "sha256": "a87dda5a3b17da91ba0a91c7efd35ed12095e5d399be49ca1af588dbaf377c80",
+    "size": 7699
+   },
+   "src/maple/case_tools/generators/seeds.py": {
+    "git_blob": "16c14ee5fc8747fac0b7d6edb7eff69db8216f84",
+    "git_mode": "100644",
+    "sha256": "160009795f1f2931ee0865a409766296cd97e8a7f29f638df74083c2cd64582f",
+    "size": 3611
+   },
+   "src/maple/case_tools/generators/stratigraphy.py": {
+    "git_blob": "07a6c76410ae51da60074c4861e0cb17dd099f2b",
+    "git_mode": "100644",
+    "sha256": "69b18ae9442935d212e5879b654ba82f1f8575da6970db055278b52c6d0d9e80",
+    "size": 18416
+   },
+   "src/maple/case_tools/generators/synthetic_bases.py": {
+    "git_blob": "c1ab4e7c628370679d26b0939c9f6b622a0bcbbd",
+    "git_mode": "100644",
+    "sha256": "c0a7bb477b4a8e2b6f6d2866f40ef40b776a439f85f1ceaaac7508ca27f607e0",
+    "size": 8220
+   },
+   "src/maple/case_tools/generators/threshold_modifiers.py": {
+    "git_blob": "704bd7bdea2f7164bae0cafe5f19aa313f16d826",
+    "git_mode": "100644",
+    "sha256": "7e74635c10ea2c2d0c65c6125953b0e9fee7faa46db7b1ab49298335b8c80cef",
+    "size": 6115
+   },
+   "src/maple/case_tools/generators/topography.py": {
+    "git_blob": "e39df5a2fa9413acd67f76b013438f9c254ca0a2",
+    "git_mode": "100644",
+    "sha256": "3bdef7b2844ac10d520fdbc29baf36ebdfdd270b6fa3cd3fea2f0eb71a3d1071",
+    "size": 16950
+   },
+   "src/maple/case_tools/generators/vegetation.py": {
+    "git_blob": "a1696e6aa854641556545f02bd1581c758ba7d2e",
+    "git_mode": "100644",
+    "sha256": "aaf4bc9c06bcfded02528040e0e562f0cf08d902af0de8818d6bba10d1d5553d",
+    "size": 17470
+   },
+   "src/maple/case_tools/importers/__init__.py": {
+    "git_blob": "9446f25510ec99e30214f5a5db60ae6c77d859da",
+    "git_mode": "100644",
+    "sha256": "bf9b92871f3ce46b52fec5fa97464eda9da05412c290d30e548b96cbf590fdc9",
+    "size": 2324
+   },
+   "src/maple/case_tools/importers/field.py": {
+    "git_blob": "2f4dca050ea100296c103e248fc491207b210330",
+    "git_mode": "100644",
+    "sha256": "7469e38563f221c841f0b14dd830f1455b45a8acc0b93f99814f708e121cedb8",
+    "size": 7946
+   },
+   "src/maple/case_tools/importers/forcing.py": {
+    "git_blob": "ec9ddf4d38246bf6dd5c26333d313549ce7c5b5f",
+    "git_mode": "100644",
+    "sha256": "2dd60005f3eb99369ad6833767d71990eeeb3fb9bbd6ecc31c063b1a61ae4bbe",
+    "size": 12493
+   },
+   "src/maple/case_tools/importers/raster_types.py": {
+    "git_blob": "acfa8ed1c0035fe4e605a6696bcb0cc77722e66d",
+    "git_mode": "100644",
+    "sha256": "06d3d97aaa8ac6a59d9d8a09ea28bb280955571a435812ed5458603d421f3c0c",
+    "size": 6801
+   },
+   "src/maple/case_tools/importers/readers.py": {
+    "git_blob": "20f87864e553ed99021b9bcff930d463fe393019",
+    "git_mode": "100644",
+    "sha256": "4cf74976ccf44fddd08553a1942f672f6251ea5424b9c9132f7e7c0221df11a7",
+    "size": 34883
+   },
+   "src/maple/case_tools/importers/resolve.py": {
+    "git_blob": "6d9eb4fe903cbf905802602fc567b9fa86148ab7",
+    "git_mode": "100644",
+    "sha256": "6dc9eae0cea0c752437d30ac5b8115b63378eade4cbfc49f7c38a8854dbb4e37",
+    "size": 12561
+   },
+   "src/maple/case_tools/importers/sediment.py": {
+    "git_blob": "b820a12513356f84572f0fb151e0229deba4707b",
+    "git_mode": "100644",
+    "sha256": "94dfbadfd854d14bdb22e259e414460972abae9b2dc01737a7da681e09c39b5b",
+    "size": 24061
+   },
+   "src/maple/case_tools/importers/vegetation.py": {
+    "git_blob": "87457aa38cc90c24e3eca215148d68e65d657f6a",
+    "git_mode": "100644",
+    "sha256": "3aa0b1afd815ae2ee114740464ac94a7c13bc001dd7caec47667d1f35f419166",
+    "size": 15802
+   },
+   "src/maple/case_tools/observation_operators/__init__.py": {
+    "git_blob": "a7b910470f4ce99d37ee329315d92615a716d4d6",
+    "git_mode": "100644",
+    "sha256": "36e14e004a5af770cfe054e336e1d0c03c0fcbbbf4870113c9ab0dbdc76fc0f3",
+    "size": 1713
+   },
+   "src/maple/case_tools/observation_operators/support.py": {
+    "git_blob": "aa83671f6d30df84a1faf08424d21b05520dd7fc",
+    "git_mode": "100644",
+    "sha256": "cb8383f8b9a3c039a7aada5313f84a2e176187f86a3faead4cc935b6e09fff12",
+    "size": 26607
+   },
+   "src/maple/case_tools/provenance.py": {
+    "git_blob": "15df4d5f227b4ebe2c6f1f9c57b6575038193295",
+    "git_mode": "100644",
+    "sha256": "5478bc06cfb0aa7f42646831d3a73b69cf9422c3a3b462d3b1ab3ad264e027bf",
+    "size": 50889
+   },
+   "src/maple/case_tools/regression/__init__.py": {
+    "git_blob": "5a899f948751f6183344b9fa8dbe36e2fd6f74e4",
+    "git_mode": "100644",
+    "sha256": "8860838216ce97908d187c1c5caaa9bc8a39069a80da135f165924b3a8adc8c7",
+    "size": 1107
+   },
+   "src/maple/case_tools/regression/reference_cases.py": {
+    "git_blob": "20731c5ec54d6442aa8542bd333f1f86b0d93152",
+    "git_mode": "100644",
+    "sha256": "305bec8b259633a90137eea9b9529927d4ac79caf4b2489b3f40f4517613d6ef",
+    "size": 2969
+   },
+   "src/maple/case_tools/report.py": {
+    "git_blob": "dcd641ab2c9f16a7a4afc74c2fd0cb0ac049f63c",
+    "git_mode": "100644",
+    "sha256": "095fd008b42ceb26e20537eca42fc1e01bc5149d49759adeb9cf446e028e6c46",
+    "size": 8160
+   },
+   "src/maple/case_tools/scenarios/__init__.py": {
+    "git_blob": "8abcdfb35606204f49753673c4cbc0aaa7914e5c",
+    "git_mode": "100644",
+    "sha256": "e382e2ac3d361a09b510f0f2138358052e62a134841d7640085277db39f249f9",
+    "size": 1667
+   },
+   "src/maple/case_tools/scenarios/definition.py": {
+    "git_blob": "1ecbad6e042e6bf3a69d1dd26a0b01ddeeaaafbc",
+    "git_mode": "100644",
+    "sha256": "1f2ab91b5a098931577d1ab28c8c8cb0a1b4a216b857694ada2cc881700e7d9a",
+    "size": 3439
+   },
+   "src/maple/case_tools/scenarios/diagnostic_runs.py": {
+    "git_blob": "3cbb3becfb61873a2a3e6adb264f29c3b5612c92",
+    "git_mode": "100644",
+    "sha256": "deac881b5998b38b3bb9d27f170cd2b620232c4f683b7f78891bc7b0ebd29780",
+    "size": 34544
+   },
+   "src/maple/case_tools/scenarios/diagnostics.py": {
+    "git_blob": "8976a109be4b4e314701fd6d9ea0bcbaf4bcd64b",
+    "git_mode": "100644",
+    "sha256": "674e4664d0ddc8b8042bbbfba383dc622674f1aa9504dc706f37c4749ec36409",
+    "size": 34345
+   },
+   "src/maple/case_tools/scenarios/runner.py": {
+    "git_blob": "260c70278b8a2d01b33c6b21ad3d0faf1f4dee89",
+    "git_mode": "100644",
+    "sha256": "c8de6d5f000eb79e160142bdc8596d0e21c19272ffcb24acf23b51d4d8ac078c",
+    "size": 1511
+   },
+   "src/maple/case_tools/sweeps/__init__.py": {
+    "git_blob": "b3b41ca45e73d9b0ba133565bab69652bec4e127",
+    "git_mode": "100644",
+    "sha256": "458f9674f9ad495a12a050d488134ac93cbb00b554a66da89a47e44e86120ce2",
+    "size": 738
+   },
+   "src/maple/case_tools/sweeps/run.py": {
+    "git_blob": "b9ac7ee5ff5dc0581239ae83b7f2a2ef711cd38e",
+    "git_mode": "100644",
+    "sha256": "64f367e8f60fbbe3db3e7ed1ae7ad8a6d37da379d34683f106de511b9e239db5",
+    "size": 29753
+   },
+   "src/maple/case_tools/sweeps/spec.py": {
+    "git_blob": "927811bc8758fbefbda85cb7c600bfced4998cdf",
+    "git_mode": "100644",
+    "sha256": "61e79b261070bb2251882f6a26e6bf2a5518f4f5545741f3223991dd2b28fcad",
+    "size": 13114
+   },
+   "src/maple/case_tools/transforms/__init__.py": {
+    "git_blob": "8442639bff4c93b769fe47e037736fdf02a8d36b",
+    "git_mode": "100644",
+    "sha256": "37390e8feff6a5f293327eecd8e14643b25f59bbd00ce9786885f8214ea610ee",
+    "size": 1814
+   },
+   "src/maple/case_tools/transforms/combine.py": {
+    "git_blob": "78ec9d98f5f8adfa47e33c384d350b3e09b0a2ce",
+    "git_mode": "100644",
+    "sha256": "0bb3d909734b59e7a2e023197598c8ba4710e2c4563c9ffa0da8bf1f37f00ae9",
+    "size": 2935
+   },
+   "src/maple/case_tools/transforms/empirical.py": {
+    "git_blob": "d04d13670613de884ba2d58002b40c169f14bcc3",
+    "git_mode": "100644",
+    "sha256": "a59608f29bda182d332d8f0eea313b52c47de1d8ba738e36fc13ff2300d452a8",
+    "size": 64162
+   },
+   "src/maple/case_tools/transforms/log.py": {
+    "git_blob": "a422345f0e25244635377417332edda6976e4119",
+    "git_mode": "100644",
+    "sha256": "45bdf15736cce004fb3bfd8eaa98401c3c26456188626b8bc9df8a595883bd19",
+    "size": 7097
+   },
+   "src/maple/case_tools/validators/__init__.py": {
+    "git_blob": "dcd588422a4c04f84e52b417504f27731b312d06",
+    "git_mode": "100644",
+    "sha256": "0816ec7804b309b6bac51b31ac0f7a472369725a8488fc9b83963cfcbcc7f300",
+    "size": 330
+   },
+   "src/maple/case_tools/validators/compiled_case.py": {
+    "git_blob": "302931cb7214894cdc8574b22f7e38c40e4b4de9",
+    "git_mode": "100644",
+    "sha256": "cf9bdedb30a311f5b98265a50cb7abddf0c82698018f845d3fadcd1fc709f9fb",
+    "size": 44421
+   },
+   "src/maple/case_tools/validators/imported_case.py": {
+    "git_blob": "ecfce7e42627ec7807d6e9ce8611924b4e07526f",
+    "git_mode": "100644",
+    "sha256": "6c3cd36f9420c5da06d0bd5bbefe6e0d9a3020d04b6ec55900643a58c34f1086",
+    "size": 11547
+   },
+   "src/maple/cli.py": {
+    "git_blob": "aff7ed7091bfe9c0b106db77596653a9e8822c2b",
+    "git_mode": "100644",
+    "sha256": "26b0e495d392b5fc3f16578c8e73315261c8e3000e0f5d2069d4de47bc860fd0",
+    "size": 1164
+   },
+   "src/maple/config.py": {
+    "git_blob": "21a09d06eb0e7c9e6cec99334e951be6a282c071",
+    "git_mode": "100644",
+    "sha256": "3c8477925f8ab2ec710fc8d4434a298516f83327c134bfa46d9bb5ca1d59aabe",
+    "size": 1503
+   },
+   "src/maple/core/__init__.py": {
+    "git_blob": "6ce23e221111a29ae964262fd3f82d1d34870281",
+    "git_mode": "100644",
+    "sha256": "8fbf67082d2dfa651ede095338abb9eb9b840fb8ac3c3698755de44e3acf0e88",
+    "size": 84
+   },
+   "src/maple/core/backend/__init__.py": {
+    "git_blob": "8d0580c87194ce6bf5ce8dad3eb4a0f184f472ef",
+    "git_mode": "100644",
+    "sha256": "541bbae44a1656a7dbc138cf72bbce229bd668cbd6afdc7972ee992be0e5ccf4",
+    "size": 3949
+   },
+   "src/maple/core/backend/arrays.py": {
+    "git_blob": "4f0c6a41127dc4d52e3e8b11409f1898ae63b798",
+    "git_mode": "100644",
+    "sha256": "475a210ced97c01ab5e7d5f661886e858f3e65f8c20d11503d7675bb1e8ca26e",
+    "size": 19975
+   },
+   "src/maple/core/backend/deferred_checks.py": {
+    "git_blob": "0381e990ece8cd9758d6519a576c80f0a1a4dddb",
+    "git_mode": "100644",
+    "sha256": "6f64a03776a4856d668f72d9f94e168f62fdd18055080344099f09dcfa843c7d",
+    "size": 4481
+   },
+   "src/maple/core/backend/leaves.py": {
+    "git_blob": "c4e1154f19b52cad7c430ebfc5d4920172d61115",
+    "git_mode": "100644",
+    "sha256": "9ff0b743bcfad53daf8ab45480e43b1fd7dba14885322c093affa57dab0ff623",
+    "size": 8103
+   },
+   "src/maple/core/backend/namespace.py": {
+    "git_blob": "6766630e123e495b1a9929f8902e94d5bba5e427",
+    "git_mode": "100644",
+    "sha256": "9420904454d5d203e2e115d7051012c01a1639c69b90402b79c490301d38c787",
+    "size": 10657
+   },
+   "src/maple/core/backend/reductions.py": {
+    "git_blob": "f84560b005309a7a5efdbf4ae286ea1620738ff5",
+    "git_mode": "100644",
+    "sha256": "16892f0c779768b4d21610fc5163132fac55c58357eeaef933bfaf961a880218",
+    "size": 5621
+   },
+   "src/maple/core/backend/scatter.py": {
+    "git_blob": "2c82016a18f4a501957cd059e21dce7fd715da62",
+    "git_mode": "100644",
+    "sha256": "a8590c4e4c5d6e53b168ca2ff7bb3b18c27ea94901a2adf571e16fbee7e9615a",
+    "size": 40239
+   },
+   "src/maple/core/backend/selection.py": {
+    "git_blob": "ec5c5f34e1bac329ca7c3e01d0ff4f506ee87819",
+    "git_mode": "100644",
+    "sha256": "af2e3b01ec50a1ef52f6fb1eac5043ce0b0c259c68872e0058355f407694cb98",
+    "size": 16633
+   },
+   "src/maple/core/backend/transforms.py": {
+    "git_blob": "4a8234b10d19f9ce4d827b579439110d583ac5da",
+    "git_mode": "100644",
+    "sha256": "8ce2cf5cd61f196bc1e38de4f0dcc059075bbede626ddf51015c8321e570e76c",
+    "size": 9048
+   },
+   "src/maple/core/boundaries/__init__.py": {
+    "git_blob": "443c2ddad04fd544288da13726467a72f0135ed3",
+    "git_mode": "100644",
+    "sha256": "b7b45cb5be9a18fa84a7bd60f86965f347bd495cff2daec2bc16d7b73c24d6d7",
+    "size": 2961
+   },
+   "src/maple/core/closure.py": {
+    "git_blob": "ce9e5dbe9ade95c9552c746f4c97757c5e61bb63",
+    "git_mode": "100644",
+    "sha256": "5d448db02500cfa32bd1f79c078c97d420d52d83d0264f559ad206278f931baf",
+    "size": 10288
+   },
+   "src/maple/core/optimization_switches.py": {
+    "git_blob": "a793ae984439bf97b1c132ddbf3b5d3aed9cd5d1",
+    "git_mode": "100644",
+    "sha256": "22943033eb2d913b8edb7f3a5340128d84119f233de4fa87ab703ab483aea6d1",
+    "size": 5065
+   },
+   "src/maple/core/parameters/__init__.py": {
+    "git_blob": "dcd84a59fbf41f42124b0ad1f8b90b6f02ea3f6c",
+    "git_mode": "100644",
+    "sha256": "20a91a1193f1ebe9a3a98db1eaa7e9869c1b57c207e493a06ecff657c38a1aec",
+    "size": 77340
+   },
+   "src/maple/core/parameters/aeolian_process_mode.py": {
+    "git_blob": "8bfb3c203976673f5b095818cd2582ee6a1252d4",
+    "git_mode": "100644",
+    "sha256": "339b50202cf31f01369d1113938b1fc45205ca0755ce8b1d23526ffa9031001e",
+    "size": 4964
+   },
+   "src/maple/core/parameters/aerodynamic_detachment.py": {
+    "git_blob": "6d4ff0f227da32c983accc17f9f3e3812e7e0b65",
+    "git_mode": "100644",
+    "sha256": "8a79a6e1f2e267343f4301b5555f9879a0e6ab013b23eb10ce6801eb585c1ec1",
+    "size": 4502
+   },
+   "src/maple/core/parameters/avalanching.py": {
+    "git_blob": "818bba4540085967cbfc0dac89efad11f2acc423",
+    "git_mode": "100644",
+    "sha256": "992e92353039983e5dd892a39a532afaa3478928c29ce84828f79a8a2a209dc2",
+    "size": 9962
+   },
+   "src/maple/core/parameters/case_import.py": {
+    "git_blob": "be294de60dcec791b7a2d23dd29cfc0ab111532f",
+    "git_mode": "100644",
+    "sha256": "29a0363d664c2bb84657dda974df9191f6f24065a0194c85f017958f94c62630",
+    "size": 72592
+   },
+   "src/maple/core/parameters/case_initialization.py": {
+    "git_blob": "12efc21443bce04a7be1dd2c10bed10e396bbaf7",
+    "git_mode": "100644",
+    "sha256": "536fd72d698ed53b1ff546e3a2965bb4756e749e9886d3891c56d1adef26d547",
+    "size": 149149
+   },
+   "src/maple/core/parameters/detachment_source.py": {
+    "git_blob": "0a70fc389ce29b9e1afe5c5b2f6f0b51aba51005",
+    "git_mode": "100644",
+    "sha256": "89f160e9e951bcdc060457e2dc53bd400764e1bac8942a346eb3a9f082e571d9",
+    "size": 2826
+   },
+   "src/maple/core/parameters/dormancy.py": {
+    "git_blob": "91fa4b27768f26621206b58729e6f387de84c27b",
+    "git_mode": "100644",
+    "sha256": "497d9850452ad4303bf2bed9f0f9fa432fb1ba627e4e9cc24fa6b90c6772f5fa",
+    "size": 2137
+   },
+   "src/maple/core/parameters/execution.py": {
+    "git_blob": "ecd9fa8701dadc6c0413f2ca1900c118a7673f21",
+    "git_mode": "100644",
+    "sha256": "509e411cfe22d7c9a470ee96ec3850f52b01e671e0882a32322d81858118047a",
+    "size": 5547
+   },
+   "src/maple/core/parameters/flow_separation.py": {
+    "git_blob": "5c450984d8a9815b22a096c601e0b2ac530a012d",
+    "git_mode": "100644",
+    "sha256": "025e18721070edefdac338f5bb83e649bcd0da485868c47c2b23c2d91fb33e5e",
+    "size": 41471
+   },
+   "src/maple/core/parameters/fluid_threshold.py": {
+    "git_blob": "2987ad34409b3e965ff197dce5496589423815ea",
+    "git_mode": "100644",
+    "sha256": "aff1120ac986161377e48b39a03e9e54bc94d6d97775afacf88ce6d705500d6c",
+    "size": 11305
+   },
+   "src/maple/core/parameters/geometry.py": {
+    "git_blob": "6e47da3817a18485300f39aff330147b3141bbd5",
+    "git_mode": "100644",
+    "sha256": "5c3ae0143c682a19755ca740b772b506f6f527ff5bca916b7819080e14f4b348",
+    "size": 8547
+   },
+   "src/maple/core/parameters/grain_classes.py": {
+    "git_blob": "b8e8f8cfc2510b5e4db0c0d7d590d2da7855a2af",
+    "git_mode": "100644",
+    "sha256": "f8b4642cbcfe3220f9d28a17ceb986fb13d7ad801690f3d3e9ee2522e0e506e8",
+    "size": 7250
+   },
+   "src/maple/core/parameters/impact_rebound_splash.py": {
+    "git_blob": "1ef1b170ee52f779f0c964eafd5de949c387625e",
+    "git_mode": "100644",
+    "sha256": "0956a32eed776206a1f342f6c2e881373b6c83b683e5ca5972ee4de782bed9f7",
+    "size": 76514
+   },
+   "src/maple/core/parameters/numerics.py": {
+    "git_blob": "9677a8d1e515eb430fe55ee10fe1640976f7dec4",
+    "git_mode": "100644",
+    "sha256": "131d7914f7884085cc1c6323d409d99c26b1d42e65cf064d6a7020c9b8e9b3e6",
+    "size": 7995
+   },
+   "src/maple/core/parameters/outputs_and_diagnostics.py": {
+    "git_blob": "46cd2f4b47e004932f3d5601199d7275a25ce88c",
+    "git_mode": "100644",
+    "sha256": "09496828da949558898c379efcc78b88a825a152faf6dd7ba7465b250240c537",
+    "size": 22310
+   },
+   "src/maple/core/parameters/particle_transport.py": {
+    "git_blob": "d341bb83a5c7aca6c9d4ed5be8440368f94d9af1",
+    "git_mode": "100644",
+    "sha256": "3d8310bdbec086a84e1629a69873fdc9fc8b0202eae0dc62a635a7583f86d521",
+    "size": 17821
+   },
+   "src/maple/core/parameters/physical_window_admission.py": {
+    "git_blob": "d66c5fd4af593a931c837312875121c0ff13030e",
+    "git_mode": "100644",
+    "sha256": "e35ed04c3c3fca96f2f791c03dd9ceee577cb3304fbc89baadddc7bb7aac946a",
+    "size": 5774
+   },
+   "src/maple/core/parameters/polygon_geometry.py": {
+    "git_blob": "6d328e8ae652b32947ddc0967011fadfc1fb463e",
+    "git_mode": "100644",
+    "sha256": "e59150c673e191ef683a98c595cbfa59d8519223e8e80c3f863f3c649194de7e",
+    "size": 17723
+   },
+   "src/maple/core/parameters/prescribed_detachment.py": {
+    "git_blob": "7f8a0e517a21279a7212d5c5f66e0458bbc8a3b2",
+    "git_mode": "100644",
+    "sha256": "65c5df3657bd5f8688ad41f30380df641b955e9f133dc3fd0b96fd8259edbc52",
+    "size": 14943
+   },
+   "src/maple/core/parameters/prescribed_external_shear.py": {
+    "git_blob": "15411f07905fc42c720f23699eee2c6170fc6389",
+    "git_mode": "100644",
+    "sha256": "93e204d778bf62be19c2d67a27d4fdd4e7c8f209acc53180e651835da767433f",
+    "size": 10243
+   },
+   "src/maple/core/parameters/process_scheduler.py": {
+    "git_blob": "5fe6e795510248efd85b79a8001d8f48846cd5de",
+    "git_mode": "100644",
+    "sha256": "41e0bcb37ed3a79d8e5e99497acdb98ae12867050ff82381d7c980ba0b92545a",
+    "size": 8367
+   },
+   "src/maple/core/parameters/reduced_detachment.py": {
+    "git_blob": "dd5d16897529876e362851922cec8bd10681352b",
+    "git_mode": "100644",
+    "sha256": "6db75ade09cfc1a87a5559a0118eb16ffa19e2a9184e2dee85b775058c526478",
+    "size": 35499
+   },
+   "src/maple/core/parameters/scalar_fields.py": {
+    "git_blob": "48b7bd5e1d95e6f15055ec43e30bf33c2eaefa24",
+    "git_mode": "100644",
+    "sha256": "c7357de1e9b9d70e7283397fa9abd500445f0879d4dc635230155922a0e3efb1",
+    "size": 28211
+   },
+   "src/maple/core/parameters/stationary_continuation.py": {
+    "git_blob": "0506c9428188336dae448576472167550684e90d",
+    "git_mode": "100644",
+    "sha256": "bcdec4cc887606b9a637450f7616fef642f88c66b1f99497706c8ed0572ec960",
+    "size": 15471
+   },
+   "src/maple/core/parameters/surface_creep.py": {
+    "git_blob": "502a324edc7aa2d48a76bd626cd1e9201cee048b",
+    "git_mode": "100644",
+    "sha256": "da2ba702c929e164bc1197f957f0b225f2edd87deafc346f21b279718bb1db7f",
+    "size": 25312
+   },
+   "src/maple/core/parameters/time_and_forcing.py": {
+    "git_blob": "cdf33ea3b8d54c9be4c17f978945862a47eef59b",
+    "git_mode": "100644",
+    "sha256": "f5e03a2a23444eb76a7ed4323bbfa3edcf8db3580084fb3e04c9f51be2d9c5d8",
+    "size": 1988
+   },
+   "src/maple/core/parameters/topographic_commit.py": {
+    "git_blob": "3e30642d743eef18a6bf5138f6e52fbc84034daf",
+    "git_mode": "100644",
+    "sha256": "23312bbf468adfa53f40f0e5f383e5435566b783ceb946b410a53d4e3ee9064d",
+    "size": 9874
+   },
+   "src/maple/core/parameters/topographic_wind.py": {
+    "git_blob": "a041717c62f7de5a4cd28445b9e00f0c6ef25417",
+    "git_mode": "100644",
+    "sha256": "07a6e148ac369b891e9e4351b0d19af89f82018cab7dd9c8b7057f6cac91ebf9",
+    "size": 14222
+   },
+   "src/maple/core/parameters/transport_accuracy.py": {
+    "git_blob": "2414e2c7c0da4ebc2929c8ff6b2ddb31dd14d8a8",
+    "git_mode": "100644",
+    "sha256": "9d7f9c1f3487fc3a385c2d8feeb97ea54a6cc6a50df8b03ac94cec70c52de000",
+    "size": 15367
+   },
+   "src/maple/core/parameters/vegetation_wake.py": {
+    "git_blob": "17ba2d2832b51d1932fdaa300941fead3e591942",
+    "git_mode": "100644",
+    "sha256": "f4ebbe31320e99b704b4a26ca2619a063bb4dc68225d0a3c0f4cc1362531696b",
+    "size": 21186
+   },
+   "src/maple/core/parameters/voxel_growth.py": {
+    "git_blob": "0947834adf8e2fe9a1185008c3b31650790bfb53",
+    "git_mode": "100644",
+    "sha256": "19ee75a697495185d0d1182deb9578a88fd0682d8f8004d19309de449a2c438c",
+    "size": 5002
+   },
+   "src/maple/core/parameters/water_coupling.py": {
+    "git_blob": "0b6037c76f8c7c225c2f390a1f9f52c95884495b",
+    "git_mode": "100644",
+    "sha256": "c785a7e043cb767784aa40661217d50b90f1f0d2f1c08cbf615ae2b5465c404e",
+    "size": 31911
+   },
+   "src/maple/core/parameters/wind_forcing.py": {
+    "git_blob": "12d479deebb4cd2b1d08117fc970cec1995c1cbd",
+    "git_mode": "100644",
+    "sha256": "fcd90112304fde34da24b9af4f924a617b879f2878e9914850ee20cb7143680c",
+    "size": 11640
+   },
+   "src/maple/core/parameters/wind_grain_feedback.py": {
+    "git_blob": "5c161f90731d09fc59edd2761cc16f6d96ce867e",
+    "git_mode": "100644",
+    "sha256": "b3be5b2efd15415fba4afdc069034de3f8da46ab02ae120951b573b546c5226c",
+    "size": 41355
+   },
+   "src/maple/core/profiling.py": {
+    "git_blob": "e95b1fc8bdd7b5b08ec84fa935dd16f64f41e176",
+    "git_mode": "100644",
+    "sha256": "b68720bf5e235454c501dd99663106e67cc4dae8cf1a4fe261e17d58e7ddb4a3",
+    "size": 15116
+   },
+   "src/maple/core/types/__init__.py": {
+    "git_blob": "2fb7e010639fb7594a3b3d10a1f83a9572c2ea7f",
+    "git_mode": "100644",
+    "sha256": "c63b5c0ca21a72225a92d8ef9f0cdf192a07e9d992a4764f40150c729022d453",
+    "size": 2384
+   },
+   "src/maple/core/types/active_layer.py": {
+    "git_blob": "4fed5f29e5435b2030d338635452daffd1810051",
+    "git_mode": "100644",
+    "sha256": "07b1a81d54a7f6117ccb3ce26bee9bb9e43cd41ea571f405e5c2f0249c260522",
+    "size": 4102
+   },
+   "src/maple/core/types/cohort.py": {
+    "git_blob": "f184e5bbcdf952d8e10fc0393ba2f59b691ecfda",
+    "git_mode": "100644",
+    "sha256": "ba68b4d88cd920a67452bd92f7faf68137d696c47b35e4cf9d6ed84b7ec1e278",
+    "size": 13962
+   },
+   "src/maple/core/types/cohort_calendar.py": {
+    "git_blob": "0aaa2170e8ce91282a2fbf99688f94c712fce2b4",
+    "git_mode": "100644",
+    "sha256": "8330b98ac4df1d4e3361669ee8adc284957722be88f1ab1720c130add767ab35",
+    "size": 19809
+   },
+   "src/maple/core/types/impact.py": {
+    "git_blob": "328ce467b29d0947c9d1bfcb5e02852c56c10977",
+    "git_mode": "100644",
+    "sha256": "28e5ab0fd1076b34b9e35d684356138af880b237205758d54ae44619bfb57c46",
+    "size": 2305
+   },
+   "src/maple/core/types/ledger_reconciliation.py": {
+    "git_blob": "ba09083a137d2898746ea1b98148abfb0e5f9d76",
+    "git_mode": "100644",
+    "sha256": "5a309aff3d8f77c47e0bb6ac79ef9bd17d1216bbef907ef98626344035c1d202",
+    "size": 17373
+   },
+   "src/maple/core/types/regional_wind.py": {
+    "git_blob": "e42bd6fd6019a5fe4bc00ca92572f87d66801dae",
+    "git_mode": "100644",
+    "sha256": "228d04814288ad4d4079840da919ac4e09cc53a51e79dde63bd6c20f9dc4c73f",
+    "size": 5126
+   },
+   "src/maple/core/types/sediment_availability.py": {
+    "git_blob": "fa986b698218783c990ff6d46d556c6b8c12194a",
+    "git_mode": "100644",
+    "sha256": "c9b713265809c0d1df9db58ee1ebc8f12ac27c4874edc190c609be19f9d067a3",
+    "size": 6885
+   },
+   "src/maple/core/types/sediment_ledger.py": {
+    "git_blob": "f6260c7fd48a65ed2f3cd1437dc0533f90b19b7a",
+    "git_mode": "100644",
+    "sha256": "736d6061a90083b9cf4aa3e050044705660779c0af5a8172a0f103ea4af1a03d",
+    "size": 41840
+   },
+   "src/maple/core/types/surface.py": {
+    "git_blob": "10fae17c80f87a1cbd30c4ec4f9ee27d31233bf7",
+    "git_mode": "100644",
+    "sha256": "9739411b081f496631ebc5eb46ad5dcefec3a6dd4fa49e24cba1b15265620d49",
+    "size": 2363
+   },
+   "src/maple/core/types/threshold_modifiers.py": {
+    "git_blob": "3a32e389079032e8f8e31969d8ccb2cb08a4c75c",
+    "git_mode": "100644",
+    "sha256": "13989d899fa1be450f371be17cbf8f7231897d62ac74cccbbd18dc54ca057cd2",
+    "size": 5980
+   },
+   "src/maple/core/types/topographic_commit.py": {
+    "git_blob": "a57bd9ab4f0410a88410408b0defb4a7aad28f2c",
+    "git_mode": "100644",
+    "sha256": "1d2ddc4ca0f1b3c39abf855f97862f73dd451ee6a562f2a0280a69de40b52cb1",
+    "size": 20369
+   },
+   "src/maple/core/types/vegetation.py": {
+    "git_blob": "dabbed94c5f22f9450622126e15f01386315188d",
+    "git_mode": "100644",
+    "sha256": "b92ea5ae6890c3094686441e348ef40357c50ebcf1e5aee0f75bd86924f0943e",
+    "size": 32726
+   },
+   "src/maple/core/types/voxel.py": {
+    "git_blob": "0f7e3cc30b48b5c7d5582e5197d205659ac4bf0b",
+    "git_mode": "100644",
+    "sha256": "e1c0e70c92dfd7f69f65215409c1f2431bb662df8c5fb333587a250f1066ce35",
+    "size": 3157
+   },
+   "src/maple/core/types/water.py": {
+    "git_blob": "6532470d4bec26df473d558a91f56da6e7a4f8df",
+    "git_mode": "100644",
+    "sha256": "a75d9a9db30b066358447be619924a8286e3330602a0d863d412bd1123dafe87",
+    "size": 7314
+   },
+   "src/maple/core/types/wind.py": {
+    "git_blob": "cf6703ac7012855daa0e73c23280d0d24763a304",
+    "git_mode": "100644",
+    "sha256": "4d1a0215eca766ee5d36765b077ec60bd731534152335248fed7dc4033a576c6",
+    "size": 3764
+   },
+   "src/maple/core/units/__init__.py": {
+    "git_blob": "27d5456fe257de1a194337463887c901e9af1d80",
+    "git_mode": "100644",
+    "sha256": "6164e4c1a3cb322c59d65b928dec5ffd2f2db4fdfed0cac05f53f5a5c5176b41",
+    "size": 4857
+   },
+   "src/maple/core/yaml_safe.py": {
+    "git_blob": "960472f234abec5aab5f39389037ae6bb11ba5bb",
+    "git_mode": "100644",
+    "sha256": "c3cd43d6f768737672ac51b132cc18e667474bbd5f6d8fa05282851cbbee5e3f",
+    "size": 1321
+   },
+   "src/maple/coupling/__init__.py": {
+    "git_blob": "25835672b4df81a7d3e578638d97501ae7b50304",
+    "git_mode": "100644",
+    "sha256": "8c8fb04bf2be41acc5a21a6b348b03a76cfebdbf10ac7884fc82b3da5e87f01b",
+    "size": 384
+   },
+   "src/maple/coupling/sediment_ledger/__init__.py": {
+    "git_blob": "1fb9ebd17fca795659b92c8d26955385f193151e",
+    "git_mode": "100644",
+    "sha256": "27efea02d24ccc61268cc6325b562de14001b6eca6f0065ccdc04f1141766d19",
+    "size": 2446
+   },
+   "src/maple/coupling/sediment_ledger/accumulate.py": {
+    "git_blob": "5975ceb68dd20a37194d6fd2754f17f643203d59",
+    "git_mode": "100644",
+    "sha256": "f784ed8571251b8579a93d27f51ef0eb589e175caffa937190f1c7cb859aa804",
+    "size": 35856
+   },
+   "src/maple/coupling/sediment_ledger/diagnostics.py": {
+    "git_blob": "9e4f6b80f68fb463182f7dad187e422872f8d28b",
+    "git_mode": "100644",
+    "sha256": "334d7b310012cdbbd87fd4bddbdc054e9e97aad63e0645e1343bf98afeae7682",
+    "size": 23111
+   },
+   "src/maple/coupling/sediment_ledger/validation.py": {
+    "git_blob": "d424d3b7cf5244118ac3eecdc8f7faa762ddae8c",
+    "git_mode": "100644",
+    "sha256": "cd6868cf0008dd38d8e6092a2326eb445e5f076fef564683fec13505b2f21c2b",
+    "size": 21624
+   },
+   "src/maple/coupling/water_event.py": {
+    "git_blob": "34481031d831cecc98cc53eece4725311460803f",
+    "git_mode": "100644",
+    "sha256": "0cfaf6cee45e1cfecddeb944583d1291a4c581bd1e875000b15cd9a4cc7bf6cb",
+    "size": 5521
+   },
+   "src/maple/experiment/__init__.py": {
+    "git_blob": "65dc8fb62313b3f3b06fafc5993b7962c4f6287a",
+    "git_mode": "100644",
+    "sha256": "cc94e0e455a0060562c3697f268c3a3d2a7f00ece7b997ea1aedef1af3477efb",
+    "size": 2908
+   },
+   "src/maple/experiment/_perf.py": {
+    "git_blob": "536c24f12be60b7c7ffd0983e1cc86eb318ff931",
+    "git_mode": "100644",
+    "sha256": "710cc245efe53c94e5c52e4de09f1605fce5a9022c582eb6da5526d4498b0f11",
+    "size": 9087
+   },
+   "src/maple/experiment/_subprocess_wait.py": {
+    "git_blob": "d52eefa777688a434abfb70851082a54ee22d24a",
+    "git_mode": "100644",
+    "sha256": "829022dad4f7d1bb83a9752f5952bb50324d6b929263e6746ee524ee2151fb45",
+    "size": 7010
+   },
+   "src/maple/experiment/apply_calibration.py": {
+    "git_blob": "7bd945b6922a801c875583d28315de7b97bb3be6",
+    "git_mode": "100644",
+    "sha256": "5e5affe1d58a596170f19acf3def2505ac972112fc4550cd98fc2ff2e2860db3",
+    "size": 89206
+   },
+   "src/maple/experiment/benchmark.py": {
+    "git_blob": "726d53787069b52624e282d33bda7b799dc535d4",
+    "git_mode": "100644",
+    "sha256": "b34add007020cde9e8d48713c3ef7105943630251389d6a488ae17fc84e57b03",
+    "size": 25928
+   },
+   "src/maple/experiment/calibrate_detachment.py": {
+    "git_blob": "c4791e34164bb6b805d89dd71752d01c6d6737cf",
+    "git_mode": "100644",
+    "sha256": "51bc0df602ecb5926faf5a420d91afc6e66e5c7fc0963650b67938d8559a6fda",
+    "size": 177125
+   },
+   "src/maple/experiment/calibration_case.py": {
+    "git_blob": "c8df6f5d80e69f3f6b43c303dbad12159fa6edb6",
+    "git_mode": "100644",
+    "sha256": "7fc4d454133db60543f0c27bd66d53406d03e36a5b873ca725cf97ef503eb942",
+    "size": 118460
+   },
+   "src/maple/experiment/calibration_preset.py": {
+    "git_blob": "3ccdc2cbd953a6734ecc58d1f4b9c23545463a5c",
+    "git_mode": "100644",
+    "sha256": "1558f8422f68233faa7f557aa727a91ae2036f491afc1f0b0ec23f17f3b3ec88",
+    "size": 31606
+   },
+   "src/maple/experiment/cli.py": {
+    "git_blob": "c1cbc1af8be028ccdb120307c2b01016fb658825",
+    "git_mode": "100644",
+    "sha256": "01a96ec4d372bbefaf72c4dd3f708a0072efe77b1bcccac1e324d8568e4aedf4",
+    "size": 84662
+   },
+   "src/maple/experiment/identity.py": {
+    "git_blob": "f4c595034a7b377b38d9ed052aa73c645a92aa14",
+    "git_mode": "100644",
+    "sha256": "1d5c10b03ad3de1a196fdef10de01f7d81b5666d3a5306ad31c73dee04eb7603",
+    "size": 8654
+   },
+   "src/maple/experiment/manifest.py": {
+    "git_blob": "d7fe3acb34e890cd55112e2bd3a16f245fcff70e",
+    "git_mode": "100644",
+    "sha256": "046cf2a0f1dfb436eef6be21aad805b0b2143d466bf6810f6f03721f665f7c1c",
+    "size": 46730
+   },
+   "src/maple/experiment/measurement.py": {
+    "git_blob": "74eafbf2923f2d57451534ffabdf09441dd1189e",
+    "git_mode": "100644",
+    "sha256": "30206fbfabceaab9ab1d23b5c8f07f2a771a44489d9208d41c34bc0ad2a3ae14",
+    "size": 13337
+   },
+   "src/maple/experiment/orchestrator.py": {
+    "git_blob": "7cb337fde444ce973927597a8e1e5d83225b8a6b",
+    "git_mode": "100644",
+    "sha256": "f4cc9d44a86a68585530ba5fd02f43664c32e5d476dfa596b0e2d57cc11f7ea7",
+    "size": 210852
+   },
+   "src/maple/experiment/phase22a_probe.py": {
+    "git_blob": "be366def7088d1d7f68d2f7a54559eaab3759456",
+    "git_mode": "100644",
+    "sha256": "213cb968b3d1677dc246b1d8c26a63d6d9a823ecb18ae3b2c4b1ab69c23e7831",
+    "size": 17652
+   },
+   "src/maple/experiment/phase22a_qsat_wind.py": {
+    "git_blob": "7214ee9279f878ad8ceabb94c1106a71392bb27f",
+    "git_mode": "100644",
+    "sha256": "ba916df2112674f9e33111e0d05ef27509c8b53e92a75fca8b17482b6c1cd9ca",
+    "size": 47496
+   },
+   "src/maple/experiment/provenance_report.py": {
+    "git_blob": "eaaf705499092deec2e9ec91f5e2e9f556acaf66",
+    "git_mode": "100644",
+    "sha256": "fa2c7834a2c08281c5e0a6f1067c38b2f2779ee588789fd5509d355a2e4c1657",
+    "size": 9770
+   },
+   "src/maple/experiment/publish.py": {
+    "git_blob": "1aa701e967d67b5e98150704010c45ad7cece3f1",
+    "git_mode": "100644",
+    "sha256": "c86c1f5a85258abc44a7b53ec800664923825ca1f050ea13abcd8a3229c4340e",
+    "size": 9442
+   },
+   "src/maple/experiment/scheduler_adapter.py": {
+    "git_blob": "36aba14f2f027563c9d12ef1ad149d8a975e8b35",
+    "git_mode": "100644",
+    "sha256": "04c3d7d53f956743d7c17c0c315fd5aca41d595840f366db862571c848f07381",
+    "size": 9363
+   },
+   "src/maple/experiment/schema.py": {
+    "git_blob": "86903549316c80bbd4182044e342b16ff33a4527",
+    "git_mode": "100644",
+    "sha256": "fde48b0e5fe4d23fa1b3fdb4ac1f39c37157ec3264967e6efc744da9a07698ad",
+    "size": 40402
+   },
+   "src/maple/experiment/stage_a.py": {
+    "git_blob": "85fa03d32eb0a9a147ebad55e45de978e4602b79",
+    "git_mode": "100644",
+    "sha256": "9574f70249457acc73e8b309a64087913712168075f2247ddbfcb1b29f38886f",
+    "size": 22304
+   },
+   "src/maple/experiment/stage_a_benchmarks.py": {
+    "git_blob": "4239f699b377ad28e9e984311b392bedc8239f73",
+    "git_mode": "100644",
+    "sha256": "42cc31a9caa9cf3846b8ce305c7716d1d37aafaffd15b3f8d4c9d48ce86f06db",
+    "size": 23703
+   },
+   "src/maple/experiment/stage_b_compare.py": {
+    "git_blob": "59479e4a28e3f6b52eb8e65bb9c07b2f41c950ad",
+    "git_mode": "100644",
+    "sha256": "8c6f4158cb2fd27f627383c0b46aca622a9c8fa4a76be7c61922810ed0a4197c",
+    "size": 316801
+   },
+   "src/maple/experiment/stage_b_run.py": {
+    "git_blob": "2bb0d651afde6fc9191ddd9444f3caf46248d3ed",
+    "git_mode": "100644",
+    "sha256": "8b28f5f4e4cd23428ef38fcea0fc30709f1fde1323c00130eb7534aa843f5075",
+    "size": 8445
+   },
+   "src/maple/experiment/stage_b_scenarios.py": {
+    "git_blob": "aa49d88a9561ff33f2c80e3abc80539c9e496403",
+    "git_mode": "100644",
+    "sha256": "82beef54d7f21645e9f5d42adf15db868da045df14fba2657b0567d3b1a13ad0",
+    "size": 19791
+   },
+   "src/maple/experiment/stage_b_verification.py": {
+    "git_blob": "45c69d1a99becbc3d310aa341bb8b676e2c96ee0",
+    "git_mode": "100644",
+    "sha256": "8203a9567cb396fb71f248c823ffba87d66f2c507138133b963a421475919888",
+    "size": 117026
+   },
+   "src/maple/io/__init__.py": {
+    "git_blob": "71cd707633e2e288328e8c30a5bbbac94207cd2a",
+    "git_mode": "100644",
+    "sha256": "6309659be6f27ef21ebd5216230f21303598340686f052afeae0b494b66a8d4e",
+    "size": 1209
+   },
+   "src/maple/io/outputs/__init__.py": {
+    "git_blob": "c1ef20f0e59bc01e4cb1990a3a00e3479034cc85",
+    "git_mode": "100644",
+    "sha256": "0e5fe3a21460bcb0b98f8eeff94147cc9ba781f5e37f6c089e436af6319fea15",
+    "size": 845
+   },
+   "src/maple/io/outputs/_atomic_publish.py": {
+    "git_blob": "4e0c530e23b8f27a1e9f6970b98cdd062731315e",
+    "git_mode": "100644",
+    "sha256": "35d9c83c8d77caed66de65d80f0e31f6f2d4dc66b206a4897970c83b23198aa9",
+    "size": 8028
+   },
+   "src/maple/io/outputs/_optional_deps.py": {
+    "git_blob": "7de640e66d013c811572e78a68167fb8bdca41de",
+    "git_mode": "100644",
+    "sha256": "e640588e21ad400350a2e7966571a8af133adeff4b6398b9c62242ff815c7838",
+    "size": 3906
+   },
+   "src/maple/io/outputs/_rollback_utils.py": {
+    "git_blob": "fd1286f5b2b4bbd50f4bd7e061af9c91efbf0703",
+    "git_mode": "100644",
+    "sha256": "f67f6dc46d512c985b033f18c6dd1eb000f2fffa6a07a3ba5e2aec4feaa53a0f",
+    "size": 2080
+   },
+   "src/maple/io/outputs/conservation.py": {
+    "git_blob": "46b442f7763a5b4903b62f64dc9ebdc117206a7b",
+    "git_mode": "100644",
+    "sha256": "1eb77fcc762c4b9b1326642e3e47fc9ee76f488e8c63f36968d47ee5d46bea7a",
+    "size": 14182
+   },
+   "src/maple/io/outputs/diagnostics_writer.py": {
+    "git_blob": "00f8a7bcb84563d9c0c94c29773b0ccde27c33b7",
+    "git_mode": "100644",
+    "sha256": "93732bdd5c15f73c6c7964cf3735381fd5337be66690e096990a455f3cfa40e8",
+    "size": 19881
+   },
+   "src/maple/io/outputs/exact_validation.py": {
+    "git_blob": "146815c37a362169324ecae9b06f9a8d114ed950",
+    "git_mode": "100644",
+    "sha256": "4f0282e06b28772747e706f10efa7e899a34771a022c9f427ffa364f88e9db93",
+    "size": 29224
+   },
+   "src/maple/io/outputs/history_recorder.py": {
+    "git_blob": "f2a96816a28dfa4718413ba101e0d502913ba850",
+    "git_mode": "100644",
+    "sha256": "d42e72dd3e1a0c750ea113df0c8dd35d3734e73e40a34903bf1c161426133fb8",
+    "size": 57693
+   },
+   "src/maple/io/outputs/phase5_lifecycle.py": {
+    "git_blob": "12a23b10c958adc9770b4252d709e40e2f805e3c",
+    "git_mode": "100644",
+    "sha256": "fe6b2278fcf1cbe213e528231bbbd410273514ea0ff1430ffff63530149c802e",
+    "size": 46564
+   },
+   "src/maple/io/outputs/reconstruction.py": {
+    "git_blob": "50d573b1621740784e55e906ae29cfc661747b69",
+    "git_mode": "100644",
+    "sha256": "1b400d4d61ddfc7ebe9307192ab0791556a09b4a749fd825f7fde8125cd8717b",
+    "size": 19455
+   },
+   "src/maple/io/outputs/snapshot.py": {
+    "git_blob": "20e60a01b52eea255f7f54366f75207fbcd465ec",
+    "git_mode": "100644",
+    "sha256": "18a1fe11a06f92fc8a5c1eaa5f1695c929ef0ab8ecafe0d5ef36eecf7c1c6344",
+    "size": 75132
+   },
+   "src/maple/io/outputs/spatial_diagnostics_writer.py": {
+    "git_blob": "f45e99dce92d9e87b7cc3b28ac83ebea9b9343f6",
+    "git_mode": "100644",
+    "sha256": "79bc39bb3e645d6a87828fa3a895285dc55dbed8010ebb8dfd0eaf6604359651",
+    "size": 65864
+   },
+   "src/maple/io/outputs/validation.py": {
+    "git_blob": "d60d4589910430a478938ef45d01061fa01bb4ae",
+    "git_mode": "100644",
+    "sha256": "a85c8fd198b602fc7b6d5369c3af8b145c722ec95acb1ed838a5f1a7b11c8994",
+    "size": 3607
+   },
+   "src/maple/io/outputs/visualization_schema.py": {
+    "git_blob": "157191d9dc273cd8e7527d9f008d1736a638ef2c",
+    "git_mode": "100644",
+    "sha256": "4cae579ec8b09b6d7c97cd8d7114f59a05a1c5b49ee66bbb416b37b188bec393",
+    "size": 33523
+   },
+   "src/maple/io/outputs/visualization_writer.py": {
+    "git_blob": "7a919e5994510498b38e4660bf8bd321e916e34e",
+    "git_mode": "100644",
+    "sha256": "3c9add8c4140274ee7c3423e4c95a4c5a561a473fc3ef937df5e21a3cc0af335",
+    "size": 53106
+   },
+   "src/maple/io/outputs/voxel_delta_log.py": {
+    "git_blob": "d823bf7e54053b5f0fa4dedad14306f81c67d05f",
+    "git_mode": "100644",
+    "sha256": "574fe4a510b55b48a201cedbfb0910579b7ed3f519cfb4e0dc2b4482c608b98a",
+    "size": 41853
+   },
+   "src/maple/surface/__init__.py": {
+    "git_blob": "4b13f9d0cfc4ec08a342ff4d641543059505418e",
+    "git_mode": "100644",
+    "sha256": "1fbec9e81b3d8494782f50dbabb715fd39656d6d16eb2719964bbad3c1eeb7a8",
+    "size": 396
+   },
+   "src/maple/surface/active_layer/__init__.py": {
+    "git_blob": "8226217801581965b61e27138072f892393cdc04",
+    "git_mode": "100644",
+    "sha256": "49e55b83104648f618a7b41a0855429995e998be89b57d1b1580d71131a0734f",
+    "size": 2658
+   },
+   "src/maple/surface/active_layer/_request.py": {
+    "git_blob": "51ac9ef647a47137ed1603e9e28202772cee2bc0",
+    "git_mode": "100644",
+    "sha256": "c787afa235cbfce3c4af7118f2a32dbfb0ae06f40a08cb3daadc76d60b77934e",
+    "size": 2993
+   },
+   "src/maple/surface/active_layer/capacity.py": {
+    "git_blob": "7e0ff5883c02af86980ff2ba0e350c9626033005",
+    "git_mode": "100644",
+    "sha256": "f06c5e0b8a850044f8f2eeb957d4a99e68cf4d9cfc4a70b0d5288e88a476b62a",
+    "size": 2618
+   },
+   "src/maple/surface/active_layer/composition.py": {
+    "git_blob": "ba01bea9843f8a6e6cf64bbcd054c50b809ee20c",
+    "git_mode": "100644",
+    "sha256": "14db2fd7baef042ed316b1a8838d95ad2538e925986816d6856348b38ecb8539",
+    "size": 9936
+   },
+   "src/maple/surface/active_layer/diagnostics.py": {
+    "git_blob": "2edf2ea06d320096d58749f40f4b85a9567d5a08",
+    "git_mode": "100644",
+    "sha256": "fe66b541bd03e546127666d7254bd98145966ed6b3305b68ae2e979aa76aaf24",
+    "size": 9116
+   },
+   "src/maple/surface/active_layer/exchange.py": {
+    "git_blob": "da1a95d086af0f2274aa09aff30a656d8c313a82",
+    "git_mode": "100644",
+    "sha256": "2d58cdcdcbb67bf9f45d1e652a8f09b29b230edad3c812554ce243cfeb01ea07",
+    "size": 40162
+   },
+   "src/maple/surface/active_layer/initialization.py": {
+    "git_blob": "b3bb4caf0dfe962abbd9d6d97440b921a7348bd4",
+    "git_mode": "100644",
+    "sha256": "2c30213cb3284e7f9c4607c9322a6f00ab1a55cb117abae5b40b3dbf211dcbbf",
+    "size": 9373
+   },
+   "src/maple/surface/active_layer/validation.py": {
+    "git_blob": "491384fef941dbcc448afb2ed8abbfc6ffc73ae8",
+    "git_mode": "100644",
+    "sha256": "762169c300a0c4fcd593083b303905ea86c8c72143f31bb0e582287a8a96bdeb",
+    "size": 15333
+   },
+   "src/maple/surface/availability/__init__.py": {
+    "git_blob": "d4d3da3f4bb711f8de290ebecbc08ff69eaddc2f",
+    "git_mode": "100644",
+    "sha256": "4939ca554c78ce1f7288e6aedbd544d19c433f1fff5fc40d6ec3cd9b589269b9",
+    "size": 936
+   },
+   "src/maple/surface/availability/exchange.py": {
+    "git_blob": "eef9b78e068294eb47bc25ab8d1c6c3a3a071ee0",
+    "git_mode": "100644",
+    "sha256": "80331acaaff3703169703dbd2d09eaa6dd9efea91d6884a533cb102701ae8fc2",
+    "size": 23099
+   },
+   "src/maple/surface/availability/validation.py": {
+    "git_blob": "bf702fde35252acb5949cbe89efbd46815e32228",
+    "git_mode": "100644",
+    "sha256": "157591c9a730251fa0ce8877b23ef4b0875d59e6356d2c62a4e75ddc6a80d81b",
+    "size": 9077
+   },
+   "src/maple/surface/avalanche/__init__.py": {
+    "git_blob": "9f27bab1478e95b843f1c693367f38b42d0251cd",
+    "git_mode": "100644",
+    "sha256": "3c2af70b64f5efedc29af3b16d19785c3667835d59aa667cb70bb60896b448e6",
+    "size": 445
+   },
+   "src/maple/surface/avalanche/callback.py": {
+    "git_blob": "5223e111f31cfe9bd3bc9b593395a40481f84b3f",
+    "git_mode": "100644",
+    "sha256": "3b7ac50803544dc5dad7d02bd2394ab14aa6f63a0b3a6cfec9c9bddb67876c20",
+    "size": 11426
+   },
+   "src/maple/surface/avalanche/slope.py": {
+    "git_blob": "054ba89245a70d2cf88537e82366a85fd81193c2",
+    "git_mode": "100644",
+    "sha256": "25f7ab4cc09961bdac3bdb8d66e60c87d9f5c32d9bbc9c8b4bbc5e0a11853777",
+    "size": 12813
+   },
+   "src/maple/surface/avalanche/solver.py": {
+    "git_blob": "d03a13fe72ffcbfe22dc9368822d18ac72c653ce",
+    "git_mode": "100644",
+    "sha256": "254801b512f32ebba5e3b710c1aebcbb6eeb2d8a69ff00e698db7c531394c860",
+    "size": 17224
+   },
+   "src/maple/surface/avalanche/transfer.py": {
+    "git_blob": "af7628f518e7770ccf1673d28b6a6308f92b8035",
+    "git_mode": "100644",
+    "sha256": "866aa87fb6d19fb5b1e1bc9a6bf012131885d3d2f45b889624f03f9370db0d05",
+    "size": 34784
+   },
+   "src/maple/surface/avalanche/validation.py": {
+    "git_blob": "f5fe4f78a0920951f8ce08b14594d297ec5e7272",
+    "git_mode": "100644",
+    "sha256": "42a20b94deceefa6137eda02f78df0cc9f2b90b24c36351c05a89f396f8ead52",
+    "size": 13138
+   },
+   "src/maple/surface/creep/__init__.py": {
+    "git_blob": "9e0bbd728c2267cfe5b2b74cb5983ed10011b170",
+    "git_mode": "100644",
+    "sha256": "f7a04b573536f9a41a4aa736fd22a8658e795e4afad7b5eb4d8a4c1ec75a4aba",
+    "size": 1468
+   },
+   "src/maple/surface/creep/apply.py": {
+    "git_blob": "c712a4e027a04f81ad07edcaf8b1a24be5dbf28b",
+    "git_mode": "100644",
+    "sha256": "9f03cf7f9b613554df5831025e2ea76b4f01dbdab9ca7fdf73ea611529eafae8",
+    "size": 20285
+   },
+   "src/maple/surface/creep/continuation.py": {
+    "git_blob": "5ace8de7ad402a99aad54312888ace809b3af80e",
+    "git_mode": "100644",
+    "sha256": "cab127aa353663f3ad3960a36207c547982ab6ce31196e759f2ab1e7b5e673fb",
+    "size": 8691
+   },
+   "src/maple/surface/creep/law.py": {
+    "git_blob": "77e16080bf43c0e88aa677dfaa1baa680acb3e3c",
+    "git_mode": "100644",
+    "sha256": "23038ea51ddaaa2c67beb6a18fb20a1e5a9910ed41be6ca847c1d115d2164482",
+    "size": 19995
+   },
+   "src/maple/surface/topographic_commit/__init__.py": {
+    "git_blob": "f8bbe1eb73fe60cc51908c98cd7753e5ddb772bd",
+    "git_mode": "100644",
+    "sha256": "a7b3cbe24e1871c374e8929ea2f17030f1fca9305adc4a229a1695df9247f9e6",
+    "size": 2245
+   },
+   "src/maple/surface/topographic_commit/accounting_reconciliation.py": {
+    "git_blob": "3535adec131a14fb5d7646045fbf7e56f91eeb1f",
+    "git_mode": "100644",
+    "sha256": "48b59e46ee1a41a5bdfa2f2b241b295d3997983d36ab28ca54c7e2c62b6ad677",
+    "size": 11749
+   },
+   "src/maple/surface/topographic_commit/commit.py": {
+    "git_blob": "3a971b30d6018620b7bf7d992c39e29b12c9d6f1",
+    "git_mode": "100644",
+    "sha256": "78fdf6e569f7ca081a88b4d63a6c94db4127dbc3cdf10873f88beb691e09e962",
+    "size": 89799
+   },
+   "src/maple/surface/topographic_commit/height.py": {
+    "git_blob": "4256ddc87fb94f1a78634a30f448afff9099413a",
+    "git_mode": "100644",
+    "sha256": "b6035806b8dca08654d9175fe30142d0eee3cc8728e202292fad0b75f068f419",
+    "size": 24882
+   },
+   "src/maple/surface/topographic_commit/initialization.py": {
+    "git_blob": "3c5a4c695fa5e3cf40a474e0339c8558e4c87d8c",
+    "git_mode": "100644",
+    "sha256": "41fb8b2d249d30a02b0b006e6dddfd3582d46199a1c2b0981d3c1e1782f2a56e",
+    "size": 6387
+   },
+   "src/maple/surface/topographic_commit/triggers.py": {
+    "git_blob": "1cfc153d0089724d24cee944579525fad41c0d17",
+    "git_mode": "100644",
+    "sha256": "01992a25c505e56e51fedcfc3aec93a2b2f7c08880fee62193e42e6cb5449c94",
+    "size": 15804
+   },
+   "src/maple/surface/voxels/__init__.py": {
+    "git_blob": "2bdd9940a07055897be20043f9e61c7e861e9132",
+    "git_mode": "100644",
+    "sha256": "d869865ad93fd173656ddc1df9ababe683bbfa63b1d52e669a2b27b8d77d498f",
+    "size": 1558
+   },
+   "src/maple/surface/voxels/_numerics.py": {
+    "git_blob": "92cabd9477e636e12ae2172bba4022ff7ad2bc74",
+    "git_mode": "100644",
+    "sha256": "42d1ffd6f1d06ea4c388ebb0551f678b435ff427dc56b39e914536b86f53f7a2",
+    "size": 19681
+   },
+   "src/maple/surface/voxels/capacity.py": {
+    "git_blob": "a1f544d180e0e8b7c26cce961733ef57bfe86905",
+    "git_mode": "100644",
+    "sha256": "f889af7030308862072dd36a9814c0bbac4bd477afbb5430c8e511e1383e73dc",
+    "size": 1150
+   },
+   "src/maple/surface/voxels/diagnostics.py": {
+    "git_blob": "e121e176a661e60987743bd3fd3fee5b48c6767b",
+    "git_mode": "100644",
+    "sha256": "36300d6ac90618199ae9d56f8bfb3a030b540882d68d1e3af22b9002a84bc50a",
+    "size": 17056
+   },
+   "src/maple/surface/voxels/growth.py": {
+    "git_blob": "a1451c962af51c439f37047652ad853675064bd3",
+    "git_mode": "100644",
+    "sha256": "c0d3dd69e69fd12b3eb988edcf286e0a7faed966759b9424f04e2388cf5c9160",
+    "size": 12506
+   },
+   "src/maple/surface/voxels/serialization.py": {
+    "git_blob": "ff5db2fa6e35e020f685f53b7021840209ff782e",
+    "git_mode": "100644",
+    "sha256": "1a3c37f6c9d105b0d9d99acb6affca3fcebf62946bd5ace6e1b02c77d81d8b09",
+    "size": 1750
+   },
+   "src/maple/surface/voxels/transfer.py": {
+    "git_blob": "fa10f2312cb816583e02d4d092d5b85c3ad04e4f",
+    "git_mode": "100644",
+    "sha256": "c976f164bb6e6684b1e8555e4f5f3616348be8388a5db8b0a40e6c88c7b6c020",
+    "size": 64711
+   },
+   "src/maple/visualization/__init__.py": {
+    "git_blob": "3f22be7aa3ca103dce9988864f46af5824bf044f",
+    "git_mode": "100644",
+    "sha256": "23531df377a31f325d2e7ad4d29873faabcd1c0ef2401d8de5e09e87e068a92f",
+    "size": 924
+   },
+   "src/maple/visualization/app.py": {
+    "git_blob": "6129ad2bbe0553992419bb57c288107d7886db08",
+    "git_mode": "100644",
+    "sha256": "0dcbacffd600409af9bdafe71097113c90aa3349680098bbf3af5de0ca0e6849",
+    "size": 26161
+   },
+   "src/maple/visualization/cell_inspector.py": {
+    "git_blob": "a84c751d32ed4167166aeca88fb78e66a0f817ba",
+    "git_mode": "100644",
+    "sha256": "60ddf1564d65fdbad4f2e306f74f1cd4fb5ea773f6c96f16616057b575fdb928",
+    "size": 3414
+   },
+   "src/maple/visualization/cli.py": {
+    "git_blob": "12bb282bebfe362ede4767886083d45df5d1d01b",
+    "git_mode": "100644",
+    "sha256": "aecf7f59277c591be07222c85f05a2b552b33a87f3a4e495dfee1ab62775ce8c",
+    "size": 5588
+   },
+   "src/maple/visualization/comparison.py": {
+    "git_blob": "0878f88dd4b93dc763994b79aa49bb02046b08d8",
+    "git_mode": "100644",
+    "sha256": "817cd3d0f8e16a03bd1cfbe4530f0953802486a746e273ffeb5a13367157f772",
+    "size": 12120
+   },
+   "src/maple/visualization/conservation.py": {
+    "git_blob": "cb3f9ad913af385b03fc51867aae785ac58f2e3b",
+    "git_mode": "100644",
+    "sha256": "1639989be4597f7fa56072c30e449ba9ae664411042915aad27106206626625e",
+    "size": 6186
+   },
+   "src/maple/visualization/domain_animation.py": {
+    "git_blob": "fb7f4c098644fbcdd6aa12a22b7e7276389bce36",
+    "git_mode": "100644",
+    "sha256": "729ac6fd856e1d62ba061d091001517945783d82f225a057c3352d7f781032d1",
+    "size": 20684
+   },
+   "src/maple/visualization/domain_maps.py": {
+    "git_blob": "039e36c61bbc0f28ea226cfdb8dd01cc31c41fd3",
+    "git_mode": "100644",
+    "sha256": "9a0fe912649dfcd2a265662596f2f55887b10003621e4c92647c24daf1e92eb6",
+    "size": 10401
+   },
+   "src/maple/visualization/explorer_controller.py": {
+    "git_blob": "68255d6b6e2dc48a8397da3b1ae3d55a6b47aa9b",
+    "git_mode": "100644",
+    "sha256": "dfe5015ff9501aef9ac222200b356c394d87aaa414e6510e54007b9d36fddce3",
+    "size": 14929
+   },
+   "src/maple/visualization/open_history.py": {
+    "git_blob": "2b6b72efe39cf1d103189fc31ffbaf2e02baa209",
+    "git_mode": "100644",
+    "sha256": "af1924136b58af749903ed162c42431e55f92612463170dc78353690e737e4d3",
+    "size": 27268
+   },
+   "src/maple/visualization/reports.py": {
+    "git_blob": "e899bd68563e6f030830b3c27b1e3c196803c506",
+    "git_mode": "100644",
+    "sha256": "127762ef2ecbd0be71c587d1eaabfa9711a9b2d7217ecb9f9cd25bc57ae6d331",
+    "size": 4904
+   },
+   "src/maple/visualization/topographic_wind_maps.py": {
+    "git_blob": "3f3ccbf8ddd0b626f947baebae5c9bc1a73e8b50",
+    "git_mode": "100644",
+    "sha256": "42dae479e976d8837d6aa8d86a14db64e406f4ef5b3b2006c86c5e0b9ce7ba28",
+    "size": 11907
+   },
+   "src/maple/visualization/transects.py": {
+    "git_blob": "3f2cff3f9eb979330ad90a4af83fa3aabfbffdf9",
+    "git_mode": "100644",
+    "sha256": "8f06ef5aee28e407a6f1c8032fc0d2fca9cd46695a7f54d47cdf8b8d77d34be7",
+    "size": 3380
+   },
+   "src/maple/visualization/vegetation_maps.py": {
+    "git_blob": "e2cfd32ebdc021516ff93e6b3cac5881bbb34e1e",
+    "git_mode": "100644",
+    "sha256": "dbab20fc40e4cb764ca173970dc2831dfb94741e00c02a2dc69fcb5570571657",
+    "size": 3944
+   },
+   "src/maple/water/__init__.py": {
+    "git_blob": "74ecb1d2c8d4234c6c7efa6d38daa6c1523374ec",
+    "git_mode": "100644",
+    "sha256": "a7d47a675cee2aca5ca4161f006520d6d6faaa082fed67f6c2acb95d57240ba0",
+    "size": 2466
+   },
+   "src/maple/water/commit_callback.py": {
+    "git_blob": "e855717ebb85737e3c9b71ad708a9de983b01f83",
+    "git_mode": "100644",
+    "sha256": "c080ce76bc551e7d831eef20c8a80bf3648932fd72038793965d468268050dd1",
+    "size": 8656
+   },
+   "src/maple/water/depth.py": {
+    "git_blob": "aa8b982cdee0e5f061e1e6939ba617f52a9e6ebb",
+    "git_mode": "100644",
+    "sha256": "cc32ad019d76a92dd2fba14d5072921eb489b83550ee187deff008cdd4bb2f97",
+    "size": 7122
+   },
+   "src/maple/water/interfaces.py": {
+    "git_blob": "b4cb2cbfa9dddeb34942e370cfef3c07a22dfbe3",
+    "git_mode": "100644",
+    "sha256": "06cecc59b6642b5507f61a36d4f708e080e116a2c5a3577bfe01c2da2cdcc932",
+    "size": 11329
+   },
+   "src/maple/water/mahleran_compat.py": {
+    "git_blob": "541df4d39dc1fc36d6feca960358d4f1b9088d18",
+    "git_mode": "100644",
+    "sha256": "a420e4fd674f9c6758ba1b5ef2cb9c40e190e91ae3ffed88d4c3d648077245c3",
+    "size": 22900
+   },
+   "src/maple/water/prescribed.py": {
+    "git_blob": "208d1d67febfa17eaf44ffae7dddad9390e3f9c9",
+    "git_mode": "100644",
+    "sha256": "3259cb49026a7db96586062a517a871e6bd638af7587ea23188b09edc284a88a",
+    "size": 7755
+   },
+   "src/maple/water/step.py": {
+    "git_blob": "02017c343b72d56390a507978bb0fd6ffd8133eb",
+    "git_mode": "100644",
+    "sha256": "1bc7f87bb405b7a639c19bbd3ba88c94b8270064040bd7c448c8236798822552",
+    "size": 17398
+   },
+   "src/maple/water/validation.py": {
+    "git_blob": "0fb543ea529a2f5cee5a408749d6cc8f8df8fbcd",
+    "git_mode": "100644",
+    "sha256": "7888af405ef1d2f7de36352dda3da569b361e64d9b4b7142acf9aef6b6a9ae09",
+    "size": 19833
+   }
+  },
+  "total_bytes": 8299849
+ },
+ "schema": "maple_syrup.maple_water_runtime_recipe.v1",
+ "target_runtime": {
+  "direct_archive_crosscheck": "Task maple39_storage_20261019/maple39_runtime from git archive39; qualified independently.",
+  "historical_recipe": "dependencies/maple_water remains unchanged for prior source reproduction; never fallback on a failed new source lock.",
+  "revision": "39bcf79e1e67b6ed960f78a923ddfedf1d173e68",
+  "runtime_git_tree_entry_sha256": "c869304451539f72dd94a0c6c0f27b80a1734a730f9a5fdf3170891d6161737c",
+  "source_selection": "Exact committed src/maple and pyproject.toml; clean runtime; no additional SYRUP/native patch."
+ },
+ "upstream": {
+  "pathspecs": [
+   "src/maple",
+   "pyproject.toml"
+  ],
+  "revision": "b3e8756c26d3661617d7e5ef23dcd29ed08e4687"
+ }
+}

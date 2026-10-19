@@ -17,12 +17,12 @@ pytest.importorskip("maple")
 from maple_syrup import checkpoint
 from maple_syrup.sediment_bed import (
     JOURNAL_RECOGNIZER_MAPLE_DIGEST,
-    TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST,
+    TYPED_JOURNAL_SOURCE_DIGESTS,
     bound_maple_package_digest,
 )
 from maple_syrup.sediment_event import SedimentEventError
 
-TYPED = bound_maple_package_digest() == TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST
+TYPED = bound_maple_package_digest() in TYPED_JOURNAL_SOURCE_DIGESTS  # explicit typed sources: 24c6 and the merged candidate
 M94 = bound_maple_package_digest() == JOURNAL_RECOGNIZER_MAPLE_DIGEST
 
 

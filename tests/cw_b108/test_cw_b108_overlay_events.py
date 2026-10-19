@@ -30,11 +30,11 @@ from b108_fixture import (
 
 from maple_syrup.checkpoint import load_checkpoint, save_checkpoint
 from maple_syrup.complete_event import CompletionPolicy, DryHandoff, EventProgress, complete_event, water_budget
-from maple_syrup.sediment_bed import TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST, bound_maple_package_digest
+from maple_syrup.sediment_bed import TYPED_JOURNAL_SOURCE_DIGESTS, bound_maple_package_digest
 
 pytestmark = pytest.mark.skipif(
-    bound_maple_package_digest() != TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST,
-    reason="overlay events need the accepted typed MAPLE source (an M94 child claims nothing here)")
+    bound_maple_package_digest() not in TYPED_JOURNAL_SOURCE_DIGESTS,
+    reason="overlay events need an explicitly pinned typed MAPLE source (an M94 child claims nothing here)")
 
 #: LABELLED fixture stopping criteria (physical quiet gates, never conservation tolerances): looser hydraulic gates and
 #: the explicit CW-B51 flow-end assumption leave a genuine mobile load for the terminal MAPLE settlement and forced commit.

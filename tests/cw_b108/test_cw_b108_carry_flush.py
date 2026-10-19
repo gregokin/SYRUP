@@ -29,7 +29,7 @@ from b108_fixture import (
 
 from maple_syrup import sediment_bed, sediment_event
 from maple_syrup.sediment_bed import (
-    TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST,
+    TYPED_JOURNAL_SOURCE_DIGESTS,
     BedIntegrationError,
     bound_maple_package_digest,
     is_carried_append_cap_refusal,
@@ -37,8 +37,8 @@ from maple_syrup.sediment_bed import (
 )
 from maple_syrup.sediment_event import SedimentEventError, evolve_sediment_event
 
-pytestmark = pytest.mark.skipif(bound_maple_package_digest() != TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST,
-                                reason="typed recognizer tests need the accepted typed MAPLE source")
+pytestmark = pytest.mark.skipif(bound_maple_package_digest() not in TYPED_JOURNAL_SOURCE_DIGESTS,
+                                reason="typed recognizer tests need an explicitly pinned typed MAPLE source")
 
 CELLS = ((10, 3), (10, 1), (10, 5), (7, 2), (7, 4))  # step 1 carries 40 records, step 2 appends 5
 CAP, HIGH_WATER = 44, 42  # LABELLED fixture values

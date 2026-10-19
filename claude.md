@@ -1,5 +1,17 @@
 # MAPLE-SYRUP: Sediment Yield, Runoff, and Uptake by Plants
 
+## Merged MAPLE shared-storage qualification — 2026-10-19
+
+The accepted uncommitted SYRUP candidate based on `b4ee14e5` qualifies actual
+MAPLE `39bcf79e1e67b6ed960f78a923ddfedf1d173e68`. The exact runtime pair and
+fixed reconstruction recipe are in `dependencies/maple_shared_storage/qualification.lock.json`;
+read `docs/maple39_shared_storage_qualification.md`. Preserve the historical
+water recipe and all source/storage/checkpoint guards. New admission helpers
+are explicit caller checks requiring real reserves; existing events do not gain
+automatic memory protection. No physics/default/threshold/tolerance changes,
+checkpoint rebinding, windowed wind or coupled MASY acceptance are implied.
+The bounded task leaves changes uncommitted; no new simulation or push is inferred.
+
 ## Direct splash and depression overflow — 2026-10-17
 
 User authorized direct rainfall splash and real flats/depressions/filling/overflow, with small Chastre subset testing. The explicit `maple_syrup.pond_event.PondEvent` integrates local-inertial hydraulics with implicit Darcy–Weisbach friction, MAHLERAN-derived splash and wet laws, multi-face characteristic transport, native evolving MAPLE dense bed, conservative completion and source-bound restart on CPU/GPU. This supersedes historical splash deferral for that opt-in path only; legacy replay, method-5 and no-splash defaults are preserved.

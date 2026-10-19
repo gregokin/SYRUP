@@ -1,5 +1,19 @@
 # SYRUP project instructions
 
+## Merged MAPLE shared-storage qualification — 2026-10-19
+
+The accepted uncommitted SYRUP candidate based on `b4ee14e5` qualifies actual
+MAPLE `39bcf79e1e67b6ed960f78a923ddfedf1d173e68`. Use the separate fixed recipe
+and exact source pair in `dependencies/maple_shared_storage/qualification.lock.json`;
+read `docs/maple39_shared_storage_qualification.md` before adopting this update.
+The old water recipe remains historical reproduction, never a silent fallback.
+The new storage-admission helper is explicit opt-in, requires caller reserves,
+and is not automatic event/CLI protection or a whole-process memory bound.
+Existing checkpoint identities must not be rebound. Physics, routing threshold,
+conservation tolerances and defaults are unchanged. This qualification does not
+accept windowed wind, growth/avalanching/creep, large alternating storms or MASY
+adapters. No new commit/push or subsequent simulation is authorized by this task.
+
 ## Direct splash and depression overflow — 2026-10-17
 
 User authorized implementing direct rainfall splash and real flats/depressions/filling/overflow with Claude, using a Chastre subset. The explicit `maple_syrup.pond_event.PondEvent` is the integrated alternative: local-inertial hydraulics with implicit quadratic Darcy–Weisbach friction, MAHLERAN-derived splash and wet laws, multi-face characteristic sediment, actual evolving MAPLE dense bed, native conservation and source-bound restart. This supersedes splash deferral for this opt-in path only. Existing legacy benchmark/method-5/no-splash defaults remain unchanged.

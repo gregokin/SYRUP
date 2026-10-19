@@ -8,7 +8,8 @@ lifecycle with a non-CUDA control are refused before any work.
 GPU tests (skip honestly without CuPy and a device; a skip claims nothing): a quiescent storm and a wet storm
 with terrain change complete with a dry handoff on the device (bisection and Newton), nonzero terminal
 settlement is a genuine MAPLE deposition, a failed terminal deposit / commit / reactivated flow leaves the wet
-input unchanged, a duration limit is not a dry handoff, the CUDA lifecycle count matches the loop commits, and
+input unchanged, a duration limit is not a dry handoff, the CUDA lifecycle count matches the ACTUAL net reroutes of the loop (held routing:
+none; a native conservative net-elevation precondition: genuine reroutes, including a genuine rerouted terminal commit), and
 the device event matches the host array / numba events at the DECLARED bounds (water rtol 2e-12 / atol 1e-14,
 sediment rtol 1e-10 / atol 1e-14 predeclared for the coupled event, MAPLE closure unchanged, integer counters
 exact).
@@ -18,6 +19,7 @@ Nothing here was run by its author (file-only tools); the root records the execu
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import replace
 
 import numpy as np
@@ -34,6 +36,7 @@ from test_coupled_backends import (  # tests/conservative_water via conftest
     close,
     compare_any,
     compare_events,
+    conservative_net_cross,
     setup_xp,
     snapshot_any,
 )
@@ -53,21 +56,29 @@ from maple_syrup.complete_event import (
 )
 from maple_syrup.event_backend import host_packet
 from maple_syrup.rainfall import constant_rainfall
-from maple_syrup.sediment_bed import bed_inventory, with_water
+from maple_syrup.sediment_bed import bed_inventory, reroute_threshold_m, with_water
 from maple_syrup.sediment_event import (
     CudaHydraulics,
     SedimentEventControl,
     SedimentEventError,
+    routing_gate_m,
 )
 from maple_syrup.storm import StormControl, initial_state
 
 ROOT_SOLVERS = ("bisection", "newton")
 
 
-def fixture_xp(xp, *, wet=False, implementation="array", root_solver="bisection", max_steps=10000, **control_kw):
+CHAIN_NET_CROSS = ((2, 0), (1, 0))  # the highest cell -> its lower neighbour: receivers stay monotone, no pit
+
+
+def fixture_xp(xp, *, wet=False, implementation="array", root_solver="bisection", max_steps=10000, net_cross=False,
+               **control_kw):
     """`tests/phase6/test_complete_event.fixture` in namespace `xp`: a 3-cell chain, ksat 1e-5 m/s, 2 s of no
-    rain (quiescent) or 10 s of 100 mm/h (wet), hold 2 s, reporting every 2 s."""
+    rain (quiescent) or 10 s of 100 mm/h (wet), hold 2 s, reporting every 2 s. `net_cross=True` first gives the host
+    bed the native conservative net-elevation precondition (`conservative_net_cross`, default False = the held fixture)."""
     bed, ctx = make_bed(chain_elevation(3), depth_m=.001 if wet else 0.)
+    if net_cross:
+        bed = conservative_net_cross(bed, ctx, *CHAIN_NET_CROSS)
     control = SedimentEventControl(storm=StormControl(max_dt_s=1, max_steps=max_steps, implementation=implementation,
                                                       root_solver=root_solver), **control_kw)
     s = setup_xp(bed, ctx, xp, ksat=1e-5, control=control)
@@ -85,6 +96,31 @@ def assert_dry(handoff):
         assert not np.any(H(a))
     if d.phase is not None:
         assert np.all(H(d.phase.fraction)[..., 0] == 1.0) and not np.any(H(d.phase.position_m))
+
+
+def assert_preparation_lifecycle(hyd, r):
+    """The CUDA context is prepared once initially and once per ACTUAL net reroute of the event loop -- never per
+    accounting commit (`record_commit_transfers` still runs for every commit: `n_commits_recorded`).
+
+    `r` is the handoff's result, which also contains complete_event's terminal forced commit; that commit runs OUTSIDE the
+    CUDA event loop (`complete_event._commit_and_reroute` is called directly), so even if it reroutes it prepares no
+    context. The loop's reroute count is therefore derived from the FULL, untruncated `commit_log`: every rerouting
+    record must match one lifecycle preparation (same `t_s`), and at most the LAST, forced record may be unprepared.
+    Returns the number of loop reroutes."""
+    assert len(r.commit_log) == r.n_commits and not hyd.summary()["log_truncated"], "commit/lifecycle log truncated"
+    rerouted = [c for c in r.commit_log if c["rerouted"]]
+    assert r.n_reroutes == len(rerouted)
+    prepared = Counter(e["t_s"] for e in hyd.log if e["reason"] == "commit")
+    wanted = Counter(c["t_s"] for c in rerouted)
+    assert not (prepared - wanted), "a preparation without a rerouting commit"
+    unprepared = wanted - prepared
+    assert sum(unprepared.values()) <= 1
+    if unprepared:  # only the terminal forced commit
+        last = r.commit_log[-1]
+        assert last["rerouted"] and last["forced"] and last["t_s"] in unprepared
+    n_loop = len(rerouted) - sum(unprepared.values())
+    assert hyd.n_preparations == 1 + n_loop == len(hyd.log)
+    return n_loop
 
 
 def compare_handoffs(ref, cand):
@@ -178,7 +214,9 @@ def test_gpu_quiescent_storm_completes_with_dry_reset_without_sediment_loss(gpu)
     assert out.accounting["soil_removed_m3"] == pytest.approx(.25 * .3 * .25 * 3)
     assert out.accounting["surface_removed_m3"] == 0 and out.accounting["combined_water_residual_m3"] == 0
     assert np.any(H(args[0].storm.soil_water_m) > 0)  # caller still wet, no mutation
-    assert hyd.n_preparations == 1 + (out.progress.result.n_commits - out.progress.result.n_forced_commits)
+    # preparations follow the ACTUAL loop reroutes (an accounting / terminal commit below the threshold prepares nothing)
+    n_loop = assert_preparation_lifecycle(hyd, out.progress.result)
+    assert n_loop == 0 and hyd.n_preparations == 1
     host_args, host_kw = fixture_xp(np)
     compare_handoffs(complete_event(*host_args, **host_kw), out)
 
@@ -201,10 +239,40 @@ def test_gpu_wet_storm_completes_with_terrain_change_and_matches_the_host(gpu, r
     assert_closed_any(r, state0, check_dry_settling=False)
     assert float(H(out.terminal_deposition_kg).sum()) >= 0.0 and out.accounting["sediment_closure"]["closed"]
     compare_any(state0, saved)  # the wet input is untouched
-    # the lifecycle followed the loop's commits; the terminal forced commit does not rebuild the context
-    assert hyd.n_preparations == 1 + (r.n_commits - r.n_forced_commits)
+    # HELD routing (natural fixture): the loop's commits are accounting commits whose net displacement from the held routing
+    # source stays below the actual threshold, so they publish a bed but prepare nothing; the preparation count follows the
+    # ACTUAL reroutes (the positive net-crossing case is the next test)
+    threshold = reroute_threshold_m(args[1])
+    assert r.n_commits >= 1 and r.n_reroutes == 0 and r.max_unrouted_net_displacement_m < threshold
+    assert all(not c["rerouted"] and c["net_displacement_m"] < c["reroute_threshold_m"] == threshold for c in r.commit_log)
+    assert assert_preparation_lifecycle(hyd, r) == 0 and hyd.n_preparations == 1
     assert hyd.n_binding_hits == r.n_accepted_steps + r.n_rejected_attempts
     host_args, host_kw = fixture_xp(np, wet=True, root_solver=root_solver)
+    compare_handoffs(complete_event(*host_args, **host_kw), out)
+
+
+@pytest.mark.parametrize("root_solver", ROOT_SOLVERS)
+def test_gpu_wet_storm_with_a_genuine_net_crossing_prepares_once_per_loop_reroute_and_matches_the_host(gpu, root_solver):
+    """POSITIVE companion of the held-routing test above: the same wet chain after the native conservative net-elevation
+    precondition (identical on host and device). The first accepted step must reroute for real and the CUDA lifecycle must
+    prepare exactly once per loop reroute; the CPU/GPU physics, closure and exact-input checks are unchanged."""
+    args, kw = fixture_xp(gpu, wet=True, implementation="cuda", root_solver=root_solver, net_cross=True)
+    state0 = args[0]
+    saved = snapshot_any(state0)
+    hyd = CudaHydraulics()
+    out = complete_event(*args, **kw, hydraulics=hyd)
+    assert isinstance(out, DryHandoff)
+    r = out.progress.result
+    assert_dry(out)
+    assert_closed_any(r, state0, check_dry_settling=False)
+    assert out.accounting["sediment_closure"]["closed"]
+    compare_any(state0, saved)  # the wet input is untouched
+    first = r.commit_log[0]
+    assert first["rerouted"] and first["net_displacement_m"] >= reroute_threshold_m(args[1])
+    n_loop = assert_preparation_lifecycle(hyd, r)
+    assert n_loop >= 1 and hyd.n_preparations == 1 + n_loop
+    assert hyd.n_binding_hits == r.n_accepted_steps + r.n_rejected_attempts
+    host_args, host_kw = fixture_xp(np, wet=True, root_solver=root_solver, net_cross=True)
     compare_handoffs(complete_event(*host_args, **host_kw), out)
 
 
@@ -255,20 +323,48 @@ def test_gpu_failed_terminal_deposit_commit_or_reactivated_flow_leaves_the_wet_i
         finalize_event(ready, ctx, column)
     compare_any(ready.result.state, saved)
     monkeypatch.undo()
+    # Reactivated flow after the terminal commit. A NON-rerouting terminal commit returns the caller's storm (discharge)
+    # unchanged by design, so the discharge of its result is never read; the injection is meaningful only on a GENUINE
+    # rerouted terminal commit. `ready_cross` is the same ready (quiet, wet-input) state whose bed first received the native
+    # conservative net-elevation precondition, still held on the old routing source: the terminal forced commit then sees a
+    # real net displacement >= the unchanged threshold and `commit.rerouted` is genuinely True (nothing is flagged by hand).
+    state_r = ready.result.state
+    cross_bed = conservative_net_cross(state_r.bed, ctx, *CHAIN_NET_CROSS)
+    ready_cross = replace(ready, result=replace(ready.result, state=replace(state_r, bed=cross_bed)))
+    threshold = reroute_threshold_m(ctx)
+    assert routing_gate_m(state_r.bed, ctx, state_r.graph, state_r.routing_source_elevation_m) < threshold
+    assert routing_gate_m(cross_bed, ctx, state_r.graph, state_r.routing_source_elevation_m) >= threshold
+    saved_cross = snapshot_any(ready_cross.result.state)
+    count_cross = cross_bed.committed_topography.commit_count
     original_commit = module._commit_and_reroute
+    seen = []
 
     def commit_with_reactivated_flow(*a, **k):
         result = original_commit(*a, **k)
+        seen.append(result.rerouted)
         q = gpu.array(result.storm.discharge_m2_s, copy=True)
         q[0, 0] = ready.policy.max_unit_discharge_m2_s * 2
         return replace(result, storm=replace(result.storm, discharge_m2_s=q))
 
     monkeypatch.setattr(module, "_commit_and_reroute", commit_with_reactivated_flow)
     with pytest.raises(SedimentEventError, match="invalidated completion"):
-        finalize_event(ready, ctx, column)
-    compare_any(ready.result.state, saved)
-    assert ready.result.state.bed.committed_topography.commit_count == count
+        finalize_event(ready_cross, ctx, column)
+    assert seen == [True], "the injected terminal commit must be a genuine reroute"
+    compare_any(ready_cross.result.state, saved_cross)
+    assert ready_cross.result.state.bed.committed_topography.commit_count == count_cross
     monkeypatch.undo()
+    # without the injection the very same genuine rerouted terminal commit completes the event
+    handoff = finalize_event(ready_cross, ctx, column)
+    assert handoff.progress.result.commit_log[-1]["rerouted"] and handoff.progress.result.commit_log[-1]["forced"]
+    assert handoff.progress.result.n_reroutes == ready_cross.result.n_reroutes + 1
+    compare_any(ready_cross.result.state, saved_cross)  # and still leaves the wet input untouched
+    # the held (non-rerouting) terminal commit really ignores the commit result's discharge: a source-backed negative
+    monkeypatch.setattr(module, "_commit_and_reroute", commit_with_reactivated_flow)
+    seen.clear()
+    finalize_event(ready, ctx, column)
+    assert seen == [False]
+    monkeypatch.undo()
+    compare_any(ready.result.state, saved)
     # a refused terminal deposit (injected pool, MAPLE call failing) publishes nothing
     r = ready.result
     pool = gpu.full(r.state.bed.active_layer.mass_kg.shape, 1e-12, dtype=np.float64)

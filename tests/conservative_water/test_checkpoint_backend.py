@@ -27,7 +27,8 @@ import pytest
 pytest.importorskip("maple")
 
 from maple.core.backend import array_namespace, is_array
-from maple.core.types.voxel import VoxelColumnState, VoxelSurfaceCache
+from maple.core.types import voxel as maple_voxel
+from maple.core.types.voxel import VoxelColumnState
 from test_complete_backend import fixture_xp
 from test_coupled_backends import H
 
@@ -44,15 +45,27 @@ from maple_syrup.sediment_event import SedimentEventError
 
 IDENTITY = {"case": "controlled actual MAPLE bed", "forcing": "fixed", "source": "test", "options": {"dt": 1}}
 
+#: The optional derived voxel-totals cache is a capability of the bound MAPLE, decided from the actual native objects: the
+#: dataclass field of `VoxelColumnState` and the class the public voxel module binds. The reference source (24c6) has both;
+#: the merged 39bcf79e Dense column is genuinely mass-only and has neither. Nothing is synthesized, imported conditionally
+#: from elsewhere, or skipped: on a source that has the cache its native binding / recomputed-totals validation below runs
+#: exactly as before, on a source that lacks it the absence is asserted and every physical field is compared unchanged.
+SURFACE_CACHE_TYPE = vars(maple_voxel).get("VoxelSurfaceCache")
+HAS_SURFACE_CACHE_FIELD = "surface_cache" in {f.name for f in dataclasses.fields(VoxelColumnState)}
+assert HAS_SURFACE_CACHE_FIELD == (SURFACE_CACHE_TYPE is not None), (
+    "inconsistent bound MAPLE: VoxelColumnState.surface_cache and the public VoxelSurfaceCache class must both exist or both be absent")
+
 
 def arrays_any(value, path=""):
     """Every PHYSICAL array reachable through dataclass fields and dicts, as host copies (NumPy or CuPy leaves).
 
-    The one explicit exclusion is MAPLE's `VoxelColumnState.surface_cache` (`VoxelSurfaceCache`): a derived,
-    identity-bound, non-persisted cache of the voxel totals (`init=False, compare=False`), deliberately absent from
-    MAPLE's snapshot and therefore from a restored column. It is NOT physical state and is checked separately by
-    `assert_surface_cache_consistent` (never carried into the restart comparison, never blindly accepted). Every
-    other field, including every `init=False` field of any other type, is walked as before."""
+    The one explicit exclusion exists ONLY where the bound MAPLE has it: `VoxelColumnState.surface_cache`
+    (`VoxelSurfaceCache`), a derived, identity-bound, non-persisted cache of the voxel totals (`init=False,
+    compare=False`), deliberately absent from MAPLE's snapshot and therefore from a restored column. It is NOT physical
+    state and is checked separately by `assert_surface_cache_consistent` (never carried into the restart comparison,
+    never blindly accepted). On a MAPLE whose Dense column has no such field (merged 39bcf79e) nothing is excluded: the
+    condition below can never match and every field is walked. Every other field, including every `init=False` field of
+    any other type, is walked as before."""
     if is_array(value):
         yield path, H(value)
     elif dataclasses.is_dataclass(value) and not isinstance(value, type):
@@ -66,19 +79,23 @@ def arrays_any(value, path=""):
 
 
 def assert_surface_cache_consistent(column, *, expect_none=False):
-    """The derived voxel-totals cache of a column is either absent, or a `VoxelSurfaceCache` whose binding is
-    the column's exact `mass_kg` object and whose totals equal, bitwise, an INDEPENDENT recomputation
-    `sum(axis=-1)` of the physical mass in the array's own namespace (MAPLE's documented invariant). A stale
-    cache bound to another array, or one disagreeing with the physical mass, fails; a restored column after a
-    MAPLE snapshot decode is expected to carry none."""
+    """On a MAPLE that has the optional cache: the derived voxel-totals cache of a column is either absent, or a
+    `VoxelSurfaceCache` whose binding is the column's exact `mass_kg` object and whose totals equal, bitwise, an
+    INDEPENDENT recomputation `sum(axis=-1)` of the physical mass in the array's own namespace (MAPLE's documented
+    invariant). A stale cache bound to another array, or one disagreeing with the physical mass, fails; a restored
+    column after a MAPLE snapshot decode is expected to carry none. On a MAPLE without the optimization the genuine
+    absence of the field and attribute is asserted (there is nothing to validate and nothing is faked)."""
     assert isinstance(column, VoxelColumnState)
+    if not HAS_SURFACE_CACHE_FIELD:
+        assert not hasattr(column, "surface_cache")
+        return
     cache = column.surface_cache
     if expect_none:
         assert cache is None, "a restored column must not carry a persisted / stale surface cache"
         return
     if cache is None:
         return
-    assert isinstance(cache, VoxelSurfaceCache)
+    assert isinstance(cache, SURFACE_CACHE_TYPE)
     assert cache.describes(column.mass_kg), "surface cache is bound to a different mass array (stale)"
     xp = array_namespace(column.mass_kg)
     recomputed = xp.sum(column.mass_kg, axis=-1)

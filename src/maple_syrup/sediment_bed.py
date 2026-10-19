@@ -730,9 +730,10 @@ def check_deep_storage_source(encoding, overlay_max_bytes) -> None:
     check_deep_storage_options(encoding, overlay_max_bytes)
     if (encoding, overlay_max_bytes) == ('full', None):
         return
-    if bound_maple_package_digest() != TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST:
-        raise BedIntegrationError('deep_chunk_encoding=\'overlay\' is supported only with the accepted MAPLE source '
-                                  f'{TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST[:16]}...; the bound MAPLE package differs')
+    if bound_maple_package_digest() not in TYPED_JOURNAL_SOURCE_DIGESTS:
+        raise BedIntegrationError('deep_chunk_encoding=\'overlay\' is supported only with an accepted MAPLE source '
+                                  f'({", ".join(d[:16] + "..." for d in sorted(TYPED_JOURNAL_SOURCE_DIGESTS))}); '
+                                  'the bound MAPLE package differs')
 
 
 def validate_deep_storage(context: BedContext, state: BedState | None = None) -> None:
@@ -806,8 +807,16 @@ def bound_maple_package_digest() -> str:
 #: CW-B108: the independently accepted MAPLE package (B107 review freeze) whose `_require_journal_room` raises the
 #: structured `deep_store.JournalCapacityError` (same message, validated record counts). Same digest convention as M94.
 TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST = '24c6e1478ed732df22f448eddf8cb16c3b72f2406dc9b37a9414cee9a2d1a9ce'
+#: Candidate pin as of authoring: the merged MAPLE `39bcf79e1e67b6ed960f78a923ddfedf1d173e68` package tree. Its final
+#: acceptance is decided by the documented qualified source pair (docs), not by this comment. Root's AST comparison found `JournalCapacityError`, `_require_journal_room`, `_resolve_encoding`,
+#: `publish_windowed_result` and `publish_staged_windowed_commit` identical to the 24c6 source; `publish_pending_column`
+#: differs only by an upfront fixed-capacity gate. The exact class / count / binding checks below are unchanged.
+MERGED_39BCF79_MAPLE_DIGEST = 'af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec'
+#: Every source whose typed `JournalCapacityError` recognizer and overlay publishers are pinned (historical + candidate).
+TYPED_JOURNAL_SOURCE_DIGESTS = frozenset({TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST, MERGED_39BCF79_MAPLE_DIGEST})
 JOURNAL_RECOGNIZER_SOURCES = {JOURNAL_RECOGNIZER_MAPLE_DIGEST: 'm94_pinned_message',
-                              TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST: 'typed_journal_capacity_error'}
+                              TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST: 'typed_journal_capacity_error',
+                              MERGED_39BCF79_MAPLE_DIGEST: 'typed_journal_capacity_error'}
 
 
 def journal_recognizer_source() -> str | None:

@@ -21,7 +21,7 @@ from maple_syrup import sediment_bed
 from maple_syrup.checkpoint import _OPTIONAL_DEFAULT_FIELDS, load_checkpoint, save_checkpoint
 from maple_syrup.complete_event import CompletionPolicy, EventProgress, complete_event
 from maple_syrup.sediment_bed import (
-    TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST,
+    TYPED_JOURNAL_SOURCE_DIGESTS,
     BedContext,
     BedIntegrationError,
     bound_maple_package_digest,
@@ -32,8 +32,8 @@ from maple_syrup.sediment_bed import (
 )
 from maple_syrup.sediment_event import SedimentEventError, evolve_sediment_event
 
-pytestmark = pytest.mark.skipif(bound_maple_package_digest() != TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST,
-                                reason="needs the accepted typed MAPLE source")
+pytestmark = pytest.mark.skipif(bound_maple_package_digest() not in TYPED_JOURNAL_SOURCE_DIGESTS,
+                                reason="needs an explicitly pinned typed MAPLE source")
 
 POLICY = CompletionPolicy(hold_s=2.0, max_depth_m=5e-4, surface_volume_m3=1e-2, max_unit_discharge_m2_s=1e-5,
                           outlet_discharge_m3_s=1e-4, deposit_mobile_at_flow_end=True)  # LABELLED (events file)

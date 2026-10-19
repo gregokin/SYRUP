@@ -1,0 +1,858 @@
+{
+  "schema": "maple_syrup.shared_storage_qualification.v1",
+  "qualified_utc": "2026-10-19T06:25:05.601465+00:00",
+  "status": "accepted_uncommitted_consumer_candidate",
+  "scope": "Native shared-storage integration; not an accepted coupled simulation or large storm",
+  "syrup": {
+    "git_base": "b4ee14e5bf37814efb0d754de17b7ea604b1cd74",
+    "dirty_runtime": true,
+    "package_sha256": "c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392",
+    "package_files": 64,
+    "source_hash_algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+    "runtime_delta_patch": "dependencies/maple_shared_storage/SYRUP_b4ee14e_runtime.patch",
+    "runtime_delta_sha256": "95a091ca8ee7ccbfdcfd95e7566d7acae9e3327018ba0c2651ffffb9b3360b8e",
+    "runtime_files": {
+      "src/maple_syrup/__init__.py": "039be50eaa7bd7e21c5cb5a88a604dc2041c9fe60f723af4b63f7dca1366adbc",
+      "src/maple_syrup/backend_correspondence.py": "62399babb731014a512f75e9ec4fc25c3ce32724a76e5ce3f32d727c4cd764ef",
+      "src/maple_syrup/benchmark_experiment.py": "37c9bce3e47fe4b82b505d6c337163d466317f748c1dcf073b80024242848020",
+      "src/maple_syrup/case_import.py": "21a87b9380296bd88b122a2ecb59f12d307bc43f39b279b2e25d0cdcaeaec056",
+      "src/maple_syrup/characteristic_cuda_csr.py": "ffa1f88b0c8f6a585ef288f223f3a603a9b45b35d88d16bad9c71c0b6178f734",
+      "src/maple_syrup/characteristic_numba.py": "07eaac65ec4d8f01737ffcee36ef4deeaa6a064dd7f77dd7445009553ade4852",
+      "src/maple_syrup/characteristic_numba_csr.py": "030ae1b3d1096a16de54723c11e70d687579b26450def15488d1555c2f1069de",
+      "src/maple_syrup/characteristic_sparse.py": "5c331e589bfe5646deafca56847ec7e7f4748d656fce55cf22de7d3a3f0bcc17",
+      "src/maple_syrup/characteristic_transport.py": "9767d797c4fe792b907a66c4a17c34aae82d98f862ee2de2b7bd450bd4847416",
+      "src/maple_syrup/chastre_case.py": "d85af5685927e24cff6a1e55fd21568224b4340313d47f81a36af9818e23bcbd",
+      "src/maple_syrup/checkpoint.py": "df877085ca5a150ff1aeb512abe7e9f8ff351297efa401d7e68a7b5f69f0d3df",
+      "src/maple_syrup/column_experiment.py": "a533573442f5e8beb7451b11265e05b7823160fa3063aa670fcd9fef59e50dd9",
+      "src/maple_syrup/complete_event.py": "76b2074d058603fa33c2d90fef7ae347b3e6246fe88af587f82c26495e7c28e6",
+      "src/maple_syrup/conservation.py": "1072cdade368a76290c8a41162dfeb7a5b60ffaf970a7ede4707635bb3cf1bb1",
+      "src/maple_syrup/dependency.py": "6a4ed5d5c484c135589b75cb15a3504d832d3ef788d92e21d1e0195c64e5d518",
+      "src/maple_syrup/dependency_bundle.py": "ae013c930697aa07251d008563d56f7795506f4b68a3b7df2ec6221d7f9f731c",
+      "src/maple_syrup/event_backend.py": "481bed15181c576bc958cf06a43343fa9494099b2080e6e6735b746dee291a68",
+      "src/maple_syrup/event_experiment.py": "eb859aa48b6cc8ddfa90f42f6d9f44c9639a282fafa136c18d8741d43e42274c",
+      "src/maple_syrup/experimental_cuda.py": "3ddc97d1c73f05344cccda2ad4193a2a7d6d5c25048d477b2a703c4e17415dbc",
+      "src/maple_syrup/experimental_experiment.py": "1bf10543fda47032e7554bea3a90c3d077027363bd17973ac19255da5b81bae4",
+      "src/maple_syrup/experimental_hydrology.py": "a5b209a98a247f94650538a7a966b1ddd17497fa9ff8bf14ab32344dd6b55632",
+      "src/maple_syrup/experimental_numba.py": "2a4767f40ba7f0a7a51d336c7e27e8dd0c81c6d423fad433fa3128bdc002afc0",
+      "src/maple_syrup/experimental_storm.py": "b278e83cd4264cb2b5ddd146e4c132145b3316c669568f55ec2b064ea9f87b92",
+      "src/maple_syrup/hydrology_cuda.py": "d91dba00b1ee8d5cbcbe789086b91ecd4ab648c1f2d8d75eedefe91cb3f7ff50",
+      "src/maple_syrup/hydrology_numba.py": "9a1fe59c4096942a5668aa028a9752fd2ee13dd9e04fdf896bb6c16d96e216cd",
+      "src/maple_syrup/infiltration.py": "c935b119e17d30cc176bcd339686b4f454ae8d742fa3946c2ae26f198efae570",
+      "src/maple_syrup/initial_reimport.py": "85de4302d20efaf1ead12383d615493fb898eb234358fc992185c76c8054f380",
+      "src/maple_syrup/legacy_case.py": "93983153ae9d147ab7315d1c334835b80780d4db9b1ec1c1950e2ba3d78872c5",
+      "src/maple_syrup/legacy_driver.py": "e81ec8c7e8ffaad6e19a853ccd56ac11e3720305f6db319b5d7442d15d42006b",
+      "src/maple_syrup/legacy_experiment.py": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1",
+      "src/maple_syrup/legacy_gpu_driver.py": "a1b589f5cfcd10bf5e13d522dfb3466912368e79887c3213c06394dfbcf6d58f",
+      "src/maple_syrup/legacy_native.py": "837a3224ffb718a16fddb6deabc19494794256a9d50187ad2839be58d5f2c1c6",
+      "src/maple_syrup/legacy_native_cuda.py": "584db1b7e4c8cf10b808433dc793a37dc7e3083d4e4ae06d2bc011bc7a12bbe9",
+      "src/maple_syrup/legacy_native_numba.py": "918dd85d14e2572c4960c97116effbe52f511f7d2000324dc2b130e753abf548",
+      "src/maple_syrup/legacy_physics_numba.py": "abf0c4e5044352830a8d2cbe0750afdb126abe78b849f029023a5a09149e13da",
+      "src/maple_syrup/legacy_transport.py": "69f2fef5ce2a6562b48edfb3f732998b390f3a942788664bbcdc3fe775db2172",
+      "src/maple_syrup/legacy_water_cuda.py": "a5d30c78f17ae576d1fe9ca2a2d7c2c6ae157ab1b08bac66e22876e70343126e",
+      "src/maple_syrup/pond_bed.py": "02a672a08398651175d4960f38b7d6390d4a6583946827a90dd4072569f9b4a4",
+      "src/maple_syrup/pond_checkpoint.py": "94cd2339566646ba44f2015dad13a67194c26a8dd3cc85b56916f62d2b4a704f",
+      "src/maple_syrup/pond_event.py": "67c0b68c330688ed4f2a8ecb63e0da004b33fd28267b23034036e6edcc8a7724",
+      "src/maple_syrup/pond_hydraulics.py": "55f34991f35b51c9be4a13e006d354dc09acf0437c27e02a3e33c1289ad07fa3",
+      "src/maple_syrup/pond_network.py": "b3aabb8103544271c4aa0cc0cd21408e4e6dd40bf9d7e290c7e46ecc3a599708",
+      "src/maple_syrup/pond_transport.py": "9da31537beb12cc8e83dc3ca707bd7c49b0f8c520511b5e5a9962afa104ce2b1",
+      "src/maple_syrup/probe.py": "af859fd93960d88f0ce205834b74dc906b0f5513d1a29d98c65649ee53750ef1",
+      "src/maple_syrup/provenance.py": "30945a037ded51402471a2f59192144b3b44f69cf7df7088472684d60bdfcaaa",
+      "src/maple_syrup/rainfall.py": "9680256608b2ca372bb88115ff5135f3bca6e350e7067968ebebb4f0b42c04b5",
+      "src/maple_syrup/rfid_case.py": "e7c7a60f8451941c1601f69389ebfcf324320516a9a3c985aa329802b83677bd",
+      "src/maple_syrup/routing.py": "7e0952db62cc2af0c8af41bdadaff58f76061843deacdcb585eb4934b3234938",
+      "src/maple_syrup/routing_cuda.py": "3dcd436abd8181482516fa6b4713d7e33fea6fbbf900216177e41d88b508350a",
+      "src/maple_syrup/routing_newton.py": "5b7a8dfde8ed30637de6745f704a20631a78719902e5e7de24209567c188f297",
+      "src/maple_syrup/routing_newton_cuda.py": "dc68f0667d8121203b05b412c0b9fa846355c944f7b0107eb4aab45c2855d29d",
+      "src/maple_syrup/routing_numba.py": "d48ad53c766a5363ce17ff231f0bd8a0ee29aab622b788e7c76c93a61e5a26b5",
+      "src/maple_syrup/sediment_bed.py": "59a494fa97b5b64e97388b21a06be06286bb721ac7cf47295262f5082638b42f",
+      "src/maple_syrup/sediment_event.py": "68bff25a00c248a32c6831e54e3cb2711571eff92ffd6c5d325fbbb89a3bdc45",
+      "src/maple_syrup/sediment_experiment.py": "90a3379bfcda271c73a624ad608fd323915dd5236956f759a0d5ca9e3643d62e",
+      "src/maple_syrup/sediment_physics.py": "b83ca42c0675acca72f00ad44a386ab4e8ea98f457e6a386913f667e630a85df",
+      "src/maple_syrup/sediment_transport.py": "c67b3875d7f66dba4725bcd072be3fd697cb0031c85887859b23cc39b0d8b1cc",
+      "src/maple_syrup/splash.py": "3a3b5697b7e28497c9f650f237e4bbe2e9f7d80bf3b2a5cdfe66fcb934e3ec33",
+      "src/maple_syrup/splash_cuda.py": "6616060a3da333c1cb87bf509716b512b4ce03b312fe61a80e8f727db9288457",
+      "src/maple_syrup/storage_admission.py": "c46b68645455b0f9b1dcf5ec5da577cf49a7d1b2c70c5429fd45d1d61bd1f1da",
+      "src/maple_syrup/storm.py": "7f0dfb03d0176e053d83c3f52a83f711c6f6729c554b45ad23ebb0e87b756d19",
+      "src/maple_syrup/storm_experiment.py": "c4d70d92f239abe5c262b5f9af8a5160d28479acd8805484cd291ba0a1b8f5f9",
+      "src/maple_syrup/windowed_case.py": "389d6705276eadd150364b22c967a24110afb7765830cd63baef4cecc018c5dc",
+      "src/maple_syrup/windowed_experiment.py": "07bdc04faf868c7a5da403ad42f78a213b0c505ea84ebb66559972a6a52c00e6",
+      "pyproject.toml": "fe93428442b3bfb15137d0ea7dff27ad6b20db75f0c402b4cb137dfdf64cf748"
+    }
+  },
+  "maple": {
+    "git_commit": "39bcf79e1e67b6ed960f78a923ddfedf1d173e68",
+    "extra_runtime_patches": [],
+    "package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+    "package_files": 351,
+    "runtime_files": 352,
+    "recipe": "dependencies/maple_shared_storage/manifest.json",
+    "recipe_pin": {
+      "manifest_sha256": "877826de3715680cc0b27c40d3c07dd7b2fb0ba0388b63bce74142c8dd583441",
+      "base_revision": "b3e8756c26d3661617d7e5ef23dcd29ed08e4687",
+      "target_revision": "39bcf79e1e67b6ed960f78a923ddfedf1d173e68",
+      "package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+      "runtime_files": 352,
+      "patch_sha256": "d5e46160a787e7b588ab8841e2fd237c29e282e21b217c4b8d563cda52dbfae3",
+      "new_files": 16,
+      "modified_files": 16
+    },
+    "project_source_digest": {
+      "algorithm": "sha256(sorted relpath NUL file_sha256 LF) over the selected project files; v1",
+      "digest_sha256": "f4214628a178446ba9337c703255b48ec4047549437651de5831b20d647fc748",
+      "file_count": 352,
+      "total_bytes": 8900116
+    }
+  },
+  "delivery": {
+    "bundle_id": "37a1bc69bfa034be7cd512d8aa7c30d33682b7c053a53c3b0c91edc34d59a96f",
+    "bundle_local_path": "outputs/dependencies/bundles/maple39_shared_storage_20261019",
+    "manifest_file": "bundle-manifest.json",
+    "manifest_sha256": "27ed385362656114f3a436257ce35a427460225ceff334e10e727852f22458cf",
+    "archive": {
+      "format": "uncompressed pax tar; regular files only; sorted; mtime 0; uid/gid 0; empty owner names; mode 0644",
+      "name": "maple-project.tar",
+      "sha256": "8b324f143cf660ebf7107818ee2aae9bf3129330d1a9a79061510b3e98d3949a",
+      "size": 9185280
+    },
+    "distribution": {
+      "files": [
+        "METADATA",
+        "WHEEL",
+        "top_level.txt",
+        "entry_points.txt"
+      ],
+      "source_dir": "/home/okin/SYRUP/agent_handoffs/tasks/maple39_storage_20261019/built_distribution/maple-0.0.1.dist-info"
+    },
+    "distribution_file_hashes": {
+      "distribution/METADATA": "dc1b5653aab75868578b7d478b3d015b146ba1fe4ea4907cc26d806d68120cca",
+      "distribution/WHEEL": "b59a1e1a3b56c5645f769944ec4ddde3954f94b3509ef6ca8989f1ee0c00cbc0",
+      "distribution/top_level.txt": "08ab2a56c8503c742c762013475ad2955377d2001a9fc03e4e8bc22e09af0844",
+      "distribution/entry_points.txt": "9430d41e28e96a53fa455b84c6a4b6122484d21e6ce8151c6c40854db190c870"
+    },
+    "materialization_local_path": "outputs/dependencies/content_cache/37a1bc69bfa034be7cd512d8aa7c30d33682b7c053a53c3b0c91edc34d59a96f",
+    "metadata_build": {
+      "method": "Genuine setuptools build_meta.build_wheel from exact isolated MAPLE39bcf79 runtime copy. No installation/metadata fabrication.",
+      "system_python": "/usr/bin/python3",
+      "setuptools": "68.1.2",
+      "wheel_build_helper": "/home/okin/SYRUP/agent_handoffs/tasks/maple39_storage_20261019/build_tools/wheel-0.45.1-py3-none-any.whl",
+      "wheel_build_helper_sha256": "708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248",
+      "artifact": "/home/okin/SYRUP/agent_handoffs/tasks/maple39_storage_20261019/built_wheel/maple-0.0.1-py3-none-any.whl",
+      "artifact_sha256": "4a7d36ac53c7f9cdf65f79a742ed6be3eb13536e35a22db8fa3ca791336521bb",
+      "all_package_files_byte_exact": 351,
+      "distribution_dir": "/home/okin/SYRUP/agent_handoffs/tasks/maple39_storage_20261019/built_distribution/maple-0.0.1.dist-info"
+    },
+    "local_artifacts_require_separate_transfer": true,
+    "installed_environments_changed": false
+  },
+  "checks": {
+    "unique_final_pytest_outcomes": {
+      "cpu": {
+        "unique_final_outcomes": {
+          "passed": 1144,
+          "skipped": 194,
+          "failure": 0,
+          "error": 0
+        },
+        "test_total": 1338,
+        "raw_runs": [
+          "final_cpu_d",
+          "history_cpu_e",
+          "lifecycle_cpu_f"
+        ],
+        "rule": "Later corrected fixture/test outcome supersedes same node; every runtime source byte identical (SYRUP c650 / selected native). Retain raw earlier failures."
+      },
+      "gpu": {
+        "unique_final_outcomes": {
+          "passed": 1328,
+          "skipped": 10,
+          "failure": 0,
+          "error": 0
+        },
+        "test_total": 1338,
+        "raw_runs": [
+          "final_gpu_d2",
+          "lifecycle_gpu_f"
+        ],
+        "rule": "Later corrected fixture/test outcome supersedes same node; every runtime source byte identical (SYRUP c650 / selected native). Retain raw earlier failures."
+      },
+      "reference_cpu": {
+        "unique_final_outcomes": {
+          "passed": 602,
+          "skipped": 43,
+          "failure": 0,
+          "error": 0
+        },
+        "test_total": 645,
+        "raw_runs": [
+          "reference_cpu_d"
+        ],
+        "rule": "Later corrected fixture/test outcome supersedes same node; every runtime source byte identical (SYRUP c650 / selected native). Retain raw earlier failures."
+      }
+    },
+    "post_adoption_focused": {
+      "passed": 96
+    },
+    "default_collection": {
+      "collected": 1831,
+      "executed_by_collection": false
+    },
+    "fresh_process_restart": {
+      "cpu": {
+        "source": {
+          "maple_syrup_tree_sha256": "c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392",
+          "maple_syrup_n_files": 64,
+          "maple_package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+        },
+        "mode": "resume",
+        "backend": "cpu",
+        "pid": 3,
+        "executable": "/home/okin/MAPLE/.venv/bin/python",
+        "results": [
+          {
+            "encoding": "full",
+            "end_s": 0.7,
+            "signature": {
+              "all_leaves_sha256": "20b73889dea53a2bffbd95b184981342525952d06d7a406b0246a8e9e58a5f6e",
+              "numeric_leaves": 181,
+              "logical_bed_sha256": "56c79394b969d889f0738f5dec5ffbfd339dbbb9b17e3ad253e1e043e2284b74"
+            },
+            "water_closes": true,
+            "sediment_closes": true,
+            "fresh_process_restart": true
+          },
+          {
+            "encoding": "overlay",
+            "end_s": 0.7,
+            "signature": {
+              "all_leaves_sha256": "f409794948294dc43f8695bd8bb9e9606ac3cab26a4a3f8263ef4624caa82e5f",
+              "numeric_leaves": 181,
+              "logical_bed_sha256": "2378933ebfcaf843e3d0def873785b4e0768fdd6a9b2f204e7415f362bf01997"
+            },
+            "water_closes": true,
+            "sediment_closes": true,
+            "fresh_process_restart": true
+          }
+        ],
+        "normalization": "Only numeric scalar representation Python/NumPy/0D normalized; dtype/shape/raw bits preserved. Every other leaf and logical bed hashed exactly.",
+        "pool_limit_bytes": null,
+        "scope": "3+4 actual0.1s steps, tiny native resident-window bed, actual wet pickup, full/overlay; not storm completion or large-case acceptance"
+      },
+      "gpu": {
+        "source": {
+          "maple_syrup_tree_sha256": "c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392",
+          "maple_syrup_n_files": 64,
+          "maple_package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+          "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+        },
+        "mode": "resume",
+        "backend": "gpu",
+        "pid": 318741,
+        "executable": "/home/okin/MAPLE/.venv-cupy/bin/python",
+        "results": [
+          {
+            "encoding": "full",
+            "end_s": 0.7,
+            "signature": {
+              "all_leaves_sha256": "ebffc3444f20859f31bdaa3ab4051c2eb476b8c8b971e98cb2fe94ac838a192e",
+              "numeric_leaves": 181,
+              "logical_bed_sha256": "56c79394b969d889f0738f5dec5ffbfd339dbbb9b17e3ad253e1e043e2284b74"
+            },
+            "water_closes": true,
+            "sediment_closes": true,
+            "fresh_process_restart": true
+          },
+          {
+            "encoding": "overlay",
+            "end_s": 0.7,
+            "signature": {
+              "all_leaves_sha256": "2c9f1f52b88e6a2b5cc945659325ce40c76d560c121859df06edae8405edb508",
+              "numeric_leaves": 181,
+              "logical_bed_sha256": "2378933ebfcaf843e3d0def873785b4e0768fdd6a9b2f204e7415f362bf01997"
+            },
+            "water_closes": true,
+            "sediment_closes": true,
+            "fresh_process_restart": true
+          }
+        ],
+        "normalization": "Only numeric scalar representation Python/NumPy/0D normalized; dtype/shape/raw bits preserved. Every other leaf and logical bed hashed exactly.",
+        "pool_limit_bytes": 9092045209,
+        "scope": "3+4 actual0.1s steps, tiny native resident-window bed, actual wet pickup, full/overlay; not storm completion or large-case acceptance"
+      }
+    },
+    "admitted_cpu": {
+      "purpose": "Actual admitted tiny native public/paired CPU/GPU exchanges; conservative in-place callback, not a storm/physics or performance acceptance.",
+      "source": {
+        "maple_syrup_tree_sha256": "c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392",
+        "maple_syrup_n_files": 64,
+        "maple_package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+      },
+      "backend": "cpu",
+      "runtime_imports_verified": true,
+      "reserves": {
+        "transport": {
+          "host": 4608,
+          "device": 0
+        },
+        "publication": {
+          "host": 1843200,
+          "device": 0
+        },
+        "commit": {
+          "host": 10752,
+          "device": 0
+        },
+        "jit_library_configured_budget": {
+          "host": 268435456,
+          "device": 0
+        },
+        "allocator_and_python_configured_budget": {
+          "host": 67108864,
+          "device": 0
+        }
+      },
+      "reserve_evidence": "Transport/commit counts derived from actual tiny state; publication from actual chunk cap. JIT/library/allocator/Python are explicitly CONFIGURED budgets, not measured universal bounds. External callback has no face-flux arrays.",
+      "public": {
+        "path": "public",
+        "namespace": "numpy",
+        "gather_columns": 256,
+        "journal_cap": 5000,
+        "plan": {
+          "new_host_bytes_peak": 2965608,
+          "new_device_bytes_peak": 0,
+          "mapped_bytes_max": 7372800,
+          "inputs": {
+            "ny": 3,
+            "nx": 4,
+            "n_classes": 6,
+            "n_voxels": 300,
+            "window_voxels": 3,
+            "packet_terms": 12,
+            "base_itemsize": 4,
+            "ledger_present_processes": 1,
+            "has_availability": true,
+            "has_boundary_input": false,
+            "has_boundary_export": false,
+            "has_face_flux": false,
+            "max_gather_columns": 256,
+            "max_journal_records": 5000,
+            "pending_records": 0,
+            "chunk_bytes_max": 921600,
+            "overlay_bytes_max": 0,
+            "mapping_cache_chunks": 8,
+            "namespace": "numpy",
+            "path": "public"
+          },
+          "excluded": [
+            "publication (publish_windowed_result / DeepStoreVersion.apply_journal chunk, overlay and manifest buffers)",
+            "windowed commit (commit_windowed_topography / stage_windowed_topography and their callbacks)",
+            "external transport (the paired transaction's `between` callback beyond its returned arrays)",
+            "CuPy memory-pool retained blocks and fragmentation",
+            "Numba / CUDA JIT compilation and library (BLAS, kernel) workspaces",
+            "Python object overhead (plans, receipts, reports, lists of journal segments)",
+            "deep-store memmap page cache (file-backed, reclaimable; `mapped_bytes_max` reports its cap separately)"
+          ]
+        },
+        "decision": {
+          "admitted": true,
+          "reason": "admitted (public path, numpy; peak stage host 'erosion'); a decision, not a reservation",
+          "host_available_bytes": 60095827968,
+          "device_available_bytes": null,
+          "host_required_bytes": 340368488,
+          "device_required_bytes": 0,
+          "host_margin_bytes": 29707545496,
+          "device_margin_bytes": null,
+          "safety_fraction": "1/2"
+        }
+      },
+      "paired": {
+        "path": "paired",
+        "namespace": "numpy",
+        "gather_columns": 256,
+        "journal_cap": 5000,
+        "plan": {
+          "new_host_bytes_peak": 3212280,
+          "new_device_bytes_peak": 0,
+          "mapped_bytes_max": 7372800,
+          "inputs": {
+            "ny": 3,
+            "nx": 4,
+            "n_classes": 6,
+            "n_voxels": 300,
+            "window_voxels": 3,
+            "packet_terms": 12,
+            "base_itemsize": 4,
+            "ledger_present_processes": 1,
+            "has_availability": true,
+            "has_boundary_input": false,
+            "has_boundary_export": false,
+            "has_face_flux": false,
+            "max_gather_columns": 256,
+            "max_journal_records": 5000,
+            "pending_records": 0,
+            "chunk_bytes_max": 921600,
+            "overlay_bytes_max": 0,
+            "mapping_cache_chunks": 8,
+            "namespace": "numpy",
+            "path": "paired"
+          },
+          "excluded": [
+            "publication (publish_windowed_result / DeepStoreVersion.apply_journal chunk, overlay and manifest buffers)",
+            "windowed commit (commit_windowed_topography / stage_windowed_topography and their callbacks)",
+            "external transport (the paired transaction's `between` callback beyond its returned arrays)",
+            "CuPy memory-pool retained blocks and fragmentation",
+            "Numba / CUDA JIT compilation and library (BLAS, kernel) workspaces",
+            "Python object overhead (plans, receipts, reports, lists of journal segments)",
+            "deep-store memmap page cache (file-backed, reclaimable; `mapped_bytes_max` reports its cap separately)"
+          ]
+        },
+        "decision": {
+          "admitted": true,
+          "reason": "admitted (paired path, numpy; peak stage host 'phase_d.erosion'); a decision, not a reservation",
+          "host_available_bytes": 60095827968,
+          "device_available_bytes": null,
+          "host_required_bytes": 340615160,
+          "device_required_bytes": 0,
+          "host_margin_bytes": 29707298824,
+          "device_margin_bytes": null,
+          "safety_fraction": "1/2"
+        }
+      },
+      "actual_pickup_kg": 1.875,
+      "requested_pickup_kg": 37.5,
+      "public_class_error_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "paired_class_error_kg": [
+        0.0,
+        0.0,
+        2.842170943040401e-14,
+        2.842170943040401e-14,
+        0.0,
+        2.842170943040401e-14
+      ],
+      "public_conservation_bound_kg": 2.950173438875936e-12,
+      "paired_conservation_bound_kg": 2.950173438875936e-12,
+      "real_deep_publication_exactly_once": true,
+      "insufficient_host_refused": true,
+      "host_peak_rss_kib": 356144,
+      "wall_seconds": 4.502421788987704,
+      "device_queried": false,
+      "pool_limit_bytes": null,
+      "pool_held_after_bytes": null
+    },
+    "admitted_gpu": {
+      "purpose": "Actual admitted tiny native public/paired CPU/GPU exchanges; conservative in-place callback, not a storm/physics or performance acceptance.",
+      "source": {
+        "maple_syrup_tree_sha256": "c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392",
+        "maple_syrup_n_files": 64,
+        "maple_package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec",
+        "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1"
+      },
+      "backend": "gpu",
+      "runtime_imports_verified": true,
+      "reserves": {
+        "transport": {
+          "host": 0,
+          "device": 4608
+        },
+        "publication": {
+          "host": 1843200,
+          "device": 0
+        },
+        "commit": {
+          "host": 0,
+          "device": 10752
+        },
+        "jit_library_configured_budget": {
+          "host": 268435456,
+          "device": 268435456
+        },
+        "allocator_and_python_configured_budget": {
+          "host": 67108864,
+          "device": 67108864
+        }
+      },
+      "reserve_evidence": "Transport/commit counts derived from actual tiny state; publication from actual chunk cap. JIT/library/allocator/Python are explicitly CONFIGURED budgets, not measured universal bounds. External callback has no face-flux arrays.",
+      "public": {
+        "path": "public",
+        "namespace": "cupy",
+        "gather_columns": 256,
+        "journal_cap": 5000,
+        "plan": {
+          "new_host_bytes_peak": 1849344,
+          "new_device_bytes_peak": 1633524,
+          "mapped_bytes_max": 7372800,
+          "inputs": {
+            "ny": 3,
+            "nx": 4,
+            "n_classes": 6,
+            "n_voxels": 300,
+            "window_voxels": 3,
+            "packet_terms": 12,
+            "base_itemsize": 4,
+            "ledger_present_processes": 1,
+            "has_availability": true,
+            "has_boundary_input": false,
+            "has_boundary_export": false,
+            "has_face_flux": false,
+            "max_gather_columns": 256,
+            "max_journal_records": 5000,
+            "pending_records": 0,
+            "chunk_bytes_max": 921600,
+            "overlay_bytes_max": 0,
+            "mapping_cache_chunks": 8,
+            "namespace": "cupy",
+            "path": "public"
+          },
+          "excluded": [
+            "publication (publish_windowed_result / DeepStoreVersion.apply_journal chunk, overlay and manifest buffers)",
+            "windowed commit (commit_windowed_topography / stage_windowed_topography and their callbacks)",
+            "external transport (the paired transaction's `between` callback beyond its returned arrays)",
+            "CuPy memory-pool retained blocks and fragmentation",
+            "Numba / CUDA JIT compilation and library (BLAS, kernel) workspaces",
+            "Python object overhead (plans, receipts, reports, lists of journal segments)",
+            "deep-store memmap page cache (file-backed, reclaimable; `mapped_bytes_max` reports its cap separately)"
+          ]
+        },
+        "decision": {
+          "admitted": true,
+          "reason": "admitted (public path, cupy; peak stage host 'publication'); a decision, not a reservation",
+          "host_available_bytes": 60080844800,
+          "device_available_bytes": 9092015513,
+          "host_required_bytes": 339236864,
+          "device_required_bytes": 337193204,
+          "host_margin_bytes": 29701185536,
+          "device_margin_bytes": 4208814552,
+          "safety_fraction": "1/2"
+        }
+      },
+      "paired": {
+        "path": "paired",
+        "namespace": "cupy",
+        "gather_columns": 256,
+        "journal_cap": 5000,
+        "plan": {
+          "new_host_bytes_peak": 2080512,
+          "new_device_bytes_peak": 1649028,
+          "mapped_bytes_max": 7372800,
+          "inputs": {
+            "ny": 3,
+            "nx": 4,
+            "n_classes": 6,
+            "n_voxels": 300,
+            "window_voxels": 3,
+            "packet_terms": 12,
+            "base_itemsize": 4,
+            "ledger_present_processes": 1,
+            "has_availability": true,
+            "has_boundary_input": false,
+            "has_boundary_export": false,
+            "has_face_flux": false,
+            "max_gather_columns": 256,
+            "max_journal_records": 5000,
+            "pending_records": 0,
+            "chunk_bytes_max": 921600,
+            "overlay_bytes_max": 0,
+            "mapping_cache_chunks": 8,
+            "namespace": "cupy",
+            "path": "paired"
+          },
+          "excluded": [
+            "publication (publish_windowed_result / DeepStoreVersion.apply_journal chunk, overlay and manifest buffers)",
+            "windowed commit (commit_windowed_topography / stage_windowed_topography and their callbacks)",
+            "external transport (the paired transaction's `between` callback beyond its returned arrays)",
+            "CuPy memory-pool retained blocks and fragmentation",
+            "Numba / CUDA JIT compilation and library (BLAS, kernel) workspaces",
+            "Python object overhead (plans, receipts, reports, lists of journal segments)",
+            "deep-store memmap page cache (file-backed, reclaimable; `mapped_bytes_max` reports its cap separately)"
+          ]
+        },
+        "decision": {
+          "admitted": true,
+          "reason": "admitted (paired path, cupy; peak stage host 'phase_d.publication'); a decision, not a reservation",
+          "host_available_bytes": 59894312960,
+          "device_available_bytes": 9091980185,
+          "host_required_bytes": 339468032,
+          "device_required_bytes": 337208708,
+          "host_margin_bytes": 29607688448,
+          "device_margin_bytes": 4208781384,
+          "safety_fraction": "1/2"
+        }
+      },
+      "actual_pickup_kg": 1.875,
+      "requested_pickup_kg": 37.5,
+      "public_class_error_kg": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "paired_class_error_kg": [
+        0.0,
+        0.0,
+        2.842170943040401e-14,
+        2.842170943040401e-14,
+        0.0,
+        2.842170943040401e-14
+      ],
+      "public_conservation_bound_kg": 2.950173438875936e-12,
+      "paired_conservation_bound_kg": 2.950173438875936e-12,
+      "real_deep_publication_exactly_once": true,
+      "insufficient_host_refused": true,
+      "host_peak_rss_kib": 889936,
+      "wall_seconds": 25.803977328992914,
+      "device_queried": true,
+      "pool_limit_bytes": 9092045209,
+      "pool_held_after_bytes": 228352
+    },
+    "source_origin_guards_passed": true,
+    "archive_negative_checks": {
+      "tampered_archive_refused": {
+        "type": "BundleError",
+        "reason": "/home/okin/SYRUP/agent_handoffs/tasks/maple39_storage_20261019/tampered_bundle_probe_02/maple-project.tar does not match the manifest archive sha256"
+      },
+      "foreign_runtime_source_refused": {
+        "type": "MapleDependencyError",
+        "reason": "expected MAPLE source root /home/okin/SYRUP/outputs/dependencies/content_cache/7ee10bd81b0859a891ff8a476cab2c8824bb0964309695ca948d12d5ac4b0c71/source, but the imported maple resolves to source root /home/okin/SYRUP/outputs/dependencies/content_cache/37a1bc69bfa034be7cd512d8aa7c30d33682b7c053a53c3b0c91edc34d59a96f/source (package /home/okin/SYRUP/outputs/dependencies/content_cache/37a1bc69bfa034be7cd512d8aa7c30d33682b7c053a53c3b0c91edc34d59a96f/source/src/maple)"
+      }
+    },
+    "new_module_and_new_tests_ruff_clean": true,
+    "diff_check_clean": true,
+    "all_64_adopted_runtime_files_equal_tested_candidate": true,
+    "legacy_failure_resolution": "Test fixtures corrected to actual net-elevation trigger; missing copied static recipe restored. No production physics change.",
+    "scope_note": "Later reruns supersede the same nodes in raw broad-run results; raw failures retained. No whole-repository test/lint claim."
+  },
+  "environments": {
+    "cpu": {
+      "executable": "/home/okin/MAPLE/.venv/bin/python",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "python_realpath": "/usr/bin/python3.12",
+      "python_binary_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "distributions": {
+        "numpy": {
+          "version": "2.5.3",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy-2.5.3.dist-info"
+        },
+        "pytest": {
+          "version": "9.1.1",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/pytest-9.1.1.dist-info"
+        },
+        "numba": {
+          "version": "0.67.0",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/numba-0.67.0.dist-info"
+        },
+        "llvmlite": {
+          "version": "0.49.0",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/llvmlite-0.49.0.dist-info"
+        },
+        "jax": {
+          "version": "0.11.2",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/jax-0.11.2.dist-info"
+        },
+        "jaxlib": {
+          "version": "0.11.2",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/jaxlib-0.11.2.dist-info"
+        },
+        "cupy-cuda12x": null,
+        "cuda-python": null,
+        "nvidia-cuda-runtime-cu12": null,
+        "nvidia-cuda-nvrtc-cu12": null,
+        "packaging": {
+          "version": "26.3",
+          "metadata_path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/packaging-26.3.dist-info"
+        }
+      },
+      "compiled_examples": [
+        {
+          "path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 10637297,
+          "sha256": "ceec5ba13ab88318632307fdd2df74f317fa293ce77be559c4298ddd1f4306b0"
+        },
+        {
+          "path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/numba/_helperlib.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 882944,
+          "sha256": "13eebbe04636256d388126931ed3983885a967395fc83388eb6d7338a3a091df"
+        },
+        {
+          "path": "/home/okin/MAPLE/.venv/lib/python3.12/site-packages/llvmlite/binding/libllvmlite.so",
+          "bytes": 178881880,
+          "sha256": "90829145327c8c37ee7a3494e3b20161343efc3357537d558cb006014a1b0f12"
+        }
+      ],
+      "gpu_queried": false
+    },
+    "gpu": {
+      "executable": "/home/okin/MAPLE/.venv-cupy/bin/python",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "python_realpath": "/usr/bin/python3.12",
+      "python_binary_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "distributions": {
+        "numpy": {
+          "version": "2.5.3",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/numpy-2.5.3.dist-info"
+        },
+        "pytest": {
+          "version": "9.1.1",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/pytest-9.1.1.dist-info"
+        },
+        "numba": {
+          "version": "0.67.0",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/numba-0.67.0.dist-info"
+        },
+        "llvmlite": {
+          "version": "0.49.0",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/llvmlite-0.49.0.dist-info"
+        },
+        "jax": {
+          "version": "0.11.2",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/jax-0.11.2.dist-info"
+        },
+        "jaxlib": {
+          "version": "0.11.2",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/jaxlib-0.11.2.dist-info"
+        },
+        "cupy-cuda12x": {
+          "version": "14.2.0",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/cupy_cuda12x-14.2.0.dist-info"
+        },
+        "cuda-python": null,
+        "nvidia-cuda-runtime-cu12": {
+          "version": "12.9.79",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/nvidia_cuda_runtime_cu12-12.9.79.dist-info"
+        },
+        "nvidia-cuda-nvrtc-cu12": {
+          "version": "12.9.86",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/nvidia_cuda_nvrtc_cu12-12.9.86.dist-info"
+        },
+        "packaging": {
+          "version": "26.3",
+          "metadata_path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/packaging-26.3.dist-info"
+        }
+      },
+      "compiled_examples": [
+        {
+          "path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 10637297,
+          "sha256": "ceec5ba13ab88318632307fdd2df74f317fa293ce77be559c4298ddd1f4306b0"
+        },
+        {
+          "path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/numba/_helperlib.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 882944,
+          "sha256": "13eebbe04636256d388126931ed3983885a967395fc83388eb6d7338a3a091df"
+        },
+        {
+          "path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/llvmlite/binding/libllvmlite.so",
+          "bytes": 178881880,
+          "sha256": "90829145327c8c37ee7a3494e3b20161343efc3357537d558cb006014a1b0f12"
+        },
+        {
+          "path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/cupy/_core/core.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 6236200,
+          "sha256": "0564e230f66180be4b24a197b9323035dd405d95adf680745429b9541b830c20"
+        },
+        {
+          "path": "/home/okin/MAPLE/.venv-cupy/lib/python3.12/site-packages/cupy_backends/cuda/api/runtime.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 4087872,
+          "sha256": "65a5c75db5e05c9bd35132b7f41631cadff6a6a6300acd85b273db3ba7ce28de"
+        }
+      ],
+      "gpu_queried": false
+    }
+  },
+  "admission_interface": {
+    "automatic_existing_driver_hook": false,
+    "explicit_host_reserve_required": true,
+    "explicit_device_reserve_required_for_cupy": true,
+    "gather_columns": 256,
+    "paired_optional_features": "Caller declaration of pickup/deposit union; future callback not inspected",
+    "scope": "Decision only, not memory reservation or whole-process fit"
+  },
+  "checkpoint_schema_changed": false,
+  "existing_source_identities_rebound": false,
+  "physics_or_conservation_tolerances_changed": false,
+  "dirty_delta_files_excluding_this_lock": {
+    "AGENTS.md": "21958b7a22e31ee897243a8a4b5c50a7a7f193b25ab7c3ad18de069c46abaa24",
+    "claude.md": "6bcd12303fec010a117b10fea015fce5f45ac071f7e72c0419146f21dd472faa",
+    "dependencies/maple_shared_storage/README.md": "737491f541d8a3dba9ba128b4428b3acadcfac4bda4cb8395173d0c81e56a834",
+    "dependencies/maple_shared_storage/SYRUP_b4ee14e_runtime.patch": "95a091ca8ee7ccbfdcfd95e7566d7acae9e3327018ba0c2651ffffb9b3360b8e",
+    "dependencies/maple_shared_storage/manifest.json": "877826de3715680cc0b27c40d3c07dd7b2fb0ba0388b63bce74142c8dd583441",
+    "dependencies/maple_shared_storage/maple_b3e8756_to_39bcf79_runtime.patch": "d5e46160a787e7b588ab8841e2fd237c29e282e21b217c4b8d563cda52dbfae3",
+    "docs/maple39_shared_storage_qualification.md": "3b7d33060ca64babfe8492e76c004428596a6725643111262fc48d4a022469cf",
+    "pyproject.toml": "fe93428442b3bfb15137d0ea7dff27ad6b20db75f0c402b4cb137dfdf64cf748",
+    "src/maple_syrup/sediment_bed.py": "59a494fa97b5b64e97388b21a06be06286bb721ac7cf47295262f5082638b42f",
+    "src/maple_syrup/storage_admission.py": "c46b68645455b0f9b1dcf5ec5da577cf49a7d1b2c70c5429fd45d1d61bd1f1da",
+    "tests/conservative_water/test_checkpoint_backend.py": "89ace602e7c303d1c6e6ca158b7a664c8d8230c528a8a6faf189f39106670b3e",
+    "tests/conservative_water/test_complete_backend.py": "fe4d3b32f93a670c7e5861247d8dc40111974e85904638fe7958706be8d4c949",
+    "tests/conservative_water/test_coupled_backends.py": "ee93e74595b7bd1e54e7e535a3c529d40f894354eb0f615023c81f856b785d5d",
+    "tests/cw_b108/test_cw_b108_carry_flush.py": "02096c6b6f26e0971da5095f9c1a194ab888dbe5c5aaaca55387b304a031f428",
+    "tests/cw_b108/test_cw_b108_options.py": "cc4ca0caa84f323510c064056a26cff3d85db77317614791fe423b70ebb98a0d",
+    "tests/cw_b108/test_cw_b108_overlay_events.py": "b7ad76bad06465163cc47d4eb8a266f5e24d7531edc3f406f1bcdd63c459445c",
+    "tests/cw_b108/test_cw_b108c1_schema_source.py": "8785e944e12e66d629227d5ed6b94f60f7f5b555430f4bfbfabe7d22464f610f",
+    "tests/pond_windowed/test_pond_windowed_storage.py": "c14e6b0b9cd19bc3c6e3140b24347af438d1a1ff561833714d7e54a53a50ee9e",
+    "tests/shared_storage_compat/compat_support.py": "b580f487ceb842fbdbc4b83fff5f04efe09c1c2d126ae1052ba4db0d8678e67f",
+    "tests/shared_storage_compat/conftest.py": "a4b229f29260b66f549f41901bdd07d45d3bacc7e7fe81f5db916296fe96f689",
+    "tests/shared_storage_compat/test_admission_inputs.py": "b8d646111f3e83e2fd956292942dce24f6e4cea8384a82b953bc1f4f7292db8f",
+    "tests/shared_storage_compat/test_exchange_contract.py": "d6750f4115b267e39b02326755412b5fdd95fd53f4fde72c2a3fd3864fd0bcca",
+    "tests/shared_storage_compat/test_snapshot_and_ledger_mapping.py": "33a801700fcd5cda05f5be578bd43ec9d31958ccb730d0feec34c34cbadb9052",
+    "tests/shared_storage_compat/test_source_lock_and_api.py": "19c7eca9ce30a72fba62fb3ab3d1db8b1fbbef94f8156b4de1317c4fb383a74e",
+    "tests/shared_storage_compat/test_storage_admission.py": "56a9cf1d7b88ddce2bd97a0627290c71a74c7ba5d2139362d1d88cceba9be849"
+  },
+  "evidence_local_root": "agent_handoffs/tasks/maple39_storage_20261019",
+  "evidence_sha256": {
+    "baseline.json": "c7312050c3f2cb81134d6d1312f2b436c58b840380be3586a73565dbacca8efe",
+    "candidate_f_scope.json": "cd276b2761ce7b50c14a62767d3ba9d12789e6f3b136e9167baa1657dac0e602",
+    "adoption_receipt.json": "9209b66def49d709fe193f8c6a8fab1a4c2abe9feba2718703016f3c4f0c8cfc",
+    "qualified_outcomes.json": "52fba77ce6c000427843cc4b5418a8f62899448b70bb4517508d1f33f61e09a3",
+    "recipe_verification.json": "2acd9589b92d5b8cfdd9d3f4c8f484c3fdd8a7d35a527f191e63af1bf0254c12",
+    "syrup_runtime_delta_receipt.json": "3c400aff48a2b4db819a3f6fbcebd96d9d084f0bdffe98b83c04ab43faf4deb2",
+    "delivery_negative_checks.json": "f67a3788ed439c09453eadb4b351efc4a11f4f30a43ffb5aff541f2a823f4665",
+    "build_metadata_receipt.json": "50cdf742f76aeb820e72bd85f64c734b3beb6c0eb646707582b65675b7af3d38",
+    "environment_cpu.json": "c042a14445fc0d3a4893e735c72e865ee6ee3b8519e6fefa1832a2d72de7049f",
+    "environment_gpu.json": "1a42ff6813cc9c9211f5d093ca75a519f1f0d2fbf5da93c5cd6f08d17bd29448",
+    "native_source_guard_audit.json": "9551bb99035dab0994c8df740d6994c74ffba9d9bfe28a3d4a13ea367a33b46e",
+    "net_fixture_probe.json": "cbed942cd171ab5a07d1402dc61fbc8958323a2976d639f8527bfe274e18b177",
+    "author_final_reconciliation_e.md": "3465d84f79a42f7cb30a283313027c1c59e2bc1bd65d4dde59a3fee99bfbe5b9",
+    "post_adoption_receipt.json": "7e5182439cc0a0c1187aee84072b5507669caeb451ff67905f5d0dec0833b7f3",
+    "post_adoption_focused/result.json": "e5fe2ca46b2882d4343b4a9cdef91938e0b1cd358b36794b3ff890c870bf7440",
+    "post_adoption_focused/junit.xml": "37e92d3d04c1c618776188b2abdff8f30869f6cb80c3b287db9b2454d10d27f9",
+    "fresh_cpu/resume_result.json": "a5499384af1af8d7a85035c9be4652ac47374025960dffbacac8ea16829a4605",
+    "fresh_gpu/resume_result.json": "509190759e41ed2e9f1d668d098ff7bdc2cf38da2327333bc0aa9080629ac960",
+    "admitted_cpu_d/result.json": "d5c2610f46cd61266b85af38398045befaf19ab98b38fe0c2ef51e05c9e899a7",
+    "admitted_gpu_d/result.json": "478732e084fc13bb94dc89d7c1d9d535686740af26516484927f416ba7c7662a",
+    "process_final.json": "7da368e669f4da94b91a19035ede74545b2cc106dce4dd6ca73cccf042603693",
+    "final_cpu_d/result.json": "a6095136b47063af61edfb37a0b7bc0037c156581468ca808d8fdbb15aa463ac",
+    "final_cpu_d/junit.xml": "6a318df086930c878d23708c6eb818ee5d26e1cd234d22ce69b4099b64e39887",
+    "history_cpu_e/result.json": "87efd3091a928f96f94dff25444cb610fd446a9cdfad59fa5539c1dab208fb28",
+    "history_cpu_e/junit.xml": "04d2c6dae813567f7cb684307e211793f915591c8153ae65dec7bc2ca8a15cde",
+    "lifecycle_cpu_f/result.json": "2377d7932ab0d6033bcf74a5d75f4cd1a6480037aa8b82bf6902ae757af466e1",
+    "lifecycle_cpu_f/junit.xml": "af1b61f003556f86ae5c082f067e6d4f1edb36ef0757d5c0deee469a14346335",
+    "final_gpu_d2/result.json": "11af4dfe6afe3d3bc16572b6b63edc94d9f5641f3a554da8f44d5c5f13e7e58b",
+    "final_gpu_d2/junit.xml": "d48ba03405ef1215fe54c2df6b11f07a67fcfb90c6069a019b4e97adb83ce3cf",
+    "lifecycle_gpu_f/result.json": "155bdce299624dc31085abb96088ebdece80a78dc58043d56296109634cb395e",
+    "lifecycle_gpu_f/junit.xml": "14933eda9989262f5954d380ca5d5e3356ccecb58978faf1f3ee79c1aea08125",
+    "reference_cpu_d/result.json": "2920339a39356878b59c13a1b5793c28e44bbf47140dd4716d20671a26b5595b",
+    "reference_cpu_d/junit.xml": "dc4d29ecaaaab669d7f11a94b3f325946df71e2e0c2299b28d279d79ca3c8bd6"
+  },
+  "unqualified": [
+    "windowed wind",
+    "windowed avalanching/creep/growth",
+    "dynamic window capacity",
+    "large alternating storms",
+    "whole-Chastre memory fit",
+    "performance improvement",
+    "MASY scheduling and wind-water adapters"
+  ],
+  "committed": false,
+  "pushed": false
+}
