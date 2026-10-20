@@ -1,0 +1,4188 @@
+{
+  "model_commit": "d05d8c6c66d9fd2969c007681916254e8d1c2c7c",
+  "source": "Captured argparse actions from frozen committed source; no model run",
+  "commands": {
+    "probe": {
+      "prog": "python -m maple_syrup.probe",
+      "description": "MAPLE-SYRUP Phase 1 dependency, state and provenance probe.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--device-id"
+          ],
+          "dest": "device_id",
+          "default": 0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse to run unless the imported MAPLE resolves to this source root (default: $MAPLE_SYRUP_EXPECTED_MAPLE_ROOT when set).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output"
+          ],
+          "dest": "output",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Also write the JSON report to this NEW file.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--include-file-manifest"
+          ],
+          "dest": "include_file_manifest",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Include per-file SHA-256 entries in the provenance record.",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "case_import": {
+      "prog": "python -m maple_syrup.case_import",
+      "description": "MAPLE-SYRUP Phase 2: audit MAHLERAN Plot 1 and compile it as a MAPLE case.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--recipe"
+          ],
+          "dest": "recipe",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "Authored recipe, e.g. cases/plot1/recipe.yaml",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for the case package.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Override the recipe's MAHLERAN root (read-only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse any other MAPLE source root.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--no-compile"
+          ],
+          "dest": "no_compile",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Write the audited case package but do not call MAPLE's compiler.",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "column_experiment": {
+      "prog": "python -m maple_syrup.column_experiment",
+      "description": "MAPLE-SYRUP Phase 3b: Plot 1 no-routing infiltration columns over the rainfall window.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "Verified Phase 2 case, e.g. outputs/plot1",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "float",
+          "help": "Largest step (s); knots always split.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for the summary and final grids.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Override the recipe's MAHLERAN root (read-only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse any other MAPLE source root.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Run even if MAPLE's source digest differs from the import's (recorded).",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "storm_experiment": {
+      "prog": "python -m maple_syrup.storm_experiment",
+      "description": "MAPLE-SYRUP Phase 4c: Plot 1 coupled water-only storm and recession (no sediment, no reset).",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "Verified Phase 2 case, e.g. outputs/plot1",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for summary, grids and hydrograph.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": 1.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Largest step (s); knots always split.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Simulated end (s); default the legacy stormlength (5400 s for Plot 1).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--implementation"
+          ],
+          "dest": "implementation",
+          "default": "numba",
+          "choices": [
+            "array",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Hydrology implementation (default numba; missing Numba is an error, no fallback). 'cuda' is the explicit water-only prepared CUDA hydrology: it REQUIRES --backend cupy and a CUDA device and never needs Numba (no fallback).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--root-solver"
+          ],
+          "dest": "root_solver",
+          "default": "bisection",
+          "choices": [
+            "bisection",
+            "newton"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Cell-equation root solver (default bisection, unchanged). 'newton' is the explicit safeguarded Newton (CPU array/numba, or CUDA with --implementation cuda).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--newton-max-iterations"
+          ],
+          "dest": "newton_max_iterations",
+          "default": 50,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "Newton pass cap per cell, 1..1000 (only meaningful with --root-solver newton).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--report-every-s"
+          ],
+          "dest": "report_every_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Hydrograph row cadence (s).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--min-dt-s"
+          ],
+          "dest": "min_dt_s",
+          "default": 0.0009765625,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-retries"
+          ],
+          "dest": "max_retries",
+          "default": 10,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-steps"
+          ],
+          "dest": "max_steps",
+          "default": 10000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Override the recipe's MAHLERAN root (read-only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse any other MAPLE source root.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Run even if MAPLE's source digest differs from the import's (recorded).",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "sediment_experiment": {
+      "prog": "python -m maple_syrup.sediment_experiment",
+      "description": "MAPLE-SYRUP Phase 5b: Plot 1 coupled water + wet-sediment event on the actual MAPLE bed (no splash, no stop criterion, no reset, no restart).",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "Verified Phase 2 case, e.g. outputs/plot1",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for summary, grids, hydrograph, snapshot.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": 1.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Largest step (s); knots always split.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Simulated end (s); default the legacy stormlength (5400 s for Plot 1).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--implementation"
+          ],
+          "dest": "implementation",
+          "default": "numba",
+          "choices": [
+            "array",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Hydraulic sweep implementation (default numba; missing Numba is an error, no fallback; 'cuda' is the explicit prepared CUDA hydrology and requires --backend cupy).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "numpy (array/numba hydraulics) or cupy (ONLY with --implementation cuda: whole small bed on the device, memory preflight first); other pairings are refused, no fallback. Select the device with CUDA_VISIBLE_DEVICES before launching.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--root-solver"
+          ],
+          "dest": "root_solver",
+          "default": "bisection",
+          "choices": [
+            "bisection",
+            "newton"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Cell-equation root solver of the hydraulic sweep (default bisection).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--cuda-mode"
+          ],
+          "dest": "cuda_mode",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "fused",
+            "split"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "CUDA hydrology launch structure (auto/fused/split; cupy backend only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--report-every-s"
+          ],
+          "dest": "report_every_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Hydrograph row cadence (s).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--min-dt-s"
+          ],
+          "dest": "min_dt_s",
+          "default": 0.0009765625,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-retries"
+          ],
+          "dest": "max_retries",
+          "default": 10,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-steps"
+          ],
+          "dest": "max_steps",
+          "default": 10000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--sediment-courant-max"
+          ],
+          "dest": "sediment_courant_max",
+          "default": 0.5,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Sediment Courant cap per substep (<= 0.5 for characteristic, <= 1 for upwind).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-transport-substeps"
+          ],
+          "dest": "max_transport_substeps",
+          "default": 64,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-scheme"
+          ],
+          "dest": "transport_scheme",
+          "default": "characteristic",
+          "choices": [
+            "characteristic",
+            "upwind"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Lateral transport: characteristic (Phase 7b phase bins, default) or the Phase 5 upwind operator kept as an explicit comparison.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-bins"
+          ],
+          "dest": "phase_bins",
+          "default": 32,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "Position bins per cell/class for the characteristic scheme (1..128; 32 is a candidate default, not an accepted convergence).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-implementation"
+          ],
+          "dest": "transport_implementation",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "array",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Characteristic kernel: auto (follow --implementation), array or numba (dense storage); numba or cuda (csr storage); no fallback.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-storage"
+          ],
+          "dest": "phase_storage",
+          "default": "dense",
+          "choices": [
+            "dense",
+            "csr"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Phase storage of the characteristic scheme: dense (default, the accepted (ny,nx,nc,B) arrays) or csr (the accepted sparse nonempty-bin state; same physics and bins).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-max-nnz"
+          ],
+          "dest": "phase_max_nnz",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "csr only: predeclared capacity (stored bins) refused BEFORE allocation when exceeded; never truncates mass. Required by the CUDA operator for large cases.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--no-commit"
+          ],
+          "dest": "no_commit",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Do not evaluate MAPLE commit triggers per step.",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--no-final-commit"
+          ],
+          "dest": "no_final_commit",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Do not force a final commit at end_s.",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Override the recipe's MAHLERAN root (read-only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse any other MAPLE source root.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Run even if MAPLE's source digest differs from the import's (recorded).",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "event_experiment": {
+      "prog": "maple_syrup.event_experiment",
+      "description": "Complete Plot 1 water event, conservative dry handoff, and explicit restart.\n\nBackends (CW-C1): `backend='numpy'` runs the array or numba hydraulics on the host (unchanged default);\n`backend='cupy'` runs ONLY the explicit CUDA hydrology (`implementation='cuda'`, bisection or Newton) with the\nwhole small case prepared in CuPy after the CW-A1 device memory preflight, the caller-owned `CudaHydraulics`\nlifecycle handed to the solver, checkpoints written through the host bundle format and resumed in the same\nbackend only. Every other pairing is refused before the case is touched; there is no fallback in either direction.\nReporting converts device results with MAPLE's counted host helpers; the loop timing is synchronized before it is\nread. The optional `allow_maple_source_change` flag is the existing case-verification option (an explicitly\nrecorded isolated MAPLE source difference), never a mutation of the original inputs.\n",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--resume"
+          ],
+          "dest": "resume",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--checkpoint-dir"
+          ],
+          "dest": "checkpoint_dir",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-checkpoint-bytes"
+          ],
+          "dest": "max_checkpoint_bytes",
+          "default": 1073741824,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "bound on the summed uncompressed payload bytes of the --resume bundle (positive integer, default 1 GiB); a resource control, not part of the run identity",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--checkpoint-every-s"
+          ],
+          "dest": "checkpoint_every_s",
+          "default": 600.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--pause-at-s"
+          ],
+          "dest": "pause_at_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-end-s"
+          ],
+          "dest": "max_end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": 1.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--implementation"
+          ],
+          "dest": "implementation",
+          "default": "numba",
+          "choices": [
+            "array",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "hydraulic sweep: numba (default) or array on the host; cuda requires --backend cupy",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "numpy (array/numba) or cupy (ONLY with --implementation cuda); other pairings refused",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--bisection-iterations"
+          ],
+          "dest": "bisection_iterations",
+          "default": 40,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "explicit root iteration budget; accuracy and conservation bounds unchanged",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--root-solver"
+          ],
+          "dest": "root_solver",
+          "default": "bisection",
+          "choices": [
+            "bisection",
+            "newton"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--cuda-mode"
+          ],
+          "dest": "cuda_mode",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "fused",
+            "split"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "CUDA hydrology launch structure (cupy backend only)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "accept an explicitly recorded isolated MAPLE source difference from the import binding",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--allow-pit-storage"
+          ],
+          "dest": "allow_pit_storage",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "opt-in: active strict sinks become terminal-storage cells (deposit, keep water, no export)",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--allow-flat-storage"
+          ],
+          "dest": "allow_flat_storage",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "opt-in with --allow-pit-storage: flat sinks are terminal storage too",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--allow-masked-nodata"
+          ],
+          "dest": "allow_masked_nodata",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "opt-in: inactive / ring cells may hold --nodata-value and are never receivers",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--nodata-value"
+          ],
+          "dest": "nodata_value",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "the DEM nodata sentinel for --allow-masked-nodata",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--terminal-storage-water"
+          ],
+          "dest": "terminal_storage_water",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "completion option: flow cessation with water ponded ONLY in terminal-storage cells (removed and accounted by the external dry reset); needs --allow-pit-storage",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--deposit-mobile-at-flow-end"
+          ],
+          "dest": "deposit_mobile_at_flow_end",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "CW-B51 completion option: explicit dry-again assumption; after rain ended and every hydraulic quiet gate held for --hold-s, the remaining finite mobile load is deposited through MAPLE (reported separately); not a mass tolerance; default off",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--record-exchange-history"
+          ],
+          "dest": "record_exchange_history",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "CW-D2: record the actual per-cell/class MAPLE ledger touch counts and gross activity through every commit (exchange_history.npz); diagnostic evidence only, default off",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--report-every-s"
+          ],
+          "dest": "report_every_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--hold-s"
+          ],
+          "dest": "hold_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-depth-m"
+          ],
+          "dest": "max_depth_m",
+          "default": 1e-08,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--surface-volume-m3"
+          ],
+          "dest": "surface_volume_m3",
+          "default": 1e-06,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-unit-discharge-m2-s"
+          ],
+          "dest": "max_unit_discharge_m2_s",
+          "default": 1e-10,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--outlet-discharge-m3-s"
+          ],
+          "dest": "outlet_discharge_m3_s",
+          "default": 1e-09,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mobile-per-cell-class-kg"
+          ],
+          "dest": "mobile_per_cell_class_kg",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "physical stopping significance; default actual MAPLE mass_resolution_kg, not a conservation tolerance",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-steps"
+          ],
+          "dest": "max_steps",
+          "default": 10000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-report-rows"
+          ],
+          "dest": "max_report_rows",
+          "default": 100000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-scheme"
+          ],
+          "dest": "transport_scheme",
+          "default": "characteristic",
+          "choices": [
+            "characteristic",
+            "upwind"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "characteristic (Phase 7b phase bins, default) or the Phase 5 upwind comparison",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-bins"
+          ],
+          "dest": "phase_bins",
+          "default": 32,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "position bins per cell/class for the characteristic scheme (1..128)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-implementation"
+          ],
+          "dest": "transport_implementation",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "array",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "characteristic kernel: auto (follow --implementation), array or numba (dense storage), numba or cuda (csr storage); no fallback",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-storage"
+          ],
+          "dest": "phase_storage",
+          "default": "dense",
+          "choices": [
+            "dense",
+            "csr"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "phase storage of the characteristic scheme: dense (default) or csr (sparse nonempty-bin state, same physics and bins; CSR checkpoints and final arrays)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-max-nnz"
+          ],
+          "dest": "phase_max_nnz",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "csr only: predeclared capacity of stored bins, refused before allocation when exceeded; never truncates mass",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--sediment-courant-max"
+          ],
+          "dest": "sediment_courant_max",
+          "default": 0.5,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "windowed_experiment": {
+      "prog": "maple_syrup.windowed_experiment",
+      "description": "Explicit conservative water events on actual MAPLE resident-window beds.\n\nShares the complete-event solver, wet laws, rainfall factories, checkpoints\nand accounting with the dense runner. Deep voxels stay in an immutable MAPLE\nhost store; final outputs and checkpoints contain resident arrays and version\nreferences. This is not the unlimited-supply MAHLERAN legacy replay.\n",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--store-dir"
+          ],
+          "dest": "store_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--case-kind"
+          ],
+          "dest": "case_kind",
+          "default": null,
+          "choices": [
+            "plot1",
+            "rfid",
+            "chastre"
+          ],
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--bisection-iterations"
+          ],
+          "dest": "bisection_iterations",
+          "default": 40,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--root-solver"
+          ],
+          "dest": "root_solver",
+          "default": "bisection",
+          "choices": [
+            "bisection",
+            "newton"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-end-s"
+          ],
+          "dest": "max_end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--pause-at-s"
+          ],
+          "dest": "pause_at_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--reuse-initial"
+          ],
+          "dest": "reuse_initial",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--resume"
+          ],
+          "dest": "resume",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--checkpoint-every-s"
+          ],
+          "dest": "checkpoint_every_s",
+          "default": 600.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-max-nnz"
+          ],
+          "dest": "phase_max_nnz",
+          "default": 1000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-journal-records"
+          ],
+          "dest": "max_journal_records",
+          "default": 1000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--window-voxels"
+          ],
+          "dest": "window_voxels",
+          "default": 4,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-host-bytes"
+          ],
+          "dest": "max_host_bytes",
+          "default": 42949672960,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-checkpoint-bytes"
+          ],
+          "dest": "max_checkpoint_bytes",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "resume bound on summed uncompressed bundle bytes; default = --max-host-bytes, may only tighten it",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-store-bytes"
+          ],
+          "dest": "max_store_bytes",
+          "default": 274877906944,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--deep-chunk-encoding"
+          ],
+          "dest": "deep_chunk_encoding",
+          "default": "full",
+          "choices": [
+            "full",
+            "overlay"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "CW-B108 deep-chunk storage: full (default) or exact overlay (accepted typed MAPLE source only)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--deep-overlay-max-bytes"
+          ],
+          "dest": "deep_overlay_max_bytes",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "overlay only: explicit per-publication overlay byte cap forwarded to MAPLE (default: MAPLE rule)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--nodata-value"
+          ],
+          "dest": "nodata_value",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-flat-storage"
+          ],
+          "dest": "allow_flat_storage",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--terminal-storage-water"
+          ],
+          "dest": "terminal_storage_water",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--deposit-mobile-at-flow-end"
+          ],
+          "dest": "deposit_mobile_at_flow_end",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--record-exchange-history"
+          ],
+          "dest": "record_exchange_history",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "legacy_experiment": {
+      "prog": "python -m maple_syrup.legacy_experiment",
+      "description": "MAPLE-SYRUP default run: Python/Numba replay of the MAHLERAN LEGACY sediment transport on frozen Plot1 terrain (dt = 1 s, no splash, fixed routing). SYRUP hydrology + wet MAHLERAN laws + source-based flow_distrib deposition and the legacy Crank-Nicolson pool with explicit clipping-source accounting. Scientific status: fixed composition, UNLIMITED supply, explicit clipping source, NO evolving MAPLE bed. It is NOT a conservative complete-event, restart or wind-handoff model and its legacy behaviour is not MAPLE authority. The conservative multi-bin characteristic model is kept and selected explicitly with --transport-scheme characteristic (or upwind); multi-bin convergence/performance work is deferred (Phase 7g).",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--output",
+            "--output-dir"
+          ],
+          "dest": "output",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": "NEW output directory (legacy_ledger.npz, legacy_summary.json)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--case",
+            "--case-dir"
+          ],
+          "dest": "case",
+          "default": "outputs/plot1",
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--applied-rainfall"
+          ],
+          "dest": "applied_rainfall",
+          "default": "outputs/phase7/mahleran_reference_audit/applied_rainfall.csv",
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--depth-time-level"
+          ],
+          "dest": "depth_time_level",
+          "default": "previous",
+          "choices": [
+            "previous",
+            "current"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "legacy evaluates the laws with the PREVIOUS step's depth d(1) and the new velocity",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--implementation"
+          ],
+          "dest": "implementation",
+          "default": "numba",
+          "choices": [
+            "numba",
+            "array"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "SYRUP water-routing implementation. numba (default) requires compiled water AND compiled legacy sediment kernels, with no silent Python fallback. array is a declared slow diagnostic of the water sweep only.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--physics-implementation"
+          ],
+          "dest": "physics_implementation",
+          "default": null,
+          "choices": [
+            "numba",
+            "array"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "wet physical-law evaluation. Default: the same as --implementation. numba = fused compiled CPU kernel on a prepared frozen-composition context (explicit error if Numba is missing, no silent fallback). array = the NumPy sediment_physics_step reference (declared slower; may be combined with compiled hydrology and legacy transport for controlled comparisons).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--hydrology-implementation"
+          ],
+          "dest": "hydrology_implementation",
+          "default": null,
+          "choices": [
+            "prepared",
+            "reference"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "rainfall/infiltration/routing step. Default: prepared with --implementation numba, reference with --implementation array. prepared = fused compiled CPU kernels on a prepared fixed-terrain context (same equations, bisection and checks; requires --implementation numba and host NumPy, explicit error if Numba is missing, no silent fallback). reference = the NumPy/CuPy-reference storm.coupled_step (with the numba or array sweep per --implementation); declared slower, kept for controlled comparisons.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--fortran-ledger"
+          ],
+          "dest": "fortran_ledger",
+          "default": "outputs/phase7b/mahleran_ledger_run_v3/Output/syrup_sediment_ledger.dat",
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--reference-run",
+            "--reference-run-dir"
+          ],
+          "dest": "reference_run",
+          "default": "outputs/phase7/mahleran_deterministic_ksat_run",
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--transport-scheme"
+          ],
+          "dest": "transport_scheme",
+          "default": "legacy",
+          "choices": [
+            "legacy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "only 1 is supported",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--report-every-s"
+          ],
+          "dest": "report_every_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "only 1 is supported",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "only numpy is supported (no GPU)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-bins"
+          ],
+          "dest": "phase_bins",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: multi-bin characteristic transport (deferred to Phase 7g; use --transport-scheme characteristic)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-implementation"
+          ],
+          "dest": "transport_implementation",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: characteristic kernel selection",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--sediment-courant-max"
+          ],
+          "dest": "sediment_courant_max",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: sediment Courant control (the legacy replay has none)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-transport-substeps"
+          ],
+          "dest": "max_transport_substeps",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: transport substeps (the legacy replay has none)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--min-dt-s"
+          ],
+          "dest": "min_dt_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: adaptive time stepping (the legacy replay is fixed dt = 1 s)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-retries"
+          ],
+          "dest": "max_retries",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: step retries (the legacy program has no retry)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-steps"
+          ],
+          "dest": "max_steps",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: step limit",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-report-rows"
+          ],
+          "dest": "max_report_rows",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: hydrograph report rows",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-ksat-mm-s"
+          ],
+          "dest": "expected_ksat_mm_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: conductivity check (the matched benchmark only)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: MAHLERAN root override (the matched benchmark only)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "unsupported for legacy: MAPLE root pin (the matched benchmark only)",
+          "action": "_StoreAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "benchmark_experiment_characteristic": {
+      "prog": "python -m maple_syrup.benchmark_experiment",
+      "description": "MAPLE-SYRUP matched fixed-terrain wet benchmark of Plot 1.\n\nDEFAULT (--transport-scheme legacy): Python/Numba replay of the MAHLERAN legacy sediment transport (dt = 1 s, frozen terrain, no splash). Fixed composition, UNLIMITED supply, explicit clipping source, NO evolving MAPLE bed; not a conservative complete-event, restart or wind-handoff model. Run it with only --case-dir/--output-dir (see `python -m maple_syrup.legacy_experiment --help`); controls it cannot honour (dt != 1, --backend cupy, --phase-bins, Courant/substep options) are refused, not ignored.\n\nEXPLICIT (--transport-scheme characteristic | upwind): the conservative model with actual MAPLE sediment exchange and reference applied rainfall (frozen hydraulic geometry, deterministic conductivity). Multi-bin characteristic convergence/performance is deferred (Phase 7g). No completion, dry reset, restart, wind or GPU. The options below apply to this model and --applied-rainfall is required for it.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "Verified Phase 2 case, e.g. outputs/plot1",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for summary, grids and hydrographs.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--applied-rainfall"
+          ],
+          "dest": "applied_rainfall",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "CSV of the reference run's logged applied rainfall (audit_mahleran.py).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--reference-run"
+          ],
+          "dest": "reference_run",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Deterministic-conductivity MAHLERAN run directory to bind (execution.json, Output/).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": 1.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Largest step (s): 1, 0.5 or 0.25 for the study.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Window end (s); default the legacy 5400 s.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--implementation"
+          ],
+          "dest": "implementation",
+          "default": "numba",
+          "choices": [
+            "array",
+            "numba"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Hydraulic sweep: numba (default, CPU compiled; missing Numba is an error) or array.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": "numpy",
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Only numpy is accepted; cupy is refused explicitly (no GPU claim).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--report-every-s"
+          ],
+          "dest": "report_every_s",
+          "default": 1.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Hydrograph cadence (s); 1 s for matching.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--min-dt-s"
+          ],
+          "dest": "min_dt_s",
+          "default": 0.0009765625,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-retries"
+          ],
+          "dest": "max_retries",
+          "default": 10,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-steps"
+          ],
+          "dest": "max_steps",
+          "default": 10000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-report-rows"
+          ],
+          "dest": "max_report_rows",
+          "default": 100000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--sediment-courant-max"
+          ],
+          "dest": "sediment_courant_max",
+          "default": 0.5,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "Sediment Courant cap per substep (<= 0.5 for characteristic, <= 1 for upwind).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-transport-substeps"
+          ],
+          "dest": "max_transport_substeps",
+          "default": 64,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-scheme"
+          ],
+          "dest": "transport_scheme",
+          "default": "legacy",
+          "choices": [
+            "legacy",
+            "characteristic",
+            "upwind"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "legacy (DEFAULT): MAHLERAN legacy replay, dispatched to maple_syrup.legacy_experiment. characteristic: Phase 7b conservative phase-bin model (explicit). upwind: Phase 5 operator kept as an explicit comparison.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--phase-bins"
+          ],
+          "dest": "phase_bins",
+          "default": 32,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "Position bins per cell/class for the characteristic scheme (1..128; 32 is a candidate default, not an accepted convergence).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--transport-implementation"
+          ],
+          "dest": "transport_implementation",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "array",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Characteristic kernel: auto (follow --implementation), array or numba; no fallback.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-ksat-mm-s"
+          ],
+          "dest": "expected_ksat_mm_s",
+          "default": 0.00025,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Override the recipe's MAHLERAN root (read-only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse any other MAPLE source root.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Run even if MAPLE's source digest differs from the import's (recorded).",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "experimental_experiment": {
+      "prog": "python -m maple_syrup.experimental_experiment",
+      "description": "EXPERIMENTAL water-only explicit-kinematic / local-inertial runs on the imported Plot 1 case (no sediment, no reset; not the legacy hydraulics).",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-dir"
+          ],
+          "dest": "case_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "Verified Phase 2 case, e.g. outputs/plot1",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for summary, grids, hydrograph and snapshots.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--solver"
+          ],
+          "dest": "solver",
+          "default": null,
+          "choices": [
+            "explicit",
+            "local_inertial"
+          ],
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--backend"
+          ],
+          "dest": "backend",
+          "default": null,
+          "choices": [
+            "numpy",
+            "cupy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "array namespace: numpy (default) or cupy (needs CuPy + device; never Numba; no fallback)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--implementation"
+          ],
+          "dest": "implementation",
+          "default": null,
+          "choices": [
+            "numpy",
+            "numba",
+            "cuda"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "solver form: numpy = NumPy reference, numba = compiled CPU form (needs numpy backend and Numba), cuda = CUDA form (needs cupy). Omitted: numpy for --backend numpy, cuda for --backend cupy. Invalid pairs are refused before the case is read; there is never a silent fallback",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-dt-s"
+          ],
+          "dest": "max_dt_s",
+          "default": 1.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "default: the legacy stormlength (5400 s for Plot 1)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--report-every-s"
+          ],
+          "dest": "report_every_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--cfl-max"
+          ],
+          "dest": "cfl_max",
+          "default": 0.5,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "CFL bound in (0, 0.5]",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--limiter"
+          ],
+          "dest": "limiter",
+          "default": "off",
+          "choices": [
+            "off",
+            "donor"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "'donor' = documented conservative positivity limiter (local inertia only); default off",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--snapshot-times-s"
+          ],
+          "dest": "snapshot_times_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "comma-separated times for synchronous snapshot maps",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--min-dt-s"
+          ],
+          "dest": "min_dt_s",
+          "default": 0.0009765625,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-retries"
+          ],
+          "dest": "max_retries",
+          "default": 10,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--max-steps"
+          ],
+          "dest": "max_steps",
+          "default": 10000000,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Override the recipe's MAHLERAN root (read-only).",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Refuse any other MAPLE source root.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Run even if MAPLE's source digest differs from the import's (recorded).",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "rfid_case": {
+      "prog": "python -m maple_syrup.rfid_case",
+      "description": "Audit RFID_2014 and compile it as an actual MAPLE case (water-only benchmark).",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--recipe"
+          ],
+          "dest": "recipe",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": "NEW directory for the case package.",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--applied-forcing-capture"
+          ],
+          "dest": "applied_forcing_capture",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "syrup_hydro_steps.txt of the executed native run",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--mahleran-root"
+          ],
+          "dest": "mahleran_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--no-compile"
+          ],
+          "dest": "no_compile",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "chastre_case": {
+      "prog": "python -m maple_syrup.chastre_case",
+      "description": "Plan, generate or verify the tiled Chastre/RFID water-only case.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--recipe"
+          ],
+          "dest": "recipe",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "cases/chastre/recipe.yaml (plan / generate)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output-dir"
+          ],
+          "dest": "output_dir",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "NEW case directory (plan / generate)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--plan-only"
+          ],
+          "dest": "plan_only",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "print bands, estimates and free disk; write nothing",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--verify-case"
+          ],
+          "dest": "verify_case",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "verify a completed case directory",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--tile-rows"
+          ],
+          "dest": "tile_rows",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--source-case-dir"
+          ],
+          "dest": "source_case_dir",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--expected-maple-root"
+          ],
+          "dest": "expected_maple_root",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--hash-only-tiles"
+          ],
+          "dest": "hash_only_tiles",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "verify: stream-hash tiles but reload only tile 0",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "legacy_driver": {
+      "prog": "python -m maple_syrup.legacy_driver",
+      "description": "Reusable native-walk MAHLERAN LEGACY sediment benchmark driver: Plot 1 (small), RFID_2014 and Chastre (large), CPU/Numba.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-kind"
+          ],
+          "dest": "case_kind",
+          "default": null,
+          "choices": [
+            "plot1",
+            "rfid",
+            "chastre"
+          ],
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--case",
+            "--case-dir"
+          ],
+          "dest": "case",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": "verified imported case directory",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output",
+            "--output-dir"
+          ],
+          "dest": "output",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": "NEW output directory",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "default: the case storm length; whole seconds",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--snapshot-times"
+          ],
+          "dest": "snapshot_times",
+          "default": "",
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "comma-separated model seconds (at most 16); depth and mobile maps",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--warmup-s"
+          ],
+          "dest": "warmup_s",
+          "default": 0.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "whole model seconds run first on throwaway state in-process",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--progress-every-s"
+          ],
+          "dest": "progress_every_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "stderr progress cadence in model seconds; 0 = off",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--root-solver"
+          ],
+          "dest": "root_solver",
+          "default": "bisection",
+          "choices": [
+            "bisection",
+            "newton"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--bisection-iterations"
+          ],
+          "dest": "bisection_iterations",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "default 40 (Plot 1) / 64 (RFID, Chastre)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--newton-max-iterations"
+          ],
+          "dest": "newton_max_iterations",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--depth-time-level"
+          ],
+          "dest": "depth_time_level",
+          "default": "previous",
+          "choices": [
+            "previous",
+            "current",
+            "post_infiltration"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "wet-law depth: previous (default, accepted), current (new depth), post_infiltration (the original's d(1))",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--source-order"
+          ],
+          "dest": "source_order",
+          "default": "index",
+          "choices": [
+            "index",
+            "legacy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--legacy-depos-erase"
+          ],
+          "dest": "legacy_depos_erase",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "reproduce the order-dependent erasure of deposition at wet no-rain cells (needs --source-order legacy)",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--applied-rainfall"
+          ],
+          "dest": "applied_rainfall",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": "Plot 1 only: applied-rainfall CSV (as legacy_experiment)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--hash-only-tile-verify"
+          ],
+          "dest": "hash_only_tile_verify",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Chastre: reload tile 0 only during verification",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--hash-tiles-after-run"
+          ],
+          "dest": "hash_tiles_after_run",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Chastre: stream-hash every persisted tile after the run (reads the whole ~33 GB bed state once)",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--max-memory-gib"
+          ],
+          "dest": "max_memory_gib",
+          "default": 32.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "refuse if the estimated engine buffers exceed this",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-python-kernels"
+          ],
+          "dest": "allow_python_kernels",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "TESTS ONLY: pure-Python kernels (very slow)",
+          "action": "_StoreTrueAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "legacy_gpu_driver": {
+      "prog": "python -m maple_syrup.legacy_gpu_driver",
+      "description": "Coupled resident-GPU native-walk MAHLERAN LEGACY sediment storm (task gpu_sediment, stage B1): Plot 1, RFID_2014, Chastre.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [
+            "--case-kind"
+          ],
+          "dest": "case_kind",
+          "default": null,
+          "choices": [
+            "plot1",
+            "rfid",
+            "chastre"
+          ],
+          "required": true,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--case",
+            "--case-dir"
+          ],
+          "dest": "case",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": "verified imported case directory",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--output",
+            "--output-dir"
+          ],
+          "dest": "output",
+          "default": null,
+          "choices": null,
+          "required": true,
+          "nargs": null,
+          "type": "Path",
+          "help": "NEW output directory",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--end-s"
+          ],
+          "dest": "end_s",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "default: the case storm length; whole seconds",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--snapshot-times"
+          ],
+          "dest": "snapshot_times",
+          "default": "",
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "comma-separated model seconds (at most 16); depth and mobile maps",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--warmup-s"
+          ],
+          "dest": "warmup_s",
+          "default": 0.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "whole model seconds run first on throwaway state in-process",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--progress-every-s"
+          ],
+          "dest": "progress_every_s",
+          "default": 60.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "stderr progress cadence in model seconds; 0 = off",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--root-solver"
+          ],
+          "dest": "root_solver",
+          "default": "bisection",
+          "choices": [
+            "bisection",
+            "newton"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--bisection-iterations"
+          ],
+          "dest": "bisection_iterations",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "default 40 (Plot 1) / 64 (RFID, Chastre)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--newton-max-iterations"
+          ],
+          "dest": "newton_max_iterations",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--depth-time-level"
+          ],
+          "dest": "depth_time_level",
+          "default": "previous",
+          "choices": [
+            "previous",
+            "current",
+            "post_infiltration"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "wet-law depth: previous (default, accepted), current (new depth), post_infiltration (the original's d(1))",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--source-order"
+          ],
+          "dest": "source_order",
+          "default": "index",
+          "choices": [
+            "index",
+            "legacy"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": null,
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--legacy-depos-erase"
+          ],
+          "dest": "legacy_depos_erase",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "reproduce the order-dependent erasure of deposition at wet no-rain cells (needs --source-order legacy)",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--applied-rainfall"
+          ],
+          "dest": "applied_rainfall",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "Path",
+          "help": "Plot 1 only: applied-rainfall CSV (as legacy_experiment)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-maple-source-change"
+          ],
+          "dest": "allow_maple_source_change",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": null,
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--hash-only-tile-verify"
+          ],
+          "dest": "hash_only_tile_verify",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Chastre: reload tile 0 only during verification",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--hash-tiles-after-run"
+          ],
+          "dest": "hash_tiles_after_run",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "Chastre: stream-hash every persisted tile after the run (reads the whole ~33 GB bed state once)",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--max-memory-gib"
+          ],
+          "dest": "max_memory_gib",
+          "default": 32.0,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "refuse if the estimated engine buffers exceed this",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--allow-python-kernels"
+          ],
+          "dest": "allow_python_kernels",
+          "default": false,
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "TESTS ONLY: pure-Python kernels (very slow)",
+          "action": "_StoreTrueAction"
+        },
+        {
+          "flags": [
+            "--check-every-steps"
+          ],
+          "dest": "check_every_steps",
+          "default": 60,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "int",
+          "help": "read the device flags/ledger rows every N steps (and at the end)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--cuda-mode"
+          ],
+          "dest": "cuda_mode",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "fused",
+            "split"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "hydrology launch structure",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--cn-mode"
+          ],
+          "dest": "cn_mode",
+          "default": "auto",
+          "choices": [
+            "auto",
+            "level",
+            "block"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "Crank-Nicolson launch structure",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--gpu-memory-gib"
+          ],
+          "dest": "gpu_memory_gib",
+          "default": null,
+          "choices": null,
+          "required": false,
+          "nargs": null,
+          "type": "float",
+          "help": "refuse if the estimated device memory exceeds this",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--water-accounting"
+          ],
+          "dest": "water_accounting",
+          "default": "fused",
+          "choices": [
+            "separate",
+            "fused"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "per-step water series and cumulative maps: 'fused' = one device launch per step, 'separate' = the B1/B2 reference (3 scalar copies + 4 adds); identical arithmetic, device-only either way (default fused: provisional)",
+          "action": "_StoreAction"
+        },
+        {
+          "flags": [
+            "--record-strategy"
+          ],
+          "dest": "record_strategy",
+          "default": "compact",
+          "choices": [
+            "compact",
+            "all"
+          ],
+          "required": false,
+          "nargs": null,
+          "type": null,
+          "help": "walk record values: 'compact' = only classes with a positive composition fraction in an active cell (static eligibility, exactly the same science), 'all' = every class (the B1 reference)",
+          "action": "_StoreAction"
+        }
+      ],
+      "subcommands": {}
+    },
+    "dependency_bundle": {
+      "prog": "python -m maple_syrup.dependency_bundle",
+      "description": "Content-addressed local delivery of an exact actual-MAPLE project tree (CW-E2).",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [],
+          "dest": "command",
+          "default": null,
+          "choices": {
+            "export": "ArgumentParser(prog='python -m maple_syrup.dependency_bundle export', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)",
+            "verify": "ArgumentParser(prog='python -m maple_syrup.dependency_bundle verify', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)",
+            "materialize": "ArgumentParser(prog='python -m maple_syrup.dependency_bundle materialize', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)",
+            "verify-materialized": "ArgumentParser(prog='python -m maple_syrup.dependency_bundle verify-materialized', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)",
+            "env": "ArgumentParser(prog='python -m maple_syrup.dependency_bundle env', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)",
+            "check-runtime": "ArgumentParser(prog='python -m maple_syrup.dependency_bundle check-runtime', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)"
+          },
+          "required": true,
+          "nargs": "A...",
+          "type": null,
+          "help": null,
+          "action": "_SubParsersAction"
+        }
+      ],
+      "subcommands": {
+        "export": {
+          "prog": "python -m maple_syrup.dependency_bundle export",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [
+                "--project"
+              ],
+              "dest": "project",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--distribution-metadata"
+              ],
+              "dest": "distribution_metadata",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--origin"
+              ],
+              "dest": "origin",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--output"
+              ],
+              "dest": "output",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        },
+        "verify": {
+          "prog": "python -m maple_syrup.dependency_bundle verify",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [],
+              "dest": "bundle",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        },
+        "materialize": {
+          "prog": "python -m maple_syrup.dependency_bundle materialize",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [],
+              "dest": "bundle",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--cache"
+              ],
+              "dest": "cache",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        },
+        "verify-materialized": {
+          "prog": "python -m maple_syrup.dependency_bundle verify-materialized",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [],
+              "dest": "target",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        },
+        "env": {
+          "prog": "python -m maple_syrup.dependency_bundle env",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [],
+              "dest": "target",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--syrup-src"
+              ],
+              "dest": "syrup_src",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        },
+        "check-runtime": {
+          "prog": "python -m maple_syrup.dependency_bundle check-runtime",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [],
+              "dest": "target",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        }
+      }
+    },
+    "initial_reimport": {
+      "prog": "python -m maple_syrup.initial_reimport",
+      "description": "CW-B21: INITIAL-only reimport of a persisted resident-window assembly under a reviewed MAPLE source change.",
+      "actions": [
+        {
+          "flags": [
+            "-h",
+            "--help"
+          ],
+          "dest": "help",
+          "default": "==SUPPRESS==",
+          "choices": null,
+          "required": false,
+          "nargs": 0,
+          "type": null,
+          "help": "show this help message and exit",
+          "action": "_HelpAction"
+        },
+        {
+          "flags": [],
+          "dest": "command",
+          "default": null,
+          "choices": {
+            "propose": "ArgumentParser(prog='python -m maple_syrup.initial_reimport propose', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)",
+            "import": "ArgumentParser(prog='python -m maple_syrup.initial_reimport import', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)"
+          },
+          "required": true,
+          "nargs": "A...",
+          "type": null,
+          "help": null,
+          "action": "_SubParsersAction"
+        }
+      ],
+      "subcommands": {
+        "propose": {
+          "prog": "python -m maple_syrup.initial_reimport propose",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [
+                "--store-dir"
+              ],
+              "dest": "store_dir",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--producer-package-dir"
+              ],
+              "dest": "producer_package_dir",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--expected-maple-root"
+              ],
+              "dest": "expected_maple_root",
+              "default": null,
+              "choices": null,
+              "required": false,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--out"
+              ],
+              "dest": "out",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            }
+          ],
+          "subcommands": {}
+        },
+        "import": {
+          "prog": "python -m maple_syrup.initial_reimport import",
+          "description": null,
+          "actions": [
+            {
+              "flags": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "default": "==SUPPRESS==",
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": "show this help message and exit",
+              "action": "_HelpAction"
+            },
+            {
+              "flags": [
+                "--store-dir"
+              ],
+              "dest": "store_dir",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--producer-package-dir"
+              ],
+              "dest": "producer_package_dir",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--expected-maple-root"
+              ],
+              "dest": "expected_maple_root",
+              "default": null,
+              "choices": null,
+              "required": false,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--case-dir"
+              ],
+              "dest": "case_dir",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--metadata-dir"
+              ],
+              "dest": "metadata_dir",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--transition"
+              ],
+              "dest": "transition",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": null,
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--max-host-bytes"
+              ],
+              "dest": "max_host_bytes",
+              "default": null,
+              "choices": null,
+              "required": true,
+              "nargs": null,
+              "type": "int",
+              "help": null,
+              "action": "_StoreAction"
+            },
+            {
+              "flags": [
+                "--allow-case-maple-source-change"
+              ],
+              "dest": "allow_case_maple_source_change",
+              "default": false,
+              "choices": null,
+              "required": false,
+              "nargs": 0,
+              "type": null,
+              "help": null,
+              "action": "_StoreTrueAction"
+            }
+          ],
+          "subcommands": {}
+        }
+      }
+    }
+  }
+}

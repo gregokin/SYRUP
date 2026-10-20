@@ -1,0 +1,21 @@
+{
+  "source_commit": "d05d8c6c66d9fd2969c007681916254e8d1c2c7c",
+  "documents": [
+    {
+      "file": "SYRUP_CLI_User_Guide.docx",
+      "bytes": 82123,
+      "sha256": "a7cc864c93e994f8bbae1ba3d9c4b64fbfa0e53bb53da8f5c4e97564c1afcc6f",
+      "paragraphs": 370,
+      "tables": 32,
+      "headings": 61
+    },
+    {
+      "file": "SYRUP_Model_Structure_and_Physics.docx",
+      "bytes": 156128,
+      "sha256": "281b9d5c26f04f23b1a5ab719e0f9462bcd7a03d38087d5d823747116315f251",
+      "paragraphs": 262,
+      "tables": 7,
+      "headings": 42
+    }
+  ]
+}

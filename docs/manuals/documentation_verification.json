@@ -1,0 +1,85 @@
+{
+  "source_commit": "d05d8c6c66d9fd2969c007681916254e8d1c2c7c",
+  "native_maple_commit": "39bcf79e1e67b6ed960f78a923ddfedf1d173e68",
+  "verified_utc": "2026-10-20T20:58:07.901829+00:00",
+  "runtime_package_sha256": "c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392",
+  "runtime_and_tests_and_dependency_configuration_unchanged": true,
+  "installed_cli_entrypoints_covered": 9,
+  "argparse_modules_covered": 16,
+  "captured_help_and_action_records": 34,
+  "flag_alias_occurrences": 270,
+  "shell_and_python_blocks_syntax_checked": 23,
+  "synthetic_postprocessing_and_cpu_ffmpeg_passed": true,
+  "document_package_checks": "ZIP/XML/reopen/contents anchors/paragraph properties/all CLI flags/equations/schematic",
+  "claude_source_review": "Original practical/theory reviews plus citation-specific review; Codex independently verified dispositions",
+  "citation_audit": {
+    "accepted": true,
+    "utc": "2026-10-20T20:58:07.468628+00:00",
+    "scientific_references": 25,
+    "point_of_use_citations_and_clickable_DOIs": true,
+    "review": "Claude citation review and bounded correction review; Codex independently checked source, original equations/tables/examples and citation coverage",
+    "required_review_findings_closed": [
+      "MF1",
+      "MF2",
+      "MF3",
+      "MF4"
+    ],
+    "primary_full_text_relationship_checks": [
+      "Wu and Lin2002 eq7",
+      "Kirstetter etal2016 eq10",
+      "Stone etal2008 eq2",
+      "BrownFoster form in primary USDA RUSLE handbook"
+    ],
+    "publisher_metadata_records_retrieved": 10,
+    "other_bibliography_evidence": "Publisher/author/institutional records; additional Crossref batch returned HTTP429 for15 entries, not retried; full-text access limits explicit",
+    "manuscript_sha256": "15d801168ddfe7dab612a7c4532650e4a857cb21dddcc3e864f4a01ed7c34b8d",
+    "claude_final_report_sha256": "8ee971b79f535fd1e5bcd6c0edf45b30f54ed727d7b2540823f4406157897b20",
+    "physics_or_equations_changed": false,
+    "guide_changed": false,
+    "no_new_model_or_gpu_run": true,
+    "native_Word_page_rendering": false,
+    "committed_or_pushed": false,
+    "coverage_checks": {
+      "scientific_references": 25,
+      "all_25_cited_at_point_of_use": true,
+      "all_citations_present_in_DOCX": true,
+      "distinct_clickable_DOI_targets": 25,
+      "math_blocks_identical": true,
+      "all_table_rows_identical": true,
+      "code_examples_identical": true,
+      "practical_guide_and_original_utilities_unchanged": true,
+      "syrup_runtime_64_files_byte_exact": true,
+      "frozen_sources_preserved": {
+        "committed_syrup.tar": 675,
+        "maple39_reference.tar": 355
+      },
+      "bibliographic_access_limits_explicit": true
+    }
+  },
+  "native_word_or_libreoffice_page_rendering_available": false,
+  "no_new_model_or_gpu_run": true,
+  "no_model_environment_changed": true,
+  "documents": [
+    {
+      "file": "SYRUP_CLI_User_Guide.docx",
+      "bytes": 82123,
+      "sha256": "a7cc864c93e994f8bbae1ba3d9c4b64fbfa0e53bb53da8f5c4e97564c1afcc6f",
+      "paragraphs": 370,
+      "tables": 32,
+      "linked_contents_targets": 15,
+      "word_package_reopens": true,
+      "rendered_page_count": null
+    },
+    {
+      "file": "SYRUP_Model_Structure_and_Physics.docx",
+      "bytes": 156128,
+      "sha256": "281b9d5c26f04f23b1a5ab719e0f9462bcd7a03d38087d5d823747116315f251",
+      "paragraphs": 262,
+      "tables": 7,
+      "linked_contents_targets": 14,
+      "word_package_reopens": true,
+      "rendered_page_count": null
+    }
+  ],
+  "committed_or_pushed": false
+}
