@@ -653,8 +653,84 @@ def save_checkpoint(path, item, context, column, sediment, identity):
     return path
 
 
+def _terrain_anchor_admission(anchor, max_bytes):
+    # Metadata-only admission of a static terrain anchor: no array value is read, hashed or converted.
+    if type(anchor) is not TerrainReference:
+        raise SedimentEventError('terrain_anchor must be exactly a TerrainReference')
+    names = ('initial_full_elevation_m', 'initial_committed_elevation_m', 'export_receiver_full', 'active_mask',
+             'friction_factor', 'dx_m', 'allow_masked_nodata', 'nodata_value', 'allow_pit_storage',
+             'allow_flat_storage')
+    params = TerrainReference.__dict__.get('__dataclass_params__')
+    fields = TerrainReference.__dict__.get('__dataclass_fields__')
+    if (params is None or params.frozen is not True or '__slots__' in TerrainReference.__dict__
+            or type(fields) is not dict or len(fields) != 10 or tuple(fields) != names):
+        raise SedimentEventError('terrain_anchor TerrainReference layout is unknown')
+    state = vars(anchor)
+    if type(state) is not dict or len(state) != 10 or set(state) != set(names):
+        raise SedimentEventError('terrain_anchor instance fields are unknown')
+    dx = state['dx_m']
+    if type(dx) is not float or not math.isfinite(dx) or dx <= 0:
+        raise SedimentEventError('terrain_anchor dx_m must be a finite positive float')
+    for name in ('allow_masked_nodata', 'allow_pit_storage', 'allow_flat_storage'):
+        if type(state[name]) is not bool:
+            raise SedimentEventError(f'terrain_anchor {name} must be a bool')
+    nodata = state['nodata_value']
+    if nodata is not None and (type(nodata) is not float or not math.isfinite(nodata)):
+        raise SedimentEventError('terrain_anchor nodata_value must be None or a finite float')
+    committed = state['initial_committed_elevation_m']
+    if type(committed) is not np.ndarray or committed.ndim != 2:
+        raise SedimentEventError('terrain_anchor initial_committed_elevation_m array layout invalid')
+    ny, nx = committed.shape
+    if ny < 1 or nx < 1:
+        raise SedimentEventError('terrain_anchor dimensions must be positive')
+    spec = (('initial_full_elevation_m', np.float64, (ny + 2, nx + 2)),
+            ('initial_committed_elevation_m', np.float64, (ny, nx)),
+            ('export_receiver_full', np.bool_, (ny + 2, nx + 2)),
+            ('active_mask', np.bool_, (ny, nx)),
+            ('friction_factor', np.float64, (ny, nx)))
+    for name, dtype, shape in spec:
+        a = state[name]
+        if (type(a) is not np.ndarray or a.ndim != 2 or a.shape != shape or a.dtype != dtype
+                or a.dtype.str != np.dtype(dtype).str or not a.dtype.isnative or a.base is not None
+                or not a.flags.owndata or a.flags.writeable or not a.flags.c_contiguous):
+            raise SedimentEventError(f'terrain_anchor {name} array layout invalid')
+    total = 9 * (ny + 2) * (nx + 2) + 17 * ny * nx
+    if total > max_bytes:
+        raise SedimentEventError('terrain_anchor exceeds the bounded checkpoint size')
+    return ny, nx, total
+
+
+def _terrain_anchor_compare(reference, anchor, max_bytes):
+    # Bit-exact comparison of a decoded terrain reference with the admitted anchor: both are admitted (metadata
+    # only) before any byte is read; arrays are compared as raw bytes in borrowed <=64 KiB chunks, no copy.
+    import struct
+
+    if _terrain_anchor_admission(reference, max_bytes) != _terrain_anchor_admission(anchor, max_bytes):
+        raise SedimentEventError('checkpoint terrain differs from terrain_anchor (shape)')
+    saved, held = vars(reference), vars(anchor)
+    if struct.pack('<d', saved['dx_m']) != struct.pack('<d', held['dx_m']):
+        raise SedimentEventError('checkpoint terrain differs from terrain_anchor (dx_m)')
+    for name in ('allow_masked_nodata', 'allow_pit_storage', 'allow_flat_storage'):
+        if saved[name] is not held[name]:
+            raise SedimentEventError(f'checkpoint terrain differs from terrain_anchor ({name})')
+    a, b = saved['nodata_value'], held['nodata_value']
+    if (a is None) != (b is None) or (a is not None and struct.pack('<d', a) != struct.pack('<d', b)):
+        raise SedimentEventError('checkpoint terrain differs from terrain_anchor (nodata_value)')
+    for name in ('initial_full_elevation_m', 'initial_committed_elevation_m', 'export_receiver_full', 'active_mask',
+                 'friction_factor'):
+        a, b = saved[name], held[name]
+        if a.shape != b.shape or a.dtype.str != b.dtype.str:
+            raise SedimentEventError(f'checkpoint terrain differs from terrain_anchor ({name} layout)')
+        with memoryview(a) as va, memoryview(b) as vb, va.cast('B') as ca, vb.cast('B') as cb:
+            if ca.nbytes != cb.nbytes:
+                raise SedimentEventError(f'checkpoint terrain differs from terrain_anchor ({name} layout)')
+            for start in range(0, ca.nbytes, 65536):
+                if ca[start:start + 65536] != cb[start:start + 65536]:
+                    raise SedimentEventError(f'checkpoint terrain differs from terrain_anchor ({name})')
+
+
 def load_checkpoint(path, context, column, sediment, expected_identity, *, allow_complete=False,
-                    max_bytes=DEFAULT_MAX_CHECKPOINT_BYTES):
+                    max_bytes=DEFAULT_MAX_CHECKPOINT_BYTES, terrain_anchor=None):
     """Validate everything in private objects before returning a continuation.
 
     The continuation is reconstructed in the namespace of `column` / `sediment`
@@ -670,6 +746,11 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
     if target_xp is None or getattr(sediment, 'xp', None) is not target_xp:
         raise SedimentEventError('column and sediment parameters must share one array namespace')
     target = backend_name(target_xp)
+    if terrain_anchor is not None:
+        if target != 'numpy' or allow_complete is not False:
+            raise SedimentEventError('terrain_anchor requires the NumPy target and allow_complete=False')
+        _terrain_anchor_admission(terrain_anchor, max_bytes)
+        anchor_binds = 0
     path = Path(path).resolve()
     metadata = path / 'checkpoint.json'
     if metadata.stat().st_size > 32 * 1024**2:
@@ -725,6 +806,9 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
         raise SedimentEventError(f'checkpoint deep storage {saved_option or "default full"} differs from the resuming '
                                  f'context {expected_deep or "default full"}; a cross-encoding / bound change is '
                                  'refused (no migration)')
+    if terrain_anchor is not None and (data.get('bed_storage', 'dense') != 'dense' or has_deep
+                                       or saved_storage != 'dense'):
+        raise SedimentEventError('terrain_anchor requires dense bed storage, no deep_storage and dense phase storage')
     total_bytes = 0
     for name in PAYLOADS:
         file = path / name
@@ -762,6 +846,7 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
     used = set()
     with np.load(path / PAYLOADS[1], allow_pickle=False) as archive:
         def decode(value):
+            nonlocal anchor_binds
             if not isinstance(value, dict):
                 if value is None or isinstance(value, (str, bool, int, float)):
                     if isinstance(value, float) and not math.isfinite(value):
@@ -810,6 +895,10 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
                         raise SedimentEventError('checkpoint CSR phase state is bound to another routing graph')
                     if tuple(phase.shape) != tuple(graph.shape) or phase.dx_m != graph.dx_m:
                         raise SedimentEventError('checkpoint CSR phase state shape or spacing invalid')
+                if terrain_anchor is not None:
+                    _terrain_anchor_compare(values['terrain'], terrain_anchor, max_bytes)
+                    values['terrain'] = terrain_anchor
+                    anchor_binds += 1
                 return SedimentEventState(**values, graph=graph, network=network, grid=physics_grid_from_graph(graph),
                                           routing_source_elevation_m=source)
             if keys == {'csr_phase'}:
@@ -901,6 +990,8 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
         item = decode(data['payload'])
         if used != set(archive.files):
             raise SedimentEventError('unused or missing checkpoint arrays')
+    if terrain_anchor is not None and (anchor_binds != 1 or type(item) is not EventProgress or item.status != 'wet'):
+        raise SedimentEventError('terrain_anchor requires exactly one bound state in a wet EventProgress root')
     if isinstance(item, DryHandoff) != (data['status'] == 'complete'):
         raise SedimentEventError('checkpoint root does not match status')
     primary = _primary(item)
