@@ -447,6 +447,122 @@ def validate_checkpoint_state(item, context, column, sediment):
             raise SedimentEventError('completed reset accounting disagrees with physical reservoirs')
 
 
+# Private modes are selected by the two owning entry points, never supplied by a public caller.
+_WRITE_WIRE = object()
+_LAYOUT_WIRE = object()
+_SIZE_ONLY_DIGEST = '0' * 64  # byte-count placeholder, never a state digest or authority
+
+
+def _encode_wire(value, primary, arrays, registry, is_array, to_host, *, _mode=_WRITE_WIRE,
+                 _layout=None, _depth=0):
+    """The entire native structural encoder, shared by writing and metadata layout."""
+    if _mode is _LAYOUT_WIRE:
+        if type(_layout) is not _WriteLayout:
+            raise SedimentEventError('invalid private checkpoint layout mode')
+        _layout.enter(value, _depth, registry)
+    elif _mode is not _WRITE_WIRE or _layout is not None:
+        raise SedimentEventError('invalid private checkpoint write mode')
+
+    def encode(child):
+        return _encode_wire(child, primary, arrays, registry, is_array, to_host,
+                            _mode=_mode, _layout=_layout, _depth=_depth + 1)
+
+    if _mode is _WRITE_WIRE and is_array(value) and not isinstance(value, np.ndarray):
+        value = np.asarray(to_host(value))  # explicit, counted device-to-host transfer of ONE array
+    if isinstance(value, np.ndarray):
+        if _mode is _WRITE_WIRE:
+            if value.dtype.kind not in 'fiub' or not np.isfinite(value).all():
+                raise SedimentEventError('checkpoint arrays must be finite numeric/bool data')
+        name = f'a{len(arrays):04d}'
+        if _mode is _LAYOUT_WIRE:
+            _layout.array(name, value)
+        arrays[name] = value
+        return {'array': name, 'dtype': value.dtype.str, 'shape': list(value.shape)}
+    if isinstance(value, np.generic):
+        return encode(value.item())
+    if isinstance(value, SedimentEventState):
+        if value.graph.xp is not primary.graph.xp:
+            raise SedimentEventError('bundle states are in mixed namespaces')
+        return {'state': {k: encode(getattr(value, k)) for k in STATE_FIELDS},
+                'graph_digest': (_graph_digest(value.graph) if _mode is _WRITE_WIRE else _SIZE_ONLY_DIGEST), 'graph_binding': value.graph.input_sha256,
+                'routing_source': encode(value.routing_source_elevation_m)}
+    if isinstance(value, SparsePhaseState):
+        if value.xp is not primary.graph.xp:
+            raise SedimentEventError('checkpoint CSR phase state is not in the continuation namespace')
+        node = {name: encode(getattr(value, name)) for name in CSR_PHASE_ARRAYS}  # counted to_host per array
+        node.update({'dx_m': float(value.dx_m), 'n_bins': int(value.n_bins), 'n_classes': int(value.n_classes),
+                     'shape': [int(value.shape[0]), int(value.shape[1])], 'graph_digest': str(value.network_sha256)})
+        return {'csr_phase': node}
+    if isinstance(value, PhaseState):
+        if value.xp is not primary.graph.xp:
+            raise SedimentEventError('checkpoint phase state is not in the continuation namespace')
+        return {'phase': {'fraction': encode(value.fraction), 'position_m': encode(value.position_m),
+                          'dx_m': float(value.dx_m), 'n_bins': int(value.n_bins)}}
+    if isinstance(value, BedState):
+        if _mode is _LAYOUT_WIRE:
+            if value is not primary.bed:
+                raise SedimentEventError('write budget requires the primary wet bed object')
+        else:
+            # No duplicate bed authority in the sidecar: all bed storage is
+            # loaded through MAPLE's actual snapshot. Wet/dry water may differ.
+            from maple_syrup.sediment_bed import is_windowed_bed
+
+            if is_windowed_bed(value) != is_windowed_bed(primary.bed):
+                raise SedimentEventError('bundle contains incompatible bed storage types')
+            if is_windowed_bed(value):
+                from maple.surface.voxels.windowed_pending import (
+                    require_published_column,
+                )
+                from maple.surface.voxels.windowed_snapshot import COLUMN_ARRAYS
+
+                require_published_column(value.voxel_column, operation='save_checkpoint')
+                if value.voxel_column.manifest_digest != primary.bed.voxel_column.manifest_digest:
+                    raise SedimentEventError('bundle contains divergent immutable bed versions')
+                if any(not arrays_equal(getattr(value.voxel_column,k),getattr(primary.bed.voxel_column,k))
+                       for k in COLUMN_ARRAYS):
+                    raise SedimentEventError('bundle contains divergent resident sediment beds')
+                column_pairs = ()
+            else:
+                column_pairs = ((value.voxel_column.mass_kg, primary.bed.voxel_column.mass_kg),)
+            for a, b in (*column_pairs,
+                         (value.active_layer.mass_kg, primary.bed.active_layer.mass_kg),
+                         (value.sediment_availability.available_mass_kg, primary.bed.sediment_availability.available_mass_kg),
+                         (value.sediment_availability.bound_mass_kg, primary.bed.sediment_availability.bound_mass_kg)):
+                if not arrays_equal(a, b):
+                    raise SedimentEventError('bundle contains divergent sediment beds')
+        return {'bed': {k: encode(getattr(value, k)) for k in ('water', 'ledger', 'committed_topography')}}
+    if dataclasses.is_dataclass(value):
+        name = type(value).__name__
+        if registry.get(name) is not type(value):
+            raise SedimentEventError(f'unregistered checkpoint type {name}')
+        names = [f.name for f in dataclasses.fields(value)]
+        if isinstance(value, StormControl) and value.root_solver == 'bisection' \
+                and value.newton_max_iterations == DEFAULT_NEWTON_MAX_ITERATIONS:
+            # conditional metadata: the default bisection control encodes exactly as before the Newton option
+            names = [n for n in names if n not in _NEWTON_CONTROL_FIELDS]
+        if isinstance(value, SedimentEventControl) and value.phase_storage == 'dense' and value.phase_max_nnz is None:
+            names = [n for n in names if n not in _CSR_CONTROL_FIELDS]  # the dense control encodes as before CW-B5
+        if isinstance(value, CompletionPolicy) and not value.terminal_storage_water:
+            names = [n for n in names if n not in _TERMINAL_POLICY_FIELDS]
+        if isinstance(value, TerrainReference) and value.strict:
+            names = [n for n in names if n not in _TERRAIN_POLICY_FIELDS]
+        optional = _OPTIONAL_DEFAULT_FIELDS.get(name, {})
+        # CW-D2: default-valued opt-in fields are omitted so the payload of a default run is unchanged
+        names = [n for n in names if not (n in optional and getattr(value, n) == optional[n])]
+        return {'type': name, 'fields': {n: encode(getattr(value, n)) for n in names}}
+    if isinstance(value, dict):
+        if any(not isinstance(k, str) for k in value):
+            raise SedimentEventError('checkpoint mapping keys must be strings')
+        return {'dict': {k: encode(v) for k, v in value.items()}}
+    if isinstance(value, (tuple, list)):
+        return {'tuple' if isinstance(value, tuple) else 'list': [encode(v) for v in value]}
+    if value is None or isinstance(value, (str, bool, int, float)):
+        if isinstance(value, float) and not math.isfinite(value):
+            raise SedimentEventError('nonfinite checkpoint scalar')
+        return value
+    raise SedimentEventError(f'unsupported checkpoint field {type(value)}')
+
+
 def save_checkpoint(path, item, context, column, sediment, identity):
     """Write a NEW bundle atomically. Caller supplies hash-bound run identity. Every device array is encoded
     through an explicit counted `to_host`; the manifest records the backend the item lives in."""
@@ -483,96 +599,8 @@ def save_checkpoint(path, item, context, column, sediment, identity):
     arrays = {}
     registry = _registry()
 
-    def encode(value):
-        if is_array(value) and not isinstance(value, np.ndarray):
-            value = np.asarray(to_host(value))  # explicit, counted device-to-host transfer of ONE array
-        if isinstance(value, np.ndarray):
-            if value.dtype.kind not in 'fiub' or not np.isfinite(value).all():
-                raise SedimentEventError('checkpoint arrays must be finite numeric/bool data')
-            name = f'a{len(arrays):04d}'
-            arrays[name] = value
-            return {'array': name, 'dtype': value.dtype.str, 'shape': list(value.shape)}
-        if isinstance(value, np.generic):
-            return encode(value.item())
-        if isinstance(value, SedimentEventState):
-            if value.graph.xp is not primary.graph.xp:
-                raise SedimentEventError('bundle states are in mixed namespaces')
-            return {'state': {k: encode(getattr(value, k)) for k in STATE_FIELDS},
-                    'graph_digest': _graph_digest(value.graph), 'graph_binding': value.graph.input_sha256,
-                    'routing_source': encode(value.routing_source_elevation_m)}
-        if isinstance(value, SparsePhaseState):
-            if value.xp is not primary.graph.xp:
-                raise SedimentEventError('checkpoint CSR phase state is not in the continuation namespace')
-            node = {name: encode(getattr(value, name)) for name in CSR_PHASE_ARRAYS}  # counted to_host per array
-            node.update({'dx_m': float(value.dx_m), 'n_bins': int(value.n_bins), 'n_classes': int(value.n_classes),
-                         'shape': [int(value.shape[0]), int(value.shape[1])], 'graph_digest': str(value.network_sha256)})
-            return {'csr_phase': node}
-        if isinstance(value, PhaseState):
-            if value.xp is not primary.graph.xp:
-                raise SedimentEventError('checkpoint phase state is not in the continuation namespace')
-            return {'phase': {'fraction': encode(value.fraction), 'position_m': encode(value.position_m),
-                              'dx_m': float(value.dx_m), 'n_bins': int(value.n_bins)}}
-        if isinstance(value, BedState):
-            # No duplicate bed authority in the sidecar: all bed storage is
-            # loaded through MAPLE's actual snapshot. Wet/dry water may differ.
-            from maple_syrup.sediment_bed import is_windowed_bed
 
-            if is_windowed_bed(value) != is_windowed_bed(primary.bed):
-                raise SedimentEventError('bundle contains incompatible bed storage types')
-            if is_windowed_bed(value):
-                from maple.surface.voxels.windowed_pending import (
-                    require_published_column,
-                )
-                from maple.surface.voxels.windowed_snapshot import COLUMN_ARRAYS
-
-                require_published_column(value.voxel_column, operation='save_checkpoint')
-                if value.voxel_column.manifest_digest != primary.bed.voxel_column.manifest_digest:
-                    raise SedimentEventError('bundle contains divergent immutable bed versions')
-                if any(not arrays_equal(getattr(value.voxel_column,k),getattr(primary.bed.voxel_column,k))
-                       for k in COLUMN_ARRAYS):
-                    raise SedimentEventError('bundle contains divergent resident sediment beds')
-                column_pairs = ()
-            else:
-                column_pairs = ((value.voxel_column.mass_kg, primary.bed.voxel_column.mass_kg),)
-            for a, b in (*column_pairs,
-                         (value.active_layer.mass_kg, primary.bed.active_layer.mass_kg),
-                         (value.sediment_availability.available_mass_kg, primary.bed.sediment_availability.available_mass_kg),
-                         (value.sediment_availability.bound_mass_kg, primary.bed.sediment_availability.bound_mass_kg)):
-                if not arrays_equal(a, b):
-                    raise SedimentEventError('bundle contains divergent sediment beds')
-            return {'bed': {k: encode(getattr(value, k)) for k in ('water', 'ledger', 'committed_topography')}}
-        if dataclasses.is_dataclass(value):
-            name = type(value).__name__
-            if registry.get(name) is not type(value):
-                raise SedimentEventError(f'unregistered checkpoint type {name}')
-            names = [f.name for f in dataclasses.fields(value)]
-            if isinstance(value, StormControl) and value.root_solver == 'bisection' \
-                    and value.newton_max_iterations == DEFAULT_NEWTON_MAX_ITERATIONS:
-                # conditional metadata: the default bisection control encodes exactly as before the Newton option
-                names = [n for n in names if n not in _NEWTON_CONTROL_FIELDS]
-            if isinstance(value, SedimentEventControl) and value.phase_storage == 'dense' and value.phase_max_nnz is None:
-                names = [n for n in names if n not in _CSR_CONTROL_FIELDS]  # the dense control encodes as before CW-B5
-            if isinstance(value, CompletionPolicy) and not value.terminal_storage_water:
-                names = [n for n in names if n not in _TERMINAL_POLICY_FIELDS]
-            if isinstance(value, TerrainReference) and value.strict:
-                names = [n for n in names if n not in _TERRAIN_POLICY_FIELDS]
-            optional = _OPTIONAL_DEFAULT_FIELDS.get(name, {})
-            # CW-D2: default-valued opt-in fields are omitted so the payload of a default run is unchanged
-            names = [n for n in names if not (n in optional and getattr(value, n) == optional[n])]
-            return {'type': name, 'fields': {n: encode(getattr(value, n)) for n in names}}
-        if isinstance(value, dict):
-            if any(not isinstance(k, str) for k in value):
-                raise SedimentEventError('checkpoint mapping keys must be strings')
-            return {'dict': {k: encode(v) for k, v in value.items()}}
-        if isinstance(value, (tuple, list)):
-            return {'tuple' if isinstance(value, tuple) else 'list': [encode(v) for v in value]}
-        if value is None or isinstance(value, (str, bool, int, float)):
-            if isinstance(value, float) and not math.isfinite(value):
-                raise SedimentEventError('nonfinite checkpoint scalar')
-            return value
-        raise SedimentEventError(f'unsupported checkpoint field {type(value)}')
-
-    encoded = encode(item)
+    encoded = _encode_wire(item, primary, arrays, registry, is_array, to_host)
     path.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=f'.{path.name}.partial-', dir=path.parent))
     try:
@@ -599,10 +627,10 @@ def save_checkpoint(path, item, context, column, sediment, identity):
                                             'identity': identity, 'backend': backend})
 
         np.savez(staging / PAYLOADS[1], **arrays)
-        manifest = {'schema': SCHEMA, 'identity': identity,
-                    'status': 'complete' if isinstance(item, DryHandoff) else 'wet',
-                    'backend': backend,
-                    'files': {name: sha256_file(staging / name) for name in PAYLOADS}, 'payload': encoded}
+        manifest = _checkpoint_manifest(SCHEMA, identity,
+                                          'complete' if isinstance(item, DryHandoff) else 'wet',
+                                          backend, {name: sha256_file(staging / name) for name in PAYLOADS},
+                                          encoded)
         if is_windowed_bed(b):
             manifest['bed_storage'] = 'windowed'
             option = deep_storage_record(context)
@@ -888,3 +916,806 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
     except BedIntegrationError as exc:
         raise SedimentEventError(f'load_checkpoint: {exc}') from None
     return item
+
+
+# Optional P1 layout admission.  Nothing below is selected by save_checkpoint/load_checkpoint.
+# Source contract: CPython 3.12 / NumPy 2.5.3 and the source-qualified MAPLE
+# schema-2 snapshot projection.  The caller must bind the immutable dependency
+# sources; version text alone is not a substitute for that binding.
+@dataclasses.dataclass(frozen=True, slots=True)
+class CheckpointWriteLimits:
+    max_uncompressed_bytes: int = DEFAULT_MAX_CHECKPOINT_BYTES
+    max_json_bytes: int = 32 * 1024**2
+    max_members_per_archive: int = 256
+    max_nodes: int = 65536
+    max_depth: int = 32
+    max_string: int = 1024
+    max_int_bits: int = 256
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class NpyMemberLayout:
+    key: str
+    dtype: str
+    shape: tuple[int, ...]
+    fortran_order: bool
+    data_bytes: int
+    npy_header_bytes: int
+    npy_bytes: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class ArchiveLayout:
+    filename: str
+    members: tuple[NpyMemberLayout, ...]
+    data_bytes: int
+    npy_bytes: int
+    zip_metadata_bytes: int
+    file_bytes: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CheckpointWriteBudget:
+    native_schema: str
+    profile: str
+    archives: tuple[ArchiveLayout, ArchiveLayout]
+    checkpoint_json_bytes: int
+    snapshot_provenance_bytes: int
+    encode_finite_check_bytes: int
+    whole_array_serialization_fallback_bytes: int
+    nominal_iterator_buffer_pair_bytes: int
+    header_scalar_metadata_bytes: int
+    encoded_metadata_upper_bytes: int
+    json_overlap_upper_bytes: int
+    graph_digest_scratch_bytes: int
+    host_payload_copy_bytes: int
+    native_call_multiplicities: tuple[tuple[str, int], ...]
+    additional_serialization_upper_bytes: int
+    uncompressed_payload_bytes: int
+    serialized_payload_bytes: int
+    native_child_bytes: int
+
+
+_WRITE_LIMIT_MAXIMA = (DEFAULT_MAX_CHECKPOINT_BYTES, 32 * 1024**2, 256, 65536, 32, 1024, 256)
+_WRITE_SNAPSHOT_REASON = 'SYRUP bundle component: companion continuation file required'
+_WRITE_CALLS = (
+    ('validate_checkpoint_state', 1), ('_validate_accumulators', 1),
+    ('quiet_metrics', 1),
+    ('validate_checkpoint_state.check_active_layer_voxel_partition', 1),
+    ('validate_checkpoint_state.check_sediment_availability_state', 1),
+    ('validate_checkpoint_state.validate_ledger_state', 1),
+    ('validate_checkpoint_state.validate_committed_topography_state', 1),
+    ('validate_checkpoint_state.validate_water_state', 1),
+    ('validate_checkpoint_state.validate_reconciliation_context', 1),
+    ('validate_checkpoint_state.resolve_reconciliation_reference_inventory_kg', 1),
+    ('validate_checkpoint_state._reconcile_ledger_with_physical_state', 1),
+    ('validate_checkpoint_state._check_event_inputs', 1),
+    ('SedimentEventResult.closure', 2), ('water_budget', 1),
+    ('validate_deep_storage', 1), ('check_graph_matches_routing_source', 1),
+    ('routing_graph_host_rebuild', 1), ('routing_graph_evidence_compare', 1),
+    ('_encode_wire', 1), ('_graph_digest', 1), ('save_state_snapshot', 1),
+    ('snapshot.direct_check_voxel_column_state', 1),
+    ('snapshot.check_active_layer_voxel_partition', 1),
+    ('snapshot.check_sediment_availability_state', 1),
+    ('numpy.savez', 2), ('sha256_file', 2), ('checkpoint_json_write', 1),
+)
+
+
+def _write_limits(limits):
+    if type(limits) is not CheckpointWriteLimits:
+        raise SedimentEventError('write budget requires exact CheckpointWriteLimits')
+    for field, maximum in zip(dataclasses.fields(limits), _WRITE_LIMIT_MAXIMA):
+        value = getattr(limits, field.name)
+        if type(value) is not int or not 1 <= value <= maximum:
+            raise SedimentEventError('write budget limit outside the closed positive range')
+
+
+def _write_plain_metadata(value, limits, *, depth=0, counter=None):
+    """Preflight raw JSON metadata without allocating its encoded representation."""
+    if counter is None:
+        counter = [0]
+    counter[0] += 1
+    if counter[0] > limits.max_nodes or depth > limits.max_depth:
+        raise SedimentEventError('write budget metadata node/depth cap')
+    kind = type(value)
+    if kind is str:
+        if len(value) > limits.max_string:
+            raise SedimentEventError('write budget metadata string cap')
+    elif kind is int:
+        if value.bit_length() > limits.max_int_bits:
+            raise SedimentEventError('write budget metadata integer cap')
+    elif kind is float:
+        if not math.isfinite(value):
+            raise SedimentEventError('write budget nonfinite metadata scalar')
+    elif value is None or kind is bool:
+        pass
+    elif kind in (dict, tuple, list):
+        # A mapping has one key node and one value node per entry.
+        minimum = len(value) * (2 if kind is dict else 1)
+        if minimum > limits.max_nodes - counter[0]:
+            raise SedimentEventError('write budget metadata child cap')
+        if kind is dict:
+            for key, child in value.items():
+                if type(key) is not str:
+                    raise SedimentEventError('write budget metadata mapping keys must be strings')
+                _write_plain_metadata(key, limits, depth=depth + 1, counter=counter)
+                _write_plain_metadata(child, limits, depth=depth + 1, counter=counter)
+        else:
+            for child in value:
+                _write_plain_metadata(child, limits, depth=depth + 1, counter=counter)
+    else:
+        raise SedimentEventError('write budget unsupported metadata type')
+    return counter[0]
+
+
+def _write_json_measure(value, limits, *, indent=None, sort_keys=False, newline=False):
+    """Actual JSONEncoder; no dump is materialized before the byte cap."""
+    import struct
+    import sys
+
+    _write_plain_metadata(value, limits)
+    total, chunks, chunk_objects = int(newline), 0, 0
+    encoder = json.JSONEncoder(indent=indent, sort_keys=sort_keys, allow_nan=False, ensure_ascii=True)
+    for chunk in encoder.iterencode(value):
+        total += len(chunk)  # ensure_ascii makes every emitted code point one byte
+        if total > limits.max_json_bytes:
+            raise SedimentEventError('write budget JSON byte cap')
+        chunks += 1
+        chunk_objects += sys.getsizeof(chunk)
+    # CPython list growth is bounded above by 2*n+8 pointer slots. Native
+    # dumps(indent=2) retains the iterencode chunks before joining them.
+    chunk_table = sys.getsizeof([]) + (2 * chunks + 8) * struct.calcsize('P')
+    return total, chunk_objects + chunk_table
+
+
+def _write_metadata_size(value):
+    """Source-qualified CPython shallow objects plus every bounded child occurrence."""
+    import sys
+
+    total = sys.getsizeof(value)
+    if type(value) is dict:
+        for key, child in value.items():
+            total += _write_metadata_size(key) + _write_metadata_size(child)
+    elif type(value) in (tuple, list):
+        for child in value:
+            total += _write_metadata_size(child)
+    return total
+
+
+class _WriteHeaderSink:
+    __slots__ = ('size',)
+
+    def __init__(self):
+        self.size = 0
+
+    def write(self, data):
+        self.size += len(data)
+        if self.size > 10000:
+            raise SedimentEventError('write budget NPY header cap')
+
+
+def _write_npy_member(key, value, limits, *, scalar=False):
+    """Use the same actual NumPy normalization/header implementation as savez."""
+    from numpy.lib import _format_impl
+
+    if type(key) is not str or not key.isascii() or not key or len(key) + 4 > 200 \
+            or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_' for c in key):
+        raise SedimentEventError('write budget unsafe NPY member name')
+    # scalar=True is only used for small, already capped projection metadata.
+    if scalar:
+        value = np.asanyarray(value)
+    if type(value) is not np.ndarray or not value.flags.c_contiguous:
+        raise SedimentEventError('write budget requires exact C-contiguous NumPy arrays')
+    dtype = value.dtype
+    if dtype.hasobject or dtype.fields is not None or dtype.subdtype is not None \
+            or dtype.metadata is not None or type(dtype)._legacy is not True \
+            or dtype.kind not in 'fiubSU' or not 1 <= dtype.itemsize <= limits.max_uncompressed_bytes:
+        raise SedimentEventError('write budget unsupported normalized NPY dtype')
+    if not scalar and dtype.kind not in 'fiub':
+        raise SedimentEventError('write budget native arrays must be numeric/bool')
+    if len(value.shape) > 4:
+        raise SedimentEventError('write budget NPY rank cap')
+    elements = 1
+    for axis in value.shape:
+        if type(axis) is not int or not 0 <= axis <= limits.max_uncompressed_bytes:
+            raise SedimentEventError('write budget NPY axis cap')
+        elements *= axis
+        if elements > limits.max_uncompressed_bytes:
+            raise SedimentEventError('write budget NPY element cap')
+    data_bytes = elements * dtype.itemsize
+    if data_bytes > limits.max_uncompressed_bytes:
+        raise SedimentEventError('write budget NPY data byte cap')
+    # Metadata has been admitted before the native header routine can build its
+    # repr/framing. Rank<=4, bounded plain axes and scalar nonstructured dtypes
+    # bound that metadata; this is not a copied NPY codec.
+    sink = _WriteHeaderSink()
+    _format_impl._write_array_header(sink, _format_impl.header_data_from_array_1_0(value))
+    if sink.size + data_bytes > limits.max_uncompressed_bytes:
+        raise SedimentEventError('write budget NPY byte cap')
+    return NpyMemberLayout(key, dtype.str, tuple(value.shape), False,
+                           data_bytes, sink.size, sink.size + data_bytes)
+
+
+def _write_archive(filename, members, limits):
+    if len(members) > limits.max_members_per_archive:
+        raise SedimentEventError('write budget archive member cap')
+    data_bytes = sum(m.data_bytes for m in members)
+    npy_bytes = sum(m.npy_bytes for m in members)
+    overhead = 22 + sum(96 + 2 * (len(m.key) + 4) for m in members)
+    file_bytes = npy_bytes + overhead
+    if npy_bytes > limits.max_uncompressed_bytes or file_bytes >= zipfile.ZIP64_LIMIT:
+        raise SedimentEventError('write budget archive byte cap')
+    return ArchiveLayout(filename, tuple(members), data_bytes, npy_bytes, overhead, file_bytes)
+
+
+class _WriteLayout:
+    __slots__ = ('limits', 'nodes', 'members', 'data_bytes', 'npy_bytes', 'finite_bytes')
+
+    def __init__(self, limits, identity_nodes):
+        self.limits = limits
+        self.nodes = 32 + 2 * identity_nodes  # two actual identity JSON occurrences plus manifest wrappers
+        self.members = []
+        self.data_bytes = self.npy_bytes = self.finite_bytes = 0
+        self.charge(0)
+
+    def charge(self, nodes):
+        self.nodes += nodes
+        if self.nodes > self.limits.max_nodes:
+            raise SedimentEventError('write budget encoded metadata node cap')
+
+    def enter(self, value, depth, registry):
+        # The wire adds wrappers: two levels per source container, at most
+        # three at a leaf. This pre-child bound is intentionally conservative.
+        if 2 * depth + 3 > self.limits.max_depth:
+            raise SedimentEventError('write budget encoded metadata depth cap')
+        kind = type(value)
+        if kind is np.ndarray:
+            if len(value.shape) > 4:
+                raise SedimentEventError('write budget NPY rank cap')
+            self.charge(10 + len(value.shape))
+        elif isinstance(value, np.generic):
+            if kind is not value.dtype.type or value.dtype.kind not in 'fiub' or value.dtype.itemsize > 8:
+                raise SedimentEventError('write budget unsupported NumPy scalar')
+            self.charge(1)
+        elif kind in (dict, tuple, list):
+            self.charge(3 + (len(value) if kind is dict else 0))
+            minimum = len(value)
+            if minimum > self.limits.max_nodes - self.nodes:
+                raise SedimentEventError('write budget encoded child cap')
+            if kind is dict:
+                for key in value:
+                    if type(key) is not str or len(key) > self.limits.max_string:
+                        raise SedimentEventError('write budget mapping key cap')
+        elif kind in (str, bool, int, float) or value is None:
+            _write_plain_metadata(value, self.limits)
+            self.charge(1)
+        elif kind in (SedimentEventState, BedState) or kind in tuple(registry.values()):
+            names = _WRITE_PROFILE_FIELDS.get(kind.__name__)
+            if names is None or tuple(f.name for f in dataclasses.fields(kind)) != names:
+                raise SedimentEventError('write budget native field inventory changed')
+            if kind is SedimentEventState:
+                if value.phase is not None or not _is_hex_digest(value.graph.input_sha256):
+                    raise SedimentEventError('write budget requires phase-free held graph identity')
+                self.charge(15 + len(STATE_FIELDS))
+            elif kind is BedState:
+                self.charge(6)
+            else:
+                # These fields are inspected by native omission predicates
+                # BEFORE descending into children. Admit their exact scalar
+                # kinds here rather than executing array/custom comparisons.
+                if kind is StormControl and (type(value.root_solver) is not str
+                        or type(value.newton_max_iterations) is not int):
+                    raise SedimentEventError('write budget malformed root-solver metadata')
+                if kind is CompletionPolicy and (type(value.terminal_storage_water) is not bool
+                        or type(value.deposit_mobile_at_flow_end) is not bool):
+                    raise SedimentEventError('write budget malformed completion metadata')
+                if kind is TerrainReference and (any(type(getattr(value, name)) is not bool
+                        for name in ('allow_masked_nodata', 'allow_pit_storage', 'allow_flat_storage'))
+                        or (value.nodata_value is not None and type(value.nodata_value) not in (int, float))):
+                    raise SedimentEventError('write budget malformed terrain metadata')
+                self.charge(7 + len(names))
+        else:
+            raise SedimentEventError('write budget unsupported exact native type')
+
+    def array(self, name, value):
+        if len(self.members) >= self.limits.max_members_per_archive:
+            raise SedimentEventError('write budget archive member cap')
+        if self.npy_bytes + value.nbytes > self.limits.max_uncompressed_bytes:
+            raise SedimentEventError('write budget companion aggregate byte cap')
+        member = _write_npy_member(name, value, self.limits)
+        if self.npy_bytes + member.npy_bytes > self.limits.max_uncompressed_bytes:
+            raise SedimentEventError('write budget companion aggregate byte cap')
+        self.members.append(member)
+        self.data_bytes += member.data_bytes
+        self.npy_bytes += member.npy_bytes
+        self.finite_bytes = max(self.finite_bytes, member.data_bytes // value.dtype.itemsize + 1)
+
+
+def _write_profile(item, context, column, sediment):
+    """Closed metadata admission only; never calls a physical validator."""
+    from maple.core.types.active_layer import ActiveLayerState
+    from maple.core.types.sediment_availability import SedimentAvailabilityState
+    from maple.core.types.voxel import VoxelColumnState
+    from maple.core.types.water import WaterState
+    from maple_syrup.infiltration import ColumnParameters
+    from maple_syrup.routing import RoutingGraph
+    from maple_syrup.sediment_bed import BedContext
+    from maple_syrup.sediment_physics import SedimentPhysicsParameters
+
+    if type(item) is not EventProgress or type(item.status) is not str or item.status != 'wet' \
+            or type(item.result) is not SedimentEventResult \
+            or type(context) is not BedContext or type(column) is not ColumnParameters \
+            or type(sediment) is not SedimentPhysicsParameters:
+        raise SedimentEventError('write budget requires the exact default Dense wet profile')
+    state = item.result.state
+    if type(state) is not SedimentEventState or type(state.bed) is not BedState \
+            or type(state.graph) is not RoutingGraph or state.graph.xp is not np \
+            or column.xp is not np or sediment.xp is not np:
+        raise SedimentEventError('write budget requires one actual NumPy native state')
+    b, control = state.bed, item.control
+    if type(b.voxel_column) is not VoxelColumnState or type(b.active_layer) is not ActiveLayerState \
+            or type(b.sediment_availability) is not SedimentAvailabilityState or type(b.water) is not WaterState \
+            or type(control) is not SedimentEventControl or type(control.storm) is not StormControl:
+        raise SedimentEventError('write budget unsupported bed/control type')
+    for record, fields in ((control, ('transport_scheme', 'transport_implementation', 'phase_storage',
+                                      'deep_publication')),
+                           (control.storm, ('implementation', 'root_solver')),
+                           (context, ('deep_chunk_encoding',))):
+        for name in fields:
+            value = getattr(record, name)
+            if type(value) is not str or len(value) > 1024:
+                raise SedimentEventError('write budget malformed native profile selector')
+    high_water = control.deep_publication_high_water_records
+    if high_water is not None and type(high_water) is not int:
+        raise SedimentEventError('write budget malformed native omission metadata')
+    if type(column.ksat_m_per_s) is not np.ndarray:
+        raise SedimentEventError('write budget unsupported native column metadata')
+    if control.transport_scheme != 'upwind' or control.transport_implementation not in ('auto', 'array') \
+            or control.phase_storage != 'dense' or control.phase_max_nnz is not None \
+            or control.commit is not True or control.force_final_commit is not False \
+            or control.record_exchange_history is not False or control.deep_publication != 'step' \
+            or control.storm.implementation != 'array' or control.storm.root_solver != 'bisection' \
+            or context.record_exchange_history is not False or context.deep_chunk_encoding != 'full' \
+            or context.deep_overlay_max_bytes is not None or item.result.exchange_history is not None \
+            or item.result.deep_publication is not None or state.phase is not None:
+        raise SedimentEventError('write budget unsupported optional native profile')
+    dims = (context.geometry.ny, context.geometry.nx, len(context.grain_classes.classes))
+    if any(type(n) is not int or not 1 <= n <= 64 for n in dims[:2]) \
+            or type(dims[2]) is not int or not 1 <= dims[2] <= 6 or dims[0] * dims[1] > 64:
+        raise SedimentEventError('write budget cell/class cap')
+    if type(state.graph.shape) is not tuple or len(state.graph.shape) != 2 \
+            or any(type(n) is not int for n in state.graph.shape) \
+            or type(sediment.n_classes) is not int or state.graph.shape != dims[:2] \
+            or column.shape != dims[:2] or sediment.n_classes != dims[2]:
+        raise SedimentEventError('write budget native geometry/class metadata mismatch')
+    mass = b.voxel_column.mass_kg
+    if type(mass) is not np.ndarray or len(mass.shape) != 4 or mass.shape[:2] != dims[:2] \
+            or not 1 <= mass.shape[2] <= 16 or mass.shape[3] != dims[2]:
+        raise SedimentEventError('write budget voxel layout cap')
+    for n, maximum in ((item.max_report_rows, 4096), (control.storm.max_steps, 10000),
+                       (control.max_commit_log, 65536), (control.max_rejections_recorded, 65536)):
+        if type(n) is not int or not 1 <= n <= maximum:
+            raise SedimentEventError('write budget native counter policy cap')
+    if len(item.result.commit_log) > control.max_commit_log \
+            or len(item.result.rejections) > control.max_rejections_recorded:
+        raise SedimentEventError('write budget native log length cap')
+    for reports in (item.result.hydrograph, item.result.sediment_hydrograph):
+        if type(reports) is not np.ndarray or len(reports.shape) != 2 or reports.shape[0] > item.max_report_rows:
+            raise SedimentEventError('write budget native report row cap')
+    return state
+
+
+def _write_snapshot_members(state, context, item, identity, provenance_json, limits):
+    """Closed source-qualified metadata projection of the ONE dense native subcall."""
+    from maple.io.outputs.snapshot import SNAPSHOT_SCHEMA_VERSION, _EXACT_HISTORY_SCHEMA_VERSION
+
+    if SNAPSHOT_SCHEMA_VERSION != 2 or _EXACT_HISTORY_SCHEMA_VERSION != 'maple-phase4r4-v4':
+        raise SedimentEventError('write budget native snapshot schema changed')
+    if limits.max_members_per_archive < 22:
+        raise SedimentEventError('write budget snapshot member cap')
+    step = item.result.n_accepted_steps
+    if type(step) is not int or not 0 <= step <= 10000 or type(state.t_s) not in (int, float) \
+            or not math.isfinite(state.t_s):
+        raise SedimentEventError('write budget snapshot scalar cap')
+    # No model array is constructed here: only the native writer's scalar
+    # metadata conversions. Empty bytes use actual asanyarray normalization.
+    b = state.bed
+    values = (
+        ('voxel_mass_kg', b.voxel_column.mass_kg, False),
+        ('active_mass_kg', b.active_layer.mass_kg, False),
+        ('time_s', np.float64(state.t_s), True), ('run_name', np.bytes_(b''), True),
+        ('seed', np.int64(0), True), ('step', np.int64(step), True),
+        ('reason', np.bytes_(_WRITE_SNAPSHOT_REASON.encode('utf-8')), True),
+        ('validated', np.bool_(True), True), ('is_diagnostic', np.bool_(False), True),
+        ('restartable', np.bool_(True), True), ('error_type', np.bytes_(b''), True),
+        ('error_message', np.bytes_(b''), True), ('snapshot_schema_version', np.int64(2), True),
+        ('history_schema_version', np.bytes_(_EXACT_HISTORY_SCHEMA_VERSION.encode('utf-8')), True),
+        ('provenance_json', np.bytes_(provenance_json.encode('utf-8')), True),
+        ('history_store_path', np.bytes_(b''), True),
+        ('has_sediment_availability', np.bool_(True), True),
+        ('sediment_availability_available_mass_kg', b.sediment_availability.available_mass_kg, False),
+        ('sediment_availability_bound_mass_kg', b.sediment_availability.bound_mass_kg, False),
+        ('has_water', np.bool_(True), True), ('water_depth_m', b.water.depth_m, False),
+        ('water_mobile_mass_by_cell_class_kg', b.water.mobile_mass_by_cell_class_kg, False),
+    )
+    return tuple(_write_npy_member(key, value, limits, scalar=scalar) for key, value, scalar in values)
+
+
+def checkpoint_write_budget(item, context, column, sediment, identity, *, limits):
+    """Describe native wire/serialization increments, without validating/saving state.
+
+    This optional SOURCE-qualified CPU profile is not a checkpoint authority,
+    whole-heap bound, or native-work reservation. Caller admits the separate
+    native passes/owners before calling the unchanged save_checkpoint.
+    """
+    import os
+    import struct
+    import sys
+
+    _write_limits(limits)
+    if os.linesep != '\n' or os.name != 'posix' or sys.implementation.name != 'cpython' \
+            or sys.version_info[:2] != (3, 12) or np.__version__ != '2.5.3' \
+            or zipfile.ZIP64_LIMIT != (2**31) - 1:
+        raise SedimentEventError('write budget unsupported source-qualified writer stack')
+    identity_nodes = _write_plain_metadata(identity, limits)
+    primary = _write_profile(item, context, column, sediment)
+    registry = _registry()
+    layout = _WriteLayout(limits, identity_nodes)
+    arrays = {}
+    encoded = _encode_wire(item, primary, arrays, registry, None, None,
+                           _mode=_LAYOUT_WIRE, _layout=layout)
+    provenance = {'syrup_checkpoint_schema': SCHEMA, 'requires_companion': True,
+                  'identity': identity, 'backend': 'numpy'}
+    provenance_bytes, provenance_chunks = _write_json_measure(provenance, limits, sort_keys=True)
+    # A bounded metadata-only scalar is required for exact np.bytes_/asanyarray
+    # normalization. The preflight above runs before this JSON allocation.
+    provenance_json = json.dumps(provenance, sort_keys=True)
+    snapshot = _write_archive(PAYLOADS[0],
+                              _write_snapshot_members(primary, context, item, identity,
+                                                      provenance_json, limits), limits)
+    companion = _write_archive(PAYLOADS[1], layout.members, limits)
+    uncompressed = snapshot.npy_bytes + companion.npy_bytes
+    if uncompressed > limits.max_uncompressed_bytes:
+        raise SedimentEventError('write budget summed uncompressed byte cap')
+    manifest = _checkpoint_manifest(SCHEMA, identity, 'wet', 'numpy',
+                                      {name: _SIZE_ONLY_DIGEST for name in PAYLOADS}, encoded)
+    json_bytes, json_chunks = _write_json_measure(manifest, limits, indent=2, newline=True)
+    members = snapshot.members + companion.members
+    fallback = 2 * max(m.data_bytes for m in members)
+    buffer_pair = 2 * max(max((16 * 1024**2) // np.dtype(m.dtype).itemsize, 1)
+                          * np.dtype(m.dtype).itemsize for m in members)
+    # Exactly one saved graph digest; inspect only actual graph array metadata.
+    graph_scratch = 0
+    for field in dataclasses.fields(primary.graph):
+        value = getattr(primary.graph, field.name)
+        if type(value) is np.ndarray:
+            # Graph serialization is not performed by this helper. It is still
+            # a caller-reserved rebuild/hash pass, with this separate byte scratch.
+            _write_npy_member('graph_metadata', value, limits)
+            graph_scratch = max(graph_scratch, value.nbytes)
+    pointer = struct.calcsize('P')
+    # Count concrete bounded metadata objects, with occurrence counting (no
+    # alias deduction). ZipInfo's slot values are scalar/header metadata only.
+    zip_objects = 0
+    for archive in (snapshot, companion):
+        current = (sys.getsizeof([]) + (2 * len(archive.members) + 8) * pointer
+                   + sys.getsizeof({m.key + '.npy': None for m in archive.members}))
+        for member in archive.members:
+            info = zipfile.ZipInfo(member.key + '.npy')
+            current += sys.getsizeof(info)
+            for slot in zipfile.ZipInfo.__slots__:
+                if hasattr(info, slot):
+                    slot_value = getattr(info, slot)
+                    current += (_write_metadata_size(slot_value) if type(slot_value) is not int
+                                else max(sys.getsizeof(slot_value), sys.getsizeof(0xffffffff)))
+        zip_objects = max(zip_objects, current)
+    member_objects = sum(sys.getsizeof(m)
+                         + sum(_write_metadata_size(getattr(m, f.name)) for f in dataclasses.fields(m))
+                         for m in members)
+    budget_header = (sys.getsizeof(snapshot)
+                     + pointer * (len(dataclasses.fields(CheckpointWriteBudget))
+                                  - len(dataclasses.fields(ArchiveLayout))))
+    metadata = (_write_metadata_size(manifest) + _write_metadata_size(provenance)
+                + sys.getsizeof(arrays) + sys.getsizeof(layout.members) + member_objects + zip_objects
+                + sys.getsizeof(snapshot) + sys.getsizeof(companion)
+                + sys.getsizeof(snapshot.members) + sys.getsizeof(companion.members)
+                + sys.getsizeof(members) + budget_header + _write_metadata_size(_WRITE_CALLS))
+    # 10000 is the enforced NPY header cap. The small scalar descriptors and
+    # their normalized arrays/bytes coexist with header construction; provenance
+    # text is charged separately at its actual counted length.
+    header_scalar = (2 * 10000 + sum(m.npy_header_bytes for m in members)
+                     + max(snapshot.zip_metadata_bytes, companion.zip_metadata_bytes)
+                     + 3 * provenance_bytes + 22 * (sys.getsizeof(np.float64(0))
+                                                    + sys.getsizeof(np.asanyarray(np.float64(0)))
+                                                    + sys.getsizeof(()) + 4 * pointer))
+    json_overlap = (3 * json_bytes + 3 * provenance_bytes + json_chunks + provenance_chunks
+                    + 12 * limits.max_string + 2)
+    additional = (layout.finite_bytes + fallback + buffer_pair + header_scalar + metadata
+                  + json_overlap + graph_scratch)
+    serialized = snapshot.file_bytes + companion.file_bytes
+    return CheckpointWriteBudget(SCHEMA, 'default_dense_numpy_wet_v1', (snapshot, companion),
+                                  json_bytes, provenance_bytes, layout.finite_bytes,
+                                  fallback, buffer_pair, header_scalar, metadata, json_overlap,
+                                  graph_scratch, 0, _WRITE_CALLS, additional,
+                                  uncompressed, serialized, serialized + json_bytes)
+
+
+_WRITE_PROFILE_FIELDS = {'CompletionPolicy': ('max_depth_m', 'surface_volume_m3', 'max_unit_discharge_m2_s', 'outlet_discharge_m3_s', 'hold_s', 'mobile_per_cell_class_kg', 'terminal_storage_water', 'deposit_mobile_at_flow_end'), 'EventProgress': ('result', 'policy', 'quiet', 'control', 'planned_boundaries', 'origin_t_s', 'initial_surface_m3', 'initial_soil_m3', 'rainfall_end_s', 'report_every_s', 'max_report_rows', 'status'), 'QuietProgress': ('since_s', 'last_t_s', 'ready'), 'SedimentEventControl': ('storm', 'sediment_courant_max', 'max_transport_substeps', 'commit', 'force_final_commit', 'max_commit_log', 'max_rejections_recorded', 'transport_scheme', 'phase_bins', 'transport_implementation', 'phase_storage', 'phase_max_nnz', 'record_exchange_history', 'deep_publication', 'deep_publication_high_water_records'), 'SedimentEventResult': ('state', 'hydrograph', 'sediment_hydrograph', 'sediment_columns', 'boundaries', 'cumulative_rain_m', 'cumulative_intake_m', 'cumulative_saturation_return_m', 'cumulative_drainage_m', 'cumulative_export_m3', 'peak_depth_m', 'peak_velocity_m_s', 'last_velocity_m_s', 'peak_outlet_discharge_m3_s', 'time_of_peak_outlet_s', 'max_courant_old', 'max_courant_new', 'max_routing_cell_balance_residual_m', 'max_constitutive_residual_m', 'cell_steps_no_runon', 'cell_steps_partial_runon', 'cell_steps_complete_runon', 'cumulative_pickup_kg', 'cumulative_deposition_kg', 'cumulative_export_request_kg', 'by_class', 'initial_bed_by_cell_class_kg', 'initial_bed_inventory_kg', 'initial_mobile_kg', 'numerical_residual_scalar_abs_kg', 'peak_mobile_kg', 'time_of_peak_mobile_s', 'peak_export_rate_kg_s', 'time_of_peak_export_s', 'max_sediment_courant', 'max_decay_exponent', 'max_transport_cell_residual_kg', 'max_transport_substeps_used', 'n_transport_rejections', 'regime_cell_steps', 'ledger_process_totals_reset_kg', 'committed_net_bed_change_kg', 'n_commits', 'n_forced_commits', 'n_graph_changes', 'rerouted_cells_total', 'commit_log', 'max_phase_reconciliation_residual_kg', 'n_phase_canonicalized', 'n_phase_rounding_remnants', 'phase_steered_cells_total', 'n_accepted_steps', 'n_rejected_attempts', 'rejections', 'min_accepted_dt_s', 'max_accepted_dt_s', 'n_maple_water_calls', 'first_step_wall_s', 'first_step_cpu_s', 'remaining_wall_s', 'remaining_cpu_s', 'commit_wall_s', 'n_inventory_terms', 'exchange_history', 'deep_publication', 'n_reroutes', 'n_net_commits', 'n_routing_gate_evaluations', 'max_unrouted_net_displacement_m', 'routing_source_origin', 'routing_source_t_s'), 'SedimentEventState': ('storm', 'bed', 'sediment_velocity_m_s', 'graph', 'network', 'grid', 'terrain', 'phase', 'routing_source_elevation_m'), 'StormControl': ('max_dt_s', 'min_dt_s', 'max_retries', 'max_steps', 'courant_max', 'bisection_iterations', 'root_tolerance_m', 'implementation', 'root_solver', 'newton_max_iterations'), 'StormState': ('t_s', 'depth_m', 'soil_water_m', 'discharge_m2_s'), 'TerrainReference': ('initial_full_elevation_m', 'initial_committed_elevation_m', 'export_receiver_full', 'active_mask', 'friction_factor', 'dx_m', 'allow_masked_nodata', 'nodata_value', 'allow_pit_storage', 'allow_flat_storage'), 'BedState': ('voxel_column', 'active_layer', 'water', 'ledger', 'committed_topography', 'sediment_availability'), 'SedimentLedgerState': ('pending_bed_mass_change_kg', 'pending_compensation_kg', 'process_totals_kg', 'process_totals_compensation_kg', 'numerical_residual_positive_kg', 'numerical_residual_positive_compensation_kg', 'numerical_residual_negative_kg', 'numerical_residual_negative_compensation_kg', 'actual_mass_positive_kg', 'actual_mass_positive_compensation_kg', 'actual_mass_negative_kg', 'actual_mass_negative_compensation_kg', 'largest_residual_kg', 'n_physical_touches'), 'CommittedTopographyState': ('reference_elevation_m', 'elevation_offset_m', 'committed_active_layer_mass_by_class_kg', 'committed_voxel_mass_by_class_kg', 'last_commit_time_s', 'commit_count'), 'WaterState': ('depth_m', 'mobile_mass_by_cell_class_kg')}
+
+
+# Optional P2: resource/header audit of one genuine native-written private child.
+# The unchanged native loader remains the independent state/physical authority.
+
+def _checkpoint_manifest(schema, identity, status, backend, files, payload):
+    """The existing native six-key literal, shared without moving evaluation."""
+    return {'schema': schema, 'identity': identity, 'status': status, 'backend': backend,
+            'files': files, 'payload': payload}
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CheckpointRawFile:
+    """Actual caller custody of one fixed file, sealed AFTER genuine native save.
+
+    Records do not establish the genuine-writer premise or confer load authority.
+    All three records bind the same still-owned private child directory.
+    """
+    name: str
+    size_bytes: int
+    sha256: str
+    device: int
+    inode: int
+    mtime_ns: int
+    ctime_ns: int
+    mode: int
+    directory_device: int
+    directory_inode: int
+    directory_mtime_ns: int
+    directory_ctime_ns: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CheckpointAuditedMember:
+    key: str
+    dtype: str
+    shape: tuple[int, ...]
+    npy_bytes: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CheckpointAuditedArchive:
+    filename: str
+    members: tuple[CheckpointAuditedMember, ...]
+    uncompressed_bytes: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CheckpointChildAudit:
+    """Bounded metadata only; no arrays, progress, streams or finish witness."""
+    native_schema: str
+    profile: str
+    numpy_version: str
+    raw_files: tuple[CheckpointRawFile, ...]
+    archives: tuple[CheckpointAuditedArchive, CheckpointAuditedArchive]
+    raw_child_bytes: int
+    uncompressed_payload_bytes: int
+    checkpoint_json_bytes: int
+    recapture_metadata_bytes: int
+    audited_header_metadata_bytes: int
+    hash_buffer_pair_bytes: int
+    native_call_multiplicities: tuple[tuple[str, int], ...]
+
+
+_CHILD_NAMES = ('checkpoint.json', *PAYLOADS)
+_CHILD_AUDIT_CALLS = (('checkpoint_write_budget', 1),
+                      ('_encode_wire.LAYOUT_traversals', 1), ('_encode_wire.WRITE_traversals', 1),
+                      ('_graph_digest', 1), ('sha256_file', 3),
+                      ('physical_checkpoint._audit_archive', 2),
+                      ('json.loads', 0), ('load_checkpoint', 0))
+
+
+def _child_uint(value):
+    # The existing closed256-bit metadata maximum also bounds supplied stat
+    # integers. It is not the JSON limit selected for the physical input.
+    return type(value) is int and value >= 0 and value.bit_length() <= 256
+
+
+def _child_layout(layout, limits):
+    """Admit only bounded HELD descriptor metadata, without rereading the item."""
+    _write_limits(limits)
+    if type(layout) is not CheckpointWriteBudget or type(layout.native_schema) is not str \
+            or layout.native_schema != SCHEMA or type(layout.profile) is not str \
+            or layout.profile != 'default_dense_numpy_wet_v1' \
+            or type(layout.archives) is not tuple or len(layout.archives) != 2:
+        raise SedimentEventError('child audit requires the exact P1 descriptor')
+    for field in dataclasses.fields(layout):
+        if field.name not in ('native_schema', 'profile', 'archives', 'native_call_multiplicities') \
+                and not _child_uint(getattr(layout, field.name)):
+            raise SedimentEventError('child audit malformed P1 scalar metadata')
+    calls = layout.native_call_multiplicities
+    if type(calls) is not tuple or len(calls) != len(_WRITE_CALLS):
+        raise SedimentEventError('child audit malformed P1 call descriptor')
+    for pair, expected in zip(calls, _WRITE_CALLS):
+        if type(pair) is not tuple or len(pair) != 2 or type(pair[0]) is not str \
+                or len(pair[0]) > 1024 or not _child_uint(pair[1]) or pair != expected:
+            raise SedimentEventError('child audit malformed P1 call descriptor')
+    for index, archive in enumerate(layout.archives):
+        if type(archive) is not ArchiveLayout or type(archive.filename) is not str \
+                or archive.filename != PAYLOADS[index] or type(archive.members) is not tuple \
+                or not 1 <= len(archive.members) <= limits.max_members_per_archive \
+                or (index == 0 and len(archive.members) != 22):
+            raise SedimentEventError('child audit malformed archive descriptor')
+        for field in ('data_bytes', 'npy_bytes', 'zip_metadata_bytes', 'file_bytes'):
+            if not _child_uint(getattr(archive, field)):
+                raise SedimentEventError('child audit malformed archive scalar')
+        seen = set()
+        for member in archive.members:
+            if type(member) is not NpyMemberLayout or type(member.key) is not str \
+                    or not member.key or len(member.key) + 4 > 200 or not member.key.isascii() \
+                    or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
+                           for c in member.key) or member.key in seen \
+                    or type(member.dtype) is not str or not 1 <= len(member.dtype) <= 1024 \
+                    or type(member.shape) is not tuple or len(member.shape) > 4 \
+                    or any(not _child_uint(n) for n in member.shape) \
+                    or member.fortran_order is not False \
+                    or not _child_uint(member.data_bytes) or member.data_bytes > limits.max_uncompressed_bytes \
+                    or not _child_uint(member.npy_header_bytes) or not 1 <= member.npy_header_bytes <= 10000 \
+                    or not _child_uint(member.npy_bytes) \
+                    or member.npy_bytes != member.data_bytes + member.npy_header_bytes:
+                raise SedimentEventError('child audit malformed member descriptor')
+            seen.add(member.key)
+        # Reuse the original metadata-only resource formula; no copied ZIP codec.
+        if _write_archive(archive.filename, archive.members, limits) != archive:
+            raise SedimentEventError('child audit inconsistent archive descriptor')
+    if not 1 <= layout.checkpoint_json_bytes <= limits.max_json_bytes \
+            or not 1 <= layout.snapshot_provenance_bytes <= limits.max_json_bytes \
+            or layout.host_payload_copy_bytes != 0 \
+            or layout.uncompressed_payload_bytes != sum(a.npy_bytes for a in layout.archives) \
+            or not 1 <= layout.uncompressed_payload_bytes <= limits.max_uncompressed_bytes \
+            or layout.serialized_payload_bytes != sum(a.file_bytes for a in layout.archives) \
+            or layout.native_child_bytes != layout.serialized_payload_bytes + layout.checkpoint_json_bytes:
+        raise SedimentEventError('child audit inconsistent P1 byte descriptor')
+
+
+def _child_records(raw_files, layout):
+    if type(raw_files) is not tuple or len(raw_files) != 3:
+        raise SedimentEventError('child audit requires exactly three raw records')
+    expected_sizes = (layout.checkpoint_json_bytes, *(a.file_bytes for a in layout.archives))
+    directory = None
+    for row, name, size in zip(raw_files, _CHILD_NAMES, expected_sizes):
+        if type(row) is not CheckpointRawFile or type(row.name) is not str or row.name != name \
+                or type(row.sha256) is not str or not _is_hex_digest(row.sha256) \
+                or row.sha256 == _SIZE_ONLY_DIGEST:
+            raise SedimentEventError('child audit malformed raw custody record')
+        for field in dataclasses.fields(row):
+            if field.name not in ('name', 'sha256') and not _child_uint(getattr(row, field.name)):
+                raise SedimentEventError('child audit malformed raw custody scalar')
+        if row.size_bytes != size:
+            raise SedimentEventError('child audit raw record exceeds exact P1 file cap')
+        current = (row.directory_device, row.directory_inode, row.directory_mtime_ns, row.directory_ctime_ns)
+        if directory is not None and current != directory:
+            raise SedimentEventError('child audit raw records name different directories')
+        directory = current
+    if sum(row.size_bytes for row in raw_files) != layout.native_child_bytes:
+        raise SedimentEventError('child audit raw aggregate cap mismatch')
+
+
+def _child_file_stat(path, row):
+    import stat
+
+    observed = path.lstat()
+    if not stat.S_ISREG(observed.st_mode) or \
+            (observed.st_dev, observed.st_ino, observed.st_size, observed.st_mtime_ns,
+             observed.st_ctime_ns, observed.st_mode) != \
+            (row.device, row.inode, row.size_bytes, row.mtime_ns, row.ctime_ns, row.mode):
+        raise SedimentEventError('child audit raw file identity or cap changed')
+
+
+def _child_inventory(path, raw_files):
+    """Fixed three-name nofollow inventory; a fourth entry refuses immediately."""
+    import os
+    import stat
+
+    directory = path.lstat()
+    first = raw_files[0]
+    if not stat.S_ISDIR(directory.st_mode) or \
+            (directory.st_dev, directory.st_ino, directory.st_mtime_ns, directory.st_ctime_ns) != \
+            (first.directory_device, first.directory_inode,
+             first.directory_mtime_ns, first.directory_ctime_ns):
+        raise SedimentEventError('child audit private directory identity changed')
+    names = set()
+    with os.scandir(path) as entries:
+        for entry in entries:
+            if len(names) == 3 or entry.name not in _CHILD_NAMES or entry.name in names:
+                raise SedimentEventError('child audit unexpected private child inventory')
+            names.add(entry.name)
+    if len(names) != 3:
+        raise SedimentEventError('child audit missing private child file')
+    for row in raw_files:
+        _child_file_stat(path / row.name, row)
+
+
+def _child_match_archive(observed, used, expected):
+    if type(observed) is not dict or len(observed) != len(expected.members) \
+            or tuple(observed) != tuple(m.key for m in expected.members) or used != expected.npy_bytes:
+        raise SedimentEventError('child audit native archive inventory mismatch')
+    rows = []
+    for member in expected.members:
+        actual = observed[member.key]
+        if actual != {'dtype': member.dtype, 'shape': list(member.shape), 'npy_bytes': member.npy_bytes}:
+            raise SedimentEventError('child audit native member layout mismatch')
+        rows.append(CheckpointAuditedMember(member.key, actual['dtype'],
+                                            tuple(actual['shape']), actual['npy_bytes']))
+    return CheckpointAuditedArchive(expected.filename, tuple(rows), used)
+
+
+def audit_checkpoint_child(path, item, context, column, sediment, identity, *,
+                           limits, expected_layout, raw_files):
+    """Audit a genuine private native child BEFORE a separately admitted load.
+
+    The caller retains unchanged actual writer input and selected child/custody,
+    and admits ALL native/metadata/copy owners before writing. This function is
+    not a hostile-upload parser, atomic-descriptor API, physical validator or
+    authority to load/finish/publish. It does not write or return model arrays.
+    Native encoder/audit exceptions propagate unchanged.
+    """
+    import sys
+
+    _child_layout(expected_layout, limits)
+    _write_plain_metadata(identity, limits)
+    _child_records(raw_files, expected_layout)
+    if type(path) not in (str, type(Path())):
+        raise SedimentEventError('child audit requires a plain private path')
+    if type(path) is str and len(path) > 4096:
+        raise SedimentEventError('child audit private path metadata cap')
+    path = Path(path)
+    if not path.is_absolute() or '..' in path.parts or len(str(path)) > 4096:
+        raise SedimentEventError('child audit requires a bounded absolute private path')
+
+    # ALL fixed count, identities, exact raw file and aggregate caps precede
+    # hashes, held-item rerecapture, JSON reads and any ZipFile construction.
+    _child_inventory(path, raw_files)
+    for row in raw_files:
+        _child_file_stat(path / row.name, row)
+        actual_digest = sha256_file(path / row.name)
+        _child_file_stat(path / row.name, row)
+        if actual_digest != row.sha256:
+            raise SedimentEventError('child audit actual raw digest mismatch')
+    _child_inventory(path, raw_files)
+
+    actual_layout = checkpoint_write_budget(item, context, column, sediment, identity, limits=limits)
+    if actual_layout != expected_layout:
+        raise SedimentEventError('child audit held input or P1 layout changed')
+    from maple.core.backend import is_array, to_host
+
+    primary = _primary(item)
+    arrays = {}
+    encoded = _encode_wire(item, primary, arrays, _registry(), is_array, to_host)
+    payload_hashes = {name: raw_files[index + 1].sha256 for index, name in enumerate(PAYLOADS)}
+    manifest = _checkpoint_manifest(SCHEMA, identity, 'wet', 'numpy', payload_hashes, encoded)
+    json_bytes, _json_chunks = _write_json_measure(manifest, limits, indent=2, newline=True)
+    if json_bytes != expected_layout.checkpoint_json_bytes:
+        raise SedimentEventError('child audit native manifest size mismatch')
+    expected_json = (json.dumps(manifest, indent=2, allow_nan=False) + '\n').encode('ascii')
+    with (path / 'checkpoint.json').open('rb') as stream:
+        actual_json = stream.read(json_bytes + 1)
+    if len(actual_json) != json_bytes or actual_json != expected_json:
+        raise SedimentEventError('child audit native manifest bytes mismatch')
+
+    from maple.aeolian.scheduler.physical_checkpoint import _audit_archive
+
+    first, used0 = _audit_archive(path / PAYLOADS[0], limits.max_uncompressed_bytes)
+    audited0 = _child_match_archive(first, used0, expected_layout.archives[0])
+    second, used1 = _audit_archive(path / PAYLOADS[1], limits.max_uncompressed_bytes - used0)
+    audited1 = _child_match_archive(second, used1, expected_layout.archives[1])
+    if used0 + used1 != expected_layout.uncompressed_payload_bytes \
+            or used0 + used1 > limits.max_uncompressed_bytes:
+        raise SedimentEventError('child audit native summed uncompressed mismatch')
+    _child_inventory(path, raw_files)
+    # These are observed bounded metadata increments, not a whole-heap proof.
+    recapture_metadata = (_write_metadata_size(manifest) + sys.getsizeof(arrays)
+                          + sum(sys.getsizeof(name) for name in arrays))
+    header_metadata = _write_metadata_size(first) + _write_metadata_size(second)
+    return CheckpointChildAudit(SCHEMA, expected_layout.profile, np.__version__, raw_files,
+                                (audited0, audited1), expected_layout.native_child_bytes,
+                                used0 + used1, json_bytes, recapture_metadata, header_metadata,
+                                2 * 1024**2, _CHILD_AUDIT_CALLS)
