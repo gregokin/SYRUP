@@ -495,3 +495,94 @@ def test_real_complete_event_joint_splice_preserves_native_default_dry_reset(tmp
     assert actual.accounting['policy'] == 'external dry-again removal; no evapotranspiration simulated'
     assert actual.accounting['storm_water_budget']['closed']
     _unchanged(bits)
+
+
+# Metadata-only counter regressions.  Root runs these with the genuine locked
+# NumPy/Native imports; no transport, store, physics or completion law is mocked.
+def test_native_regime_producer_forms_keep_original_counter_without_array_coercion(monkeypatch):
+    from maple_syrup import windowed_shared_bed as shared
+
+    # The actual producer starts at zeros((),int64), then assigns old+sum(bool).
+    initial = np.zeros((), dtype=np.int64)
+    updated = initial + np.sum(np.array([True, False, True], dtype=bool))
+    assert initial.shape == () and initial.dtype == np.int64
+    assert updated.shape == () and updated.dtype == np.int64 and updated == 2
+    before = (initial.tobytes(), updated.tobytes())
+    sentinel = np.array([11.0])
+    arrays = [sentinel]
+
+    def forbid_conversion(*args, **kwargs):
+        raise AssertionError('regime metadata must not materialize or coerce a counter')
+
+    with monkeypatch.context() as patch:
+        patch.setattr(np, 'array', forbid_conversion)
+        patch.setattr(np, 'asarray', forbid_conversion)
+        assert shared._append_regime_counter(arrays, initial) is None
+        assert shared._append_regime_counter(arrays, updated) is None
+    assert arrays[0] is sentinel and arrays[1] is initial
+    # A provider may keep its updated value as an exact0D array or return its
+    # Native int64 scalar.  Neither form is converted or replaced by admission.
+    if type(updated) is np.ndarray:
+        assert len(arrays) == 3 and arrays[2] is updated
+    else:
+        assert type(updated) is np.int64 and len(arrays) == 2
+    assert (initial.tobytes(), updated.tobytes()) == before
+
+
+@pytest.mark.parametrize('value', [0, 2, (1 << 63) - 1])
+def test_exact_native_int64_scalar_counter_keeps_value_and_array_owner(value):
+    from maple_syrup import windowed_shared_bed as shared
+
+    counter = np.int64(value)
+    original_bits = counter.tobytes()
+    sentinel = np.array([19.0])
+    arrays = [sentinel]
+    shared._append_regime_counter(arrays, counter)
+    assert len(arrays) == 1 and arrays[0] is sentinel
+    assert type(counter) is np.int64 and counter == value and counter.tobytes() == original_bits
+
+
+@pytest.mark.parametrize('dtype,value', [(np.int64, 0), (np.int64, -1), (np.float64, 1.25)])
+def test_existing_zero_dimensional_array_counter_path_is_byte_exact(dtype, value):
+    from maple_syrup import windowed_shared_bed as shared
+
+    # This is the original array metadata route, not a newly approved producer
+    # dtype/value policy.  Its later genuine Native validators stay unchanged.
+    counter = np.array(value, dtype=dtype)
+    before = (counter.dtype, counter.shape, counter.strides, counter.flags.writeable, counter.tobytes())
+    arrays = []
+    shared._append_regime_counter(arrays, counter)
+    assert len(arrays) == 1 and arrays[0] is counter
+    assert (counter.dtype, counter.shape, counter.strides, counter.flags.writeable, counter.tobytes()) == before
+
+
+@pytest.mark.parametrize('kind', ['negative', 'bool', 'python_int', 'python_float', 'int32',
+    'uint64', 'float64', 'numpy_bool', 'none', 'vector', 'array_subclass', 'scalar_subclass', 'coercible'])
+def test_unsupported_regime_counter_forms_refuse_without_append_or_coercion(kind):
+    from maple_syrup import windowed_shared_bed as shared
+
+    class ArraySubclass(np.ndarray):
+        pass
+
+    class ScalarSubclass(np.int64):
+        pass
+
+    class Coercible:
+        def __array__(self, *args, **kwargs):
+            raise AssertionError('unsupported counter was coerced')
+
+        def __int__(self):
+            raise AssertionError('unsupported counter was cast')
+
+    cases = {'negative': np.int64(-1), 'bool': True, 'python_int': 1, 'python_float': 1.0,
+        'int32': np.int32(1), 'uint64': np.uint64(1), 'float64': np.float64(1),
+        'numpy_bool': np.bool_(True), 'none': None, 'vector': np.array([1], dtype=np.int64),
+        'array_subclass': np.array(1, dtype=np.int64).view(ArraySubclass),
+        'scalar_subclass': ScalarSubclass(1), 'coercible': Coercible()}
+    counter = cases[kind]
+    sentinel = np.array([23.0])
+    before = sentinel.tobytes()
+    arrays = [sentinel]
+    with pytest.raises(BedIntegrationError):
+        shared._append_regime_counter(arrays, counter)
+    assert len(arrays) == 1 and arrays[0] is sentinel and sentinel.tobytes() == before

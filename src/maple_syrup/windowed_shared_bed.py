@@ -109,6 +109,10 @@ _SEDIMENT_ARRAYS = ('diameter_m', 'raindrop_a', 'raindrop_b', 'raindrop_c',
 _VISIBLE_REQUEST_CENSUS = {'attempt': (((3852, (0, 0, 0, 0, 0, 0, 0)), (1172, (0, 0, 0, 1, 0, 0, 0)), (190, (0, 0, 1, 0, 0, 0, 0)), (190, (0, 0, 1, 1, 0, 0, 0)), (39, (1, 0, 0, 0, 0, 0, 0)), (1, (1, 1, 0, 0, 0, 0, 0))), ((3852, (0, 0, 0, 0, 0, 0, 0)), (1172, (0, 0, 0, 1, 0, 0, 0)), (190, (0, 0, 1, 0, 0, 0, 0)), (190, (0, 0, 1, 1, 0, 0, 0)), (45, (1, 0, 0, 0, 0, 0, 0)), (9, (1, 1, 0, 0, 0, 0, 0)))), 'commit_routing': (((2068, (0, 0, 0, 0, 0, 0, 0)), (130, (1, 0, 0, 0, 0, 0, 0))), ((2068, (0, 0, 0, 0, 0, 0, 0)), (130, (1, 0, 0, 0, 0, 0, 0)))), 'complete_entry': (((830, (0, 0, 0, 0, 0, 0, 0)), (17, (0, 0, 0, 0, 0, 0, 1))), ((830, (0, 0, 0, 0, 0, 0, 0)), (17, (0, 0, 0, 0, 0, 0, 1)))), 'driver': (((4309, (0, 0, 0, 0, 0, 0, 0)), (1013, (0, 0, 0, 0, 0, 0, 1)), (545, (0, 0, 0, 0, 0, 0, 2)), (165, (0, 0, 0, 0, 0, 1, 1)), (165, (0, 0, 0, 0, 0, 1, 2)), (1082, (0, 0, 0, 0, 1, 0, 1)), (537, (0, 0, 0, 0, 1, 0, 2)), (330, (0, 0, 0, 0, 1, 1, 1)), (165, (0, 0, 0, 0, 1, 1, 2)), (537, (0, 0, 0, 0, 2, 0, 1)), (165, (0, 0, 0, 0, 2, 1, 1)), (65, (1, 0, 0, 0, 0, 0, 0))), ((4309, (0, 0, 0, 0, 0, 0, 0)), (1019, (0, 0, 0, 0, 0, 0, 1)), (550, (0, 0, 0, 0, 0, 0, 2)), (167, (0, 0, 0, 0, 0, 1, 1)), (167, (0, 0, 0, 0, 0, 1, 2)), (1092, (0, 0, 0, 0, 1, 0, 1)), (542, (0, 0, 0, 0, 1, 0, 2)), (334, (0, 0, 0, 0, 1, 1, 1)), (167, (0, 0, 0, 0, 1, 1, 2)), (542, (0, 0, 0, 0, 2, 0, 1)), (167, (0, 0, 0, 0, 2, 1, 1)), (65, (1, 0, 0, 0, 0, 0, 0)))), 'initial': (((1727, (0, 0, 0, 0, 0, 0, 0)), (65, (1, 0, 0, 0, 0, 0, 0))), ((1727, (0, 0, 0, 0, 0, 0, 0)), (65, (1, 0, 0, 0, 0, 0, 0)))), 'packed_result': (((47, (0, 0, 0, 0, 0, 0, 0)),), ((47, (0, 0, 0, 0, 0, 0, 0)),)), 'prepared_commit': (((5, (0, 0, 0, 0, 0, 0, 0)),), ((5, (0, 0, 0, 0, 0, 0, 0)),)), 'publish_commit': (((60, (0, 0, 0, 0, 0, 0, 0)),), ((60, (0, 0, 0, 0, 0, 0, 0)),)), 'quiet': (((111, (0, 0, 0, 0, 0, 0, 0)),), ((111, (0, 0, 0, 0, 0, 0, 0)),)), 'refresh_hydraulics': (((13, (0, 0, 0, 0, 0, 0, 0)),), ((14, (0, 0, 0, 0, 0, 0, 0)),)), 'terminal': (((1342, (0, 0, 0, 0, 0, 0, 0)),), ((1342, (0, 0, 0, 0, 0, 0, 0)),))}
 _MAX_EXTERNAL_ARRAYS = 256
 _MAX_ROOT_RANK = 4
+# Source-derived logical counter/frame/header/error banks, NOT object heap sizes.
+# Complete fixed seven-counter census is recorded in the owning Source ledger.
+_REGIME_COUNTER_LOGICAL_HOST_BYTES = 135003
+_REGIME_COUNTER_LOGICAL_WORK = 28932
 
 
 def _refuse(code):
@@ -298,6 +302,19 @@ def _append(arrays, value, *, shape=None, ndim=None, max_size=None):
         arrays.append(value)
 
 
+def _append_regime_counter(arrays, value):
+    """Retain the Native CPU count representation; never create an array."""
+    import numpy as np
+
+    if type(value) is np.int64:
+        if value < 0:
+            _refuse('regime_counter_scalar_nonnegative')
+        return
+    if type(value) is not np.ndarray:
+        _refuse('regime_counter_representation')
+    _append(arrays, value, shape=())
+
+
 def _external_arrays(*, graph, terrain, routing_source_m=None, soil_water_m=None,
                      state=None, column=None, sediment=None, field=None, schedule=None,
                      vegetation=None, continuation=None, planned_boundaries=None, max_rows=None,
@@ -426,7 +443,7 @@ def _external_arrays(*, graph, terrain, routing_source_m=None, soil_water_m=None
         if type(continuation.regime_cell_steps) is not dict or len(continuation.regime_cell_steps) != 7:
             _refuse('regime_result_map')
         for value in continuation.regime_cell_steps.values():
-            _append(arrays, value, shape=())
+            _append_regime_counter(arrays, value)
         if continuation.exchange_history is not None or continuation.deep_publication is not None:
             _refuse('continuation_history_or_deferred_publication')
         # Its prior event state is separately retained, without alias credit.
@@ -605,7 +622,8 @@ def _reserve(state, context, metadata, external_arrays=(), *, control=None, max_
                ('metadata_original_and_water_and_adapter', native_reference + 8 * (256 + 8 * len(external_arrays))),
                ('owned_directory_metadata_and_error_paths', limits.max_entries * (4 * 4096 + 256)),
                ('fixed_rainfall_text_and_scalar_metadata', 5 * 4096 * 4 + 128 * 32),
-               ('visible_syrup_requests_including_terminal_error', visible))
+               ('visible_syrup_requests_including_terminal_error', visible),
+               ('seven_continuation_regime_scalar_frame_header_error', _REGIME_COUNTER_LOGICAL_HOST_BYTES))
     mapped = policy.max_mapped_bytes + 2 * storage.mapped_bytes_max + 2 * chunk
     reads = (commits * policy.max_logical_deep_read_bytes
              + (2 * attempts + 2 * commits) * storage.logical_deep_read_bytes
@@ -615,7 +633,8 @@ def _reserve(state, context, metadata, external_arrays=(), *, control=None, max_
             ('visible_syrup_loop_expanded_byte_visits', visible_work),
             ('original_and_external_metadata', original.request.logical_work + 256 * len(external_arrays)),
             ('two_owned_directory_scans', 2 * limits.max_entries * (4 * 4096 + 256)),
-            ('publication_and_validation_byte_visits', 8 * chunk + 2 * storage.new_host_bytes_peak))
+            ('publication_and_validation_byte_visits', 8 * chunk + 2 * storage.new_host_bytes_peak),
+            ('seven_continuation_regime_scalar_metadata_work', _REGIME_COUNTER_LOGICAL_WORK))
     if (sum(value for _, value in payload) + limits.reserve_host_bytes > limits.max_host_bytes
             or mapped > limits.max_mapped_bytes or reads > limits.max_logical_read_bytes
             or sum(value for _, value in work) > limits.max_work):

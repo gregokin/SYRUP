@@ -108,3 +108,34 @@ This one-class fixture declaration does not change the Native parameter
 default or response law and does not establish production calibration.
 The existing assertions and original limits remain unchanged; actual
 integration execution and acceptance remain Root-owned and pending.
+
+
+Continuation regime-counter metadata accepts the two genuine CPU forms:
+the existing exact zero-dimensional ndarray route remains unchanged, and an
+additional exact nonnegative `numpy.int64` host scalar may be retained in its
+original result dictionary. Native code initializes seven counters with
+`zeros((),int64)` and updates them with out-of-place addition of boolean sums;
+NumPy may return its scalar representation. No counter is copied, cast,
+replaced, converted to an array or transferred between host and device here.
+Other scalar dtypes, Python integers/bools, subclasses and unsupported shapes
+refuse before Native work. The original array route keeps its old later Native
+dtype/value checks; this correction adds no array dtype or value policy.
+
+A separately named seven-counter logical bank is additive to every existing
+HOST/work term and ceiling. It charges exact int64/boolean payloads, explicit
+logical reference/header/error/frame roles and Source check/primitive visits
+without alias/release/GC credit. Its frame projection follows the Native
+8-byte logical-reference convention; it is not CPython/NumPy object header,
+allocator, RSS, heap or execution-time measurement. All provider-private costs,
+existing positive reserve, actual headroom and original runtime guards remain
+required. Source acceptance neither proves fit nor converts the preserved
+failed terminal attempt into success. Root runs only the affected continuation,
+terminal and new metadata checks; producer/core/dry-reset/physics/defaults and
+the original fifteen test definitions remain unchanged.
+
+This counter-specific admission deliberately refuses `None`. The previous
+generic array collector skipped `None`; Native's seven regime-counter
+producers never emit it. This is an explicit unsupported-representation
+narrowing for those counters, accepted separately from the additional scalar
+representation. The existing ndarray path and the generic collector remain
+unchanged.
