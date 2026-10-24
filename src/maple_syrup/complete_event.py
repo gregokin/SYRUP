@@ -232,6 +232,13 @@ def complete_event(state, context, column, field, schedule, vegetation, sediment
     policy = CompletionPolicy() if policy is None else policy
     policy.validated()
     control.validated()
+    from maple_syrup.sediment_event import _admit_shared_event
+
+    _admit_shared_event(state, context, control, column=column, sediment=sediment,
+                        field=field, schedule=schedule, vegetation=vegetation,
+                        continuation=None if continuation is None else continuation.result,
+                        max_report_rows=max_report_rows, end_s=max_end_s,
+                        report_every_s=report_every_s)
     if not control.commit:
         raise SedimentEventError('complete event requires actual MAPLE commits')
     control = replace(control, force_final_commit=False)
@@ -351,6 +358,12 @@ def finalize_event(progress, context, column):
     from maple.water import WaterProcessDemand
 
     r, state = progress.result, progress.result.state
+    from maple_syrup.sediment_event import _admit_shared_event
+    from maple_syrup.sediment_bed import _shared_profile
+
+    _admit_shared_event(state, context, progress.control, column=column, continuation=r,
+                        max_report_rows=progress.max_report_rows)
+    shared = _shared_profile(state.bed, context)
     xp = state.graph.xp
     policy = progress.policy.validated()
     qualifies, before_metrics = quiet_metrics(state, context, policy, progress.rainfall_end_s)
@@ -501,9 +514,15 @@ def finalize_event(progress, context, column):
         }
     # All settlement, terrain, phase, history, quiet, and water/class budget
     # checks passed. Publish the ONE bed shared by pre-reset and dry states last.
+    if shared is not None:
+        shared.require_terminal_pair(state.bed, dry.bed, context, current_time_s=state.t_s)
     accepted_bed = publish_bed_storage(state.bed, context)
     state = replace(state, bed=accepted_bed)
-    dry = replace(dry, bed=replace(dry.bed, voxel_column=accepted_bed.voxel_column))
+    if shared is not None:
+        dry = replace(dry, bed=shared.splice_terminal_shared_beds(
+            accepted_bed, dry.bed, context, current_time_s=state.t_s))
+    else:
+        dry = replace(dry, bed=replace(dry.bed, voxel_column=accepted_bed.voxel_column))
     r = replace(r, state=state)
     progress = replace(progress, result=r)
     return DryHandoff(progress, dry, h, soil, deposited, accounting)

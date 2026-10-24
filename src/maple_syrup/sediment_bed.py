@@ -173,6 +173,9 @@ def bed_from_case(case, *, xp=None) -> tuple[BedState, BedContext]:
 
 def with_water(state: BedState, context: BedContext, depth_m, mobile_kg=None) -> BedState:
     """Validate a replacement WaterState before returning a new wrapper."""
+    shared = _shared_profile(state, context)
+    if shared is not None:
+        shared.admit_water_operands(state, context, depth_m=depth_m, mobile_kg=mobile_kg)
     from maple.core.backend import resolve_operand_namespace
     from maple.core.types.water import WaterState
     from maple.water import validate_water_state
@@ -188,6 +191,9 @@ def apply_bed_demand(state: BedState, context: BedContext, demand) -> tuple[BedS
     availability, stratigraphic refill and gross ledger accounting. Pure.
     The caller retains the returned genuine result for event accounting.
     """
+    shared = _shared_profile(state, context)
+    if shared is not None:
+        shared.admit_water_operands(state, context, demand=demand)
     from maple.water import apply_water_process_demand, validate_water_state
 
     g = context.geometry
@@ -519,75 +525,83 @@ def commit_bed(state: BedState, context: BedContext, graph: RoutingGraph,
     from maple.surface.topographic_commit.triggers import evaluate_commit_triggers
     from maple.water.commit_callback import make_water_depth_commit_callback
 
-    if is_windowed_bed(state):
-        if bool(getattr(context.avalanching_spec, 'enabled', False)):
-            raise BedIntegrationError('windowed commits require explicitly disabled avalanching')
-        from maple.surface.topographic_commit.windowed_commit import (
-            stage_windowed_topography,
-        )
-        from maple.water.windowed_commit_callback import (
-            make_windowed_water_depth_commit_callback,
-        )
+    shared = _shared_profile(state, context)
+    if shared is not None:
+        candidate, trigger, result, water_box, threshold = shared.commit_shared_bed(
+            state, context, graph, reference, current_time_s=time_s,
+            force=force, routing_source_m=routing_source_m)
+        if candidate is None:
+            return BedCommit(state, graph, False, trigger)
+    else:
+        if is_windowed_bed(state):
+            if bool(getattr(context.avalanching_spec, 'enabled', False)):
+                raise BedIntegrationError('windowed commits require explicitly disabled avalanching')
+            from maple.surface.topographic_commit.windowed_commit import (
+                stage_windowed_topography,
+            )
+            from maple.water.windowed_commit_callback import (
+                make_windowed_water_depth_commit_callback,
+            )
 
-        commit_topography = stage_windowed_topography
-        make_water_depth_commit_callback = make_windowed_water_depth_commit_callback
-    g = context.geometry
-    if (graph.shape != (g.ny, g.nx) or graph.dx_m != g.dx_m or g.dx_m != g.dy_m
-            or reference.dx_m != graph.dx_m
-            or reference.initial_committed_elevation_m.shape != graph.shape):
-        raise BedIntegrationError('bed context, terrain and routing geometry must agree')
-    xp = array_namespace(state.water.depth_m)
-    if xp is not graph.xp:
-        raise BedIntegrationError('bed water and routing must use the same backend')
-    if context.depth_update_rule != 'constant_depth':
-        raise BedIntegrationError('SYRUP requires constant_depth for hydraulic ownership')
-    if not isinstance(force, bool):
-        raise BedIntegrationError('force must be bool')
-    if routing_source_m is not None:
-        check_routing_source(routing_source_m, graph.shape, graph.xp)
-        threshold = reroute_threshold_m(context)
-    if reference.allow_masked_nodata and bool(getattr(context.avalanching_spec, 'enabled', False)):
-        # MAPLE's avalanching knows the whole grid, not SYRUP's inactive / nodata mask: a slope relaxation could
-        # move bed mass into or out of masked cells. Refused until that interaction is qualified separately.
-        raise BedIntegrationError('avalanching inside commits is not supported with a masked-nodata terrain '
-                                  '(unqualified mass exchange across the mask); disable avalanching or the mask')
-    if not isinstance(context.record_exchange_history, bool):
-        raise BedIntegrationError('record_exchange_history must be bool')
-    history_kwargs = {}
-    if context.record_exchange_history:
-        # Refused BEFORE the trigger evaluation and the commit: an older MAPLE cannot record the history and
-        # nothing may be published on an unsupported dependency when the caller asked for it.
-        if not maple_supports_exchange_history():
-            raise BedIntegrationError('the bound MAPLE dependency cannot record the exchange history '
-                                      '(commit_topography has no record_exchange_history keyword); no commit made')
-        history_kwargs['record_exchange_history'] = True
-    trigger = evaluate_commit_triggers(state.ledger, state.committed_topography, context.geometry,
-                                      time_s, context.topographic_commit_spec)
-    if not force and not trigger.should_commit:
-        return BedCommit(state, graph, False, trigger)
-    avalanche, avalanche_box = make_availability_aware_avalanche_callback(
-        context.avalanching_spec, state.sediment_availability, context.initial_available_fraction)
-    water, water_box = make_water_depth_commit_callback(
-        state.water, context.geometry, committed_elevation_m(state.committed_topography),
-        depth_update_rule=context.depth_update_rule,
-        **({'trusted_packet': True} if is_windowed_bed(state) else {}))
-    result = commit_topography(state.ledger, state.committed_topography, state.voxel_column,
-                               state.active_layer, context.geometry, context.mass_resolution_kg,
-                               time_s, avalanche_callback=avalanche, water_callback=water,
-                               **({'trusted_packet': True} if is_windowed_bed(state) else {}), **history_kwargs)
-    if context.record_exchange_history and (
-            result.pre_commit_n_physical_touches is None or result.pre_commit_gross_physical_activity_kg is None
-            or result.exchange_history_receipt is None):
-        raise BedIntegrationError('MAPLE commit returned no exchange history although it was requested; '
-                                  'nothing published')
-    water_box.publish()  # local box only; nothing is returned until graph validation
-    xp = array_namespace(state.water.depth_m)
-    if (not water_box.ran or water_box.depth_update.rule != 'constant_depth'
-            or not to_bool(xp.all(water_box.water.depth_m == state.water.depth_m))):
-        raise BedIntegrationError('MAPLE commit changed solver-owned water depth')
-    candidate = replace(state, voxel_column=result.new_voxel_column, active_layer=result.new_active_layer,
-                        committed_topography=result.new_committed_state, ledger=result.new_ledger,
-                        sediment_availability=avalanche_box.new_sediment_availability, water=water_box.water)
+            commit_topography = stage_windowed_topography
+            make_water_depth_commit_callback = make_windowed_water_depth_commit_callback
+        g = context.geometry
+        if (graph.shape != (g.ny, g.nx) or graph.dx_m != g.dx_m or g.dx_m != g.dy_m
+                or reference.dx_m != graph.dx_m
+                or reference.initial_committed_elevation_m.shape != graph.shape):
+            raise BedIntegrationError('bed context, terrain and routing geometry must agree')
+        xp = array_namespace(state.water.depth_m)
+        if xp is not graph.xp:
+            raise BedIntegrationError('bed water and routing must use the same backend')
+        if context.depth_update_rule != 'constant_depth':
+            raise BedIntegrationError('SYRUP requires constant_depth for hydraulic ownership')
+        if not isinstance(force, bool):
+            raise BedIntegrationError('force must be bool')
+        if routing_source_m is not None:
+            check_routing_source(routing_source_m, graph.shape, graph.xp)
+            threshold = reroute_threshold_m(context)
+        if reference.allow_masked_nodata and bool(getattr(context.avalanching_spec, 'enabled', False)):
+            # MAPLE's avalanching knows the whole grid, not SYRUP's inactive / nodata mask: a slope relaxation could
+            # move bed mass into or out of masked cells. Refused until that interaction is qualified separately.
+            raise BedIntegrationError('avalanching inside commits is not supported with a masked-nodata terrain '
+                                      '(unqualified mass exchange across the mask); disable avalanching or the mask')
+        if not isinstance(context.record_exchange_history, bool):
+            raise BedIntegrationError('record_exchange_history must be bool')
+        history_kwargs = {}
+        if context.record_exchange_history:
+            # Refused BEFORE the trigger evaluation and the commit: an older MAPLE cannot record the history and
+            # nothing may be published on an unsupported dependency when the caller asked for it.
+            if not maple_supports_exchange_history():
+                raise BedIntegrationError('the bound MAPLE dependency cannot record the exchange history '
+                                          '(commit_topography has no record_exchange_history keyword); no commit made')
+            history_kwargs['record_exchange_history'] = True
+        trigger = evaluate_commit_triggers(state.ledger, state.committed_topography, context.geometry,
+                                          time_s, context.topographic_commit_spec)
+        if not force and not trigger.should_commit:
+            return BedCommit(state, graph, False, trigger)
+        avalanche, avalanche_box = make_availability_aware_avalanche_callback(
+            context.avalanching_spec, state.sediment_availability, context.initial_available_fraction)
+        water, water_box = make_water_depth_commit_callback(
+            state.water, context.geometry, committed_elevation_m(state.committed_topography),
+            depth_update_rule=context.depth_update_rule,
+            **({'trusted_packet': True} if is_windowed_bed(state) else {}))
+        result = commit_topography(state.ledger, state.committed_topography, state.voxel_column,
+                                   state.active_layer, context.geometry, context.mass_resolution_kg,
+                                   time_s, avalanche_callback=avalanche, water_callback=water,
+                                   **({'trusted_packet': True} if is_windowed_bed(state) else {}), **history_kwargs)
+        if context.record_exchange_history and (
+                result.pre_commit_n_physical_touches is None or result.pre_commit_gross_physical_activity_kg is None
+                or result.exchange_history_receipt is None):
+            raise BedIntegrationError('MAPLE commit returned no exchange history although it was requested; '
+                                      'nothing published')
+        water_box.publish()  # local box only; nothing is returned until graph validation
+        xp = array_namespace(state.water.depth_m)
+        if (not water_box.ran or water_box.depth_update.rule != 'constant_depth'
+                or not to_bool(xp.all(water_box.water.depth_m == state.water.depth_m))):
+            raise BedIntegrationError('MAPLE commit changed solver-owned water depth')
+        candidate = replace(state, voxel_column=result.new_voxel_column, active_layer=result.new_active_layer,
+                            committed_topography=result.new_committed_state, ledger=result.new_ledger,
+                            sediment_availability=avalanche_box.new_sediment_availability, water=water_box.water)
     if routing_source_m is None:
         updated_graph, rerouted, source, net = refresh_routing(reference, candidate, xp=graph.xp), True, None, None
     else:
@@ -657,6 +671,9 @@ def bed_voxel_count(state: BedState) -> int:
 
 
 def bed_already_committed(state: BedState, context: BedContext, time_s: float) -> bool:
+    shared = _shared_profile(state, context)
+    if shared is not None:
+        return shared.shared_bed_already_committed(state, context, time_s)
     from maple.surface.topographic_commit.commit import is_already_committed
 
     if is_windowed_bed(state):
@@ -677,6 +694,10 @@ def publish_bed_storage(state: BedState, context: BedContext) -> BedState:
     """Last operation of an accepted transaction, after all prospective checks. CW-B108: the context's deep-chunk
     encoding options are forwarded ONLY when not the default, so a default-full publication is exactly the call
     every earlier dependency (M94) accepts."""
+    shared = _shared_profile(state, context)
+    if shared is not None:
+        return shared.publish_shared_bed(state, context,
+            current_time_s=shared.storage_reference_time(state))
     if not is_windowed_bed(state):
         return state
     from maple.surface.voxels.windowed_pending import publish_pending_column
@@ -875,3 +896,12 @@ def is_carried_append_cap_refusal(exc: BaseException, context: BedContext, carri
         return type(exc) is require_typed_journal_capacity_error() and _typed_counts_recognized(exc, cap,
                                                                                                 carried_records)
     return False
+
+
+# Opt-in family recognition only: exact old calls do not import the new module.
+def _shared_profile(state, context):
+    if type(state) is BedState and type(context) is BedContext:
+        return None
+    from maple_syrup import windowed_shared_bed as shared
+
+    return shared if shared.is_shared_pair(state, context) else None

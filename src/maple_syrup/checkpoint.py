@@ -323,6 +323,7 @@ def _validate_accumulators(progress, context):
 
 
 def validate_checkpoint_state(item, context, column, sediment):
+    _refuse_shared_checkpoint(item=item, context=context)
     from maple.core.backend import to_bool, to_host, to_int
     from maple.core.types.topographic_commit import validate_committed_topography_state
     from maple.coupling.sediment_ledger.validation import validate_ledger_state
@@ -456,6 +457,8 @@ _SIZE_ONLY_DIGEST = '0' * 64  # byte-count placeholder, never a state digest or 
 def _encode_wire(value, primary, arrays, registry, is_array, to_host, *, _mode=_WRITE_WIRE,
                  _layout=None, _depth=0):
     """The entire native structural encoder, shared by writing and metadata layout."""
+    if isinstance(value, BedState) and type(value) is not BedState:
+        _refuse_shared_checkpoint(value=value)
     if _mode is _LAYOUT_WIRE:
         if type(_layout) is not _WriteLayout:
             raise SedimentEventError('invalid private checkpoint layout mode')
@@ -569,6 +572,7 @@ def save_checkpoint(path, item, context, column, sediment, identity):
     from maple.core.backend import is_array, to_host
     from maple.io.outputs.snapshot import save_state_snapshot
 
+    _refuse_shared_checkpoint(item=item, context=context)
     path = Path(path).resolve()
     if path.exists():
         raise SedimentEventError(f'checkpoint path already exists: {path}')
@@ -741,6 +745,7 @@ def load_checkpoint(path, context, column, sediment, expected_identity, *, allow
     array is materialized."""
     from maple.io.outputs.snapshot import load_state_snapshot
 
+    _refuse_shared_checkpoint(context=context)
     max_bytes = checkpoint_byte_bound(max_bytes)
     target_xp = getattr(column, 'xp', None)
     if target_xp is None or getattr(sediment, 'xp', None) is not target_xp:
@@ -1443,6 +1448,7 @@ def checkpoint_write_budget(item, context, column, sediment, identity, *, limits
     import struct
     import sys
 
+    _refuse_shared_checkpoint(item=item, context=context)
     _write_limits(limits)
     if os.linesep != '\n' or os.name != 'posix' or sys.implementation.name != 'cpython' \
             or sys.version_info[:2] != (3, 12) or np.__version__ != '2.5.3' \
@@ -1810,3 +1816,22 @@ def audit_checkpoint_child(path, item, context, column, sediment, identity, *,
                                 (audited0, audited1), expected_layout.native_child_bytes,
                                 used0 + used1, json_bytes, recapture_metadata, header_metadata,
                                 2 * 1024**2, _CHILD_AUDIT_CALLS)
+
+
+# New family alone is refused.  Unrelated historical subclasses remain legacy.
+def _refuse_shared_checkpoint(*, item=None, context=None, value=None):
+    from maple_syrup.sediment_bed import BedContext
+
+    if (type(context) is BedContext and (value is None or type(value) is BedState)
+            and item is None):
+        return
+    if context is not None and type(context) is BedContext and item is not None:
+        progress = getattr(item, 'progress', None) if isinstance(item, DryHandoff) else item
+        result = getattr(progress, 'result', None) if isinstance(progress, EventProgress) else None
+        primary = getattr(result, 'state', None)
+        if primary is None or (type(getattr(primary, 'bed', None)) is BedState and
+                (not isinstance(item, DryHandoff) or type(getattr(getattr(item, 'dry_state', None), 'bed', None)) is BedState)):
+            return
+    from maple_syrup.windowed_shared_bed import refuse_checkpoint
+
+    refuse_checkpoint(item=item, context=context, value=value)

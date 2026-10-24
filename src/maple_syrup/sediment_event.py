@@ -669,6 +669,7 @@ def _check_event_inputs(state: SedimentEventState, context: BedContext, column: 
         true_flag,
     )
 
+    _admit_shared_event(state, context, control, column=column, sediment=sediment)
     graph = state.graph
     xp, shape = graph.xp, graph.shape
     g = context.geometry
@@ -763,6 +764,11 @@ def initial_event_state(graph: RoutingGraph, terrain: TerrainReference, bed: Bed
     from maple.core.types.topographic_commit import committed_elevation_m
 
     control = (SedimentEventControl() if control is None else control).validated()
+    from maple_syrup.sediment_bed import _shared_profile
+
+    shared = _shared_profile(bed, context)
+    if shared is not None:
+        shared.admit_initial(bed, context, graph, terrain, soil_water_m, t_s, control)
     source = committed_elevation_m(bed.committed_topography)
     try:
         check_routing_source(source, graph.shape, graph.xp)
@@ -1451,6 +1457,9 @@ def _sediment_coupled_core(
     # to the state's phase (scheme, presence, bin count, cell size) BEFORE any
     # hydraulic or MAPLE work; a direct caller cannot run with a mismatched or
     # invalid control.
+    _admit_shared_event(state, context, control, column=column, sediment=sediment,
+                        vegetation=vegetation_cover_fraction, rain_rate=rain_rate_m_per_s,
+                        zero_demand=zero_demand)
     control = _bind_phase_to_control(state, control)
     if hydraulics is not None and not isinstance(hydraulics, CudaHydraulics):
         raise SedimentEventError("hydraulics must be a CudaHydraulics lifecycle (or None)")
@@ -2237,6 +2246,11 @@ def evolve_sediment_event(
     )
 
     control = control.validated()
+    _admit_shared_event(state, context, control, column=column, sediment=sediment,
+                        field=field, schedule=schedule, vegetation=vegetation_cover_fraction,
+                        continuation=continuation, planned_boundaries=planned_boundaries,
+                        max_report_rows=max_report_rows, end_s=end_s,
+                        report_every_s=report_every_s)
     storm_control = control.storm
     if hydraulics is not None and not isinstance(hydraulics, CudaHydraulics):
         raise SedimentEventError("hydraulics must be a CudaHydraulics lifecycle (or None)")
@@ -2899,3 +2913,17 @@ def water_channel_index() -> int:
 def event_error_types() -> tuple[type[BaseException], ...]:
     """Exception types a runner treats as a refused / failed event."""
     return (SedimentEventError, StormError, BedIntegrationError)
+
+
+# No new Native/provider import for an exact old six-field state/context.
+def _admit_shared_event(state, context, control, **operands):
+    from maple_syrup.sediment_bed import BedContext, _shared_profile
+
+    # Preserve the ordinary core's own malformed-state refusal and order.
+    if not isinstance(state, SedimentEventState) and type(context) is BedContext:
+        return None
+    shared = _shared_profile(state.bed, context)
+    if shared is not None:
+        checked = (SedimentEventControl() if control is None else control).validated()
+        return shared.admit_event(state, context, checked, **operands)
+    return None
