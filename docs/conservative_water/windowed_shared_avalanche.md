@@ -84,3 +84,16 @@ hydraulic diagnostic records, compiled/CSR/Newton solvers and other backends
 remain outside this profile.
 
 The synthetic Dense comparison uses the exact recursive diagnostic helper: dictionaries, dataclasses and sequences retain exact types, all keys/fields/elements are visited, and every leaf keeps the original array dtype/shape/bytes and float-hex checks. No physical assertion or numerical bound is omitted or relaxed.
+
+
+The labelled synthetic interface fixture uses SYRUP's existing public
+`LEGACY_FRICTION_FLOOR` for routing friction. Its former 0.03 declaration
+was below the supported native minimum and failed during fixture setup.
+The approved synthetic boundary ring is 1.0 m on the north/south rows and
+-1.0 m on the west/east export cells, surrounding the original 1x2 bed.
+This avoids the all-low ring's north/south tie and preserves valid active
+opposite neighbours for SYRUP's native outlet edge rule. Both sloped and
+flat fixture interiors keep open east/west drainage; all ring export flags
+remain as declared. These are explicit interface-test inputs, with
+production calibration pending. Native routing, slopes/conveyance rules,
+physics, fixture interiors, caps and physical comparisons are unchanged.

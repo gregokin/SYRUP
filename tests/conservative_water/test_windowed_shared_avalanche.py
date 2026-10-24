@@ -38,7 +38,7 @@ from tests.windowed_wind.test_w4_avalanche_publication import (
 from tests.windowed_wind.test_w4_closed_native_commit import _bounded_cpu_limits
 
 from maple_syrup import checkpoint
-from maple_syrup.routing import build_routing_graph
+from maple_syrup.routing import LEGACY_FRICTION_FLOOR, build_routing_graph
 from maple_syrup.sediment_bed import (
     BedContext, BedIntegrationError, BedState, _shared_profile, apply_bed_demand,
     bed_already_committed, commit_bed, publish_bed_storage, terrain_reference, with_water,
@@ -188,10 +188,12 @@ def _fixture(tmp_path, *, mobile=0.000125, flat=False):
     qualify_depth_class_order(6, 1)
     context = _validation_work_context(bed, context)
     full = np.full((3, 4), -1.0)
+    # Labelled synthetic ring: high N/S, low E/W open export cells.
+    full[0, :] = full[-1, :] = 1.0
     full[1:-1, 1:-1] = windowed_commit.committed_elevation_m(committed)
     exports = np.ones((3, 4), bool)
     exports[1:-1, 1:-1] = False
-    graph = build_routing_graph(full, exports, np.full((1, 2), 0.03), 0.01, xp=np)
+    graph = build_routing_graph(full, exports, np.full((1, 2), LEGACY_FRICTION_FLOOR), 0.01, xp=np)
     terrain = terrain_reference(full, exports, bed, graph)
     source = windowed_commit.committed_elevation_m(committed)
     return SimpleNamespace(bed=bed, context=context, graph=graph, terrain=terrain, source=source,
