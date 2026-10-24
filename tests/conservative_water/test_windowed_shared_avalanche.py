@@ -420,6 +420,7 @@ def test_actual_accepted_water_step_keeps_native_baseline_and_soil(tmp_path):
         suction_m=zeros, drainage_parameter=zeros, theta_sat=ones * 0.5, soil_thickness_m=ones)
     sediment = sediment_physics_parameters(diameter_m=np.array([0.00025]),
         raindrop_a=np.array([0.0]), raindrop_b=np.array([1.0]), raindrop_c=np.array([0.0]),
+        raindrop_depth_attenuation_per_cm=np.array([0.0]),
         raindrop_max_depth_mm=np.array([0.0]), particle_density_g_cm3=2.65,
         active_layer_sensitivity_mm=1.0, ke_model='wainwright_log', xp=np)
     # These are synthetic input declarations, not a changed Native response.
@@ -471,6 +472,7 @@ def test_real_complete_event_joint_splice_preserves_native_default_dry_reset(tmp
         suction_m=zeros, drainage_parameter=zeros, theta_sat=ones * 0.5, soil_thickness_m=ones)
     sediment = sediment_physics_parameters(diameter_m=np.array([0.00025]),
         raindrop_a=np.array([0.0]), raindrop_b=np.array([1.0]), raindrop_c=np.array([0.0]),
+        raindrop_depth_attenuation_per_cm=np.array([0.0]),
         raindrop_max_depth_mm=np.array([0.0]), particle_density_g_cm3=2.65,
         active_layer_sensitivity_mm=1.0, ke_model='wainwright_log', xp=np)
     field = rainfall_field(1, 2, xp=np)

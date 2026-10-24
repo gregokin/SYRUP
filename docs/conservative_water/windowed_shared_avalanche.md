@@ -97,3 +97,14 @@ flat fixture interiors keep open east/west drainage; all ring export flags
 remain as declared. These are explicit interface-test inputs, with
 production calibration pending. Native routing, slopes/conveyance rules,
 physics, fixture interiors, caps and physical comparisons are unchanged.
+
+
+The two labelled one-class, zero-detachment water interface tests
+(`test_actual_accepted_water_step_keeps_native_baseline_and_soil` and
+`test_real_complete_event_joint_splice_preserves_native_default_dry_reset`)
+explicitly declare `raindrop_depth_attenuation_per_cm=np.array([0.0])`.
+The user approved zero attenuation for these synthetic tests on 2026-10-24.
+This one-class fixture declaration does not change the Native parameter
+default or response law and does not establish production calibration.
+The existing assertions and original limits remain unchanged; actual
+integration execution and acceptance remain Root-owned and pending.
