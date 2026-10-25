@@ -1830,4 +1830,3 @@ def _positive_metadata(state, context):
             or context.native_iteration_limits.max_operations != 2):
         _positive_refuse('positive_native_water_batch')
     return closed, ids, provider, original, plan, (prepass,)
-
