@@ -193,6 +193,8 @@ def apply_bed_demand(state: BedState, context: BedContext, demand) -> tuple[BedS
     """
     shared = _shared_profile(state, context)
     if shared is not None:
+        if shared._positive_context(context):
+            shared._positive_require_action(state, context)
         shared.admit_water_operands(state, context, demand=demand)
     from maple.water import apply_water_process_demand, validate_water_state
 
@@ -206,6 +208,8 @@ def apply_bed_demand(state: BedState, context: BedContext, demand) -> tuple[BedS
         apply = apply_windowed_water_process_demand
         if context.window_max_journal_records is not None:
             window_options["max_journal_records"] = context.window_max_journal_records
+        if shared is not None and shared._positive_context(context):
+            window_options["max_gather_columns"] = 4
     result = apply(
         state.voxel_column, state.active_layer, state.water, state.ledger, demand,
         g, context.grain_classes, context.mass_resolution_kg,
@@ -900,6 +904,12 @@ def is_carried_append_cap_refusal(exc: BaseException, context: BedContext, carri
 
 # Opt-in family recognition only: exact old calls do not import the new module.
 def _shared_profile(state, context):
+    # Only an already-loaded new lane can be active; ordinary defaults keep
+    # their original no-import return and the full old body below.
+    import sys
+    positive = sys.modules.get('maple_syrup.windowed_shared_bed')
+    if positive is not None:
+        positive._positive_pair_guard(state, context)
     if type(state) is BedState and type(context) is BedContext:
         return None
     from maple_syrup import windowed_shared_bed as shared
