@@ -171,7 +171,7 @@ coverage, larger-grid/scale fit, or production calibration. Other Source,
 runtime, fixture, resource and scientific domains retain their existing
 qualification and refusal requirements.
 
-## Positive entry forced commit (Source only, unqualified)
+## Positive entry forced commit (qualified Small CPU profile)
 
 `commit_positive_windowed_entry` performs one genuine `commit_bed(...,
 force=True)` under its own private positive owner, separate from
@@ -209,10 +209,54 @@ cumulative ceilings. Store/run/entry inventory caps persist through both,
 with no credit between them. Native physics, routing threshold, commit,
 recession and dry reset are unmodified.
 
-This API is Source-only and unqualified until Root's actual checks. The
-qualified profile above covers only `complete_positive_windowed_event`, not
-this entry. The focused tests use explicit synthetic delegates. They
-establish no physical success and fabricate no Native certificate. Root
-separately authors and runs the genuine entry-vs-Dense oracle under the
-original 4GiB controls. No performance, heap, fit, restart, windowed-GPU or
-combined wind/water claim is made.
+Root has separately qualified one actual entry commit followed by a complete
+water event against an independent Dense control. The executed subject is
+MAPLE `3afad954eb6d4789270298f26eaa4f9b880970b5`, MASY
+`34523c1b32bc565aa6a9f83c8aaf44b03b9217ea` and SYRUP
+`2e023d7afeda79eaf4b2c141ea86d5fe89b83c15`, immutable pair lock
+`514ba28752cf6c16e3ff01131efa86ad67a11aa1201513d83e357f8e8b228d4b`.
+The actual windowed module is SHA256
+`14d6f33fca4611895f3b333a07629570bbbc1631fe22755fa629757dea3af942`.
+The one case passed all three pytest phases in the original 4GiB
+address-space limit, with the reviewed 600s CPU / 900s wall limits. The
+worker's reported elapsed time was 164.302s. This is one bounded execution,
+not a peak-memory measurement or a forecast for another case.
+
+The external MASY Source oracle is
+`tests/conservative_water/test_positive_windowed_entry_physical.py::test_positive_windowed_entry_commit_matches_dense`,
+from task851 `masy851_positive_water_entry_physical_oracle_20261025`.
+It reuses the labelled C16/K1/V6/W3 fixture and original water forcing,
+boundaries, native avalanche, tracked availability and constant-depth policy
+of the complete-water qualification above. Reproduction requires its full
+pinned fixture closure, immutable Source/runtime and original Native image,
+provider, compiled, origin and process prerequisites; the spelling of a
+commit or a test selector alone does not supply those prerequisites.
+
+The oracle checks the actual forced entry commit, returned bed/graph/routing
+source identities, exact complete columns, active layer, ledger,
+availability, water and committed topography against Dense. Native
+representation-owned inventory bounds are preserved. It then runs genuine
+rainfall, physical recession, accepted quiet completion, terminal settlement
+and dry reset on both returned beds. Native physical comparisons, retained
+pre-reset values and input holdings must pass. Accounting key sets must
+match, and every non-inventory accounting value must equal Dense; the
+oracle excludes inventory accounting values from exact equality. Every
+pre-existing deep-store file must remain byte-identical after the entry and
+after the event, in the unchanged store directory. Entry and event admission
+summaries are returned separately, each typed
+`PositiveWaterAdmissionSummary`. Their combined work/read/version counters
+must fit the original selected ceilings. Host predicate bytes are bounded
+per summary, without a combined host-byte assertion in this oracle.
+A valid no-op publication may retain the original version; this case makes
+no forced deep-write claim.
+
+The focused synthetic delegate tests remain interface controls, separate
+from this physical result. Earlier resource refusals remain recorded in
+tasks851 and853. Root's acceptance is task853
+`Root_physical_acceptance_01.json`, SHA256
+`70106bee6c3d4d30dbe8b5e013a0e194c17384b87e3e0d1fb3bcdb652d6f80b7`.
+Actual saved model payloads and raw logs stayed local to Root. A later
+documentation-only commit has not been executed under its new commit id;
+unchanged executable Source must be checked explicitly. This profile grants
+no general latest/main pairing, alternating wind/water, windowed-GPU,
+combined restart, larger-grid/scale fit or production-calibration claim.
