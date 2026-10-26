@@ -83,3 +83,90 @@ its generic ValueError handler rethrows, and only the distinct hydraulic/
 transport rejection classes retry. Escaping errors poison/close the fixed
 entry. This states no guarantee for arbitrary outside catchers. Original
 Native hydraulic retry decisions are unchanged.
+
+## Qualified synthetic CPU Source profile
+
+Root subsequently accepted 30 separate admission metadata tests and one
+physical integration test. The physical test invokes two actual native
+complete water events: the positive windowed entry and a separately
+initialized independent Dense control. It passed as **one case with three
+pytest phase reports**, not three cases. The composite two-event worker used
+the original 4GiB address-space limit with reviewed 600s CPU / 900s wall
+limits; its reported outer elapsed time was 166.132s. These are aggregate
+qualification facts, not a peak-memory measurement or a forecast for another
+case. Saved results, arrays, stores, package/proc records and logs remain with
+Root; none was supplied to the documentation reviewer.
+
+The executable Source subject of that result was:
+
+- MASY `34523c1b32bc565aa6a9f83c8aaf44b03b9217ea`;
+- MAPLE `3afad954eb6d4789270298f26eaa4f9b880970b5`;
+- SYRUP `ea822979a18292ad3473b03857c0560a9836ff17`.
+
+The external MASY Source oracle is
+`tests/conservative_water/test_positive_windowed_shared_physical.py::test_small_complete_positive_water_matches_dense`,
+materialized from task832
+`masy832_water_noop_publication_assertion_Source_correction_20261025/candidate_source/tests/conservative_water/test_positive_windowed_shared_physical.py`.
+That complete test Source is 25,398 bytes, SHA256
+`c06257f6079fc0c2dcac5c563ad4a21d3980125b7506bd1ea483afadec5ff75a`.
+It is external qualification Source, not an installed SYRUP test or a new
+public API. Reproduction also requires its genuine pinned MASY fixture
+modules, Native fixture/cold procedure and the original immutable Source,
+provider, compiled, origin, runtime and process checks. A commit spelling or
+test hash alone does not issue those prerequisites.
+
+The Source recipe uses MAPLE's existing `_small_feature_fixture` through
+`tests.windowed_wind.test_w6_windowed_event_finalization`: C16 (4×4), V6, W3,
+K1, tracked availability, constant-depth water and the enabled native
+avalanche, with the existing M2/G4/J320 Native limits. The independent Dense
+bed comes from `fixture_dense_production.model()` / `build_bed()`. Both water
+input owners use the existing labelled synthetic100um
+`water_inputs(dense_bed, all_edges_open=True)` recipe: native open outlets on
+all four edges, with the original terrain and prescribed vegetation. This
+is a synthetic interface fixture, not a calibrated production water case.
+
+The original forcing is one 60s interval at 72mm/h, with the existing 180s
+completion guard and 10s reporting interval. The unchanged array storm
+control uses maximum dt=1s, 10000 steps and ten retries; sediment control
+retains upwind transport, at most 64 transport substeps, 256 commit-log
+records, 100 rejection records, `commit=True`, `force_final_commit=True`,
+`deep_publication='step'` and `record_exchange_history=False`. The genuine
+completion policy has `deposit_mobile_at_flow_end=True`. These are the
+oracle's existing controls, not new defaults or modified physics. Rainfall end, quiet readiness, terminal settlement accounting and dry-reset
+state are checked through the actual native results; the test does not
+manufacture completion at the guard.
+
+The passing case requires genuine complete handoffs, positive rainfall,
+intake, water depth, pickup and sediment activity, and real water calls and
+commits. It retains the test's full physical/accounting comparisons against
+the Dense control: complete logical voxel columns, active layer, ledger,
+availability, water, native inventory bounds, routing and clocks. The Dense
+committed-topography comparison covers reference elevation, elevation
+offset, committed active-layer mass, last commit time and commit count.
+When an entry reconciliation baseline exists, its count must increase. When
+the final baseline's reconciliation time equals the result time, its fields
+must agree with the final windowed state. Existing representation-owned inventory
+reductions/stage names and finite per-role timing checks remain as declared
+in the Source oracle. Dry reset, retained pre-reset values, vegetation,
+input identity, old-column contents and every previously present deep file
+are also checked. Admission counters must satisfy their original positive
+and upper-bound assertions.
+
+A successful event need not publish a new deep version. Native
+`DeepStoreVersion.apply_journal` validates a zero-record journal and returns
+the **exact existing handle**; `publish_pending_column` likewise keeps the
+column when no pending journal exists. The oracle therefore requires the
+same store directory and either that exact original handle or a replacement
+with a strictly greater `version_id`. It still checks old files and holdings unchanged
+and bounds actual version growth by the original reservation. This result
+establishes no deep-write or version-advance claim; no deep write is forced
+to make the test pass.
+
+This documentation amendment records the executable subject above. A later
+documentation-only commit is not described as having been executed under its
+new commit id; runtime continuity requires an explicit unchanged-executable-
+Source check. The result grants no general latest/main pairing, alternating
+wind/water integration, windowed GPU or restart readiness, deep-write
+coverage, larger-grid/scale fit, or production calibration. Other Source,
+runtime, fixture, resource and scientific domains retain their existing
+qualification and refusal requirements.
