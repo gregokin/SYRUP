@@ -1284,6 +1284,8 @@ def _positive_bootstrap(state, context):
     # Full Native metadata prefix, not sparse max_proof_bytes alone.
     amount = (p.max_retained_payload_bytes + p.max_mapped_bytes + p.max_proof_bytes
               + p.reserve_host_bytes + _POSITIVE_HELPER_HOST + context.bridge_limits.reserve_host_bytes)
+    if _POSITIVE_ENTRY_SCOPE is not None:  # ENTRY-ONLY outer holding bank; absent otherwise.
+        amount += _entry_extra_host(owner, context)
     if mapped + amount > min(cap, context.bridge_limits.max_host_bytes):
         _positive_refuse('positive_before_metadata_AS')
     if owner is not None:
@@ -1582,6 +1584,8 @@ def _positive_gate(state, context, metadata, arrays, role, *, control=None,
         ('directory_scan_error', directory),
         ('rainfall_text', 5 * 4096 * 4 + 128 * 32),
         ('new_helpers_frames_metadata_errors', _POSITIVE_HELPER_HOST))
+    if _POSITIVE_ENTRY_SCOPE is not None:  # ENTRY-ONLY outer holding bank; absent otherwise.
+        payload += (('entry_only_outer_holding_bank', _entry_extra_host(owner, context)),)
     mapped = native_mapped + 2 * storage.mapped_bytes_max + 2 * chunk
     reads = native_prefixes * native_read + 4 * storage.logical_deep_read_bytes
     work = (('native', native_prefixes * native_work), ('existing_Source', source_work),
@@ -1830,3 +1834,199 @@ def _positive_metadata(state, context):
             or context.native_iteration_limits.max_operations != 2):
         _positive_refuse('positive_native_water_batch')
     return closed, ids, provider, original, plan, (prepass,)
+
+
+# Append-only positive ENTRY commit. A separate owner from the later
+# complete_positive_windowed_event transport owner; per-owner limits unchanged.
+# Helper names deliberately avoid the `_positive_` prefix so the existing
+# helper-bank census scope stays exact; this Source is priced below instead.
+_POSITIVE_ENTRY_SCOPE = None
+# Declared Source maxima of ALL new entry Source (the API, three helpers, the
+# scope class and both seam statements). The focused test regenerates their
+# AST/text/slot census and requires it to stay within these ceilings. New
+# entry Source contains no loop; the loop factor below is the conservative
+# _MAX_EXTERNAL_ARRAYS domain of its callees' arrays. Not heap/CPU fit.
+_POSITIVE_ENTRY_SOURCE_BYTES = 32768
+_POSITIVE_ENTRY_SOURCE_NODES = 8192
+_POSITIVE_ENTRY_FUNCTIONS = 8
+_POSITIVE_ENTRY_SLOTS = 256
+# Bounded proc reads by the entry: birth, pre-array and post-return frontier.
+_POSITIVE_ENTRY_PROC_SITES = 3
+
+
+class _PositiveEntryScope:
+    """Private ENTRY-ONLY scope: genuine owner/context/thread, never a fee."""
+    __slots__ = ('owner', 'context', 'thread')
+
+    def __init__(self, owner, context, thread):
+        self.owner, self.context, self.thread = owner, context, thread
+
+
+def _entry_bank(context):
+    """(host, work) of the ENTRY-ONLY outer holding bank; logical Source law.
+
+    Derived from commit_positive_windowed_entry's actual call/frame/return/
+    error graph. Every owner it creates or retains stays live until it
+    returns or raises: no del/GC/alias/release/current-sample/spare credit.
+    """
+    p = context.native_publication_limits
+    word, header = _POSITIVE_WORD, _POSITIVE_HEADER
+    # Retained first metadata: the pre-gate's whole _positive_metadata result
+    # (closed, ids, provider, Original, B plan, water prepass) is held through
+    # the entire nested commit. One COMPLETE admitted Native metadata-prefix
+    # envelope dominates it: exactly the owning _positive_bootstrap law for
+    # that one call (never sparse max_proof_bytes alone). Native
+    # _k_fixed_admission separately bounds the complete Original DATA
+    # projection (three graph roles, fixed maxima) by max_proof_bytes.
+    metadata = (_positive_integer(p.max_retained_payload_bytes, 'entry_payload')
+                + _positive_integer(p.max_mapped_bytes, 'entry_mapped')
+                + _positive_integer(p.max_proof_bytes, 'entry_proof')
+                + _positive_integer(p.reserve_host_bytes, 'entry_reserve') + _POSITIVE_HELPER_HOST)
+    # _external_arrays: list and returned tuple of <=256 references.
+    arrays = 2 * (header + _MAX_EXTERNAL_ARRAYS * word)
+    # One Native _RankPrepass at its 34-leaf/8-node maxima: slots 3+2C+2N,
+    # the same again for construction lists; prepass/chain/rank/list headers;
+    # the _k_dtype_anchors list+tuple of <=272 three-slot rows.
+    nodes = 34 * 8
+    prepass = (2 * word * (3 + 2 * 34 + 2 * nodes) + header * (1 + 3 * 34)
+               + 2 * (header + nodes * word) + nodes * (header + 3 * word))
+    # Retained pre-gate _Admission: <=8 external batches (256/34) and the
+    # water prepass reference, _array_rows list/tuple, nine fields, prepass
+    # tuple plus concatenation, payload/work/disk tables at <=32 int rows.
+    batches = -(-_MAX_EXTERNAL_ARRAYS // 34)
+    tables = 3 * (2 * (header + 32 * word) + 32 * (header + 2 * word + 32))
+    admission = (batches * prepass + 2 * (header + batches * word) + header + 9 * word
+                 + 2 * (header + (batches + 1) * word) + tables)
+    # Original control projection (<=128 scalar rows each for control and
+    # storm, list+tuple), owner (14 slots), scope (3 slots), birth pair.
+    projection = 2 * (2 * (header + 128 * word) + 128 * (header + 2 * word)) + header + 2 * word
+    owners = projection + header + 14 * word + header + 3 * word + header + 2 * (word + 32)
+    # Each bounded proc read: the helper ledger's per-site stat/statm text,
+    # split and field occurrences.
+    proc = _POSITIVE_ENTRY_PROC_SITES * (3 * 4097 * 2 + 2 * 257 + 4096 * (word + 32)
+                                         + 50 * (word + 32))
+    # Summary (five ints) and returned pair. The BedCommit and the complete
+    # commit_bed tail (routing_graph_from_elevation, net displacement, _pit_mask)
+    # are the unchanged function's own outputs, covered by the inner gates
+    # exactly as for the forced commits inside complete_event.
+    summary = header + 5 * (word + 32) + header + 2 * word
+    # One escaping error in four roles (raise/poison/rethrow/close):
+    # exception, args, <=4096-char message, a traceback entry per new frame.
+    error = 4 * (3 * header + word + 4096 + _POSITIVE_ENTRY_FUNCTIONS * (header + 4 * word))
+    # Helper-ledger formulas: four roles of every new frame slot; four Source
+    # text roles and a reference per new AST node.
+    frames = 4 * (32 * _POSITIVE_ENTRY_FUNCTIONS + _POSITIVE_ENTRY_SLOTS * (word + 32))
+    source = 4 * _POSITIVE_ENTRY_SOURCE_BYTES + _POSITIVE_ENTRY_SOURCE_NODES * (word + 32)
+    wrapper = arrays + admission + owners + proc + summary + error + frames + source
+    # Work: 32 visits of every new node at the maximal loop domain plus four
+    # byte visits of the wrapper bank. Metadata work is bootstrap's own debit.
+    work = 32 * _POSITIVE_ENTRY_SOURCE_NODES * _MAX_EXTERNAL_ARRAYS + 4 * wrapper
+    return (_positive_integer(metadata + wrapper, 'entry_host', 1),
+            _positive_integer(work, 'entry_work', 1))
+
+
+def _entry_extra_host(owner, context):
+    # Seam payload: only the genuine installed entry owner/context/thread.
+    import threading
+
+    scope = _POSITIVE_ENTRY_SCOPE
+    if (type(scope) is not _PositiveEntryScope or type(owner) is not _PositiveOwner
+            or scope.owner is not owner or _POSITIVE_OWNER is not owner
+            or scope.context is not context or owner.context is not context
+            or scope.thread != threading.get_ident() or owner.thread != scope.thread):
+        _positive_refuse('positive_entry_scope_binding')
+    return _entry_bank(context)[0]
+
+
+def _entry_frontier(owner, context):
+    # Same AS predicate as the gates: actual mapped extent plus the complete
+    # entry bank and original positive reserve, then the declared wrapper
+    # work debit. Before the first wrapper allocation and after return.
+    if _positive_owner(context) is not owner:
+        _positive_refuse('positive_entry_owner_identity')
+    host = _entry_extra_host(owner, context)
+    work = _entry_bank(context)[1]
+    _birth, current, cap = _positive_current_mapped(owner.birth)
+    limits = context.bridge_limits
+    total = current + host + limits.reserve_host_bytes
+    if total > min(cap, limits.max_host_bytes):
+        _positive_refuse('positive_entry_outer_bank_AS')
+    _positive_debit(owner, context, work, 0)
+    owner.maximum = max(owner.maximum, total)
+
+
+def commit_positive_windowed_entry(state, context, graph, reference, current_time_s,
+                                   routing_source_m, *, control):
+    """ONE genuine forced commit_bed under its own positive entry owner.
+
+    Callback-free; no fee, plan, ordinal, reset, projection or alternate
+    transport. Returns the exact Native BedCommit and this owner's actual
+    counters. complete_positive_windowed_event remains a separate owner.
+    """
+    import threading
+    from maple_syrup.sediment_bed import BedCommit, commit_bed
+
+    global _POSITIVE_OWNER, _POSITIVE_ENTRY_SCOPE
+    if (_POSITIVE_OWNER is not None or _POSITIVE_ENTRY_SCOPE is not None
+            or not _positive_context(context)):
+        _positive_refuse('positive_nonreentrant_exact_lane')
+    _positive_pair_guard(state, context)
+    _holder(state, WindowedSharedBedState, _BED_FIELDS)
+    limits = context.bridge_limits
+    _holder(limits, PositiveWindowedWaterBridgeLimits)
+    limits.__post_init__()
+    if limits.max_report_rows != _POSITIVE_REPORT_ROWS:
+        _positive_refuse('positive_original_report_declaration')
+    _time(current_time_s)
+    if control is None or routing_source_m is None:
+        _positive_refuse('positive_explicit_original_control_and_held_source')
+    projection = _positive_control_projection(context, control)
+    _entry_bank(context)  # Positive Source law refuses before any owner exists.
+    birth, _mapped, _cap = _positive_current_mapped()
+    owner = _PositiveOwner(context, control, birth, threading.get_ident(), projection)
+    scope = _PositiveEntryScope(owner, context, owner.thread)
+    _POSITIVE_OWNER = owner
+    try:
+        _POSITIVE_ENTRY_SCOPE = scope
+        _entry_frontier(owner, context)
+        # Literal pre-gate. The genuine gate increments the ordinal itself;
+        # metadata/Admission/arrays stay referenced until return or raise.
+        arrays = _external_arrays(graph=graph, terrain=reference,
+            routing_source_m=routing_source_m,
+            max_rows=context.bridge_limits.max_report_rows)
+        metadata = _metadata(state, context)
+        admission = _positive_gate(state, context, metadata, arrays,  # noqa: F841 - held
+            'commit_trigger', control=control)
+        _value_validate(state, context, current_time_s,
+            published=state.voxel_column.pending_deep is None)
+        result = commit_bed(state, context, graph, reference, current_time_s,
+            force=True, routing_source_m=routing_source_m)
+        # The positive commit already validated its candidate; only the
+        # post-return frontier and exact type/identity/scalar checks follow.
+        _entry_frontier(owner, context)
+        if (type(result) is not BedCommit or result.did_commit is not True
+                or type(result.rerouted) is not bool or result.state is state
+                or result.routing_source_m is None or type(result.graph) is not type(graph)):
+            _positive_refuse('positive_actual_entry_commit_required')
+        _holder(result.state, WindowedSharedBedState, _BED_FIELDS)
+        source = result.routing_source_m
+        if result.rerouted:
+            if (result.graph is graph or source is routing_source_m
+                    or type(source) is not type(routing_source_m)
+                    or source.shape != routing_source_m.shape
+                    or source.dtype != routing_source_m.dtype):
+                _positive_refuse('positive_rerouted_full_routing_source')
+        elif result.graph is not graph or source is not routing_source_m:
+            _positive_refuse('positive_unrerouted_original_routing_identity')
+        summary = PositiveWaterAdmissionSummary(owner.ordinal, owner.work, owner.reads,
+                                                 owner.versions, owner.maximum)
+        return result, summary
+    except BaseException:
+        owner.poisoned = True
+        raise
+    finally:
+        owner.closed = True
+        if _POSITIVE_ENTRY_SCOPE is scope:
+            _POSITIVE_ENTRY_SCOPE = None
+        if _POSITIVE_OWNER is owner:
+            _POSITIVE_OWNER = None

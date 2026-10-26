@@ -170,3 +170,39 @@ wind/water integration, windowed GPU or restart readiness, deep-write
 coverage, larger-grid/scale fit, or production calibration. Other Source,
 runtime, fixture, resource and scientific domains retain their existing
 qualification and refusal requirements.
+
+## Positive entry forced commit (Source only, unqualified)
+
+`commit_positive_windowed_entry` performs one genuine `commit_bed(...,
+force=True)` under its own private positive owner, separate from
+`complete_positive_windowed_event`, whose body is unchanged. It requires the
+explicit original control and held routing source, then runs the literal
+metadata, owned gate, validator and that one commit. It returns the exact
+Native `BedCommit` plus this owner's immutable `PositiveWaterAdmissionSummary`;
+the result's state, graph and routing-source identities are checked, not
+rebuilt. Escaping errors keep their identity, poison and close the owner and
+clear only its own lease. An existing owner or scope refuses re-entry and is
+never replaced or cleared.
+
+The outer holding bank is a logical Source law derived from the entry's own
+call/frame/return/error graph. It retains the complete pre-gate metadata,
+prices one complete Native metadata prefix (never sparse proof alone), and
+relies on the complete unchanged `commit_bed` tail and its inner gates. It
+takes no spare-capacity, GC or release credit. Two entry-only seam
+statements add it to the existing gate/bootstrap predicates only while the
+entry scope is installed; otherwise they are absent. The existing helper
+bank, its limits and all other limits are unchanged.
+
+Each call's summary is per owner. A future MASY adapter must aggregate entry
+and event summaries before adopting the event, under the original selected
+cumulative ceilings. Store/run/entry inventory caps persist through both,
+with no credit between them. Native physics, routing threshold, commit,
+recession and dry reset are unmodified.
+
+This API is Source-only and unqualified until Root's actual checks. The
+qualified profile above covers only `complete_positive_windowed_event`, not
+this entry. The focused tests use explicit synthetic delegates. They
+establish no physical success and fabricate no Native certificate. Root
+separately authors and runs the genuine entry-vs-Dense oracle under the
+original 4GiB controls. No performance, heap, fit, restart, windowed-GPU or
+combined wind/water claim is made.
