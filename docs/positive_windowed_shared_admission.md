@@ -198,6 +198,11 @@ statements add it to the existing gate/bootstrap predicates only while the
 entry scope is installed; otherwise they are absent. The existing helper
 bank, its limits and all other limits are unchanged.
 
+The extra metadata helper holding includes the complete Source, proc, manifest,
+frame and control-container terms. It omits the directory inventory term because
+the first metadata producer never calls the inventory or writer-forecast helpers.
+Actual inner gates retain their complete original inventory and error charges.
+
 Each call's summary is per owner. A future MASY adapter must aggregate entry
 and event summaries before adopting the event, under the original selected
 cumulative ceilings. Store/run/entry inventory caps persist through both,

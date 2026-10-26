@@ -1852,6 +1852,10 @@ _POSITIVE_ENTRY_FUNCTIONS = 8
 _POSITIVE_ENTRY_SLOTS = 256
 # Bounded proc reads by the entry: birth, pre-array and post-return frontier.
 _POSITIVE_ENTRY_PROC_SITES = 3
+# Complete old helper Source/proc/manifest/frame/container holdings, with no
+# directory inventory term: _positive_metadata cannot reach the inventory or
+# writer-forecast helpers. The original inner helper bank remains unchanged.
+_POSITIVE_ENTRY_METADATA_HELPER_HOST = 7065372
 
 
 class _PositiveEntryScope:
@@ -1897,7 +1901,7 @@ def _entry_bank(context):
     # Retained first-version mappings remain additive to future inner maps.
     metadata = (proof + _positive_integer(p.max_mapped_bytes, 'entry_retained_mapped')
                 + 4 * (plan_rows + plan_terms + plan_records + paths + water))
-    metadata += native_frames + _POSITIVE_HELPER_HOST
+    metadata += native_frames + _POSITIVE_ENTRY_METADATA_HELPER_HOST
     # All external prepass backing occurrences are bounded by the existing
     # selected ceiling. Pay both retained roles before constructing arrays.
     metadata += 2 * _positive_integer(context.bridge_limits.max_external_backing_bytes,

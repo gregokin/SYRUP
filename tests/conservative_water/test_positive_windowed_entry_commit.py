@@ -26,6 +26,7 @@ _SEAMS = ('_positive_bootstrap', '_positive_gate')
 _NEW_NAMES = ('_POSITIVE_ENTRY_SCOPE', '_POSITIVE_ENTRY_SOURCE_BYTES',
               '_POSITIVE_ENTRY_SOURCE_NODES', '_POSITIVE_ENTRY_FUNCTIONS',
               '_POSITIVE_ENTRY_SLOTS', '_POSITIVE_ENTRY_PROC_SITES',
+              '_POSITIVE_ENTRY_METADATA_HELPER_HOST',
               '_PositiveEntryScope', '_entry_bank', '_entry_extra_host',
               '_entry_frontier', 'commit_positive_windowed_entry')
 _MAPPED, _HOST, _WORK = 1000, 1024, 7
@@ -340,8 +341,11 @@ def test_retained_bank_does_not_reserve_another_physical_operation(tmp_path, mon
     context.native_publication_limits.max_retained_payload_bytes += 1 << 30
     context.native_publication_limits.reserve_host_bytes += 1 << 30
     assert shared._entry_bank(context) == before
-    assert before[0] > shared._POSITIVE_HELPER_HOST + (5 << 20)
+    assert before[0] > (shared._POSITIVE_ENTRY_METADATA_HELPER_HOST + (5 << 20)
+                        + 2 * context.bridge_limits.max_external_backing_bytes)
     assert before[0] < 1 << 30 and before[1] > 0
+    assert shared._POSITIVE_ENTRY_METADATA_HELPER_HOST == 7065372
+    assert shared._POSITIVE_HELPER_HOST == 284938012
 
 
 def test_genuine_retained_metadata_backings_are_additive(tmp_path, monkeypatch):
