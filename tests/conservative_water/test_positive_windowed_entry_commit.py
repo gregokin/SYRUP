@@ -9,7 +9,7 @@ import ast
 from dataclasses import replace
 import subprocess
 from pathlib import Path
-from types import SimpleNamespace
+from types import CodeType, SimpleNamespace
 
 import numpy as np
 import pytest
@@ -286,13 +286,25 @@ def test_new_entry_source_stays_within_declared_ceilings():
     assert size <= shared._POSITIVE_ENTRY_SOURCE_BYTES
     assert count <= shared._POSITIVE_ENTRY_SOURCE_NODES
     assert len(defs) <= shared._POSITIVE_ENTRY_FUNCTIONS
-    loops = (ast.For, ast.While, ast.AsyncFor, ast.comprehension, ast.Lambda)
+    loops = (ast.For, ast.While, ast.AsyncFor, ast.Lambda)
     assert not any(isinstance(d, loops) for n in nodes for d in ast.walk(n))
+    comprehensions = [d for n in nodes for d in ast.walk(n) if isinstance(d, ast.comprehension)]
+    assert len(comprehensions) == 2
+    assert {ast.unparse(d.iter) for d in comprehensions} == {
+        'held[3].prepass.chains', 'held[5][0].chains'}
     # Helper-bank census scope stays exact: no new `_positive_`-prefixed def.
     assert not any(d.name.startswith('_positive_') for d in defs)
-    codes = [shared._PositiveEntryScope.__init__.__code__] + [
-        getattr(shared, name).__code__ for name in
-        ('_entry_bank', '_entry_extra_host', '_entry_frontier', 'commit_positive_windowed_entry')]
+    # Compile-only: include the class body as well as all nested genexprs;
+    # neither the class nor the candidate code is executed by this census.
+    module_code = compile(ast.Module(body=nodes, type_ignores=[]),
+                          str(_MODULE), 'exec', dont_inherit=True)
+    pending, codes = [module_code], []
+    while pending:
+        code = pending.pop()
+        children = [value for value in code.co_consts if isinstance(value, CodeType)]
+        codes.extend(children)
+        pending.extend(children)
+    assert len(codes) <= shared._POSITIVE_ENTRY_FUNCTIONS
     slots = sum(c.co_nlocals + c.co_stacksize + len(c.co_cellvars) + len(c.co_freevars)
                 for c in codes)
     assert slots <= shared._POSITIVE_ENTRY_SLOTS
@@ -316,6 +328,41 @@ def test_entry_proc_sites_imports_and_single_forced_commit_are_exact():
                for n in ast.walk(entry) if isinstance(n, (ast.Import, ast.ImportFrom))]
     assert imports == [(None, ('threading',)),
                        ('maple_syrup.sediment_bed', ('BedCommit', 'commit_bed'))]
+
+
+def test_retained_bank_does_not_reserve_another_physical_operation(tmp_path, monkeypatch):
+    """Synthetic resource controls; neither invocation creates a Native bed."""
+    context = replace(_context(tmp_path), native_publication_limits=SimpleNamespace(
+        max_proof_bytes=4 << 20, max_mapped_bytes=1 << 20,
+        max_retained_payload_bytes=1 << 30, reserve_host_bytes=64 << 20))
+    monkeypatch.setattr(shared, '_POSITIVE_ENTRY_SCOPE', None)
+    before = shared._entry_bank(context)
+    context.native_publication_limits.max_retained_payload_bytes += 1 << 30
+    context.native_publication_limits.reserve_host_bytes += 1 << 30
+    assert shared._entry_bank(context) == before
+    assert before[0] > shared._POSITIVE_HELPER_HOST + (5 << 20)
+    assert before[0] < 1 << 30 and before[1] > 0
+
+
+def test_genuine_retained_metadata_backings_are_additive(tmp_path, monkeypatch):
+    context = replace(_context(tmp_path), native_publication_limits=SimpleNamespace(
+        max_proof_bytes=4 << 20, max_mapped_bytes=1 << 20))
+    owner = _owner(context, _control())
+    scope = shared._PositiveEntryScope(owner, context, owner.thread)
+    monkeypatch.setattr(shared, '_POSITIVE_OWNER', owner)
+    monkeypatch.setattr(shared, '_POSITIVE_ENTRY_SCOPE', scope)
+    host0, work0 = shared._entry_extra_host(owner, context), shared._entry_bank(context)[1]
+    # Explicit synthetic metadata stand-ins. The public API never accepts
+    # metadata, a backing sum or a fee; its own real preflight supplies them.
+    scope.metadata = (None, None, None,
+        SimpleNamespace(prepass=SimpleNamespace(chains=((SimpleNamespace(nbytes=111),),))),
+        SimpleNamespace(caller_live_host_bytes=222),
+        (SimpleNamespace(chains=((SimpleNamespace(nbytes=333),),)),))
+    assert shared._entry_extra_host(owner, context) == host0 + 666
+    assert shared._entry_bank(context)[1] == work0
+    scope.metadata[3].prepass.chains[0][0].nbytes = -1
+    with pytest.raises(BedIntegrationError, match='entry_native_roots'):
+        shared._entry_extra_host(owner, context)
 
 
 def test_two_seams_and_old_functions_are_exact_inverses_of_base():

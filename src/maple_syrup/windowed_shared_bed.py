@@ -1856,10 +1856,11 @@ _POSITIVE_ENTRY_PROC_SITES = 3
 
 class _PositiveEntryScope:
     """Private ENTRY-ONLY scope: genuine owner/context/thread, never a fee."""
-    __slots__ = ('owner', 'context', 'thread')
+    __slots__ = ('owner', 'context', 'thread', 'metadata')
 
     def __init__(self, owner, context, thread):
         self.owner, self.context, self.thread = owner, context, thread
+        self.metadata = None
 
 
 def _entry_bank(context):
@@ -1871,17 +1872,54 @@ def _entry_bank(context):
     """
     p = context.native_publication_limits
     word, header = _POSITIVE_WORD, _POSITIVE_HEADER
-    # Retained first metadata: the pre-gate's whole _positive_metadata result
-    # (closed, ids, provider, Original, B plan, water prepass) is held through
-    # the entire nested commit. One COMPLETE admitted Native metadata-prefix
-    # envelope dominates it: exactly the owning _positive_bootstrap law for
-    # that one call (never sparse max_proof_bytes alone). Native
-    # _k_fixed_admission separately bounds the complete Original DATA
-    # projection (three graph roles, fixed maxima) by max_proof_bytes.
-    metadata = (_positive_integer(p.max_retained_payload_bytes, 'entry_payload')
-                + _positive_integer(p.max_mapped_bytes, 'entry_mapped')
-                + _positive_integer(p.max_proof_bytes, 'entry_proof')
-                + _positive_integer(p.reserve_host_bytes, 'entry_reserve') + _POSITIVE_HELPER_HOST)
+    # Retain the first metadata, NOT another prospective physical operation.
+    # Native _k_fixed_admission and _k_admit_request bound the COMPLETE
+    # Original graph/construction/error/text projection by max_proof_bytes.
+    # The separate terms below price the other retained/construction owners;
+    # max_proof_bytes alone is not the metadata bank. Original native gates
+    # still reserve their full physical payload/mapping/reserve unchanged.
+    proof = _positive_integer(p.max_proof_bytes, 'entry_proof', 1)
+    # Native B metadata: <=34 seven-field rows with <=5 shape dimensions,
+    # <=64 three-field terms (both strings <=1024 Source characters), the
+    # ten-field plan, shape/identity, and four bounded path-format roles.
+    # Four complete construction/current/prior/error occurrences are paid.
+    plan_rows = 34 * (header + 7 * (word + 32) + header + 5 * (word + 32)
+                      + 2 * (header + 128 * 4))
+    plan_terms = 64 * (header + 3 * (word + 32) + 2 * (header + 1024 * 4))
+    plan_records = 3 * header + (10 + 5 + 8) * (word + 32)
+    paths = 4 * (header + 4096 * 4 + 128 * (word + 32))
+    # Water metadata (no commit box): <=34 node/leaf/native-row occurrences,
+    # complete field-pair/text, rank/dtype records and construction lists.
+    water = 34 * (8 * header + 32 * (word + 32) + 4 * 1024 * 4)
+    # Fixed Native metadata frame/error locals, including plan's nested term
+    # and scalar/path/scratch validators, separate from Original's projection.
+    native_frames = 4 * (128 * 32 + 4096 * (word + 32) + 4 * 4096 * 4)
+    # Retained first-version mappings remain additive to future inner maps.
+    metadata = (proof + _positive_integer(p.max_mapped_bytes, 'entry_retained_mapped')
+                + 4 * (plan_rows + plan_terms + plan_records + paths + water))
+    metadata += native_frames + _POSITIVE_HELPER_HOST
+    # All external prepass backing occurrences are bounded by the existing
+    # selected ceiling. Pay both retained roles before constructing arrays.
+    metadata += 2 * _positive_integer(context.bridge_limits.max_external_backing_bytes,
+                                      'entry_external_backing_ceiling')
+    # Install the genuine first preflight before its first gate. Its original,
+    # water and plan backings stay ADDITIONAL outer occurrences at every gate,
+    # even when an inner/current/caller root references the same allocation.
+    scope = _POSITIVE_ENTRY_SCOPE
+    if scope is not None and (type(scope) is not _PositiveEntryScope or scope.context is not context):
+        _positive_refuse('positive_entry_bank_scope')
+    if scope is not None and scope.metadata is not None:
+        held = scope.metadata
+        if (type(held) is not tuple or len(held) != 6 or type(held[5]) is not tuple
+                or len(held[5]) != 1 or type(held[3].prepass.chains) is not tuple
+                or len(held[3].prepass.chains) > 34
+                or type(held[5][0].chains) is not tuple or len(held[5][0].chains) > 34):
+            _positive_refuse('positive_entry_metadata_rows')
+        native_roots = sum(chain[-1].nbytes for chain in held[3].prepass.chains)
+        water_roots = sum(chain[-1].nbytes for chain in held[5][0].chains)
+        metadata += (_positive_integer(native_roots, 'entry_native_roots')
+                     + _positive_integer(water_roots, 'entry_water_roots')
+                     + _positive_integer(held[4].caller_live_host_bytes, 'entry_bed_roots'))
     # _external_arrays: list and returned tuple of <=256 references.
     arrays = 2 * (header + _MAX_EXTERNAL_ARRAYS * word)
     # One Native _RankPrepass at its 34-leaf/8-node maxima: slots 3+2C+2N,
@@ -1894,13 +1932,16 @@ def _entry_bank(context):
     # water prepass reference, _array_rows list/tuple, nine fields, prepass
     # tuple plus concatenation, payload/work/disk tables at <=32 int rows.
     batches = -(-_MAX_EXTERNAL_ARRAYS // 34)
-    tables = 3 * (2 * (header + 32 * word) + 32 * (header + 2 * word + 32))
+    # Admission payload/work/disk tables and construction holdings, including
+    # borrowed key text, keep all128 rows in all four roles; no alias credit.
+    tables = 4 * (2 * (header + 128 * word)
+                  + 128 * (header + 2 * word + 32 + header + 1024 * 4))
     admission = (batches * prepass + 2 * (header + batches * word) + header + 9 * word
                  + 2 * (header + (batches + 1) * word) + tables)
     # Original control projection (<=128 scalar rows each for control and
-    # storm, list+tuple), owner (14 slots), scope (3 slots), birth pair.
+    # storm, list+tuple), owner (14 slots), scope (4 slots), birth pair.
     projection = 2 * (2 * (header + 128 * word) + 128 * (header + 2 * word)) + header + 2 * word
-    owners = projection + header + 14 * word + header + 3 * word + header + 2 * (word + 32)
+    owners = projection + header + 14 * word + header + 4 * word + header + 2 * (word + 32)
     # Each bounded proc read: the helper ledger's per-site stat/statm text,
     # split and field occurrences.
     proc = _POSITIVE_ENTRY_PROC_SITES * (3 * 4097 * 2 + 2 * 257 + 4096 * (word + 32)
@@ -1995,6 +2036,7 @@ def commit_positive_windowed_entry(state, context, graph, reference, current_tim
             routing_source_m=routing_source_m,
             max_rows=context.bridge_limits.max_report_rows)
         metadata = _metadata(state, context)
+        scope.metadata = metadata
         admission = _positive_gate(state, context, metadata, arrays,  # noqa: F841 - held
             'commit_trigger', control=control)
         _value_validate(state, context, current_time_s,

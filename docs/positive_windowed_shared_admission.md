@@ -185,9 +185,14 @@ clear only its own lease. An existing owner or scope refuses re-entry and is
 never replaced or cleared.
 
 The outer holding bank is a logical Source law derived from the entry's own
-call/frame/return/error graph. It retains the complete pre-gate metadata,
-prices one complete Native metadata prefix (never sparse proof alone), and
-relies on the complete unchanged `commit_bed` tail and its inner gates. It
+call/frame/return/error graph. It retains the complete pre-gate metadata:
+Native's complete Original reference projection, separately derived bed-plan,
+water, helper and error holdings, and retained first-version mappings. The
+first exact preflight supplies additional retained native/water/bed backing
+occurrences before its first gate and during subsequent native calls. Both
+external backing roles retain their original declared ceiling. No prospective physical operation
+is added merely for retaining a metadata plan. The bank relies on the complete
+unchanged `commit_bed` tail and its inner physical gates. It
 takes no spare-capacity, GC or release credit. Two entry-only seam
 statements add it to the existing gate/bootstrap predicates only while the
 entry scope is installed; otherwise they are absent. The existing helper
