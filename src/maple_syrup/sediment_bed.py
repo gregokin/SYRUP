@@ -910,6 +910,11 @@ def _shared_profile(state, context):
     positive = sys.modules.get('maple_syrup.windowed_shared_bed')
     if positive is not None:
         positive._positive_pair_guard(state, context)
+    device = sys.modules.get('maple_syrup.windowed_shared_bed_device')
+    if device is not None:
+        device._positive_pair_guard(state, context)
+        if device.is_shared_pair(state, context):
+            return device
     if type(state) is BedState and type(context) is BedContext:
         return None
     from maple_syrup import windowed_shared_bed as shared

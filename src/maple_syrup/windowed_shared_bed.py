@@ -1032,6 +1032,12 @@ def _positive_context(context):
 
 
 def _positive_pair_guard(state, context):
+    # Device-family exclusion is metadata-only and never imports its module.
+    import sys
+
+    device = sys.modules.get('maple_syrup.windowed_shared_bed_device')
+    if device is not None:
+        device._positive_pair_guard(state, context)
     active = _POSITIVE_OWNER
     selected = _positive_context(context)
     if selected or active is not None:
