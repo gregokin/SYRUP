@@ -124,3 +124,41 @@ Stage A wet Native commit and Stage B direct/paired exchange qualification are
 prerequisites. A future passing run qualifies only this labelled physical
 experiment under its actual Source/runtime/device/budget controls. Failure is
 not completion, and successful metadata tests alone establish no water result.
+
+## Commit-only qualification entry
+
+`commit_qualification_device_entry(state, context, graph, reference,
+current_time_s, routing_source_m, *, control)` accepts the adapted seven-field
+shared bed and the same qualification context/budget. It creates a short,
+nonreentrant owner after the actual type, control, geometry, profile, Source and
+runtime checks. One entry gate reserves the original known positive prefix,
+then genuine `sediment_bed.commit_bed(..., force=True)` performs the existing
+Native trigger, avalanche, constant-depth water copy, accounting, publication,
+full validation and net-displacement routing decision. Its trigger, writer and
+candidate-validation gates remain independent and unchanged.
+
+The result is the actual `BedCommit` and an actual-counter
+`QualificationAdmissionSummary`. This commit-only summary has
+`hydraulics=None`; it creates no `CudaHydraulics`. Thus the earlier
+complete-handoff summary statement applies to the full-event API, while this
+additive entry returns only after its genuine forced commit. The full-event API
+and every prior strict/qualification body remain unchanged. All twenty opaque
+terms remain `None`, with the same known-subset/no-allocation-proof labels.
+
+An unrouted commit retains the exact graph and routing-source objects. A routed
+commit returns the actual refreshed graph/source; the decision uses the actual
+Native context threshold and maximum active-cell absolute net displacement,
+never a wrapper threshold. Errors poison the short owner and propagate; finally
+closes authority without claiming memory release, rollback or completion.
+
+The appended component selector
+`test_qualification_device_entry_matches_direct_native_commit_and_routing`
+compares two sequential real entry commits with the independent direct Native
+commit/routing calls on a separate instance of the same small fixture. It
+checks input/old-version immutability, the complete logical column and all six
+other authoritative fields, constant-depth/mobile identities, routing evidence,
+actual owner counters and opaque labels. It does not execute a water event or
+create a hydraulic lifecycle. Root must issue its own actual selector/source/
+runtime/grant controls and run it under the same whole-experiment budgets; no
+extra oracle, event timeout or allocation allowance is introduced. Metadata
+checks or this component alone do not qualify complete water or alternation.

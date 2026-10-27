@@ -2229,6 +2229,72 @@ def complete_qualification_device_event(state, context, column, field, schedule,
             _OWNER = None
 
 
+def commit_qualification_device_entry(state, context, graph, reference, current_time_s,
+                                      routing_source_m, *, control):
+    """One genuine forced entry commit under a short qualification owner.
+
+    Returns the actual BedCommit and this owner's known-subset counters.
+    This commit-only operation creates no hydraulic lifecycle; the unchanged
+    complete-event entry owns its separate genuine CudaHydraulics.
+    """
+    global _OWNER
+    from maple_syrup import windowed_shared_bed as cpu
+    from maple_syrup.sediment_bed import BedCommit, commit_bed
+    from maple_syrup.sediment_event import SedimentEventControl
+
+    if _OWNER is not None:
+        _refuse('nonreentrant_device_operation')
+    _positive_pair_guard(state, context)
+    if not _qualification_dispatch(context):
+        _refuse('qualification_entry_requires_qualification_budget')
+    cpu._positive_pair_guard(state, context)
+    _holder(state, WindowedSharedBedState)
+    _holder(context, WindowedDeviceWaterContext)
+    _time(current_time_s)
+    if control is None or routing_source_m is None:
+        _refuse('explicit_original_control_and_retained_routing_source')
+    _holder(control, SedimentEventControl)
+    _geometry(context, graph, reference)
+    _profile(state, context)
+    projection = _control_projection(context, control)
+    _runtime_bounds(context, verify_files=True)
+    owner = _Owner(context, control, projection, context.runtime_bounds.source_bindings)
+    _OWNER = owner
+    try:
+        # The real gate increments the ordinal before commit_shared_bed's
+        # independent trigger, writer and validation gates. No duplicate gate.
+        _gate(state, context, 'entry', roots=(('graph', graph), ('terrain', reference),
+                                            ('routing_source_m', routing_source_m)))
+        result = commit_bed(state, context, graph, reference, current_time_s,
+                            force=True, routing_source_m=routing_source_m)
+        _holder(result, BedCommit)
+        if (result.did_commit is not True or type(result.rerouted) is not bool
+                or result.state is state or result.routing_source_m is None
+                or type(result.graph) is not type(graph)):
+            _refuse('actual_qualification_entry_commit_required')
+        _holder(result.state, WindowedSharedBedState)
+        source = result.routing_source_m
+        if result.rerouted:
+            if (result.graph is graph or source is routing_source_m
+                    or type(source) is not type(routing_source_m)
+                    or source.shape != routing_source_m.shape
+                    or source.dtype != routing_source_m.dtype):
+                _refuse('rerouted_full_routing_source')
+        elif result.graph is not graph or source is not routing_source_m:
+            _refuse('unrerouted_original_routing_identity')
+        _owner(context)
+        summary = QualificationAdmissionSummary(owner.ordinal, owner.work, owner.reads,
+            owner.versions, owner.h2d, owner.d2h, owner.scalars, owner.max_host, owner.max_device, None)
+        return result, summary
+    except BaseException:
+        owner.poisoned = True
+        raise
+    finally:
+        owner.closed = True
+        if _OWNER is owner:
+            _OWNER = None
+
+
 # Immutable function/code witness; includes dataclass-generated methods and
 # every own helper. No selected runtime/ABI fact is manufactured here.
 _RUNTIME_BOUNDS_REPR_WITNESS = _runtime_bounds_repr_witness()

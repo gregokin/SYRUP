@@ -342,3 +342,146 @@ def test_small_complete_device_water_qualification_matches_dense(tmp_path, cupy,
     assert admission.known_subset_only is True
     assert all(value is None for _name, value in admission.opaque_terms)
     assert admission.claim == 'bounded physical qualification; known subset only; no allocation proof'
+
+
+def _entry_component_inputs(root, cp, budget):
+    """A separate genuine Small genesis; no input bed is reconstructed."""
+    fx = _device_fixture(root, cp)
+    host = production.build_bed(production.model())
+    assert fx.geo == host.context.geometry
+    assert fx.model.grain_classes == host.context.grain_classes
+    committed, regroup = windowed_committed_state_from_dense_baseline(
+        fx.physical.committed_topography, fx.physical.voxel_column,
+        fx.physical.active_layer, fx.geo, trusted_packet=True)
+    assert regroup['exact_height_checked'] is True
+    p = fx.physical
+    bed = WindowedSharedBedState(p.voxel_column, p.active_layer, p.water, p.ledger,
+        committed, p.sediment_availability, p.ledger_reconciliation_baseline)
+    context = device.WindowedDeviceWaterContext(
+        geometry=fx.geo, grain_classes=fx.model.grain_classes, mass_resolution_kg=fx.mres,
+        topographic_commit_spec=fx.config.topographic_commit_spec,
+        avalanching_spec=fx.config.avalanching_spec,
+        initial_available_fraction=fx.config_device.initial_available_fraction,
+        window_max_journal_records=320, native_solve_limits=_solve_limits(fx.config.avalanching_spec),
+        native_validation_limits=_validation_limits(),
+        native_commit_limits=dataclasses.replace(_commit_limits(), publication_max_records=320),
+        source_identity=budget.native_source_identity, bridge_limits=_limits(root), runtime_bounds=budget)
+    water = production.water_inputs(host, all_edges_open=True)
+    source = committed_elevation_m(bed.committed_topography)
+    graph = routing_graph_from_elevation(water.terrain, source, xp=cp)
+    reference = terrain_reference(water.terrain.initial_full_elevation_m,
+        water.terrain.export_receiver_full, bed, graph)
+    control = legacy.sediment_control(implementation='cuda', root_solver='bisection')
+    return bed, context, graph, reference, source, control, fx.state.physical.time_s
+
+
+def _direct_native_entry_oracle(state, context, graph, reference, source, time_s):
+    """Independent real Native calls; no SYRUP entry owner or fake BedCommit."""
+    from maple.water.windowed_commit_callback import make_windowed_water_depth_commit_callback
+    from maple_syrup.sediment_bed import net_routing_displacement_m, reroute_threshold_m
+    _bed, _solve, avalanche, commit, *_ = device._native()
+    ids = tuple(gc.class_id for gc in context.grain_classes.classes)
+    callback, availability = avalanche._make_device_windowed_avalanche_callback(
+        context.avalanching_spec, class_ids=ids, solve_limits=context.native_solve_limits,
+        validation_limits=context.native_validation_limits,
+        sediment_availability=state.sediment_availability,
+        initial_available_fraction=context.initial_available_fraction)
+    before = committed_elevation_m(state.committed_topography)
+    water_callback, water_box = make_windowed_water_depth_commit_callback(
+        state.water, context.geometry, before, depth_update_rule='constant_depth', trusted_packet=True)
+    result = commit._stage_device_windowed_topography_with_native_avalanche(
+        state.ledger, state.committed_topography, state.voxel_column, state.active_layer,
+        context.geometry, context.mass_resolution_kg, time_s,
+        avalanche_callback=callback, water_callback=water_callback, water_box=water_box,
+        water=state.water, committed_elevation_before_m=before, limits=context.native_commit_limits,
+        reconciliation_baseline=state.reconciliation_baseline, record_exchange_history=False)
+    assert water_box.ran and water_box.depth_update.rule == 'constant_depth'
+    assert water_box.water.depth_m is not state.water.depth_m
+    assert water_box.water.mobile_mass_by_cell_class_kg is state.water.mobile_mass_by_cell_class_kg
+    assert water_box.depth_update.clamp_cell_count == 0
+    assert water_box.depth_update.clamp_added_volume_m3 == 0.0
+    assert water_box.depth_update.displaced_volume_m3 == 0.0
+    _same(water_box.water.depth_m, state.water.depth_m, 'direct constant depth')
+    candidate = dataclasses.replace(state, voxel_column=result.new_voxel_column,
+        active_layer=result.new_active_layer, committed_topography=result.new_committed_state,
+        ledger=result.new_ledger, water=water_box.water,
+        sediment_availability=availability.new_sediment_availability,
+        reconciliation_baseline=result.new_reconciliation_baseline)
+    committed = committed_elevation_m(candidate.committed_topography)
+    net = net_routing_displacement_m(committed, source, graph.active_flat.reshape(graph.shape))
+    rerouted = net >= reroute_threshold_m(context)
+    if rerouted:
+        return candidate, routing_graph_from_elevation(reference, committed, xp=graph.xp), committed, net, True
+    return candidate, graph, source, net, False
+
+
+def test_qualification_device_entry_matches_direct_native_commit_and_routing(
+        tmp_path, cupy, device_water_qualification_budget):
+    """Two real forced entry commits; all work stays in the original budget."""
+    from maple_syrup.sediment_bed import BedCommit
+    from maple.surface.topographic_commit.windowed_device import _bed_leaves
+    cp = cupy
+    budget = device_water_qualification_budget
+    device.reserve_qualification_device_water_oracle_frontier(budget, device_id=int(cp.cuda.Device().id))
+    actual, context, graph, reference, source, control, time_s = _entry_component_inputs(
+        tmp_path/'entry', cp, budget)
+    expected, direct_context, direct_graph, direct_reference, direct_source, _direct_control, direct_time = _entry_component_inputs(
+        tmp_path/'oracle', cp, budget)
+    assert time_s == direct_time
+    old_versions = (actual.voxel_column.deep_store, expected.voxel_column.deep_store)
+    old_files = tuple(_files(v.store_dir) for v in old_versions)
+    inputs = _snapshot(actual, expected, source, direct_source,
+        tuple(a for _n, a in _bed_leaves(actual.voxel_column, actual.active_layer)),
+        tuple(a for _n, a in _bed_leaves(expected.voxel_column, expected.active_layer)),
+        context.initial_available_fraction, direct_context.initial_available_fraction)
+    summaries = []
+    for ordinal in range(2):
+        previous, held_graph, held_source = actual, graph, source
+        direct_held_graph, direct_held_source = direct_graph, direct_source
+        committed, summary = device.commit_qualification_device_entry(
+            actual, context, graph, reference, time_s, source, control=control)
+        assert device._OWNER is None
+        assert type(committed) is BedCommit and committed.did_commit is True
+        assert committed.state is not previous
+        assert committed.water_result.water.mobile_mass_by_cell_class_kg is previous.water.mobile_mass_by_cell_class_kg
+        assert committed.state.water.depth_m is not previous.water.depth_m
+        _same(committed.state.water.depth_m, previous.water.depth_m, 'entry constant depth')
+        expected, direct_graph, direct_source, net, rerouted = _direct_native_entry_oracle(
+            expected, direct_context, direct_graph, direct_reference, direct_source, direct_time)
+        assert committed.rerouted is rerouted and committed.net_displacement_m == net
+        actual, graph, source = committed.state, committed.graph, committed.routing_source_m
+        if rerouted:
+            assert graph is not held_graph and source is not held_source
+            assert direct_graph is not direct_held_graph and direct_source is not direct_held_source
+        else:
+            assert graph is held_graph and source is held_source
+            assert direct_graph is direct_held_graph and direct_source is direct_held_source
+        check_graph_evidence_matches(graph, direct_graph)
+        _same(source, direct_source, 'entry routing source')
+        for name in device._BED_FIELDS:
+            if name != 'voxel_column':
+                _same(getattr(actual, name), getattr(expected, name), 'entry.'+name)
+        cells = np.arange(16, dtype=np.int64)
+        _same(gather_full_columns(actual.voxel_column, cells),
+              gather_full_columns(expected.voxel_column, cells), 'entry complete logical column')
+        for name in ('window_kg', 'base', 'deep_by_class_kg', 'deep_total_kg', 'deep_room_kg', 'n_voxels'):
+            _same(getattr(actual.voxel_column, name), getattr(expected.voxel_column, name), 'entry.column.'+name)
+        assert actual.voxel_column.pending_deep is expected.voxel_column.pending_deep is None
+        assert type(summary) is device.QualificationAdmissionSummary
+        assert summary.gate_count == 4  # One entry + the unchanged trigger/writer/candidate gates.
+        assert summary.hydraulics is None and summary.known_subset_only is True
+        assert len(summary.opaque_terms) == 20 and all(v is None for _n, v in summary.opaque_terms)
+        assert summary.claim == 'bounded physical qualification; known subset only; no allocation proof'
+        assert summary.maximum_host_predicate <= context.bridge_limits.max_host_bytes
+        assert summary.maximum_device_predicate <= context.bridge_limits.max_device_bytes
+        summaries.append(summary)
+        _unchanged(inputs)
+    assert sum(s.logical_work_debited for s in summaries) <= context.bridge_limits.max_work
+    assert sum(s.logical_read_bytes_debited for s in summaries) <= context.bridge_limits.max_logical_read_bytes
+    assert sum(s.versions_reserved for s in summaries) <= context.bridge_limits.max_new_versions
+    for old, files, final in zip(old_versions, old_files, (actual, expected), strict=True):
+        current = final.voxel_column.deep_store
+        assert current.store_dir == old.store_dir and (current is old or current.version_id >= old.version_id)
+        after = _files(old.store_dir)
+        for name, raw in files.items():
+            assert after[name] == raw

@@ -124,3 +124,104 @@ def test_qualification_dispatch_does_not_touch_foreign_context_hooks():
         def __getattribute__(self, name):
             raise AssertionError('foreign hook was evaluated: '+name)
     assert d._qualification_dispatch(Foreign()) is False
+
+
+# Entry protocol tests use genuine SYRUP metadata holders with opaque tokens.
+# They stop before geometry/Native/provider/file admission and claim no bed.
+def _entry_metadata_pair():
+    limits = d.PositiveWindowedDeviceWaterLimits(
+        max_host_bytes=5 << 30, max_device_bytes=2 << 30, max_mapped_bytes=128 << 20,
+        max_logical_read_bytes=(1 << 63)-1, max_work=(1 << 63)-1,
+        max_store_bytes=64 << 20, max_run_bytes=512 << 20, max_new_versions=1000000,
+        max_entries=4096, max_external_backing_bytes=64 << 20, max_event_steps=10000,
+        max_retries=10, max_transport_substeps=64, max_report_rows=4096,
+        reserve_host_bytes=64 << 20, reserve_device_bytes=256 << 20,
+        safety_fraction=0.5, run_dir='/unissued/entry')
+    state = d.WindowedSharedBedState(*(object() for _ in d._BED_FIELDS))
+    context = d.WindowedDeviceWaterContext(
+        geometry=object(), grain_classes=object(), mass_resolution_kg=1.0,
+        topographic_commit_spec=object(), avalanching_spec=object(),
+        initial_available_fraction=object(), native_solve_limits=object(),
+        native_validation_limits=object(), native_commit_limits=object(),
+        source_identity='b'*64, bridge_limits=limits, runtime_bounds=_budget())
+    return state, context
+
+
+def test_entry_signature_accepts_bed_operands_and_requires_keyword_control():
+    import inspect
+    signature = inspect.signature(d.commit_qualification_device_entry)
+    assert tuple(signature.parameters) == ('state', 'context', 'graph', 'reference',
+        'current_time_s', 'routing_source_m', 'control')
+    assert signature.parameters['control'].kind is inspect.Parameter.KEYWORD_ONLY
+    with pytest.raises(TypeError):
+        d.commit_qualification_device_entry(None, None, None, None, 0.0, None)
+
+
+def test_entry_foreign_operands_do_not_dereference_event_bed_or_hooks():
+    calls = []
+    class Foreign:
+        def __getattribute__(self, name):
+            calls.append(name)
+            raise AssertionError('foreign hook: '+name)
+    with pytest.raises(BedIntegrationError, match='qualification_entry_requires'):
+        d.commit_qualification_device_entry(Foreign(), Foreign(), Foreign(), Foreign(),
+            0.0, Foreign(), control=Foreign())
+    assert calls == [] and d._OWNER is None
+
+
+def test_entry_nonreentrant_refusal_leaves_existing_authority_identity():
+    original = d._OWNER
+    marker = object()  # Explicit synthetic metadata marker, not a Native owner.
+    try:
+        d._OWNER = marker
+        with pytest.raises(BedIntegrationError, match='nonreentrant_device_operation'):
+            d.commit_qualification_device_entry(None, None, None, None, 0.0, None, control=None)
+        assert d._OWNER is marker
+    finally:
+        d._OWNER = original
+
+
+def test_entry_rejects_nonqualification_and_subclass_pairs_before_admission():
+    state, context = _entry_metadata_pair()
+    for bad in (None, object()):
+        with pytest.raises(BedIntegrationError, match='qualification_entry_requires'):
+            d.commit_qualification_device_entry(state, replace(context, runtime_bounds=bad),
+                None, None, 0.0, None, control=None)
+    class ForeignState(d.WindowedSharedBedState):
+        pass
+    with pytest.raises(BedIntegrationError, match='exact_active_process_thread_pair'):
+        d.commit_qualification_device_entry(ForeignState(**vars(state)), context,
+            None, None, 0.0, None, control=None)
+    assert d._OWNER is None
+
+
+def test_entry_time_source_and_control_refuse_before_native_or_owner():
+    state, context = _entry_metadata_pair()
+    for time in (False, -1.0, float('inf'), float('nan')):
+        with pytest.raises(BedIntegrationError, match='finite_plain_time'):
+            d.commit_qualification_device_entry(state, context, None, None,
+                time, None, control=None)
+    for control, source in ((None, object()), (object(), None)):
+        with pytest.raises(BedIntegrationError, match='explicit_original_control'):
+            d.commit_qualification_device_entry(state, context, None, None,
+                0.0, source, control=control)
+    calls = []
+    class ForeignControl:
+        def __getattribute__(self, name):
+            calls.append(name)
+            raise AssertionError('foreign control hook')
+    with pytest.raises(BedIntegrationError, match='exact_holder'):
+        d.commit_qualification_device_entry(state, context, None, None,
+            0.0, object(), control=ForeignControl())
+    assert calls == [] and d._OWNER is None
+
+
+def test_entry_commit_only_summary_has_no_hydraulics_or_numeric_opaque_terms():
+    summary = d.QualificationAdmissionSummary(4, 10, 20, 1, 0, 0, 0, 30, 40, None)
+    assert summary.hydraulics is None and summary.known_subset_only is True
+    assert len(summary.opaque_terms) == 20
+    assert all(value is None for _name, value in summary.opaque_terms)
+    for changed in ({'known_subset_only': False}, {'claim': 'complete allocation proof'},
+                    {'opaque_terms': ((*summary.opaque_terms[0][:-1], 1), *summary.opaque_terms[1:])}):
+        with pytest.raises(BedIntegrationError):
+            d.QualificationAdmissionSummary(4, 10, 20, 1, 0, 0, 0, 30, 40, None, **changed)
