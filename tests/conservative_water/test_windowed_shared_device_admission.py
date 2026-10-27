@@ -208,3 +208,208 @@ def test_complete_issued_contract_encoding_joins_values_and_is_acyclic():
     external = dataclasses.replace(bounds.external_bounds[0], work=2)
     changed = dataclasses.replace(bounds, external_bounds=(external,)+bounds.external_bounds[1:])
     assert device.runtime_contract_bytes(changed) != raw
+
+
+def _constructor_v2_bank(name, **counts):
+    values = {key: 0 for key in device._CONSTRUCTOR_V2_COUNTS}
+    assert set(counts) <= set(values)
+    values.update(counts)
+    return (name, *(values[key] for key in device._CONSTRUCTOR_V2_COUNTS))
+
+
+def _constructor_v2(**changes):
+    # Synthetic SCHEMA values only. Shell2 means one positive placeholder plus
+    # one cache terminator, slope8 includes both character storage families.
+    # None of these values is a genuine selected ABI or runtime policy.
+    values = dict(schema=device._CONSTRUCTOR_V2_SCHEMA, source_census_sha256='a'*64,
+        domain=device._CONSTRUCTOR_V2_DOMAIN, unicode_shell_bytes=2, unicode_character_bytes=8,
+        bytes_shell_bytes=1, bytes_payload_bytes=1, list_header_bytes=1, list_slot_bytes=1,
+        tuple_header_bytes=1, tuple_slot_bytes=1, dict_header_bytes=1, dict_entry_bytes=1,
+        set_header_bytes=1, set_entry_bytes=1,
+        banks=tuple(_constructor_v2_bank(name) for name in device._CONSTRUCTOR_V2_BANK_NAMES))
+    values.update(changes)
+    return device.DeviceWaterConstructorAccountingV2(**values)
+
+
+def test_v2_none_preserves_complete_v1_encoding_and_constructor_dispatch():
+    import json
+    bounds = _bounds()
+    assert bounds.constructor_accounting_v2 is None
+    def ref(value):
+        return dict(path=value.path, size=value.size, sha256=value.sha256)
+    # Independent original6c schema: the new optional field must be absent.
+    expected = dict(schema='maple_syrup.windowed_device_water.runtime_contract.v1',
+        native_source_identity=bounds.native_source_identity,
+        current_runtime_ref=ref(bounds.current_runtime_ref), primitive_evidence=ref(bounds.primitive_evidence),
+        primitive_units=bounds.primitive_units,
+        external_bounds=tuple(dict(role=b.role, host_bytes=b.host_bytes, device_bytes=b.device_bytes,
+            work=b.work, logical_read_bytes=b.logical_read_bytes, h2d_bytes=b.h2d_bytes,
+            d2h_bytes=b.d2h_bytes, scalar_reads=b.scalar_reads, evidence=ref(b.evidence)) for b in bounds.external_bounds),
+        source_bindings=tuple(dict(module=name, **ref(r)) for name, r in bounds.source_bindings))
+    assert device.runtime_contract_bytes(bounds) == json.dumps(expected, sort_keys=True,
+        separators=(',', ':'), ensure_ascii=True, allow_nan=False).encode('ascii')
+    args = dict(rows=23, arrays=7, text=311, frames=101, errors=6)
+    for name in device._CONSTRUCTOR_V2_BANK_NAMES:
+        assert device._constructor_projection(bounds, name, **args) == device._constructor_frontier(bounds, **args)
+
+
+def test_v2_schema_domain_banks_and_utf8_units_are_closed():
+    profile = _constructor_v2()
+    assert profile.validated() is profile
+    assert '__repr__' not in vars(type(profile))  # No second hidden repr closure.
+    bad = [dict(schema='v1'), dict(source_census_sha256='G'*64),
+        dict(domain=list(profile.domain)), dict(domain=(True,)+profile.domain[1:]),
+        dict(domain=(17,)+profile.domain[1:]), dict(unicode_shell_bytes=1),
+        dict(unicode_character_bytes=7), dict(banks=profile.banks[:-1]),
+        dict(banks=(profile.banks[0],)*4)]
+    for change in bad:
+        with pytest.raises(BedIntegrationError):
+            dataclasses.replace(profile, **change).validated()
+    for name in device._CONSTRUCTOR_V2_UNITS:
+        for value in (True, 0, 1 << 31):
+            with pytest.raises(BedIntegrationError):
+                dataclasses.replace(profile, **{name: value}).validated()
+    for name in ('call_rows_max', 'call_text_max', 'unicode_objects'):
+        for count in (True, -1, 1 << 63):
+            row = _constructor_v2_bank('reference_bootstrap', **{name: count})
+            with pytest.raises(BedIntegrationError):
+                dataclasses.replace(profile, banks=(row,)+profile.banks[1:]).validated()
+    row = _constructor_v2_bank('reference_bootstrap', unicode_characters=1)
+    with pytest.raises(BedIntegrationError, match='missing_typed_owner'):
+        dataclasses.replace(profile, banks=(row,)+profile.banks[1:]).validated()
+    for counts in (dict(unrefined_rows=1), dict(remaining_v1_text_characters=1)):
+        row = _constructor_v2_bank('reference_bootstrap', **counts)
+        with pytest.raises(BedIntegrationError, match='residual_exceeds_call_max'):
+            dataclasses.replace(profile, banks=(row,)+profile.banks[1:]).validated()
+
+
+def test_v2_encoder_binds_every_field_and_remains_acyclic():
+    import json
+    profile = _constructor_v2()
+    bounds = dataclasses.replace(_bounds(), constructor_accounting_v2=profile)
+    raw = device.runtime_contract_bytes(bounds)
+    decoded = json.loads(raw)
+    assert decoded['schema'] == 'maple_syrup.windowed_device_water.runtime_contract.v2'
+    assert set(decoded['constructor_accounting_v2']) == {f.name for f in dataclasses.fields(profile)}
+    assert decoded['constructor_accounting_v2']['banks'] == [list(row) for row in profile.banks]
+    for name in device._CONSTRUCTOR_V2_UNITS:
+        changed = dataclasses.replace(profile, **{name: getattr(profile, name)+1})
+        assert device.runtime_contract_bytes(dataclasses.replace(bounds, constructor_accounting_v2=changed)) != raw
+    for changed in (dataclasses.replace(profile, source_census_sha256='b'*64),
+                    *(dataclasses.replace(profile, banks=(_constructor_v2_bank('reference_bootstrap',
+                        **counts),)+profile.banks[1:]) for counts in (
+                            dict(unicode_objects=1, unicode_characters=1),
+                            dict(call_rows_max=1), dict(call_text_max=1)))):
+        assert device.runtime_contract_bytes(dataclasses.replace(bounds, constructor_accounting_v2=changed)) != raw
+    assert device.runtime_contract_bytes(dataclasses.replace(bounds,
+        runtime_evidence=device.SourceReference('/DIFFERENT_CONTAINER', 777, 'c'*64))) == raw
+
+
+def test_v2_degenerate_identity_at_all_four_source_call_arguments():
+    bounds = _bounds()
+    refs = (bounds.runtime_evidence, bounds.current_runtime_ref, bounds.primitive_evidence,
+        *(b.evidence for b in bounds.external_bounds), *(r for _n, r in bounds.source_bindings))
+    raw, source = sum(r.size for r in refs), sum(r.size for _n, r in bounds.source_bindings)
+    assert len(refs) == 36
+    # Real pure code census; no Native plans or provider operations. Phase's
+    # additional immediate-operator slots may take any genuine nonnegative
+    # value: this algebraic identity holds for the same actual frames argument.
+    _codes, own_slots, own_text = device._code_frontier()
+    cases = ((25600, 512, 4*raw+36*4*4096+16384*2048+2305),
+             (16384, 1024, source+4*4096*4096),
+             (4580, 512, source+own_text+5*4096*4),
+             (16512, 576, 16384*2048+2305+4*4096+256*128))
+    banks = tuple(_constructor_v2_bank(name, call_rows_max=rows, call_text_max=text,
+                                      unrefined_rows=rows, remaining_v1_text_characters=text)
+                  for name, (rows, _arrays, text) in zip(device._CONSTRUCTOR_V2_BANK_NAMES, cases))
+    bounds = dataclasses.replace(bounds, constructor_accounting_v2=_constructor_v2(banks=banks))
+    for name, (rows, arrays, text) in zip(device._CONSTRUCTOR_V2_BANK_NAMES, cases):
+        args = dict(rows=rows, arrays=arrays, text=text, frames=90*own_slots, errors=6)
+        assert device._constructor_projection(bounds, name, **args) == device._constructor_frontier(bounds, **args)
+        with pytest.raises(BedIntegrationError, match='current_call_caps'):
+            device._constructor_projection(bounds, name, **{**args, 'rows': rows-1})
+        with pytest.raises(BedIntegrationError, match='current_call_caps'):
+            device._constructor_projection(bounds, name, **{**args, 'text': text-1})
+        with pytest.raises(BedIntegrationError, match='current_call_caps'):
+            device._constructor_projection(bounds, name, **{**args, 'rows': rows+1})
+        with pytest.raises(BedIntegrationError, match='current_call_caps'):
+            device._constructor_projection(bounds, name, **{**args, 'text': text+1})
+
+
+def test_v2_typed_costs_remain_positive_and_distinct():
+    counts = {name: 1 for name in device._CONSTRUCTOR_V2_COUNTS}
+    counts.update(call_rows_max=2, call_text_max=5)
+    bank = _constructor_v2_bank('reference_bootstrap', **counts)
+    profile = _constructor_v2(banks=(bank,)+_constructor_v2().banks[1:])
+    bounds = dataclasses.replace(_bounds(), constructor_accounting_v2=profile)
+    args = dict(rows=2, arrays=3, text=5, frames=7, errors=6)
+    base = device._constructor_frontier_v2(bounds, 'reference_bootstrap', **args)
+    for name in device._CONSTRUCTOR_V2_UNITS:
+        raised = dataclasses.replace(profile, **{name: getattr(profile, name)+1})
+        value = device._constructor_frontier_v2(dataclasses.replace(bounds, constructor_accounting_v2=raised),
+            'reference_bootstrap', **args)
+        assert value == base+1
+    for name in device._CONSTRUCTOR_V2_COUNTS[2:]:
+        raised_counts = {**counts, name: 2}
+        raised = dataclasses.replace(profile, banks=(_constructor_v2_bank('reference_bootstrap', **raised_counts),)+profile.banks[1:])
+        assert device._constructor_frontier_v2(dataclasses.replace(bounds, constructor_accounting_v2=raised),
+            'reference_bootstrap', **args) > base
+
+
+def test_v2_current_call_types_bank_and_int63_overflow_refuse():
+    profile = _constructor_v2()
+    bounds = dataclasses.replace(_bounds(), constructor_accounting_v2=profile)
+    args = dict(rows=2, arrays=3, text=5, frames=7, errors=6)
+    for bank in ('unknown', True):
+        with pytest.raises(BedIntegrationError, match='constructor_v2_bank'):
+            device._constructor_frontier_v2(bounds, bank, **args)
+    for name in args:
+        for wrong in (True, -1, 1 << 63):
+            with pytest.raises(BedIntegrationError):
+                device._constructor_frontier_v2(bounds, 'reference_bootstrap', **{**args, name: wrong})
+    huge = _constructor_v2_bank('reference_bootstrap', call_rows_max=2, call_text_max=5,
+                               unicode_objects=(1 << 63)-1)
+    bounds = dataclasses.replace(bounds, constructor_accounting_v2=dataclasses.replace(profile, banks=(huge,)+profile.banks[1:]))
+    with pytest.raises(BedIntegrationError, match='constructor_v2_projection'):
+        device._constructor_frontier_v2(bounds, 'reference_bootstrap', **args)
+
+
+def test_v2_frozen_and_revalidated_metadata_mutations_refuse():
+    profile = _constructor_v2()
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        profile.unicode_character_bytes = 1
+    bounds = dataclasses.replace(_bounds(), constructor_accounting_v2=profile)
+    object.__setattr__(profile, 'unicode_character_bytes', 7)
+    with pytest.raises(BedIntegrationError):
+        device._constructor_frontier_v2(bounds, 'reference_bootstrap', rows=2, arrays=3, text=5, frames=7)
+
+
+def test_v2_generated_repr_user_function_code_and_bindings_are_witnessed(monkeypatch):
+    witness = device._RUNTIME_BOUNDS_REPR_WITNESS
+    wrapped = device.DeviceWaterRuntimeBounds.__repr__
+    assert witness[0] is wrapped and witness[5] is wrapped.__wrapped__
+    assert any(fn is witness[5] and code is witness[6] for fn, code in device._CODE_BANK)
+    for fn in (device._constructor_frontier_v2, device._constructor_projection,
+               device.DeviceWaterConstructorAccountingV2.validated):
+        assert any(owner is fn and code is fn.__code__ for owner, code in device._CODE_BANK)
+    device._check_code()
+    def substitute(_self):
+        return 'synthetic replacement'
+    monkeypatch.setattr(wrapped, '__wrapped__', substitute)
+    with pytest.raises(BedIntegrationError, match='runtime_bounds_repr_closure_binding'):
+        device._check_code()
+
+
+def test_v2_generated_repr_cell_and_hidden_code_mutations_refuse(monkeypatch):
+    witness = device._RUNTIME_BOUNDS_REPR_WITNESS
+    def substitute(_self):
+        return 'synthetic replacement'
+    with monkeypatch.context() as patch:
+        patch.setattr(witness[4], 'cell_contents', substitute)
+        with pytest.raises(BedIntegrationError, match='runtime_bounds_repr_closure_binding'):
+            device._check_code()
+    with monkeypatch.context() as patch:
+        patch.setattr(witness[5], '__code__', substitute.__code__)
+        with pytest.raises(BedIntegrationError, match='adapter_code_identity_changed'):
+            device._check_code()
+    device._check_code()

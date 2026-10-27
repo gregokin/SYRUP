@@ -21,6 +21,16 @@ _BED_FIELDS = ('voxel_column', 'active_layer', 'water', 'ledger',
                'committed_topography', 'sediment_availability', 'reconciliation_baseline')
 _UNIT_NAMES = ('reference', 'scalar', 'text_character', 'sequence_header',
                'mapping_header', 'array_header', 'frame_slot', 'error_shell')
+_CONSTRUCTOR_V2_SCHEMA = 'maple_syrup.windowed_device_water.constructor_accounting.v2'
+_CONSTRUCTOR_V2_DOMAIN = (16, 1, 6, 3, 4, 320, 10000, 11, 64, 4096)
+_CONSTRUCTOR_V2_BANK_NAMES = ('reference_bootstrap', 'oracle_pregenesis', 'phase', 'metadata_gate')
+_CONSTRUCTOR_V2_COUNTS = ('call_rows_max', 'call_text_max', 'unrefined_rows', 'unicode_objects', 'unicode_characters',
+    'byte_objects', 'byte_payload', 'list_objects', 'list_slots', 'tuple_objects', 'tuple_slots',
+    'dict_objects', 'dict_entries', 'set_objects', 'set_entries', 'remaining_v1_text_characters')
+_CONSTRUCTOR_V2_UNITS = ('unicode_shell_bytes', 'unicode_character_bytes',
+    'bytes_shell_bytes', 'bytes_payload_bytes', 'list_header_bytes', 'list_slot_bytes',
+    'tuple_header_bytes', 'tuple_slot_bytes', 'dict_header_bytes', 'dict_entry_bytes',
+    'set_header_bytes', 'set_entry_bytes')
 # These are the components EXCLUDED by the native payload planners.  Each
 # supplied bound must cite the exact current Source/selected runtime contract.
 _EXTERNAL_ROLES = ('native_metadata', 'cuda_prepare', 'cuda_attempt', 'transport',
@@ -155,6 +165,68 @@ class ExternalRuntimeBound:
         return self
 
 
+@dataclass(frozen=True, repr=False)
+class DeviceWaterConstructorAccountingV2:
+    """Opt-in finite typed constructor policy, not an observed heap/fit proof.
+
+    source_census_sha256 is Root's attestation carried in the complete issued
+    contract and primitive_evidence, not a separately read SourceReference.
+    Root must join the full current/next/error population and selected runtime
+    capacity laws. Unicode shell includes the fresh shell PLUS >=1 byte for a
+    possible UTF8-cache terminator; character slope includes Unicode<=4 plus
+    cachedUTF8<=4. Encoded bytes/writers and provider errors remain additional.
+    Counts are occurrences/capacities, never measured peaks or alias credit.
+    """
+    schema: str
+    source_census_sha256: str
+    domain: tuple
+    unicode_shell_bytes: int
+    unicode_character_bytes: int
+    bytes_shell_bytes: int
+    bytes_payload_bytes: int
+    list_header_bytes: int
+    list_slot_bytes: int
+    tuple_header_bytes: int
+    tuple_slot_bytes: int
+    dict_header_bytes: int
+    dict_entry_bytes: int
+    set_header_bytes: int
+    set_entry_bytes: int
+    banks: tuple
+
+    def validated(self):
+        _holder(self, DeviceWaterConstructorAccountingV2)
+        if type(self.schema) is not str or self.schema != _CONSTRUCTOR_V2_SCHEMA:
+            _refuse('constructor_v2_schema')
+        if (type(self.source_census_sha256) is not str or len(self.source_census_sha256) != 64
+                or any(c not in '0123456789abcdef' for c in self.source_census_sha256)):
+            _refuse('constructor_v2_Root_census_attestation')
+        if (type(self.domain) is not tuple or any(type(x) is not int for x in self.domain)
+                or self.domain != _CONSTRUCTOR_V2_DOMAIN):
+            _refuse('constructor_v2_reserved_domain')
+        for name in _CONSTRUCTOR_V2_UNITS:
+            # At least one positive fresh-shell byte plus the cache terminator;
+            # the genuine selected fresh-shell value still requires Root proof.
+            low = 8 if name == 'unicode_character_bytes' else 2 if name == 'unicode_shell_bytes' else 1
+            _integer(getattr(self, name), 'constructor_v2_' + name, low, 1 << 30)
+        if type(self.banks) is not tuple or len(self.banks) != len(_CONSTRUCTOR_V2_BANK_NAMES):
+            _refuse('constructor_v2_complete_banks')
+        for expected, row in zip(_CONSTRUCTOR_V2_BANK_NAMES, self.banks):
+            if (type(row) is not tuple or len(row) != 1 + len(_CONSTRUCTOR_V2_COUNTS)
+                    or type(row[0]) is not str or row[0] != expected):
+                _refuse('constructor_v2_ordered_bank')
+            for name, value in zip(_CONSTRUCTOR_V2_COUNTS, row[1:]):
+                _integer(value, 'constructor_v2_' + name)
+            if row[3] > row[1] or row[16] > row[2]:
+                _refuse('constructor_v2_residual_exceeds_call_max')
+            # Zero means a Source-proven absent family, never an unknown. A
+            # payload/slot count cannot exist without its typed object owner.
+            for objects, payload in ((4, 5), (6, 7), (8, 9), (10, 11), (12, 13), (14, 15)):
+                if row[objects] == 0 and row[payload] != 0:
+                    _refuse('constructor_v2_missing_typed_owner')
+        return self
+
+
 @dataclass(frozen=True)
 class DeviceWaterRuntimeBounds:
     """Finite Root operands, absent until genuinely issued for this Source.
@@ -171,6 +243,7 @@ class DeviceWaterRuntimeBounds:
     primitive_units: tuple
     external_bounds: tuple
     source_bindings: tuple
+    constructor_accounting_v2: DeviceWaterConstructorAccountingV2 | None = None
 
     def validated(self):
         _holder(self, DeviceWaterRuntimeBounds)
@@ -202,6 +275,8 @@ class DeviceWaterRuntimeBounds:
         if (sum(row[1].size for row in self.source_bindings) > 16 << 20
                 or len(set(names)) != len(names) or set(names) != set(_SOURCE_MODULES)):
             _refuse('complete_source_roster')
+        if self.constructor_accounting_v2 is not None:
+            _holder(self.constructor_accounting_v2, DeviceWaterConstructorAccountingV2).validated()
         return self
 
 
@@ -538,7 +613,7 @@ def _bootstrap_reference_frontier(context, bounds):
     raw = sum(r.size for r in refs)
     # Raw bytes + decoded/path/hash/currentness/error lifetimes; two full
     # reference traversals remain additive. No source-only RSS/heap assertion.
-    metadata = _constructor_frontier(bounds, rows=2*len(refs)*128+16384, arrays=512,
+    metadata = _constructor_projection(bounds, 'reference_bootstrap', rows=2*len(refs)*128+16384, arrays=512,
         text=4*raw+len(refs)*4*4096+16384*2048+2305, frames=18*5*_code_frontier()[1])
     banks = tuple(b for b in bounds.external_bounds if b.role in ('native_metadata', 'query'))
     host = 3*raw+metadata+3*sum(b.host_bytes for b in banks)+limits.reserve_host_bytes
@@ -580,6 +655,10 @@ def runtime_contract_bytes(bounds):
             d2h_bytes=b.d2h_bytes, scalar_reads=b.scalar_reads, evidence=ref(b.evidence))
             for b in bounds.external_bounds),
         source_bindings=tuple(dict(module=name, **ref(r)) for name, r in bounds.source_bindings))
+    if bounds.constructor_accounting_v2 is not None:
+        profile = bounds.constructor_accounting_v2
+        payload['schema'] = 'maple_syrup.windowed_device_water.runtime_contract.v2'
+        payload['constructor_accounting_v2'] = {f.name: getattr(profile, f.name) for f in fields(type(profile))}
     raw = json.dumps(payload, sort_keys=True, separators=(',', ':'), ensure_ascii=True, allow_nan=False).encode('ascii')
     if len(raw) > 2 << 20:
         _refuse('finite_runtime_contract_encoding')
@@ -654,7 +733,7 @@ def reserve_device_water_oracle_frontier(bounds, *, device_id):
     if len(banks) != 3:
         _refuse('complete_before_fixture_oracle_observer_banks')
     source_bytes = sum(ref.size for _name, ref in bounds.source_bindings)
-    own = _constructor_frontier(bounds, rows=16384, arrays=1024,
+    own = _constructor_projection(bounds, 'oracle_pregenesis', rows=16384, arrays=1024,
         text=source_bytes+4*4096*4096, frames=18*5*_code_frontier()[1])
     # The Original/file observer retains a complete bounded old store plus
     # current+next raw/readback generations, in addition to its typed bank.
@@ -688,6 +767,83 @@ def _constructor_frontier(bounds, *, rows, arrays, text, frames, errors=6):
             + 4 * rows * u['sequence_header'] + errors * u['error_shell'])
 
 
+def _constructor_frontier_v2(bounds, bank, *, rows, arrays, text, frames, errors=6):
+    """Typed affine population arithmetic, with actual call-time caps.
+
+    The reserved domain is Root-attested here; pregenesis has no physical state
+    or context. Original state-bearing callers still perform genuine _profile.
+    No census is generated or vendor/backend/fixture operation executed here.
+    """
+    _holder(bounds, DeviceWaterRuntimeBounds).validated()
+    profile = bounds.constructor_accounting_v2
+    if profile is None:
+        _refuse('constructor_v2_required')
+    if type(bank) is not str or bank not in _CONSTRUCTOR_V2_BANK_NAMES:
+        _refuse('constructor_v2_bank')
+    for name, value in (('rows', rows), ('arrays', arrays), ('text', text), ('frames', frames), ('errors', errors)):
+        _integer(value, 'constructor_v2_call_' + name)
+    record = profile.banks[_CONSTRUCTOR_V2_BANK_NAMES.index(bank)]
+    (_name, call_rows_max, call_text_max, remaining_rows, unicode_objects, unicode_characters, byte_objects, byte_payload,
+     list_objects, list_slots, tuple_objects, tuple_slots, dict_objects, dict_entries,
+     set_objects, set_entries, remaining_text) = record
+    if not (remaining_rows <= rows <= call_rows_max and remaining_text <= text <= call_text_max):
+        _refuse('constructor_v2_current_call_caps')
+    u = dict(bounds.primitive_units)
+    total = (unicode_objects*profile.unicode_shell_bytes + unicode_characters*profile.unicode_character_bytes
+        + byte_objects*profile.bytes_shell_bytes + byte_payload*profile.bytes_payload_bytes
+        + list_objects*profile.list_header_bytes + list_slots*profile.list_slot_bytes
+        + tuple_objects*profile.tuple_header_bytes + tuple_slots*profile.tuple_slot_bytes
+        + dict_objects*profile.dict_header_bytes + dict_entries*profile.dict_entry_bytes
+        + set_objects*profile.set_header_bytes + set_entries*profile.set_entry_bytes
+        + remaining_text*u['text_character']
+        + 2*remaining_rows*(u['mapping_header'] + 64*u['reference'])
+        + 4*remaining_rows*u['sequence_header']
+        + 4*arrays*(u['array_header'] + 8*u['reference'])
+        + 2*rows*32*u['scalar'] + frames*u['frame_slot'] + errors*u['error_shell'])
+    # Bounded inputs imply intermediate arithmetic <128bits. The resulting
+    # logical frontier must still fit the unchanged plain-int63 counter domain.
+    return _integer(total, 'constructor_v2_projection')
+
+
+def _constructor_projection(bounds, bank, *, rows, arrays, text, frames, errors=6):
+    """Literal four-site opt-in dispatch; unchanged original F for None."""
+    if bounds.constructor_accounting_v2 is None:
+        return _constructor_frontier(bounds, rows=rows, arrays=arrays, text=text, frames=frames, errors=errors)
+    return _constructor_frontier_v2(bounds, bank, rows=rows, arrays=arrays, text=text, frames=frames, errors=errors)
+
+
+def _runtime_bounds_repr_witness():
+    """Only the selected standard dataclass RuntimeBounds repr wrapper.
+
+    Its generated user_function is held in a closure, not co_consts. Preserve
+    the real repr and bind that exact function/code/cells; no graph traversal,
+    descriptor invocation or generated substitute supplies authority.
+    """
+    import types
+    wrapper = vars(DeviceWaterRuntimeBounds).get('__repr__')
+    if type(wrapper) is not types.FunctionType:
+        _refuse('runtime_bounds_repr_wrapper')
+    closure = wrapper.__closure__
+    wrapped = getattr(wrapper, '__wrapped__', None)
+    if (type(wrapped) is not types.FunctionType or type(closure) is not tuple or len(closure) != 2
+            or wrapper.__code__.co_freevars != ('repr_running', 'user_function')
+            or any(type(cell) is not types.CellType for cell in closure)):
+        _refuse('runtime_bounds_repr_selected_closure')
+    try:
+        running, user_function = closure[0].cell_contents, closure[1].cell_contents
+    except ValueError:
+        _refuse('runtime_bounds_repr_empty_cell')
+    if type(running) is not set or user_function is not wrapped:
+        _refuse('runtime_bounds_repr_closure_binding')
+    return wrapper, wrapper.__code__, closure, closure[0], closure[1], wrapped, wrapped.__code__, running
+
+
+def _check_runtime_bounds_repr_witness():
+    current = _runtime_bounds_repr_witness()
+    if any(before is not after for before, after in zip(_RUNTIME_BOUNDS_REPR_WITNESS, current)):
+        _refuse('runtime_bounds_repr_owner_changed')
+
+
 def _code_frontier():
     import types
     # Complete own classes/functions including generated dataclass methods.
@@ -718,6 +874,7 @@ def _check_code():
     for fn, code in _CODE_BANK:
         if getattr(fn, '__code__', None) is not code:
             _refuse('adapter_code_identity_changed')
+    _check_runtime_bounds_repr_witness()
 
 
 def _transaction_plan(state, context, demand=None):
@@ -827,7 +984,7 @@ def produce_device_water_phase(state, context, phase, *, demand=None, external_h
         code_text += len(code.co_code)+len(code.co_exceptiontable)+len(code.co_linetable)
         codes += 1
     source_bytes = sum(ref.size for _name, ref in bounds.source_bindings)
-    constructor = _constructor_frontier(bounds, rows=4096+256+100+128,
+    constructor = _constructor_projection(bounds, 'phase', rows=4096+256+100+128,
         arrays=512, text=source_bytes+code_text+5*4096*4, frames=18*5*slots)
     # The existing event driver can take Q accepted steps, A attempts and
     # S transport substeps. Admission is for the WHOLE requested interval;
@@ -1128,7 +1285,7 @@ def _gate(state, context, phase, *, roots=(), demand=None, writer=False):
     bounds, limits = _runtime_bounds(context), context.bridge_limits
     # Construction of the census/phase/currentness/error records is additive;
     # it does not disappear merely because the logical result is small.
-    own = _constructor_frontier(bounds, rows=16384+128, arrays=512+64,
+    own = _constructor_projection(bounds, 'metadata_gate', rows=16384+128, arrays=512+64,
         text=16384*2048+2305+4*4096+256*128, frames=18*5*_code_frontier()[1])
     host = plan.host_new + plan.host_retained + plan.mapped + own + limits.reserve_host_bytes
     device = plan.device_new + plan.device_retained + limits.reserve_device_bytes
@@ -1458,11 +1615,13 @@ def complete_positive_windowed_device_event(state, context, column, field, sched
 
 # Immutable function/code witness; includes dataclass-generated methods and
 # every own helper. No selected runtime/ABI fact is manufactured here.
+_RUNTIME_BOUNDS_REPR_WITNESS = _runtime_bounds_repr_witness()
 _CODE_BANK = tuple((fn, fn.__code__)
     for value in tuple(globals().values())
     for fn in ((value,) if callable(value) and hasattr(value, '__code__') else
                tuple(vars(value).values()) if isinstance(value, type) and value.__module__ == __name__ else ())
     if callable(fn) and hasattr(fn, '__code__'))
+_CODE_BANK += ((_RUNTIME_BOUNDS_REPR_WITNESS[5], _RUNTIME_BOUNDS_REPR_WITNESS[6]),)
 
 _OWN_BINDINGS = tuple(
     (namespace, name, fn, fn.__code__)

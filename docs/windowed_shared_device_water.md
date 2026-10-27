@@ -154,3 +154,90 @@ GPU restart or alternating MASY integration is claimed. StageD additionally
 requires a separately qualified Native completed-device record scale receiver;
 the existing CPU receiver rejects `_DeviceRecordPlan`. This adapter does not
 add a fallback, reconstruct a Dense evolving bed or change numerical tolerances.
+
+## Explicit affine constructor accounting (v2)
+
+`DeviceWaterRuntimeBounds.constructor_accounting_v2` defaults to `None`.
+That path retains the original constructor formula and exact v1 contract
+encoding at identical arguments. New Source and generated code still require
+fresh positive Source/code/frame charges; whole-runtime totals are not claimed
+identical. The original combined v1 issuance law overcounts a complete string
+header for every possible character and is mathematically unable to fit its
+original 5 GiB HOST ceiling for this source pair. That is a resource-policy
+refusal, not a physical-model failure or proof every local gate separately
+refuses. The limit is unchanged.
+
+The opt-in frozen `DeviceWaterConstructorAccountingV2` separates Unicode/bytes,
+list, tuple, dict and set object counts from their character, payload, slot and
+entry capacities. It has an exact schema, Root-attested census SHA, reserved
+domain `(16,1,6,3,4,320,10000,11,64,4096)` in `(C,K,V,W,G,J,Q,A,S,B)` order,
+twelve positive typed unit coefficients, and exactly four ordered bank rows:
+`reference_bootstrap`, `oracle_pregenesis`, `phase`, `metadata_gate`.
+
+Each row is `(name, call_rows_max, call_text_max, unrefined_rows, unicode_objects, unicode_characters,
+byte_objects, byte_payload, list_objects, list_slots, tuple_objects, tuple_slots,
+dict_objects, dict_entries, set_objects, set_entries,
+remaining_v1_text_characters)`. Counts are Source-proven complete occurrences,
+including current, next and failed generations. Zero denotes a proved absent
+family, never an unknown. Unknown/unclassified populations retain their entire
+old row/text charge. Removed generic reference/row capacity must be joined to
+the full typed slot/entry population and growth/resize law; a sampled empty
+container header is insufficient.
+
+Every possibly reached Unicode object includes a potential UTF-8 cache:
+the shell coefficient covers the genuine fresh shell plus at least one cache
+terminator byte, and the character coefficient is at least eight (up to four
+for Unicode plus four for cached UTF-8). The schema checks positivity and this
+storage floor; it cannot establish the actual fresh-shell ABI. Encoded bytes,
+writers, raw Source, provider errors and allocator/currentness owners remain
+additional. The existing eight units and eleven external contracts are not
+reinterpreted, removed or automatically issued by this DTO.
+
+Each bank binds plain-int63 call-row and call-text maxima to its complete typed
+census. Residual row/text charges cannot exceed those maxima. On every call,
+`_constructor_frontier_v2` requires `unrefined_rows <= rows <= call_rows_max`
+and `remaining_v1_text_characters <= text <= call_text_max`. The containing
+contract's actual current size participates in the bootstrap argument; a larger
+argument than the attested bank covers refuses before any refined action.
+Unknown bank/type, wrong domain, missing typed owners, over-cap or overflowing
+plain-int63 results refuse. Leaving all typed populations zero and preserving
+the complete old row/text charges gives the exact old formula for the same
+arguments. Pregenesis has no landscape/context: its domain is only the
+Root-attested reservation operand. Actual physical profile checks remain at
+the original state-bearing sites, and a reservation return grants no transport
+authority.
+
+The canonical `runtime_contract.v2` encoding includes every profile field,
+domain, unit and bank. It still excludes only its own containing reference.
+The census SHA is explicitly Root's attestation inside that complete immutable
+contract and primitive evidence; the worker does not claim to independently
+derive a census from a bare SHA. A v1 Root serializer cannot silently consume
+v2. Root must review and bind a matching serializer and positive full outer
+reservation before any physical execution. All Source/origin/cold/provider,
+memory/headroom, full-I, work/read/traffic, fixture/oracle/observer and failure
+guards remain independent.
+
+New methods and helpers use the existing code/currentness bank. The new DTO
+disables generated repr; the existing runtime-bound repr remains real. Its
+standard wrapper closes over a generated `user_function`, so a narrow witness
+also retains and counts that actual function/code and checks wrapper, closure
+tuple, both cells, wrapped function and running-set identities. It traverses no
+arbitrary graph. The code frontier positively includes the hidden code/slots/
+literal bytes and the wrapper's closure slots; the retained witness tuple,
+cells and metadata owners belong to the full Source constructor population.
+Unsupported selected-wrapper layouts refuse rather than supplying synthetic
+code. Root must authenticate the selected stdlib/runtime Source.
+
+The required filesystem census covers the complete yielded-Path population,
+component/cache strings, per-directory DirEntry/name lists, pending directory
+Paths and suspended failed generators before post-yield checks. Root's actual
+list observation covers append through 131072 and presized/copy/sorted through
+4096; set observations through 4096 cannot be extrapolated to the list's larger
+domain. The selected stdlib route is Source-bound, never inferred from a
+version label. Missing path/descendant/provider bounds retain refusal.
+
+The added focused controls use clearly labelled synthetic schema operands and
+pure arithmetic/encoding/currentness checks. They issue no ABI, vendor,
+resource-fit or physical-event acceptance. Complete numeric v2 populations,
+selected runtime facts and full-event qualification remain Root-owned; no
+production parameters, forcing, native operation or comparison bound changes.
