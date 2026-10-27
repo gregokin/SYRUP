@@ -1973,6 +1973,79 @@ def reserve_qualification_device_water_oracle_frontier(budget, *, device_id):
          ('known_fixture_mass_device_payload', fixture_device)))
 
 
+def _qualification_visible_device_payload(generic_payload):
+    """Closed C16/K1 known payload; no provider/allocator/constructor proof.
+
+    The unchanged caller profile/transaction joins fix C16/K1/V6/W3/G4/J320.
+    Keep the complete request bank except the HOST-only 17Q boundary loop;
+    keep its fixed830 requests, all other families and all HOST/work charges.
+    The sole operand is a verified Source count, never a caller budget.
+    """
+    import hashlib
+    import json
+    from maple_syrup import windowed_shared_bed as generic
+
+    _check_code()
+    if type(generic_payload) is not int or generic_payload != 271839:
+        _refuse('qualification_device_payload_request_count')
+    controls = (('_POSITIVE_WORD', 8), ('_POSITIVE_HEADER', 32),
+        ('_POSITIVE_INTERFACE', 200), ('_POSITIVE_GRID', 1024),
+        ('_POSITIVE_FLAG', 2440), ('_POSITIVE_REPORT_ROWS', 4096),
+        ('_POSITIVE_PLANNER_EXTENT', 8194))
+    namespace = vars(generic)
+    for name, expected in controls:
+        actual = namespace.get(name)
+        if type(actual) is not int or actual != expected:
+            _refuse('qualification_device_payload_Source_controls')
+    counts = {'initial': 2, 'attempt': 6, 'commit_routing': 2, 'driver': 12,
+        'complete_entry': 2, 'terminal': 1, 'quiet': 1, 'packed_result': 1,
+        'prepared_commit': 1, 'publish_commit': 1, 'refresh_hydraulics': 1}
+    names = namespace.get('_POSITIVE_CENSUS_NAMES')
+    if (type(names) is not tuple or len(names) != len(counts)
+            or any(type(name) is not str for name in names)
+            or names != tuple(counts)):
+        _refuse('qualification_device_payload_Source_names')
+    census = namespace.get('_VISIBLE_REQUEST_CENSUS')
+    if (type(census) is not dict or len(census) != len(counts)
+            or any(type(name) is not str for name in census) or set(census) != set(counts)):
+        _refuse('qualification_device_payload_Source_census')
+    # Before serialization/equality, every container/scalar is a bounded
+    # plain Source literal. No foreign iterable/equality/string hook runs.
+    for name, both in census.items():
+        if type(both) is not tuple or len(both) != 2:
+            _refuse('qualification_device_payload_Source_census')
+        for polynomial in both:
+            if type(polynomial) is not tuple or len(polynomial) != counts[name]:
+                _refuse('qualification_device_payload_Source_census')
+            for row in polynomial:
+                if type(row) is not tuple or len(row) != 2:
+                    _refuse('qualification_device_payload_Source_census')
+                coefficient, powers = row
+                if (type(coefficient) is not int or not 0 <= coefficient <= 4309
+                        or type(powers) is not tuple or len(powers) != 7
+                        or any(type(power) is not int or not 0 <= power <= 2 for power in powers)):
+                    _refuse('qualification_device_payload_Source_census')
+    entry = ((830, (0, 0, 0, 0, 0, 0, 0)), (17, (0, 0, 0, 0, 0, 0, 1)))
+    if census['complete_entry'] != (entry, entry):
+        _refuse('qualification_device_payload_HOST_boundary_polynomial')
+    encoded = json.dumps(census, sort_keys=True, separators=(',', ':'),
+                         ensure_ascii=True, allow_nan=False).encode('ascii')
+    if hashlib.sha256(encoded).hexdigest() != '1b680c85ab44bf640f54e33d716e63b0e19b06c80ad1228a8e6281f960140069':
+        _refuse('qualification_device_payload_Source_census_hash')
+    if generic._positive_interval_units() != (271839, 297579):
+        _refuse('qualification_device_payload_Source_request_domain')
+    # Numeric/mask grids: max(C*P, 7*C*K, C*V*K, 4*C*K, 6*6) =128.
+    # Native-owned scratch and CUDA rosters retain their separate full terms.
+    ordinary = generic_payload - 17*8194
+    grid_elements = max(16*8, 7*16, 16*6, 4*16, 6*6)
+    numeric, boolean = 8*grid_elements, grid_elements
+    # Current, prospective and first-error banks; no release/alias credit.
+    ordinary_device = 3*ordinary*(numeric+boolean)
+    # Genuine xp report tables, their prospective copies and partial error.
+    reports_device = 3*4096*(16+14)*8
+    return ordinary_device + reports_device
+
+
 def _qualification_produce_device_water_phase(state, context, phase, *, demand=None, external_host=0,
                                external_device=0, writer=False):
     """Known Native/payload subset before action; opaque costs stay None.
@@ -2034,7 +2107,7 @@ def _qualification_produce_device_water_phase(state, context, phase, *, demand=N
     generic_rows, generic_work = generic._positive_source_frontier()
     generic_payload, _generic_visits = generic._positive_interval_units()
     generic_host = sum(value for _name, value in generic_rows)
-    generic_device = generic_payload*(generic._POSITIVE_GRID + generic._POSITIVE_FLAG)
+    generic_device = _qualification_visible_device_payload(generic_payload)
     reports = 2*4096*(16+14)*8
     planner = 2*12*(8194*8) + 8*8194*(8+32)
     codes, slots, code_text = _code_frontier()
@@ -2064,7 +2137,7 @@ def _qualification_produce_device_water_phase(state, context, phase, *, demand=N
         ('cuda_attempt_current_next_error', 3*cuda_attempt),
         ('cuda_HOST_prepare_downloads_and_upload_sources', host_prepare),
         ('unchanged_generic_Source_HOST_projection', generic_host),
-        ('unchanged_generic_Source_device_grid_projection', generic_device),
+        ('qualification_visible_device_payload_current_next_error_and_reports', generic_device),
         ('complete_reports_and_public_planners', reports+planner),
         ('canonical_HOST_journal_current_next_error', 3*j*(16+8*k)),
         ('known_reference_raw_generations', reference_reads),

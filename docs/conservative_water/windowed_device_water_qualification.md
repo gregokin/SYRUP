@@ -162,3 +162,27 @@ create a hydraulic lifecycle. Root must issue its own actual selector/source/
 runtime/grant controls and run it under the same whole-experiment budgets; no
 extra oracle, event timeout or allocation allowance is introduced. Metadata
 checks or this component alone do not qualify complete water or alternation.
+
+
+## Qualification DEVICE payload projection
+
+The qualification-only known DEVICE term separates ordinary grid/mask payload
+from HOST planning/text/header projections. It keeps the unchanged Source
+request/work census. The complete-entry17Q boundary-planning loop is NumPy and
+Python metadata; its fixed830 requests remain in the ordinary bank. For the
+fixedC16/K1/V6/W3 family, the packet gridP8 gives128 elements; numeric payloads
+receive1024B and masks128B per ordinary request. Three full ordinary request
+banks retain current, prospective and first-error occurrences. Genuine CuPy
+water16-column and sediment14-column report tables retain three full4096-row
+pairs for current/copy/partial-error owners. The resulting known DEVICE term is
+461010816B, not a universal allocation or backing theorem.
+
+The closed helper refuses changed Source polynomials, Source domain controls or
+request counts. It offers no configurable fee, shape or bank multiplier. Generic
+HOST/work projections, old HOST report/planner overcoverage, actual Native peaks,
+current retained inputs, CUDA context/attempt banks and every reserve/cap/0.5
+admission rule remain in place. All20 opaque provider/primitive/constructor terms
+still remainNone. The strict proof-oriented producer and generic Source are
+unchanged. Root must qualify a newly authenticated Source/runtime/carrier/grant
+composition under the original monitors; a smaller known-payload projection is
+not fit, physical completion or allocation-proof acceptance.
