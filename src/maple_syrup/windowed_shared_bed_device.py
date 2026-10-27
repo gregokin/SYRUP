@@ -1095,6 +1095,7 @@ def _backing_census(roots, context):
     cp_type = bed._cupy_ndarray()
     device_id = int(context.initial_available_fraction.device.id)
     host = device = nodes = leaves = 0
+    rainfall_arrays = ()
     if type(roots) is not tuple or len(roots) > 64:
         _refuse('closed_hybrid_root_count')
     pending = []
@@ -1113,6 +1114,18 @@ def _backing_census(roots, context):
         nodes += 1
         if nodes > 16384 or depth > 12 or len(path) > 2048:
             _refuse('hybrid_metadata_forest_domain')
+        if path == 'schedule' and value is not None:
+            from maple_syrup.rainfall import RainfallSchedule
+            _holder(value, RainfallSchedule)
+            rainfall_arrays = (value.edges_s, value.intensity_mm_per_h, value.rate_m_per_s)
+            for array in rainfall_arrays:
+                if (type(array) is not np.ndarray or array.dtype != np.float64 or array.ndim != 1
+                        or not array.flags.c_contiguous or array.flags.writeable
+                        or not array.flags.owndata or array.base is not None):
+                    _refuse('native_HOST_rainfall_metadata')
+            if (rainfall_arrays[1].size < 1 or rainfall_arrays[0].size != rainfall_arrays[1].size + 1
+                    or rainfall_arrays[2].size != rainfall_arrays[1].size):
+                _refuse('native_HOST_rainfall_lengths')
         if value is None or type(value) in (bool, int, float, str, np.int64, np.float64, np.bool_):
             if type(value) is str and len(value) > 4096:
                 _refuse('metadata_text_width')
@@ -1139,11 +1152,15 @@ def _backing_census(roots, context):
                 if report_clock and (value.ndim != 1 or value.dtype != np.float64
                         or value.size > context.bridge_limits.max_report_rows):
                     _refuse('original_HOST_report_clock_domain')
+                rainfall_metadata = (prefix == 'schedule' and len(rainfall_arrays) == 3
+                    and ((member == 'edges_s' and value is rainfall_arrays[0])
+                         or (member == 'intensity_mm_per_h' and value is rainfall_arrays[1])
+                         or (member == 'rate_m_per_s' and value is rainfall_arrays[2])))
                 allowed = ((prefix in ('terrain', 'state.terrain', 'prior.state.terrain') and member in _TERRAIN_HOST)
                     or (prefix == 'pending_journal' and member in ('cell_flat', 'voxel', 'values_kg'))
                     or (prefix in ('graph', 'state.graph', 'prior.state.graph') and member in _GRAPH_HOST)
                     or (prefix in ('state.network', 'prior.state.network') and member in _NETWORK_HOST)
-                    or (prefix == 'sediment' and member in _SEDIMENT_HOST) or report_clock)
+                    or (prefix == 'sediment' and member in _SEDIMENT_HOST) or report_clock or rainfall_metadata)
                 if not allowed or value.dtype.hasobject or not value.flags.c_contiguous:
                     _refuse('unexpected_HOST_payload_' + path)
                 root = value
