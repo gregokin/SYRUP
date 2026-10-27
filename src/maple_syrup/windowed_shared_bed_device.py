@@ -67,6 +67,74 @@ def _holder(value, kind):
     return value
 
 
+def _windowed_column_holder(value):
+    """Native constructor storage, including its two class-default caches.
+
+    This checks metadata only. The unchanged Native planner below still owns
+    array, deep-version, cache and mandatory prefix-packet validation.
+    """
+    from dataclasses import Field, MISSING
+    from types import GetSetDescriptorType
+    from maple.core.types.voxel import WindowedVoxelColumnState
+
+    kind = WindowedVoxelColumnState
+    if type(kind) is not type or type(value) is not kind:
+        _refuse('exact_native_column_holder')
+    namespace = type.__getattribute__(kind, '__dict__')
+    bases = type.__getattribute__(kind, '__bases__')
+    if (len(bases) != 1 or bases[0] is not object
+            or '__getattribute__' in namespace or '__getattr__' in namespace):
+        _refuse('native_column_class_definition')
+    names = ('window_kg', 'base', 'deep_by_class_kg', 'deep_total_kg', 'deep_room_kg',
+             'n_voxels', 'deep_store', 'generation', 'manifest_digest',
+             'window_cache', 'height_packet', 'pending_deep')
+    annotations = ('np.ndarray', 'np.ndarray', 'np.ndarray', 'np.ndarray', 'np.ndarray',
+                   'int', 'Any', 'int', 'str', 'VoxelWindowCache | None', 'Any | None', 'Any | None')
+    derived = ('window_cache', 'height_packet')
+    required = names[:9] + ('pending_deep',)
+    schema = namespace.get('__dataclass_fields__')
+    declared_annotations = namespace.get('__annotations__')
+    if (type(schema) is not dict or len(schema) != 12
+            or any(type(name) is not str for name in schema) or tuple(schema) != names
+            or any(type(field) is not Field for field in schema.values())
+            or type(declared_annotations) is not dict or len(declared_annotations) != 12
+            or any(type(name) is not str for name in declared_annotations)
+            or set(declared_annotations) != set(names)):
+        _refuse('native_column_field_schema')
+    declared = fields(kind)
+    if len(declared) != 12:
+        _refuse('native_column_field_schema')
+    for field, name, annotation in zip(declared, names, annotations, strict=True):
+        defaulted = name in derived or name == 'pending_deep'
+        if (type(field.name) is not str or field.name != name
+                or type(field.type) is not str or field.type != annotation
+                or declared_annotations[name] is not field.type
+                or field.init is not (name in required)
+                or field.default is not (None if defaulted else MISSING)
+                or field.default_factory is not MISSING or field.kw_only is not False
+                or field.repr is not (not defaulted) or field.compare is not (not defaulted)
+                or field.hash is not None):
+            _refuse('native_column_field_definition')
+    if (any(name in namespace for name in names[:9])
+            or any(name not in namespace or namespace[name] is not None
+                   for name in derived + ('pending_deep',))):
+        _refuse('native_column_class_defaults')
+    dictionary = namespace.get('__dict__')
+    if type(dictionary) is not GetSetDescriptorType:
+        _refuse('native_column_dictionary_descriptor')
+    try:
+        actual = dictionary.__get__(value, kind)
+    except (TypeError, AttributeError):
+        _refuse('native_column_dictionary_descriptor')
+    if (type(actual) is not dict or len(actual) > 128
+            or any(type(name) is not str for name in actual)):
+        _refuse('native_column_dictionary')
+    own = set(actual)
+    if not set(required) <= own or not own <= set(names):
+        _refuse('native_column_own_fields')
+    return value
+
+
 def _time(value):
     if type(value) is not float or not math.isfinite(value) or value < 0:
         _refuse('finite_plain_time')
@@ -638,11 +706,10 @@ def _profile(state, context):
     from maple.core.parameters.geometry import GeometrySpec
     from maple.core.parameters.grain_classes import GrainClass, GrainClassSet
     from maple.core.parameters.avalanching import AvalanchingSpec
-    from maple.core.types.voxel import WindowedVoxelColumnState
     _holder(context.geometry, GeometrySpec)
     _holder(context.grain_classes, GrainClassSet)
     _holder(context.avalanching_spec, AvalanchingSpec)
-    _holder(state.voxel_column, WindowedVoxelColumnState)
+    _windowed_column_holder(state.voxel_column)
     g, col = context.geometry, state.voxel_column
     if ((g.ny, g.nx, col.n_voxels, col.deep_store.header.window_voxels) != (4, 4, 6, 3)
             or g.dx_m != g.dy_m or context.depth_update_rule != 'constant_depth'
