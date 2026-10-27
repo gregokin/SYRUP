@@ -280,6 +280,146 @@ class DeviceWaterRuntimeBounds:
         return self
 
 
+_QUALIFICATION_SCHEMA = 'maple_syrup.windowed_device_water.qualification_budget.v1'
+_QUALIFICATION_PROFILE = 'small_C16_K1_V6_W3_complete_device_water_v1'
+_QUALIFICATION_CLAIM = 'bounded physical qualification; known subset only; no allocation proof'
+_QUALIFICATION_FACTORY_SIZE = 20771
+_QUALIFICATION_FACTORY_SHA256 = '8ab9ad38bfd434989f8c5e3c0727b301df41184aaef01557fb4678cc9e504eaf'
+_QUALIFICATION_EXECUTION_BUDGETS = (
+    ('leader_rss_abort_bytes', 5 << 30), ('driver_growth_abort_bytes', 9 << 30),
+    ('active_pool_limit_bytes', 2 << 30), ('run_storage_abort_bytes', 512 << 20),
+    ('per_file_os_limit_bytes', 64 << 20), ('combined_output_abort_bytes', 4 << 20),
+    ('wall_abort_seconds', 600), ('cpu_soft_seconds', 480), ('cpu_hard_seconds', 540),
+    ('known_host_logical_bytes', 5 << 30), ('known_device_logical_bytes', 2 << 30),
+    ('native_safety_fraction', 0.5))
+_QUALIFICATION_OPAQUE_TERMS = (
+    tuple(('external.' + name, None) for name in _EXTERNAL_ROLES)
+    + tuple(('primitive.' + name, None) for name in _UNIT_NAMES)
+    + (('constructor_allocation', None),))
+
+
+@dataclass(frozen=True)
+class DeviceWaterQualificationBudget:
+    """Closed execution-budget descriptor, never an Original proof DTO.
+
+    grant names the complete canonical qualification_budget_bytes output;
+    that self-reference is excluded from the encoding. Root independently
+    authenticates the fresh device/availability/runtime/grant before import.
+    No provider/primitive/constructor allocation bound is supplied here.
+    """
+    native_source_identity: str
+    current_runtime_ref: SourceReference
+    factory_source: SourceReference
+    grant: SourceReference
+    source_bindings: tuple
+    gpu_uuid: str
+    source_manifest_sha256: str
+
+    def validated(self):
+        _holder(self, DeviceWaterQualificationBudget)
+        for value in (self.native_source_identity, self.source_manifest_sha256):
+            if (type(value) is not str or len(value) != 64
+                    or any(c not in '0123456789abcdef' for c in value)):
+                _refuse('qualification_source_identity')
+        if (type(self.gpu_uuid) is not str or len(self.gpu_uuid) != 40
+                or not self.gpu_uuid.startswith('GPU-')
+                or tuple(i for i, c in enumerate(self.gpu_uuid[4:]) if c == '-') != (8, 13, 18, 23)
+                or any(c not in '0123456789abcdef-' for c in self.gpu_uuid[4:])):
+            _refuse('qualification_physical_UUID')
+        for ref in (self.current_runtime_ref, self.factory_source, self.grant):
+            _holder(ref, SourceReference).validated()
+        if (self.factory_source.size != _QUALIFICATION_FACTORY_SIZE
+                or self.factory_source.sha256 != _QUALIFICATION_FACTORY_SHA256
+                or Path(self.factory_source.path).name != 'test_windowed_shared_device_physical.py'):
+            _refuse('qualification_exact_prescribed_factory')
+        if (type(self.source_bindings) is not tuple or len(self.source_bindings) != len(_SOURCE_MODULES)):
+            _refuse('qualification_complete_Source_roster')
+        names = []
+        for row in self.source_bindings:
+            if type(row) is not tuple or len(row) != 2 or type(row[0]) is not str:
+                _refuse('qualification_Source_row')
+            names.append(row[0])
+            _holder(row[1], SourceReference).validated()
+        if (tuple(names) != _SOURCE_MODULES
+                or sum(ref.size for _name, ref in self.source_bindings) > 16 << 20):
+            _refuse('qualification_ordered_Source_roster')
+        return self
+
+
+def qualification_budget_record(budget):
+    """Pure closed metadata projection; grant's containing ref is excluded."""
+    _holder(budget, DeviceWaterQualificationBudget).validated()
+    def ref(value):
+        return dict(path=value.path, size=value.size, sha256=value.sha256)
+    return dict(schema=_QUALIFICATION_SCHEMA, profile=_QUALIFICATION_PROFILE,
+        native_source_identity=budget.native_source_identity,
+        current_runtime_ref=ref(budget.current_runtime_ref), factory_source=ref(budget.factory_source),
+        source_bindings=tuple(dict(module=name, **ref(value)) for name, value in budget.source_bindings),
+        gpu_uuid=budget.gpu_uuid, source_manifest_sha256=budget.source_manifest_sha256,
+        execution_budgets=dict(_QUALIFICATION_EXECUTION_BUDGETS),
+        opaque_external_bounds=tuple((name, None) for name in _EXTERNAL_ROLES),
+        opaque_primitive_units=tuple((name, None) for name in _UNIT_NAMES),
+        opaque_constructor_accounting=None, claim=_QUALIFICATION_CLAIM)
+
+
+def qualification_budget_bytes(budget):
+    """Canonical ASCII JSON, no newline; no authority/measurement is minted."""
+    import json
+    raw = json.dumps(qualification_budget_record(budget), sort_keys=True, separators=(',', ':'),
+                     ensure_ascii=True, allow_nan=False).encode('ascii')
+    if len(raw) > 2 << 20:
+        _refuse('finite_qualification_budget_encoding')
+    return raw
+
+
+@dataclass(frozen=True)
+class QualificationDeviceWaterPhase:
+    phase: str
+    host_new: int
+    device_new: int
+    host_retained: int
+    device_retained: int
+    mapped: int
+    logical_reads: int
+    work: int
+    h2d: int
+    d2h: int
+    scalar_reads: int
+    writer_bytes: int
+    writer_entries: int
+    writer_versions: int
+    terms: tuple
+    known_subset_only: bool = True
+    opaque_terms: tuple = _QUALIFICATION_OPAQUE_TERMS
+    claim: str = _QUALIFICATION_CLAIM
+
+    def __post_init__(self):
+        _holder(self, QualificationDeviceWaterPhase)
+        _qualification_labels(self.known_subset_only, self.opaque_terms, self.claim)
+
+
+@dataclass(frozen=True)
+class QualificationAdmissionSummary:
+    gate_count: int
+    logical_work_debited: int
+    logical_read_bytes_debited: int
+    versions_reserved: int
+    h2d_bytes_reserved: int
+    d2h_bytes_reserved: int
+    scalar_reads_reserved: int
+    maximum_host_predicate: int
+    maximum_device_predicate: int
+    hydraulics: object
+    known_subset_only: bool = True
+    opaque_terms: tuple = _QUALIFICATION_OPAQUE_TERMS
+    claim: str = _QUALIFICATION_CLAIM
+
+    def __post_init__(self):
+        _holder(self, QualificationAdmissionSummary)
+        _qualification_labels(self.known_subset_only, self.opaque_terms, self.claim)
+
+
+
 @dataclass(frozen=True, kw_only=True)
 class WindowedDeviceWaterContext(BedContext):
     native_solve_limits: object
@@ -287,7 +427,7 @@ class WindowedDeviceWaterContext(BedContext):
     native_commit_limits: object
     source_identity: str
     bridge_limits: PositiveWindowedDeviceWaterLimits
-    runtime_bounds: DeviceWaterRuntimeBounds | None = None
+    runtime_bounds: DeviceWaterRuntimeBounds | DeviceWaterQualificationBudget | None = None
 
 
 @dataclass(frozen=True)
@@ -602,6 +742,10 @@ def _bootstrap_reference_frontier(context, bounds):
     module roster; an admission call never cold-imports a provider as a proof.
     The original independent Root cold/image/origin guards remain mandatory.
     """
+    if _qualification_dispatch(context):
+        if bounds is not object.__getattribute__(context, 'runtime_bounds'):
+            _refuse('qualification_bootstrap_pair')
+        return _qualification_bootstrap(context, bounds)
     if any(name not in sys.modules for name in _SOURCE_MODULES):
         _refuse('genuine_loaded_Source_bootstrap_required')
     limits = context.bridge_limits
@@ -666,6 +810,8 @@ def runtime_contract_bytes(bounds):
 
 
 def _runtime_bounds(context, *, verify_files=False):
+    if _qualification_dispatch(context):
+        return _qualification_runtime(context, verify_files=verify_files)
     bounds = context.runtime_bounds
     if type(bounds) is not DeviceWaterRuntimeBounds:
         _refuse('unissued_runtime_ABI_provider_contract')
@@ -921,6 +1067,11 @@ def produce_device_water_phase(state, context, phase, *, demand=None, external_h
     rows and separately authenticated excluded runtime banks add positively.
     No maximum is inferred from free memory or from an observed failure.
     """
+    if type(context) is WindowedDeviceWaterContext and type(object.__getattribute__(context, 'runtime_bounds')) is DeviceWaterQualificationBudget:
+        _positive_pair_guard(state, context)
+        if _qualification_dispatch(context):
+            return _qualification_produce_device_water_phase(state, context, phase, demand=demand,
+                external_host=external_host, external_device=external_device, writer=writer)
     if type(phase) is not str or phase not in _PHASES or type(writer) is not bool:
         _refuse('phase_domain')
     _integer(external_host, 'external_host'); _integer(external_device, 'external_device')
@@ -1290,6 +1441,8 @@ def _gate(state, context, phase, *, roots=(), demand=None, writer=False):
     active = None if _OWNER is None else _owner(context)
     if active is None and phase not in ('initial', 'validate'):
         _refuse('entry_required_before_action')
+    if _qualification_dispatch(context):
+        return _qualification_gate(state, context, phase, roots=roots, demand=demand, writer=writer)
     bounds = _runtime_bounds(context, verify_files=active is None)
     # This bounded complete metadata frontier is admitted BEFORE its walk;
     # the later action gate adds all Native/physical/current-next terms.
@@ -1589,6 +1742,8 @@ def complete_positive_windowed_device_event(state, context, column, field, sched
     if _OWNER is not None:
         _refuse('nonreentrant_device_operation')
     _positive_pair_guard(state.bed, context)
+    if _qualification_dispatch(context):
+        _refuse('strict_entry_rejects_qualification_budget')
     cpu._positive_pair_guard(state.bed, context)  # Genuine CPU exclusion before owner construction.
     from maple_syrup.sediment_event import SedimentEventState
     _holder(state, SedimentEventState)
@@ -1628,6 +1783,383 @@ def complete_positive_windowed_device_event(state, context, column, field, sched
             _OWNER = None
         # No Native close exists. Keep current/prospective/error/traceback
         # lifetimes charged and let original worker cleanup own the process.
+
+
+def _qualification_dispatch(context):
+    """Select only after canonical metadata and existing owner/code checks."""
+    if type(context) is not WindowedDeviceWaterContext:
+        return False
+    budget = object.__getattribute__(context, 'runtime_bounds')
+    if type(budget) is not DeviceWaterQualificationBudget:
+        return False
+    _check_code()
+    _positive_context(context)
+    if _OWNER is not None:
+        _owner(context)
+    return True
+
+
+def _qualification_labels(known_subset_only, opaque_terms, claim):
+    if type(known_subset_only) is not bool or known_subset_only is not True:
+        _refuse('qualification_known_subset_marker')
+    if type(opaque_terms) is not tuple or len(opaque_terms) != len(_QUALIFICATION_OPAQUE_TERMS):
+        _refuse('qualification_opaque_rows')
+    for actual, expected in zip(opaque_terms, _QUALIFICATION_OPAQUE_TERMS):
+        if (type(actual) is not tuple or len(actual) != 2 or type(actual[0]) is not str
+                or actual[0] != expected[0] or actual[1] is not None):
+            _refuse('qualification_opaque_not_a_numeric_bound')
+    if type(claim) is not str or claim != _QUALIFICATION_CLAIM:
+        _refuse('qualification_claim')
+
+
+def _qualification_refs(budget):
+    return (budget.current_runtime_ref, budget.factory_source, budget.grant,
+            *(ref for _name, ref in budget.source_bindings))
+
+
+def _qualification_bootstrap(context, budget):
+    """Known raw-reference occurrences only; construction/providers opaque.
+
+    This is an execution-budget lane. The selected immutable Source bootstrap
+    already exists. No constructor unit, foreign operation or error bound is
+    inferred from raw file sizes or available memory.
+    """
+    if not _qualification_dispatch(context) or object.__getattribute__(context, 'runtime_bounds') is not budget:
+        _refuse('qualification_bootstrap_pair')
+    _holder(budget, DeviceWaterQualificationBudget).validated()
+    if any(name not in sys.modules for name in _SOURCE_MODULES):
+        _refuse('genuine_loaded_Source_bootstrap_required')
+    limits = context.bridge_limits
+    limits.__post_init__()
+    raw = sum(ref.size for ref in _qualification_refs(budget))
+    known_host = 3*raw + limits.reserve_host_bytes
+    known_device = limits.reserve_device_bytes
+    if known_host > limits.max_host_bytes or known_device > limits.max_device_bytes:
+        _refuse('qualification_known_reference_ceiling')
+    from maple.aeolian.cohorts.capacity import default_available_memory_bytes
+    available = default_available_memory_bytes()
+    if type(available) is not int or 2*known_host > available:
+        _refuse('qualification_reference_HOST_headroom')
+    bed = _native()[0]
+    fraction = context.initial_available_fraction
+    if type(fraction) is not bed._cupy_ndarray():
+        _refuse('bootstrap_actual_device_fraction')
+    bed._check_device_admission(known_device, device_id=int(fraction.device.id), safety_fraction=0.5)
+    return 3*raw
+
+
+def _qualification_runtime(context, *, verify_files=False):
+    if not _qualification_dispatch(context):
+        _refuse('exact_qualification_budget_required')
+    budget = object.__getattribute__(context, 'runtime_bounds')
+    _holder(budget, DeviceWaterQualificationBudget).validated()
+    if budget.native_source_identity != context.source_identity:
+        _refuse('qualification_native_source_join')
+    if verify_files:
+        _qualification_bootstrap(context, budget)
+        for ref in (budget.current_runtime_ref, budget.factory_source):
+            _read_reference(ref)
+        if _read_reference(budget.grant) != qualification_budget_bytes(budget):
+            _refuse('qualification_complete_grant_value_join')
+        import types
+        for name, ref in budget.source_bindings:
+            module = sys.modules.get(name)
+            if type(module) is not types.ModuleType:
+                _refuse('qualification_loaded_module')
+            origin = vars(module).get('__file__')
+            if (type(origin) is not str or not origin or '\x00' in origin
+                    or not Path(origin).is_absolute() or '..' in Path(origin).parts
+                    or Path(origin).resolve() != Path(ref.path).resolve()):
+                _refuse('actual_loaded_source_origin')
+            _read_reference(ref)
+    return budget
+
+
+def reserve_qualification_device_water_oracle_frontier(budget, *, device_id):
+    """Before-genesis KNOWN subset, not fixture/oracle/provider upper bounds.
+
+    Keep the original three64MiB old/current/readback raw-file generations
+    and Source983's visible fixed-shape fixture mass-copy payloads positive.
+    The rest of all11 operation roles and primitive constructors stays opaque.
+    """
+    _check_code()
+    _holder(budget, DeviceWaterQualificationBudget).validated()
+    if type(device_id) is not int or device_id != 0:
+        _refuse('qualification_one_visible_device')
+    raw = sum(ref.size for ref in _qualification_refs(budget))
+    fixture_host = 6*16*6*8
+    fixture_device = 3*16*6*8
+    host = 3*raw + 3*(64 << 20) + fixture_host + (64 << 20)
+    device = fixture_device + (256 << 20)
+    if host > 5 << 30 or device > 2 << 30:
+        _refuse('qualification_known_oracle_profile')
+    from maple.aeolian.cohorts.capacity import default_available_memory_bytes
+    available = default_available_memory_bytes()
+    if type(available) is not int or 2*host > available:
+        _refuse('oracle_HOST_headroom')
+    _native()[0]._check_device_admission(device, device_id=device_id, safety_fraction=0.5)
+    return QualificationDeviceWaterPhase('entry', host, device, 0, 0, 0,
+        3*raw, 3*raw+fixture_host+fixture_device, fixture_device, 0, 0, 0, 0, 0,
+        (('known_immutable_reference_raw_generations', 3*raw),
+         ('known_Original_current_readback_file_generations', 3*(64 << 20)),
+         ('known_fixture_mass_HOST_payload', fixture_host),
+         ('known_fixture_mass_device_payload', fixture_device)))
+
+
+def _qualification_produce_device_water_phase(state, context, phase, *, demand=None, external_host=0,
+                               external_device=0, writer=False):
+    """Known Native/payload subset before action; opaque costs stay None.
+
+    Every actual Native plan, Source-known payload, current/next/error and
+    writer term is retained. This is NOT the strict whole-operation producer.
+    No foreign or constructor bound follows from a sample or available RAM.
+    """
+    if type(phase) is not str or phase not in _PHASES or type(writer) is not bool:
+        _refuse('phase_domain')
+    _integer(external_host, 'external_host'); _integer(external_device, 'external_device')
+    bounds = _qualification_runtime(context)
+    ids, bed, solve, *_ = _profile(state, context)
+    native, water = _transaction_plan(state, context, demand)
+    solved = solve._plan_device_windowed_avalanche_solve(state.voxel_column, state.active_layer,
+        context.geometry, context.avalanching_spec, context.mass_resolution_kg, class_ids=ids,
+        limits=context.native_solve_limits, sediment_availability=state.sediment_availability,
+        initial_available_fraction=context.initial_available_fraction)
+    if (solved.shape != native.shape or solved.device_id != native.device_id
+            or solved.bed_plan.shape != native.shape or solved.bed_plan.device_id != native.device_id):
+        _refuse('solve_and_water_shape_device_join')
+    # Complete actual allocating public water+full-I Native solve, never a
+    # caller-owned adoption/donation discount. Validation/commit are retained
+    # as full native ceilings until their genuine future result exists.
+    validation = context.native_validation_limits
+    commit = context.native_commit_limits
+    c, k, v, w, p, j = 16, 1, 6, 3, native.packet_terms, 320
+    endpoint = c * (8*w*k + 8 + 8*k + 2*8 + 8*k + 8*p + 8 + 8*w)
+    # Same closed shapes as the genuine validation owner; include its whole
+    # delta-resident/gather, two full partitions/mappings and byte snapshots.
+    from maple.surface.avalanche.windowed_validation import _NATIVE_EXPRESSION_CREDITS
+    credits = sum(n for _name, n in _NATIVE_EXPRESSION_CREDITS)
+    validation_device = (4*endpoint + credits*8*c*k + 2*(3*k*8+c*k*8)
+        + validation.delta_budgets.max_resident_temp_bytes
+        + 2*bed._scratch('cheap_column_validator.cupy', c, v, w, k, p))
+    validation_host = (2*validation.full_partition_host_bytes
+        + validation.delta_budgets.max_resident_temp_bytes
+        + validation.delta_budgets.max_gather_temp_bytes + 2*native.mapped_bytes_max)
+    # Complete actual B2b Source families, beyond its snapshot-only ceilings:
+    # current/output/compare/callback/later endpoint owners, all ledger/water/
+    # committed/baseline/availability auxiliary leaves and native report rows.
+    # The larger auxiliary logical ceiling remains separately charged below.
+    auxiliary = 512*c*k*8
+    report_bytes = (128+3*c)*k*8
+    commit_device = (6*endpoint + 2*auxiliary + 2*report_bytes + 6*c*k*8 + 4*k*8
+        + 4890*c*k+952*k+8 + 200*c*k+680*k+112
+        + 8*(10*c+(2*w+25)*c*k)+4*c+17*c*k)
+    commit_host = (native.carried_records+2*j)*(16+8*k)+2*3*3*8+2*c*k*8
+    # Two contexts (current/prospective), two attempt/result owner generations,
+    # and one error frontier. No claim that a retired allocator block is free.
+    cuda_static = 58*c + 40*c + 8*(c+1)
+    cuda_attempt = 161*c + 144
+    host_prepare = 2*(58*c + 40*c + 8*(c+1)) + 8*c*6 + 64*c
+    # Existing shared generic event/transport constructor census remains
+    # unchanged. It overcovers the skipped array hydraulic branch; the new
+    # CUDA static/attempt/provider frontiers are additional, not substitutions.
+    # These are logical Source projections, not CPU AS or ABI certificates.
+    from maple_syrup import windowed_shared_bed as generic
+    generic_rows, generic_work = generic._positive_source_frontier()
+    generic_payload, _generic_visits = generic._positive_interval_units()
+    generic_host = sum(value for _name, value in generic_rows)
+    generic_device = generic_payload*(generic._POSITIVE_GRID + generic._POSITIVE_FLAG)
+    reports = 2*4096*(16+14)*8
+    planner = 2*12*(8194*8) + 8*8194*(8+32)
+    codes, slots, code_text = _code_frontier()
+    operators = _OWNER.operators if type(_OWNER) is _Owner else _operator_roster()
+    for _parent, _name, _fn, code in operators:
+        slots += 1+code.co_nlocals+code.co_stacksize+len(code.co_cellvars)+len(code.co_freevars)
+        code_text += len(code.co_code)+len(code.co_exceptiontable)+len(code.co_linetable)
+        codes += 1
+    source_bytes = sum(ref.size for _name, ref in bounds.source_bindings)
+    reference_reads = 3*sum(ref.size for ref in _qualification_refs(bounds))
+    # The existing event driver can take Q accepted steps, A attempts and
+    # S transport substeps. Admission is for the WHOLE requested interval;
+    # calls reserve independently before each Native mutation too.
+    q, a = context.bridge_limits.max_event_steps, 11
+    terms = [
+        ('native_bed_exchange_host', native.new_host_bytes_peak),
+        ('native_bed_exchange_device', native.new_device_bytes_peak),
+        ('native_public_water_host', water.new_host_bytes_peak),
+        ('native_public_water_device', water.new_device_bytes_peak),
+        ('native_full_solve_host', solved.peak_host_bytes),
+        ('native_full_solve_device', solved.peak_device_bytes),
+        ('native_validation_host', validation_host),
+        ('native_validation_device', validation_device),
+        ('native_commit_full_host', commit_host + commit.max_guard_host_bytes),
+        ('native_commit_full_device', commit_device + commit.max_guard_device_bytes),
+        ('cuda_static_current_prospective_error', 3*cuda_static),
+        ('cuda_attempt_current_next_error', 3*cuda_attempt),
+        ('cuda_HOST_prepare_downloads_and_upload_sources', host_prepare),
+        ('unchanged_generic_Source_HOST_projection', generic_host),
+        ('unchanged_generic_Source_device_grid_projection', generic_device),
+        ('complete_reports_and_public_planners', reports+planner),
+        ('canonical_HOST_journal_current_next_error', 3*j*(16+8*k)),
+        ('known_reference_raw_generations', reference_reads),
+    ]
+    host_new = (native.new_host_bytes_peak + water.new_host_bytes_peak + solved.peak_host_bytes + validation_host
+        + commit_host + commit.max_guard_host_bytes + host_prepare + generic_host + reports + planner + 3*j*(16+8*k) + reference_reads)
+    device_new = (native.new_device_bytes_peak + water.new_device_bytes_peak + solved.peak_device_bytes + validation_device
+        + commit_device + commit.max_guard_device_bytes + generic_device + 3*cuda_static + 3*cuda_attempt)
+    required = dict(solved.required)
+    water_calls = 2*q*a+1 if phase == 'event' else 1
+    commit_calls = q+4096+1 if phase == 'event' else 1
+    reads = (water_calls*(water.mapped_bytes_max+native.logical_deep_read_bytes)
+             + commit_calls*required['max_total_logical_deep_read_bytes'] + reference_reads)
+    native_work = (water_calls*(native.new_host_bytes_peak+native.new_device_bytes_peak
+                                +water.new_host_bytes_peak+water.new_device_bytes_peak)
+        + commit_calls*solved.iterations*(solved.peak_host_bytes+solved.peak_device_bytes))
+    work = source_bytes + code_text + slots + codes + reports + planner + generic_work + native_work + reference_reads
+    h2d = water_calls*native.h2d_bytes_max + commit_calls*required['max_total_h2d_bytes'] + 3*cuda_static
+    d2h = water_calls*native.d2h_bytes_max + commit_calls*required['max_total_d2h_bytes'] + host_prepare + 3*144
+    scalars = 3*18
+    # All11 external operation costs and primitive/constructor allocation
+    # terms remain explicitly opaque in the distinct result, never zero.
+    # Actual full backing occurrences; no deduplication/alias/free credit.
+    retained_device = sum(row.backing_nbytes for row in native.arrays) + external_device
+    retained_host = external_host + source_bytes + 3*(64 << 20)
+    mapped = water.mapped_bytes_max + native.mapped_bytes_max
+    disk_bytes = disk_entries = versions = 0
+    if writer:
+        version = state.voxel_column.deep_store
+        chunks = len(version.chunks)
+        if chunks != 1 or version.header.n_chunks != 1 or version.version_id > (1 << 63)-3:
+            _refuse('fixed_chunk_count_or_future_revision')
+        # Full v1 chunk writes, next manifest and one complete partial at
+        # widest int64 revision widths; all old/orphan files stay counted.
+        manifest = 8192
+        disk_bytes = 2*(version.header.logical_bytes + manifest)
+        disk_entries = 2*(2*chunks+2)+2
+        versions = 2
+    result = QualificationDeviceWaterPhase(phase, host_new, device_new, retained_host, retained_device,
+        mapped, reads, work, h2d, d2h, scalars, disk_bytes, disk_entries, versions, tuple(terms))
+    for f in fields(QualificationDeviceWaterPhase):
+        if f.name not in ('phase', 'terms', 'known_subset_only', 'opaque_terms', 'claim'):
+            _integer(getattr(result, f.name), f.name)
+    return result
+
+
+def _qualification_gate(state, context, phase, *, roots=(), demand=None, writer=False):
+    """Reserve before the action; original Native guards repeat independently."""
+    _positive_pair_guard(state, context)
+    active = None if _OWNER is None else _owner(context)
+    if active is None and phase not in ('initial', 'validate'):
+        _refuse('entry_required_before_action')
+    bounds = _qualification_runtime(context, verify_files=active is None)
+    # This bounded complete metadata frontier is admitted BEFORE its walk;
+    # the later action gate adds all Native/physical/current-next terms.
+    _qualification_bootstrap(context, bounds)
+    _profile(state, context)
+    external_host, external_device, _nodes, _leaves = _backing_census(
+        _bed_roots(state, context) + roots, context)
+    plan = _qualification_produce_device_water_phase(state, context, phase, demand=demand,
+        external_host=external_host, external_device=external_device, writer=writer)
+    bounds, limits = _qualification_runtime(context), context.bridge_limits
+    # Primitive/constructor/error costs are NOT priced by this known subset.
+    # The unchanged outer abort controls cover the attempted experiment only.
+    host = plan.host_new + plan.host_retained + plan.mapped + limits.reserve_host_bytes
+    device = plan.device_new + plan.device_retained + limits.reserve_device_bytes
+    if (host > limits.max_host_bytes or device > limits.max_device_bytes
+            or plan.mapped > limits.max_mapped_bytes or plan.work > limits.max_work
+            or plan.logical_reads > limits.max_logical_read_bytes):
+        _refuse('prospective_logical_resource_ceiling')
+    from maple.aeolian.cohorts.capacity import default_available_memory_bytes
+    available = default_available_memory_bytes()
+    if type(available) is not int or host*2 > available:
+        _refuse('genuine_HOST_half_headroom')
+    ids, bed, *_ = _profile(state, context)
+    native = bed._plan_device_windowed_bed_exchange(state.voxel_column, state.active_layer,
+        context.geometry, class_ids=ids, limits=context.native_solve_limits.bed_limits)
+    bed._check_device_admission(device, device_id=native.device_id,
+                               safety_fraction=limits.safety_fraction)
+    if writer:
+        total, store, entries = _inventory_disk(context, state.voxel_column.deep_store.store_dir)
+        if (total + plan.writer_bytes > limits.max_run_bytes
+                or store + plan.writer_bytes > limits.max_store_bytes
+                or entries + plan.writer_entries > limits.max_entries):
+            _refuse('before_writer_current_next_partial_disk')
+    if active is not None:
+        work = active.work + plan.work
+        reads = active.reads + plan.logical_reads
+        versions = active.versions + plan.writer_versions
+        if (work > limits.max_work or reads > limits.max_logical_read_bytes
+                or versions > limits.max_new_versions):
+            _refuse('monotone_cumulative_resource_ceiling')
+        # Planned transfer/query counters have the closed int63 DTO domain;
+        # real Native per-solve caps and the original worker monitor remain
+        # independent. No new measured-traffic authority or relaxed cap.
+        h2d = _integer(active.h2d + plan.h2d, 'cumulative_h2d')
+        d2h = _integer(active.d2h + plan.d2h, 'cumulative_d2h')
+        scalars = _integer(active.scalars + plan.scalar_reads, 'cumulative_scalar_reads')
+        active.work, active.reads, active.versions = work, reads, versions
+        active.h2d, active.d2h, active.scalars = h2d, d2h, scalars
+        active.max_host, active.max_device = max(active.max_host, host), max(active.max_device, device)
+        active.ordinal += 1
+    _check_code()
+    _profile(state, context)  # Real Source/owner recheck after both queries.
+    return plan
+
+
+def complete_qualification_device_event(state, context, column, field, schedule, vegetation, sediment,
+        *, max_end_s, control, policy, report_every_s):
+    """One genuine complete_event under a separate qualification budget.
+
+    Native physics/admission/conservation and Root cold/origin/UUID/grant
+    checks are mandatory. Whole external/constructor bounds remain opaque.
+    A return is a physical result, never a whole-allocation/production proof.
+    Native errors stay errors; finally closes authority, not allocations.
+    """
+    global _OWNER
+    from maple_syrup import windowed_shared_bed as cpu
+    from maple_syrup.complete_event import CompletionPolicy, DryHandoff, complete_event
+    from maple_syrup.sediment_event import CudaHydraulics
+    if _OWNER is not None:
+        _refuse('nonreentrant_device_operation')
+    _positive_pair_guard(state.bed, context)
+    if not _qualification_dispatch(context):
+        _refuse('qualification_entry_requires_qualification_budget')
+    cpu._positive_pair_guard(state.bed, context)  # Genuine CPU exclusion before owner construction.
+    from maple_syrup.sediment_event import SedimentEventState
+    _holder(state, SedimentEventState)
+    _profile(state.bed, context)
+    projection = _control_projection(context, control)
+    _holder(policy, CompletionPolicy).validated()
+    if policy.deposit_mobile_at_flow_end is not True:
+        _refuse('original_deposit_mobile_completion_policy')
+    if (type(max_end_s) is not float or not math.isfinite(max_end_s) or max_end_s <= state.t_s
+            or type(report_every_s) is not float or report_every_s <= 0):
+        _refuse('explicit_finite_event_domain')
+    _runtime_bounds(context, verify_files=True)
+    owner = _Owner(context, control, projection, context.runtime_bounds.source_bindings)
+    _OWNER = owner
+    try:
+        # Full prospective context/preparation/attempt/terminal/frontier BEFORE
+        # the real lifecycle constructor; complete_event repeats real checks.
+        _gate(state.bed, context, 'entry', roots=(('state', state), ('column', column),
+            ('field', field), ('schedule', schedule), ('vegetation', vegetation), ('sediment', sediment)))
+        owner.hydraulics = CudaHydraulics(mode='auto', max_log=256)
+        result = complete_event(state, context, column, field, schedule, vegetation, sediment,
+            max_end_s=max_end_s, control=control, policy=policy, report_every_s=report_every_s,
+            max_report_rows=4096, continuation=None, checkpoint_callback=None, hydraulics=owner.hydraulics)
+        if type(result) is not DryHandoff or result.status != 'complete':
+            _refuse('actual_complete_dry_handoff_required')
+        _owner(context)
+        summary = QualificationAdmissionSummary(owner.ordinal, owner.work, owner.reads,
+            owner.versions, owner.h2d, owner.d2h, owner.scalars, owner.max_host, owner.max_device,
+            owner.hydraulics.summary())
+        return result, summary
+    except BaseException:
+        owner.poisoned = True
+        raise
+    finally:
+        owner.closed = True
+        if _OWNER is owner:
+            _OWNER = None
 
 
 # Immutable function/code witness; includes dataclass-generated methods and
