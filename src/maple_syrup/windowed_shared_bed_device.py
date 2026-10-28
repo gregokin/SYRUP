@@ -2457,6 +2457,72 @@ class DeviceWaterC64QualificationBudget:
         return self
 
 
+_C64_CASE_SCHEMA = 'maple_syrup.windowed_device_water.c64_case_budget.v1'
+
+
+@dataclass(frozen=True, repr=False, eq=False)
+class DeviceWaterC64CaseBudget:
+    """Case-request-bound sibling of the synthetic C64 descriptor.
+
+    Root issues the complete grant and exact producer Source identity. The
+    real MASY producer owns its HOST/placement prefix; no synthetic oracle
+    reserve or whole-operation allocation proof is implied by this record.
+    """
+    native_source_identity: str
+    current_runtime_ref: SourceReference
+    producer_module: str
+    producer_source: SourceReference
+    grant: SourceReference
+    source_bindings: tuple
+    gpu_uuid: str
+    source_manifest_sha256: str
+    case_request_binding_sha256: str
+
+    def validated(self):
+        _holder(self, DeviceWaterC64CaseBudget)
+        if (type(_C64_CASE_SCHEMA) is not str
+                or _C64_CASE_SCHEMA != 'maple_syrup.windowed_device_water.c64_case_budget.v1'
+                or type(_C64_PROFILE) is not str or _C64_PROFILE != 'C64_K1_V20_W3_complete_device_water_v1'):
+            _refuse('C64_case_schema_profile_binding')
+        for value in (self.native_source_identity, self.source_manifest_sha256, self.case_request_binding_sha256):
+            if (type(value) is not str or len(value) != 64
+                    or any(c not in '0123456789abcdef' for c in value)):
+                _refuse('C64_case_source_or_request_identity')
+        if (type(self.gpu_uuid) is not str or len(self.gpu_uuid) != 40
+                or not self.gpu_uuid.startswith('GPU-')
+                or tuple(i for i, c in enumerate(self.gpu_uuid[4:]) if c == '-') != (8, 13, 18, 23)
+                or any(c not in '0123456789abcdef-' for c in self.gpu_uuid[4:])):
+            _refuse('C64_case_physical_UUID')
+        for ref in (self.current_runtime_ref, self.producer_source, self.grant):
+            _holder(ref, SourceReference).validated()
+        if (type(self.producer_module) is not str or self.producer_module != 'masy.case_device_c64'
+                or Path(self.producer_source.path).name != 'case_device_c64.py'):
+            _refuse('C64_case_exact_producer')
+        if (self.producer_source.sha256 == _C64_FACTORY_SHA256
+                or self.producer_source.sha256 == 'df967a08ac421a2caf76ba63f281a10af2190b37c7b2c3dce55184a8d263e7d5'):
+            _refuse('C64_case_not_synthetic_factory')
+        if type(self.source_bindings) is not tuple or len(self.source_bindings) != len(_SOURCE_MODULES):
+            _refuse('C64_case_complete_Source_roster')
+        names = []
+        for row in self.source_bindings:
+            if type(row) is not tuple or len(row) != 2 or type(row[0]) is not str:
+                _refuse('C64_case_Source_row')
+            names.append(row[0])
+            _holder(row[1], SourceReference).validated()
+        if tuple(names) != _SOURCE_MODULES or sum(ref.size for _name, ref in self.source_bindings) > 16 << 20:
+            _refuse('C64_case_ordered_Source_roster')
+        return self
+
+
+def _c64_budget(value):
+    """Two exact siblings; no extensible tuple or subclass authority."""
+    if type(value) is DeviceWaterC64QualificationBudget:
+        return _holder(value, DeviceWaterC64QualificationBudget)
+    if type(value) is DeviceWaterC64CaseBudget:
+        return _holder(value, DeviceWaterC64CaseBudget)
+    _refuse('C64_budget_kind')
+
+
 @dataclass(frozen=True, kw_only=True, repr=False, eq=False)
 class WindowedDeviceWaterC64Context(BedContext):
     native_solve_limits: object
@@ -2465,7 +2531,7 @@ class WindowedDeviceWaterC64Context(BedContext):
     native_dimension_profile: object
     source_identity: str
     bridge_limits: PositiveWindowedDeviceWaterLimits
-    runtime_bounds: DeviceWaterC64QualificationBudget | None = None
+    runtime_bounds: DeviceWaterC64QualificationBudget | DeviceWaterC64CaseBudget | None = None
 
 
 def c64_qualification_budget_record(budget):
@@ -2493,6 +2559,33 @@ def c64_qualification_budget_bytes(budget):
     return raw
 
 
+def c64_case_budget_record(budget):
+    """Complete case descriptor value; the containing grant has no self-cycle."""
+    _holder(budget, DeviceWaterC64CaseBudget).validated()
+    def ref(value):
+        return dict(path=value.path, size=value.size, sha256=value.sha256)
+    return dict(schema=_C64_CASE_SCHEMA, profile=_C64_PROFILE,
+        native_source_identity=budget.native_source_identity,
+        current_runtime_ref=ref(budget.current_runtime_ref),
+        producer_module=budget.producer_module, producer_source=ref(budget.producer_source),
+        source_bindings=tuple(dict(module=name, **ref(value)) for name, value in budget.source_bindings),
+        gpu_uuid=budget.gpu_uuid, source_manifest_sha256=budget.source_manifest_sha256,
+        case_request_binding_sha256=budget.case_request_binding_sha256,
+        execution_budgets=dict(_QUALIFICATION_EXECUTION_BUDGETS),
+        opaque_external_bounds=tuple((name, None) for name in _EXTERNAL_ROLES),
+        opaque_primitive_units=tuple((name, None) for name in _UNIT_NAMES),
+        opaque_constructor_accounting=None, claim=_QUALIFICATION_CLAIM)
+
+
+def c64_case_budget_bytes(budget):
+    import json
+    raw = json.dumps(c64_case_budget_record(budget), sort_keys=True, separators=(',', ':'),
+                     ensure_ascii=True, allow_nan=False).encode('ascii')
+    if len(raw) > 2 << 20:
+        _refuse('finite_C64_case_budget_encoding')
+    return raw
+
+
 def _c64_tag(context):
     return any(kind is WindowedDeviceWaterC64Context
                for kind in type.__getattribute__(type(context), '__mro__'))
@@ -2504,7 +2597,7 @@ def _c64_pair_guard(state, context):
     _holder(context, WindowedDeviceWaterC64Context)
     if type(context.bridge_limits) is not PositiveWindowedDeviceWaterLimits:
         _refuse('C64_original_engineering_limits')
-    _holder(context.runtime_bounds, DeviceWaterC64QualificationBudget)
+    _c64_budget(context.runtime_bounds)
     active = _OWNER
     if active is not None and (type(active) is not _Owner or active.context is not context
             or active.pid != os.getpid() or active.thread != threading.get_ident()
@@ -2518,7 +2611,7 @@ def _c64_context(context):
     _holder(context, WindowedDeviceWaterC64Context)
     if type(context.bridge_limits) is not PositiveWindowedDeviceWaterLimits:
         _refuse('C64_original_engineering_limits')
-    _holder(context.runtime_bounds, DeviceWaterC64QualificationBudget)
+    _c64_budget(context.runtime_bounds)
     active = _OWNER
     if active is not None and (type(active) is not _Owner or active.context is not context
             or active.pid != os.getpid() or active.thread != threading.get_ident()
@@ -2528,6 +2621,10 @@ def _c64_context(context):
 
 
 def _c64_refs(budget):
+    if type(budget) is DeviceWaterC64CaseBudget:
+        _holder(budget, DeviceWaterC64CaseBudget)
+        return (budget.current_runtime_ref, budget.producer_source, budget.grant,
+                *(ref for _name, ref in budget.source_bindings))
     return (budget.current_runtime_ref, budget.factory_source, budget.grant,
             *(ref for _name, ref in budget.source_bindings))
 
@@ -2579,6 +2676,8 @@ def _c64_bootstrap(context, budget):
 
 def _c64_qualification_runtime(context, *, verify_files=False):
     _c64_context(context)
+    if type(context.runtime_bounds) is DeviceWaterC64CaseBudget:
+        return _c64_case_runtime(context, verify_files=verify_files)
     budget = context.runtime_bounds.validated()
     if budget.native_source_identity != context.source_identity:
         _refuse('C64_native_source_join')
@@ -2589,6 +2688,53 @@ def _c64_qualification_runtime(context, *, verify_files=False):
         if _read_reference(budget.grant) != c64_qualification_budget_bytes(budget):
             _refuse('C64_complete_grant_value_join')
         import types
+        for name, ref in budget.source_bindings:
+            module = sys.modules.get(name)
+            if type(module) is not types.ModuleType:
+                _refuse('C64_loaded_module')
+            origin = vars(module).get('__file__')
+            if (type(origin) is not str or not origin or '\x00' in origin
+                    or not Path(origin).is_absolute() or '..' in Path(origin).parts
+                    or Path(origin).resolve() != Path(ref.path).resolve()):
+                _refuse('C64_actual_loaded_Source_origin')
+            _read_reference(ref)
+    return budget
+
+
+def _c64_case_runtime(context, *, verify_files=False):
+    """Real context/source join and device bootstrap before case metadata IO."""
+    _c64_context(context)
+    budget = _holder(context.runtime_bounds, DeviceWaterC64CaseBudget).validated()
+    if budget.native_source_identity != context.source_identity:
+        _refuse('C64_case_native_source_join')
+    if verify_files:
+        _c64_bootstrap(context, budget)
+    return _c64_case_budget_runtime(budget, verify_files=verify_files)
+
+
+def _c64_case_budget_runtime(budget, *, verify_files=False):
+    """Case metadata currentness only; no physical, device or fit authority.
+
+    A pre-placement MASY caller must price/admit these bounded reference reads
+    and its real OS/pool/Native Source checks before asking to verify files.
+    The real context entry separately retains the original device bootstrap.
+    """
+    _holder(budget, DeviceWaterC64CaseBudget).validated()
+    _check_code()
+    if verify_files:
+        for ref in (budget.current_runtime_ref, budget.producer_source):
+            _read_reference(ref)
+        if _read_reference(budget.grant) != c64_case_budget_bytes(budget):
+            _refuse('C64_case_complete_grant_value_join')
+        import types
+        module = sys.modules.get(budget.producer_module)
+        if type(module) is not types.ModuleType:
+            _refuse('C64_case_loaded_producer_module')
+        origin = vars(module).get('__file__')
+        if (type(origin) is not str or not origin or '\x00' in origin
+                or not Path(origin).is_absolute() or '..' in Path(origin).parts
+                or Path(origin).resolve() != Path(budget.producer_source.path).resolve()):
+            _refuse('C64_case_actual_loaded_producer_origin')
         for name, ref in budget.source_bindings:
             module = sys.modules.get(name)
             if type(module) is not types.ModuleType:
