@@ -118,6 +118,9 @@ def _limits(root):
 def _water_inputs(host, cp):
     """Actual832 all-edge-open scientific inputs; lossless initial placement."""
     water = production.water_inputs(host, all_edges_open=True)
+    # User-selected Native strict-pit storage; flat-sink storage stays disabled.
+    water = dataclasses.replace(water, terrain=dataclasses.replace(
+        water.terrain, allow_pit_storage=True))
     column = dataclasses.replace(water.column, xp=cp,
         **{f.name: to_device(getattr(water.column, f.name), cp)
            for f in dataclasses.fields(water.column) if type(getattr(water.column, f.name)) is np.ndarray})
@@ -237,6 +240,10 @@ def test_c64_complete_device_water_qualification_matches_dense(tmp_path, cupy, d
     terrain = terrain_reference(w.terrain.initial_full_elevation_m, w.terrain.export_receiver_full, bed0, graph)
     dgraph = routing_graph_from_elevation(d.terrain, committed_elevation_m(dense0.committed_topography), xp=cp)
     check_graph_evidence_matches(graph, dgraph)
+    assert w.terrain.build_options() == d.terrain.build_options() == terrain.build_options() == {
+        'nodata_value': None, 'allow_masked_nodata': False,
+        'allow_pit_storage': True, 'allow_flat_storage': False}
+    assert graph.policy == dgraph.policy == 'masked_nodata=False;pit_storage=True'
     control = legacy.sediment_control(implementation='cuda', root_solver='bisection')
     dense_control = legacy.sediment_control(implementation='cuda', root_solver='bisection')
     assert (legacy.RAIN_S, legacy.RAIN_MM_H, legacy.GUARD_S, legacy.REPORT_EVERY_S) == (60.0, 72.0, 180.0, 10.0)
@@ -244,6 +251,7 @@ def test_c64_complete_device_water_qualification_matches_dense(tmp_path, cupy, d
     assert context.avalanching_spec.enabled and context.depth_update_rule == 'constant_depth'
     policy, dpolicy = legacy.policy(), legacy.policy()
     assert policy == CompletionPolicy(deposit_mobile_at_flow_end=True)
+    assert policy.terminal_storage_water is dpolicy.terminal_storage_water is False
     schedule, dschedule = _rainfall(fx.state.physical.time_s), _rainfall(host.time_s)
     _same(schedule, dschedule, 'rainfall')
     old = bed0.voxel_column.deep_store
@@ -335,6 +343,8 @@ def test_c64_complete_device_water_qualification_matches_dense(tmp_path, cupy, d
     for name in ('storm', 'sediment_velocity_m_s', 'routing_source_elevation_m', 'network', 'grid', 'graph'):
         _same(getattr(a.state, name), getattr(b.state, name), 'state.'+name)
     check_graph_evidence_matches(a.state.graph, b.state.graph)
+    assert a.state.terrain.build_options() == b.state.terrain.build_options() == terrain.build_options()
+    assert a.state.graph.policy == b.state.graph.policy == graph.policy
     assert a.state.phase is b.state.phase is None
     for name in ('planned_boundaries', 'origin_t_s', 'initial_surface_m3', 'initial_soil_m3', 'rainfall_end_s',
                  'report_every_s', 'max_report_rows', 'quiet', 'policy', 'control', 'status'):
@@ -377,6 +387,9 @@ def _entry_component_inputs(root, cp, budget):
     """A separate genuine C64 genesis; no input bed is reconstructed."""
     fx, host, bed, _dense, _dense_context, context = _native_c64_inputs(root, cp, budget)
     water = production.water_inputs(host, all_edges_open=True)
+    # User-selected Native strict-pit storage; flat-sink storage stays disabled.
+    water = dataclasses.replace(water, terrain=dataclasses.replace(
+        water.terrain, allow_pit_storage=True))
     source = committed_elevation_m(bed.committed_topography)
     graph = routing_graph_from_elevation(water.terrain, source, xp=cp)
     reference = terrain_reference(water.terrain.initial_full_elevation_m,
@@ -439,6 +452,10 @@ def test_c64_qualification_device_entry_matches_direct_native_commit_and_routing
     expected, direct_context, direct_graph, direct_reference, direct_source, _direct_control, direct_time = _entry_component_inputs(
         tmp_path/'oracle', cp, budget)
     assert time_s == direct_time
+    assert reference.build_options() == direct_reference.build_options() == {
+        'nodata_value': None, 'allow_masked_nodata': False,
+        'allow_pit_storage': True, 'allow_flat_storage': False}
+    assert graph.policy == direct_graph.policy == 'masked_nodata=False;pit_storage=True'
     old_versions = (actual.voxel_column.deep_store, expected.voxel_column.deep_store)
     old_files = tuple(_files(v.store_dir) for v in old_versions)
     inputs = _snapshot(actual, expected, source, direct_source,
@@ -468,6 +485,7 @@ def test_c64_qualification_device_entry_matches_direct_native_commit_and_routing
             assert graph is held_graph and source is held_source
             assert direct_graph is direct_held_graph and direct_source is direct_held_source
         check_graph_evidence_matches(graph, direct_graph)
+        assert graph.policy == direct_graph.policy == held_graph.policy
         _same(source, direct_source, 'entry routing source')
         for name in device._BED_FIELDS:
             if name != 'voxel_column':

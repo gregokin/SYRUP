@@ -139,3 +139,31 @@ Claude verdict, runs affected metadata checks and qualifies the exact new
 Native/SYRUP runtime/carrier/fixture/actor joins. Only then may it attempt
 the bounded physical selectors under unchanged controls. All actual model
 payloads remain local to Root.
+
+## User-selected Native pit storage — 2026-10-28
+
+The user selected “let water collect in closed depressions.” The labelled
+C64 fixture therefore selects the existing `TerrainReference` option
+`allow_pit_storage=True` for both the windowed event and its independent
+Dense CuPy oracle, including both sides of the forced-entry comparison.
+It replaces only that immutable reference field after the unchanged
+production input constructor; the terrain values, all-open boundary ring,
+friction, active mask, sediment/soil/rain/cover parameters and original
+Native configuration remain the same. Small fixtures and routing defaults
+are unchanged.
+
+`routing_graph_from_elevation` passes the reference's build options to the
+existing graph constructor. The windowed reference rebind reads the graph
+policy, and later net-elevation-triggered reroutes retain that same policy.
+Native strict pits are terminal storage with zero conveyance; this option
+does not fill, carve, drain or overtop them. `allow_flat_storage=False`
+remains explicit in the assertions. No new depression or overflow physics
+is supplied.
+
+The existing completion policies retain `terminal_storage_water=False`.
+The full native completion, original recession guard, sediment closure,
+`DryHandoff` requirement and explicit dry-reset accounting remain required;
+a limit or error is not completion. Source preparation does not establish
+that the pit-storage event completes. Root must review the exact new test
+Source, issue truthful fresh test/factory/runtime/carrier joins and run the
+affected genuine selectors under all unchanged limits before acceptance.
