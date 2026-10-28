@@ -249,9 +249,12 @@ def test_c64_complete_device_water_qualification_matches_dense(tmp_path, cupy, d
     assert (legacy.RAIN_S, legacy.RAIN_MM_H, legacy.GUARD_S, legacy.REPORT_EVERY_S) == (60.0, 72.0, 180.0, 10.0)
     assert control.cuda and control.transport_scheme == 'upwind' and control.deep_publication == 'step'
     assert context.avalanching_spec.enabled and context.depth_update_rule == 'constant_depth'
-    policy, dpolicy = legacy.policy(), legacy.policy()
-    assert policy == CompletionPolicy(deposit_mobile_at_flow_end=True)
-    assert policy.terminal_storage_water is dpolicy.terminal_storage_water is False
+    # User-selected interim inter-event removal of accounted ponded water;
+    # all other Native completion/flow-end settlement settings are retained.
+    policy = dataclasses.replace(legacy.policy(), terminal_storage_water=True)
+    dpolicy = dataclasses.replace(legacy.policy(), terminal_storage_water=True)
+    assert policy == dpolicy == CompletionPolicy(
+        terminal_storage_water=True, deposit_mobile_at_flow_end=True)
     schedule, dschedule = _rainfall(fx.state.physical.time_s), _rainfall(host.time_s)
     _same(schedule, dschedule, 'rainfall')
     old = bed0.voxel_column.deep_store
@@ -361,6 +364,29 @@ def test_c64_complete_device_water_qualification_matches_dense(tmp_path, cupy, d
         if name not in _CLOSURE_OWN:
             _same(wa[name], da[name], 'sediment closure.'+name)
     _check_dry(handoff); _check_dry(dense)
+    for completed in (handoff, dense):
+        accounting = completed.accounting
+        metrics = accounting['completion_after_terminal']
+        selected = completed.progress.policy
+        assert selected.terminal_storage_water and selected.deposit_mobile_at_flow_end
+        assert metrics['terminal_storage_cells'] > 0
+        assert accounting['terminal_storage_cells'] == metrics['terminal_storage_cells']
+        assert metrics['terminal_surface_volume_m3'] > 0.0
+        assert accounting['terminal_storage_removed_m3'] == metrics['terminal_surface_volume_m3']
+        assert accounting['surface_removed_m3'] > 0.0
+        assert accounting['moving_surface_removed_m3'] == (
+            accounting['surface_removed_m3'] - accounting['terminal_storage_removed_m3'])
+        assert accounting['terminal_storage_policy'] == (
+            'external dry reset removes the ponded terminal-storage water with the '
+            'rest of the surface water; no pond residence, spill or overtopping model')
+        assert metrics['moving_max_depth_m'] <= selected.max_depth_m
+        assert metrics['moving_surface_volume_m3'] <= selected.surface_volume_m3
+        assert metrics['max_unit_discharge_m2_s'] <= selected.max_unit_discharge_m2_s
+        assert metrics['outlet_discharge_m3_s'] <= selected.outlet_discharge_m3_s
+        assert metrics['rainfall_finished']
+    # The complete accounting comparison above includes every terminal/moving
+    # removal field and completion metric from the independent Dense oracle;
+    # _check_dry retains Native water/class bounds and the actual zero dry state.
     _same(handoff.dry_state.storm, dense.dry_state.storm, 'dry storm')
     _same(handoff.dry_state.bed.water, dense.dry_state.bed.water, 'dry water')
     _unchanged(inputs)

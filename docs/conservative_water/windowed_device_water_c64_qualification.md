@@ -160,10 +160,37 @@ does not fill, carve, drain or overtop them. `allow_flat_storage=False`
 remains explicit in the assertions. No new depression or overflow physics
 is supplied.
 
-The existing completion policies retain `terminal_storage_water=False`.
-The full native completion, original recession guard, sediment closure,
-`DryHandoff` requirement and explicit dry-reset accounting remain required;
-a limit or error is not completion. Source preparation does not establish
-that the pit-storage event completes. Root must review the exact new test
-Source, issue truthful fresh test/factory/runtime/carrier joins and run the
-affected genuine selectors under all unchanged limits before acceptance.
+The subsequent user decision is: “for now explicitly remove and account for
+remaining ponded water, Once we have a model that can do ET, we will revisit
+this.” The local C64 complete-event fixture therefore selects the existing
+Native `CompletionPolicy.terminal_storage_water=True` independently for the
+windowed event and its Dense CuPy oracle. All other policy values come from
+the unchanged existing fixture, including `deposit_mobile_at_flow_end=True`.
+Native defaults and other fixtures are unchanged.
+
+This explicit interim policy excludes recognised terminal-storage cells only
+from the moving-water depth and surface-volume completion criteria. Rain-off,
+continuous quiet hold, unit/outlet discharge and finite/nonnegative water and
+mobile validation remain Native. The already selected flow-end deposition
+option already waives the mobile significance threshold; remaining mobile
+sediment is still deposited through the actual Native terminal transaction,
+with its original class-conservation bounds and empty-mobile requirement.
+
+Ponded surface water remains physical storage through the wet event. Only
+after genuine completion does the existing external dry reset remove it and
+report `terminal_storage_removed_m3` within total `surface_removed_m3`, with
+moving surface removal and soil-water removal separately accounted. The
+physical check requires positive terminal storage/removal, preserved Native
+moving-water/discharge gates, exact agreement with independent Dense
+accounting, Native water/sediment closure and the actual zero dry state.
+This is explicit inter-event removal, not evapotranspiration, drainage,
+retained-water wind handoff or a new pond residence/overflow model. ET remains
+unimplemented and requires its own future scientific and qualification work.
+
+The original rain, physical recession guard, reporting cadence, completion
+hold and all process/device/storage budgets remain unchanged. A limit or
+error remains incomplete and cannot trigger removal. Source preparation does
+not establish that the event completes. Root must review the exact new
+test/factory pins, issue fresh runtime/carrier/role authority and execute the
+affected complete-event selector under the original controls. No earlier
+failed experiment or Source-only result is relabelled as physical acceptance.

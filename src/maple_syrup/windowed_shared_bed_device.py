@@ -2401,8 +2401,8 @@ def commit_qualification_device_entry(state, context, graph, reference, current_
 _C64_SCHEMA = 'maple_syrup.windowed_device_water.c64_qualification_budget.v1'
 _C64_PROFILE = 'C64_K1_V20_W3_complete_device_water_v1'
 # Exact newly authored C64 physical factory; it is not the Small factory pin.
-_C64_FACTORY_SIZE = 32644
-_C64_FACTORY_SHA256 = '8f1bcef3faf7c75f126fa115659adcbb9e3ac4c0b1bead16b156f731cf4c916a'
+_C64_FACTORY_SIZE = 34469
+_C64_FACTORY_SHA256 = 'df967a08ac421a2caf76ba63f281a10af2190b37c7b2c3dce55184a8d263e7d5'
 
 
 @dataclass(frozen=True, repr=False, eq=False)
@@ -2437,9 +2437,9 @@ class DeviceWaterC64QualificationBudget:
             _refuse('C64_physical_UUID')
         for ref in (self.current_runtime_ref, self.factory_source, self.grant):
             _holder(ref, SourceReference).validated()
-        if (type(_C64_FACTORY_SIZE) is not int or _C64_FACTORY_SIZE != 32644
+        if (type(_C64_FACTORY_SIZE) is not int or _C64_FACTORY_SIZE != 34469
                 or type(_C64_FACTORY_SHA256) is not str
-                or _C64_FACTORY_SHA256 != '8f1bcef3faf7c75f126fa115659adcbb9e3ac4c0b1bead16b156f731cf4c916a'
+                or _C64_FACTORY_SHA256 != 'df967a08ac421a2caf76ba63f281a10af2190b37c7b2c3dce55184a8d263e7d5'
                 or self.factory_source.size != _C64_FACTORY_SIZE
                 or self.factory_source.sha256 != _C64_FACTORY_SHA256
                 or Path(self.factory_source.path).name != 'test_windowed_shared_device_c64_qualification.py'):
