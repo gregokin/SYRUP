@@ -1,8 +1,22 @@
 # MAPLE-SYRUP
 
-**Sediment Yield, Runoff, and Uptake by Plants**: a water erosion and transport extension for MAPLE (`/home/okin/MAPLE`). It is not a standalone model. MAPLE owns wind physics and the shared sediment bed (voxel column, active layer, grain classes, availability, ledger, topographic commits, snapshots, backend). MAPLE-SYRUP adds MAHLERAN-like water processes on top of that state and invokes MAPLE for everything else.
+**Sediment Yield, Runoff, and Underground Plumbing**: a water erosion and transport extension for MAPLE (`/home/okin/MAPLE`). It is not a standalone model. MAPLE owns wind physics and the shared sediment bed (voxel column, active layer, grain classes, availability, ledger, topographic commits, snapshots, backend). MAPLE-SYRUP adds MAHLERAN-like water processes on top of that state and invokes MAPLE for everything else.
+
+The user selected this expansion on 2026-11-09, replacing “Sediment Yield,
+Runoff, and Uptake by Plants.” The companion vegetation model is **LEAF —
+Landscape Ecohydrology with Agent-based Flora**. Historical documents retain
+the expansion used when they were written.
 
 Project scope and rules: `AGENTS.md`, `claude.md`, `syrup_implementation_phases.md`.
+
+The subsurface development branch now provides an opt-in layered soil-water
+column and shared weather/PET foundation. See the [implementation guide](docs/subsurface_hydrology/implementation.md),
+[weather/PET guide](docs/subsurface_hydrology/weather_pet.md),
+[Phase 0 qualification](docs/subsurface_hydrology/phase0_qualification.md) and
+[development program](docs/subsurface_hydrology/development_phases_20261109.md).
+MASY coordinates dated wind, rain and interevent files; persistent storm
+infiltration, LEAF integration and combined physical restart remain development
+work. Existing water CLI/benchmark defaults are unchanged.
 
 An explicit [splash and depression-overflow event](docs/splash_and_overflow/README.md)
 adds direct rainfall splash, local-inertial pond filling/overflow, conservative
