@@ -1,0 +1,18 @@
+{
+ "evidence": [
+  "Root: phase1_verified_delivery_20261112/root_qualification_receipt.json:92 metadata and19 native/reader checks",
+  "Root: phase1_publication_c1_20261112/root_c1_portable_gpu_receipt.json:154 scientific controls",
+  "Actual V1 prepare succeeded using the existing .venv-cupy and exact C1 heads; runtime_cuda_stdout.json",
+  "Qualified scientific water109 AFCA and Leaf23_8da component receipts retained separately"
+ ],
+ "independent": true,
+ "limits": [
+  "Small4x6 Dense fixed-bed/layer example only; no field/wind/moving-soil/large-domain claim",
+  "This attests independent code review/component checks; does not claim a not-yet-executed full production run",
+  "Receipt hashes prove consistency, not authenticity; selected under the project accidental-drift trust model"
+ ],
+ "recipe_sha256": "7a9eecfad45c7b0ba920746a627f5e495289f76527a40ea0d00bcd213694ab67",
+ "schema": "masy.production_release_receipt.v1",
+ "scope": "Independently reviewed functional C1 sources and bounded component checks; permits the actual small Dense Phase1 CUDA qualification experiment. Full committed-runtime CPU/GPU simulation acceptance is pending and must be recorded separately.",
+ "status": "root_reviewed"
+}

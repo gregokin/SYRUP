@@ -1,0 +1,2 @@
+plant_id,species,x_m,y_m,establishment_ground_m,agb_dry_kg,seasonal_agb_dry_kg,age_days,status
+1,A,0.375,0.375,SURFACE,100.0,0.0,100.0,live

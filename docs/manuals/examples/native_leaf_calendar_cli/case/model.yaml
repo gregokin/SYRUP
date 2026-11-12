@@ -1,0 +1,31 @@
+aerodynamic_detachment:
+  reference_rate_kg_m2_s: 0.00015
+avalanching:
+  enabled: false
+detachment_source:
+  mode: aerodynamic
+numerics:
+  mass_resolution_kg: 1.0e-10
+outputs_and_diagnostics:
+  conservation_cadence_s: 1
+  exact_checkpoint_cadence_s: 2
+  keyframe_cadence_s: 2
+  visualization_cadence_s: 1
+particle_transport:
+  hop_distance_by_class:
+    coarse:
+      geometric_stddev: 2.0
+      median_hop_distance_m: 0.2
+      representative_flight_speed_m_s: 2.5
+    fine:
+      geometric_stddev: 2.0
+      median_hop_distance_m: 0.2
+      representative_flight_speed_m_s: 2.5
+    sand:
+      geometric_stddev: 2.0
+      median_hop_distance_m: 0.2
+      representative_flight_speed_m_s: 2.5
+  max_active_cohorts: 4000
+  quantile_bins: 6
+surface_creep:
+  enabled: false

@@ -1,0 +1,8 @@
+wind_forcing:
+  blocks:
+  - direction_deg: 90.0
+    duration_s: 1.0
+    shear_velocity_m_s: 0.6
+  - direction_deg: 90.0
+    duration_s: 1.0
+    shear_velocity_m_s: 0.6

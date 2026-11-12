@@ -1,5 +1,245 @@
 # SYRUP project instructions
 
+## Accepted Phase 1 source foundation — 2026-11-12
+
+The bounded fixed-bed water/LEAF C1 release uses actual code commits SYRUP
+`e40a1b8fc56a96920db4ffbd182d4068fa5de3e8`, LEAF
+`52f39fe06166a91e768740b19d3c26d4ffceaf6e`, MASY
+`a70400230f26d7931624d49173196a1cfa05a90a`, and historical MAPLE
+`9f466d2cfcd52991b24496cf67f4562d6268afa9`. Read
+`docs/subsurface_hydrology/phase1_release_qualification.md` and JSON for exact
+scope, source packages, actual CPU/GPU/restart/refusal controls and limits.
+The dated older design/component statuses below are historical; no source lock
+or checkpoint is rebound. New phase work must begin from the accepted source
+foundation, preserving live dirty benchmark work and jobs. Documentation-only
+commits do not change those qualified code pins.
+
+Phase 1.5 is next ONLY after completion of Phase 1 publication; its binding spec
+is `docs/subsurface_hydrology/phase15_daily_recharge.md`. User chose recharge
+attempt at P=T. Do not skip it or renumber Phases 2, 2.5,3. Continue automatic
+Codex–Claude implementation/review/correction, with per-phase validated commit
+and push, asking only unresolved material physics questions. No main merge,
+reset, unrelated staging or environment replacement is authorized. Existing
+MAPLE `.venv`/`.venv-cupy` only; GPU0 only after fresh availability check.
+No wind-with-persistent-soil, moving-soil, field or large-domain readiness is
+claimed by the small fixed-geometry qualification.
+
+## Queued Phase 1.5: daily recharge — 2026-11-12 UTC
+
+After Phase 1 is completed, independently validated, committed and pushed,
+implement/qualify/commit/push Phase 1.5 BEFORE Phase 2. Preserve Phases 2, 2.5
+and 3. Binding specification: docs/subsurface_hydrology/phase15_daily_recharge.md
+and development_phases_20261109.md. Zero rain is a no-op; 0<P<=T attempts small
+rain recharge (user explicitly chose equality); P>T uses full native storm.
+FIELD CAPACITY triggers gravity movement, SATURATION limits storage; any active
+closed-column capacity failure falls back from the unchanged original state
+with FULL rainfall. Integrate with one daily water update; no duplicated water,
+drainage, E/T or intervals. No matrix-history reset. Audit history semantics
+before choosing any new scientific rule. New nominal-calendar/physical-time
+separation must be explicitly versioned, never rebound into historical profiles.
+Native SYRUP capability only: no full daily MASY scheduler/CSV or LEAF redesign.
+This is queued scope, not Phase 1 completion or authorization to skip it.
+
+## Approved bounded wetting-history qualification — 2026-11-10
+
+User chose the bounded approach: retain matrix wetting history by default;
+allow explicitly requested resets only between controlled, quiescent test
+episodes while preserving actual soil moisture and all physical water ledgers.
+Do not infer reset from rain-off, a filename, wind, checkpoint or schedule
+boundary. Automatic drying/recovery remains deferred and general repeated-storm
+infiltration unqualified. Implement explicit reset safeguards and source-bound
+receipts before offering that control; approval does not claim it already exists.
+Single-episode component, storm and restart work continues automatically.
+
+
+## Approved subsurface physics choices — 2026-11-10
+
+The user accepted both recommendations: retain Tietjen's separate vegetation
+placements before/after ponding in persistent Green–Ampt infiltration, and
+apply the soil-evaporation share AFTER limiting the combined potential soil
+loss by current withdrawable water. SYRUP debits actual E only; LEAF requests
+T separately against the remaining available water. Do not ask these again
+or revert to one vegetation-scaled conductivity or potential-level E share.
+See the current development_phases document and task physics-decisions record
+for scope and independent qualification. These are approved requirements,
+not acceptance of an untested implementation or an automatic wetting-history
+recovery/reset policy.
+
+## Added subsurface development Phase 2.5 — 2026-11-10
+
+User added Phase 2.5 between evolving-soil Phase 2 and observational-validation
+Phase 3. Once Phase 2 is completed and validated, proceed automatically with
+Codex–Claude implementation of an adapter from actual LEAF vegetation to the
+vegetation inputs of SYRUP's MAHLERAN-derived splash physics. LEAF owns plants,
+SYRUP owns splash/water/sediment transport, MAPLE owns the bed. Preserve explicit
+cover/overlap conventions, source-law choices, CPU/GPU equivalence, bounded
+memory, conservation, generation-bound restart and event nonoverlap; no growth
+or E/T during wind/rain/recession. Do not silently change legacy vegetation
+kinetic-energy formulas or infer canopy cover from roots. Read the detailed
+Phase 2.5 requirements in docs/subsurface_hydrology/development_phases_20261109.md.
+Commit and push each completed validated phase under the user's current
+program authorization. This phase is queued, not yet implemented.
+
+User decision, 2026-11-10: Phase1 uses explicit user-supplied hydraulic
+properties; texture-to-property method belongs to Phase2. Retain background
+preferential infiltration with separate soil receiving-layer weights alongside
+LEAF species weights, under one aggregate supply/rate/capacity water budget.
+See docs/subsurface_hydrology/development_phases_20261109.md.
+
+User clarification, 2026-11-10: LEAF species traits own preferential-infiltration
+receiving weights, distinct from root-uptake fractions. Weights are nonnegative
+and need not sum to one; normalize positive vectors for allocation, all zeros
+disable that species' contribution. `[0,1,1]` divides equally between the lower
+two of three layers. Preserve one aggregate supply/capacity-limited SYRUP water
+budget; never assume every shrub participates. See the governing phase plan.
+
+User authorization, 2026-11-10: share whatever material is needed with
+Anthropic/Claude for this project collaboration. This ongoing permission
+supersedes the earlier exact-payload approval blocker; do not ask again for
+already-covered source sharing. Respect execution controls and exclude
+unneeded secrets.
+
+## Active shared scheduler and subsurface program — 2026-11-09
+
+User said "OK, begin" after approving depth-dependent proportional root uptake.
+The prior instruction to wait before implementing Phase 0–3 is superseded.
+Proceed in automatic Codex–Claude mode, asking only unresolved material physics
+questions and continuing independent work while answers are pending. Commit and
+push each completed, independently validated phase, then continue. Preserve all
+pre-existing dirty work and active jobs; acceptance/publication is scoped, not
+permission to stage unrelated changes. See
+`docs/subsurface_hydrology/development_phases_20261109.md` for governing phases,
+ownership, event gates and the agreed root competition/growth equations.
+Phase 0 starts in an isolated MASY source candidate under
+`agent_handoffs/tasks/shared_scheduler_phase0_20261109/`. Existing native source
+guards and historical dry-reset profiles remain unchanged until explicit new
+continuous-mode qualification. Source-only Claude sharing remains authorized.
+
+## Plant withdrawal ownership clarification — 2026-11-09
+
+LEAF calculates plant water withdrawals using its roots and plant physiology.
+SYRUP maintains the authoritative water inventory, checks the proposed
+withdrawals against available water, accounts for accepted withdrawals exactly
+once, and reports insufficient supply and accepted amounts to LEAF. LEAF uses
+that feedback in plant calculations without independently decrementing a second
+soil-water store. Do not assign the plant withdrawal calculation to SYRUP.
+This clarifies the planned interface; it changes no current runtime behavior.
+
+## Interevent coordination clarification — 2026-11-09
+
+Wind, precipitation and interevent intervals may occur in any order, but never
+overlap. Evaporation, transpiration and plant growth occur only in interevent
+intervals; they are inactive throughout wind and rain events, including storm
+recession. Calendar time still advances during every event. Do not later apply
+interevent E/T or growth retroactively to wind/rain durations. Storm infiltration,
+routing and water/sediment accounting remain storm processes.
+
+MASY is the temporary name of the shared scheduler/integrator for MAPLE, SYRUP
+and LEAF. It coordinates temporal events, adapters and combined restart; native
+MAPLE infrastructure initializes the landscape, including imported MAHLERAN
+cases, and LEAF infrastructure initializes vegetation. Reuse MAPLE's existing
+`case.yaml` `location.latitude_deg` for future PET, with explicit qualification of
+its new physical use. SYRUP remains the physical water authority. Continuous
+soil-moisture handoffs must be explicitly implemented and qualified; current
+dry-reset handoffs do not provide them. The proposed Phase 0–3 development has
+not started; the user's instruction to discuss before starting remains in force.
+
+## Official SYRUP name — 2026-11-09
+
+SYRUP stands for **Sediment Yield, Runoff, and Underground Plumbing**, selected
+by the user. This supersedes the earlier “Uptake by Plants” expansion wherever
+historical scope notes use it. Use the new expansion in future documentation.
+The companion vegetation model is **LEAF — Landscape Ecohydrology with
+Agent-based Flora**. Preserve historical reports, receipts and source identities;
+this naming decision changes no physics, interfaces or ownership.
+
+## Required soil remapping and infiltration feedback — 2026-11-08
+
+User requires future implementation of detailed, conservative soil-profile
+remapping after erosion/deposition, and soil-moisture feedback on storm
+infiltration using MAHLERAN's Smith–Parlange approach. The legacy bucket already
+has moisture feedback; the missing work is connecting the persistent layered
+state as the authority. Define its effective infiltration depth explicitly,
+retain corrected `r2(i,j)`, saturation return and water accounting, and do not
+silently substitute whole-profile moisture for the MAHLERAN bucket. Remapping
+must account for layer geometry/properties, stored water, added/removed material
+and LEAF root access. See `docs/subsurface_hydrology/design.md`. These are
+required follow-ups, superseding any suggestion of permanent deferral; this
+request records scope and does not implement or qualify the interfaces.
+
+## Shared weather and weather-to-PET requirement — 2026-11-08
+
+Weather-to-potential-evapotranspiration (PET) calculation is required future work.
+SYRUP and LEAF must consume shared weather inputs: temperature, relative humidity
+(RH), vapor-pressure deficit (VPD) and radiation, with explicitly documented
+simplified forcing supported. Use one source/calendar and consistent units,
+sampling, spatial mapping and derived RH/VPD; do not maintain contradictory
+weather streams. See the shared-weather requirement in
+`docs/subsurface_hydrology/design.md`. This records a requirement, not a selected
+PET method or implemented interface. SYRUP retains physical water authority;
+LEAF supplies vegetation demand. This chat focuses on subsurface validation;
+MAHLERAN surface validation is assigned to the separate chat fork.
+
+## Subsurface hydrology branch — 2026-10-31
+
+The first isolated column milestone is implemented and independently qualified
+on `feature/subsurface-hydrology`: configurable layers, streamed soil intake,
+conservative redistribution/drainage, and actual soil evaporation, with NumPy,
+Numba and CUDA backends. Read `docs/subsurface_hydrology/qualification.md` for
+exact sources, tests and limits. Storm/pond/LEAF integration, transpiration,
+restart and moving-ground remapping remain later work; old defaults are intact.
+No commit, push or merge was performed. This current status supersedes the
+historical design-only status below.
+
+User requested `feature/subsurface-hydrology` for eventual integration into main.
+SYRUP will own all physical water in MAPLE–SYRUP–LEAF, including configurable
+soil layers, post-rain moisture initialization, inter-event redistribution,
+evaporation, transpiration and drainage. LEAF owns vegetation and supplies roots
+and plant demand; it must not maintain a second authoritative water budget.
+Start from Tietjen hydrology, using SOILWAT layered accounting as a reference.
+GPU acceleration and bounded memory remain requirements. See
+`docs/subsurface_hydrology/design.md` and the task's source/review records.
+The continuous mode must preserve soil moisture across events; old dry-reset
+assumptions remain for historical benchmark/default modes until explicit opt-in
+integration is implemented and qualified. User authorized branch creation and
+automatic Codex–Claude collaboration. Current milestone is design/assessment;
+no hydrology kernel, storm run, commit, push or merge is implied by this note.
+Preserve prior dirty benchmark work and upstream jobs/source identities.
+
+Later on 2026-10-31 the user explicitly authorized implementation after design
+if no material physics question blocks it, and confirmed evaporation is included.
+The first bounded column implementation is tracked in
+`agent_handoffs/tasks/subsurface_column_20261031/`. This supersedes the
+design-only milestone restriction above, without authorizing commit/push/merge
+or claiming full storm, vegetation, or moving-bed coupling.
+
+
+## Author-confirmed MAHLERAN rainfall index correction — 2026-10-28
+
+The user confirmed with MAHLERAN's author that `r2(i, 2)` in v1.2.3
+`src/Subroutines_Water/infilt.for:71` is a typo and must be `r2(i, j)`.
+Use the corrected source and rebuilt executable for ALL new MAHLERAN runs.
+Do not execute historical uncorrected binaries or silently rebind their
+source identities. The exact patch is
+`benchmarks/additional_cases/patches/mahleran_local_rain_index.patch`.
+Corrected ledger/capture builds and Wise runs are under
+`outputs/additional_mahleran_cases/wise_local_rain_index_fix/`; see
+`docs/additional_mahleran_cases/wise_index_correction.md` for results and limits.
+Keep source and executable guards; missing corrected builds are setup
+failures, never a reason to fall back to uncorrected builds.
+
+The user also authorized deleting results affected by the bug to save disk.
+Preserve valid SYRUP CPU/GPU results, forcing, inputs and source provenance,
+and current corrected Fortran results. Record exactly what was invalidated
+and deleted and the space reclaimed. Do not alter immutable receipts to
+make deleted reference outputs appear qualified. The seven-case audit
+identifies Abbott and original Wise as affected: Wise and Abbott now have corrected native reruns; see
+`docs/additional_mahleran_cases/abbott_index_correction.md`.
+Plots 1–4 have no differing rainfall branch
+choices; RFID uses infiltration model 1 and bypasses this branch. Their
+existing results remain usable for this correction. All future executions
+nevertheless use the fixed source.
+
 ## Merged MAPLE shared-storage qualification — 2026-10-19
 
 The accepted uncommitted SYRUP candidate based on `b4ee14e5` qualifies actual

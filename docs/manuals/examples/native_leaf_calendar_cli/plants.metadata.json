@@ -1,0 +1,64 @@
+{
+  "catalog_hash": "sha256:1a1c1fee88043f18b76dd67df82a3143e008878ab86f88c4fd253ebe2871e06c",
+  "cell_sampling": "containing_cell_closed_upper",
+  "coordinate_frame": "landscape frame (same frame as origin_x_m/origin_y_m; NOT origin-relative)",
+  "csv": {
+    "columns": [
+      "plant_id",
+      "species",
+      "x_m",
+      "y_m",
+      "establishment_ground_m",
+      "agb_dry_kg",
+      "seasonal_agb_dry_kg",
+      "age_days",
+      "status"
+    ],
+    "n_bytes": 140,
+    "sha256": "sha256:364cb94a62b7bf80219653a4a08625a16124108fca8a3e67a9bb6738975b5c08"
+  },
+  "description": "Companion metadata of a plain nine-column LEAF plant CSV; the CSV itself carries no metadata.",
+  "domain": {
+    "axes": "(ny, nx): row = y north, col = x east",
+    "cell_sampling": "containing_cell_closed_upper",
+    "coordinate_frame": "landscape frame (same frame as origin_x_m/origin_y_m; NOT origin-relative)",
+    "dx_m": 0.25,
+    "dy_m": 0.25,
+    "edges": "finite closed domain, non-periodic",
+    "nx": 6,
+    "ny": 4,
+    "origin_x_m": 0.0,
+    "origin_y_m": 0.0
+  },
+  "establishment_resolved": false,
+  "initial": true,
+  "leaf_version": "0.1.0",
+  "model": "LEAF",
+  "n_plants": 1,
+  "provenance": {
+    "purpose": "Illustrative fixed-grid CLI example; resolve establishment height from actual initial MAPLE bed",
+    "writer": "LEAF public PlantState/plant_files_text"
+  },
+  "schema": "leaf.plant_state_metadata",
+  "schema_version": 1,
+  "species_names": [
+    "A",
+    "B"
+  ],
+  "species_table_order": "sorted species ids (deterministic across JSON key order)",
+  "status_codes": {
+    "dead_standing": 1,
+    "live": 0,
+    "removed": 2
+  },
+  "time_days": 0.0,
+  "units": {
+    "agb_dry_kg": "kg dry aboveground mass per individual",
+    "age_days": "days",
+    "establishment_ground_m": "m elevation at establishment",
+    "seasonal_agb_dry_kg": "kg dry aboveground mass (subcomponent of agb_dry_kg, 0 <= E <= B)",
+    "time_days": "days (model calendar)",
+    "x_m": "m, landscape-frame easting (same frame as origin_x_m; not origin-relative)",
+    "y_m": "m, landscape-frame northing (same frame as origin_y_m; not origin-relative)"
+  }
+}

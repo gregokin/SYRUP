@@ -1,0 +1,18 @@
+{
+ "evidence": [
+  "Root: phase1_verified_delivery_20261112/root_qualification_receipt.json:92 metadata and19 native/reader checks",
+  "Root: phase1_publication_c1_20261112/root_c1_portable_gpu_receipt.json:154 scientific controls",
+  "Actual V1 prepare succeeded on the exact C1 heads; runtime_cpu_stdout.json",
+  "Qualified scientific water109 AFCA and Leaf23_8da component receipts retained separately"
+ ],
+ "independent": true,
+ "limits": [
+  "Small4x6 Dense fixed-bed/layer example only; no field/wind/moving-soil/large-domain claim",
+  "This attests independent code review/component checks; does not claim a not-yet-executed full production run",
+  "Receipt hashes prove consistency, not authenticity; selected under the project accidental-drift trust model"
+ ],
+ "recipe_sha256": "3c81ac3282c2daacb63c0d5ecd214b836a2e7a4cc470d53aa4c8303f99f118fe",
+ "schema": "masy.production_release_receipt.v1",
+ "scope": "Independently reviewed functional C1 sources and bounded component checks; permits the actual small Dense Phase1 qualification experiment. Full committed-runtime CPU/GPU simulation acceptance is pending and must be recorded separately.",
+ "status": "root_reviewed"
+}

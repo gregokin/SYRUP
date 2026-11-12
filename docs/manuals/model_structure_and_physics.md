@@ -1,14 +1,16 @@
 # MAPLE-SYRUP: model structure, governing relationships and numerical methods
 
+*{{official_name}} — {{release_status}} edition, prepared {{prepared_date}}.*
+
 ## Abstract
 
 MAPLE-SYRUP represents rainfall-driven runoff, soil-water exchange and size-selective sediment redistribution on an evolving granular surface. Its central idea is to combine MAHLERAN-inspired detachment and transport-distance relationships with MAPLE's finite sediment inventory. Material is detached from the current surface composition, moves at a grain-specific virtual velocity, and has an exponential probability of deposition with distance. MAPLE supplies the active layer, buried voxel column, availability rules, conservation accounting and CPU/GPU array infrastructure. SYRUP supplies rainfall, water routing and water-driven transport. Two hydraulic formulations are available: a directed, MAHLERAN method-5 formulation, and an explicitly selected local-inertial pond formulation that permits filling and overflow. These formulations share empirical erosion relationships but are different numerical models. This account states their equations, update order, parameter conventions, boundaries and end-of-event assumptions, followed by a compact reconstruction specification.
 
-This description is bound to committed SYRUP **d05d8c6c66d9fd2969c007681916254e8d1c2c7c**, with qualified native MAPLE **39bcf79e1e67b6ed960f78a923ddfedf1d173e68**. The SYRUP and MAPLE package-content SHA256 values are respectively `c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392` and `af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec`. Historical notes in the repository describe earlier milestones; these pinned implementations define the model discussed here.
+This document has two parts that refer to different committed sources. Sections 1 to 12 describe the surface-erosion formulation of the **historical reference release**, SYRUP **{{surface_syrup_commit}}** with qualified native MAPLE **{{surface_maple_commit}}** (package-content SHA256 values `c650b786b03601c601b47182f8e3b24b8ad87f9b55b40770d4a38b13cb254392` and `af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec`); these are unchanged. Section 13 describes the layered subsurface water formulation of the **subsurface release**, SYRUP **{{syrup_commit}}**, with LEAF **{{leaf_commit}}** and the historical, explicitly pinned native MAPLE **{{maple_native_commit}}**; it is not an update of the earlier release and does not use the latest MAPLE. Its component-level qualification is bounded and is stated, with limits, in Section 13.10. Historical notes in the repository describe earlier milestones; the pinned implementations define the model discussed here.
 
 ## 1. Purpose and model family
 
-The model is intended to study runoff and the redistribution of mixed sediment while allowing the landscape left by one event to influence the next. It is a water extension of MAPLE, not a separate aeolian implementation. Wind physics remains in MAPLE. A wrapper such as MASY may alternate wind and water events, with one shared bed passed between them; the processes do not run simultaneously. The letters in SYRUP stand for Sediment Yield, Runoff, and Uptake by Plants. Plant uptake, plant growth, nutrient cycling and full ecohydrology are not implemented in the water model described here. Prescribed vegetation cover can affect rain energy, but it does not grow.
+The model is intended to study runoff and the redistribution of mixed sediment while allowing the landscape left by one event to influence the next. It is a water extension of MAPLE, not a separate aeolian implementation. Wind physics remains in MAPLE. A wrapper such as MASY may alternate wind and water events, with one shared bed passed between them; the processes do not run simultaneously. The letters in SYRUP stand for Sediment Yield, Runoff, and Underground Plumbing. In the historical surface release, plant uptake, plant growth, nutrient cycling and full ecohydrology are not implemented in the water model described here. Prescribed vegetation cover can affect rain energy, but it does not grow.
 
 It is essential to specify which member of the model family is being used. Their equations and outputs cannot be treated as interchangeable.
 
@@ -18,6 +20,7 @@ It is essential to specify which member of the model family is being used. Their
 | Conservative method-5 event | Directed D4 routing with Crank–Nicolson water balance | Current MAPLE inventory; characteristic distance transport by default; evolving bed | Conservative event CLI, Dense or resident-window storage |
 | Pond/splash event | Local inertia on signed D4 faces; filling, reversal and overflow | Same native inventory and empirical wet laws; multi-face characteristic transport; optional direct dry-cell splash | Explicit Python API; Dense or resident-window bed |
 | Hydraulic candidates | Explicit kinematic wave or local inertia | No sediment exchange or evolving bed in their standalone driver | Water-only numerical and performance experiments |
+| Layered subsurface water (Section 13) | Local-inertial surface router with a persistent multi-layer soil column, interevent evaporation and LEAF withdrawals, on a dated calendar | Fixed bed; no sediment transport in the scheduled run | Bounded subsurface-release runs of the scheduled water command; not the erosion model |
 
 The conservative method-5 formulation is the main CLI water model. The pond formulation must be selected explicitly through the API. The generic benchmark command defaults to legacy replay; this default is not a statement that replay is the conservative production model.
 
@@ -367,7 +370,7 @@ The corrected Plot1 case uses the 60×20 interior of a 62×22 legacy raster at 0
 
 The bed uses 0.1 m voxels, 0.002 m active layer, 1250 kg/m³ bulk density, at least 0.3 m fill beneath the lowest cell and 0.2 m headroom above the highest initial surface. A documented constant datum offset makes this a finite nonnegative MAPLE column; it must be removed consistently in absolute-elevation comparisons. Soil thickness is separately 0.3 m. Plot1 initial retained water is 0.075 m, θ₀=0.25, θ_s≈0.39 from its map, ψ=0.0466 m, K_sat=2.5×10⁻⁷ m/s, drainage coefficient 0.05 and friction 21.45. These are case choices, not universal defaults for RFID or Chastre.
 
-The model does not provide dynamic vegetation, nutrients, full storm ET, lateral groundwater, channel bank mechanics, general backwater boundaries or simultaneous wind and water. Directed terminal sinks have no spill. The pond formulation supplies spill but omits advective inertia and sediment concentration-driven changes to hydraulics. Its multi-face progress is scalar and its water-volume split is frozen within the step. Splash requires user-provided class inverse distances. Grain laws are inherited empirical relationships, including documented unit and precedence quirks; conservation does not independently validate their magnitude or calibration.
+For the surface-erosion formulation of Sections 1 to 12 (the layered subsurface formulation of Section 13 differs and keeps its own limits), the model does not provide dynamic vegetation, nutrients, full storm ET, lateral groundwater, channel bank mechanics, general backwater boundaries or simultaneous wind and water. Directed terminal sinks have no spill. The pond formulation supplies spill but omits advective inertia and sediment concentration-driven changes to hydraulics. Its multi-face progress is scalar and its water-volume split is frozen within the step. Splash requires user-provided class inverse distances. Grain laws are inherited empirical relationships, including documented unit and precedence quirks; conservation does not independently validate their magnitude or calibration.
 
 Matched Fortran benchmarks require the same forcing, conductivity, composition, geometry, masks, splash setting and fixed/evolving terrain choice. SYRUP's initial benchmark freezes elevation and routing and disables direct splash in the isolated reference, while retaining rain-assisted wet pickup. A reported water surplus in the Fortran recession is a reference limitation, not a target to copy. Full catchment and CPU/GPU acceptance remain case- and source-specific.
 
@@ -458,6 +461,432 @@ $$
 
 Negative M_raw,new is set to zero and an explicit effective clipping source C=−M_raw,new[1+Δt v_s/(2Δx)] is recorded. Trapezoidal export Δt(Q_old+Q_new)/2 and endpoint export ΔtQ_new are both diagnostics; they are not identical quantities. The extended CPU driver's optional order-dependent deposition erasure is off by default, requires legacy source order and is refused by the CUDA replay. This algorithm is valuable for matching the legacy program but is not the finite-inventory conservative transport of sections 5–7. Its source-assigned instantaneous walk, unlimited supply and clipping term must all be retained if replay, rather than the conservative model, is the target.
 
+## 13. Layered soil water, evaporation and plant withdrawals (subsurface release)
+
+*This part is additive. Sections 1 to 12 describe the surface-erosion formulation of the historical reference release, including its dry-again assumption at the end of an event; they are unchanged. This part describes the opt-in layered subsurface water formulation of the subsurface release. In that formulation soil water and the wetting history persist across events and no dry reset occurs. Statements about code refer to the declared behaviour of the kernels, not to field performance.*
+
+### 13.1 Scope
+
+This part describes the opt-in layered soil-water formulation of MAPLE-SYRUP for the combined MAPLE–SYRUP–LEAF program. SYRUP owns every physical water
+quantity: standing surface water, soil water in a configurable stack of layers, infiltration, drainage, redistribution, soil and surface evaporation, and the
+accepted withdrawals that plants request. MAPLE owns the sediment bed and its active layer and supplies the soil texture. LEAF owns plants, roots and demand.
+The temporal coordinator (provisionally named MASY) only decides which interval is wind, rain or interevent. Wind, rain (with its recession) and interevent
+intervals never overlap. Evaporation, transpiration and growth act only in interevent intervals; they are never applied retroactively to the duration of a wind
+or rain event, although the calendar advances throughout. In the current dated Phase 1 calendar the clock advances through wind, rain and recession exactly as it
+does through interevent time; interevent processes are simply inactive in the former. (A later, separately versioned daily-recharge phase, Section 13.9, may
+distinguish a nominal calendar from physical time; that convention does not exist in the current formulation and nothing here should be read as describing it.)
+No process silently resets soil water or the wetting history at an event boundary.
+
+The formulation is for a fixed bed, fixed layer geometry, fixed hydraulic properties and fixed prescribed cover. It is not coupled to evolving sediment
+transport: conservative remapping of the soil profile after erosion and deposition and a texture-to-property method are later work, as is the use of LEAF
+vegetation for rainfall splash. It is a numerical formulation; it has not been validated against field soil-moisture data (a comparison with observed shallow
+profiles is planned), no time step or site parameter set is recommended, and automatic recovery of the wetting history between storms is not provided.
+Which parts have been implemented on CPU and CUDA, and what is qualified for restart, is stated in Section 13.10 with its limits; the formulation itself does not depend on it.
+
+### 13.2 Heritage and what is original here
+
+The model is Tietjen-inspired, not a transcription. Tietjen, Zehe and Jeltsch (2009) describe two soil layers with
+Green–Ampt-type matrix infiltration beneath a vegetation-dependent onset of ponding, shrub-enhanced bypass flow to the
+lower layer, drainage above field capacity and a moisture-gradient exchange between layers; Tietjen et al. (2010)
+applies the same hydrology in a climate-change study. The SYRUP code was written against three later descendants of
+that hydrology that we downloaded: the GitHub biocrust extension of Baldauf, Cantón and Tietjen (2023) and the two Dryad
+EcoHyD packages of Irob et al. These are not verified copies of the original 2009 program, and we call them
+*descendants*. Wherever this part says "the reference" it means the descendant source file named in the appendix, and
+wherever it says "the paper" it means Tietjen et al. (2009). Its published prose has been read directly for three points: fillable
+porosity is field capacity minus the cell's own current moisture (section 2.1, paragraph 15); the layer exchange uses a donor-depth
+conductivity times a calibration coefficient as a heuristic with stated qualifications (section 2.2, paragraph 18); and the aspect
+factor and the cosine of inclination, with the table attributed to Shevenell (section 2.3, paragraph 20 and Table 1). The equation
+images themselves have not been visually verified (the publisher images could not be retrieved), so the specific equation numbers
+and forms quoted below rest on an author-linked transcription of the paper, not on the publisher's equation images. Where the downloaded descendants differ from the paper's described form, the difference is reported as a version difference; this part does not assert that any difference is an error. Three kinds of departure are distinguished throughout: version differences between paper and
+descendants, SYRUP numerical extensions (for example continuous-time forms of hourly rules) and decisions taken by the user for
+the combined model.
+
+### 13.3 State, geometry and units
+
+Every cell carries water-equivalent depths w_l (m) in L layers whose edges are supplied by the user, strictly increasing
+from zero. Volumetric moisture is θ_l = w_l/h_l. Each layer has residual θ_r, field-capacity θ_fc and saturation θ_s, with
+0 ≤ θ_r ≤ θ_fc ≤ θ_s ≤ 1 and θ_r < θ_s; the matching depths are the products with h_l. Volumes are depth times cell area.
+Cells are a flat index with an explicit active mask; inactive cells are bitwise unchanged by every stage. Physical water and flux arrays use
+64-bit floating point; masks and indices are Boolean or integer arrays.
+
+The surface-water depth H (m) is the native MAPLE water depth array. In each accepted payload the lifecycle state references that array rather than
+copying it, so there is one surface-water authority; this is a property of each accepted state, not a claim that earlier states are mutated in place. Two further per-cell quantities describe matrix infiltration: the
+*wetting history* J (m), a hydraulic coordinate that is not a water store, and the *lifetime intake* (m), the cumulative
+water actually admitted. They are kept separate on purpose: a future recovery rule may change J, but physical water,
+and therefore the intake ledger, can only change by a real transfer.
+
+Soil texture is obtained by reducing the actual MAPLE bed to the user's layers. Starting at the material surface the
+column is the active layer (counted once, in the top soil layer) followed by the occupied voxels from the top down; each
+segment's height is its actual mass divided by ρ_b·Δx·Δy, never the nominal voxel size, so empty voxel space is not soil and
+a partly filled top voxel has its actual height. A soil layer receives the overlap-weighted fraction of each segment's class
+masses; the class fractions follow. Nothing is relabelled as clay, silt or sand. **No hydraulic property is inferred from
+this texture in Phase 1**: conductivity, suction, retention thresholds and the diffusion coefficient are explicit inputs.
+A cell whose material does not reach the bottom layer edge, or whose top layer is thinner than the active layer, is refused;
+nothing is invented below the bed.
+
+**Effective-property assumptions.** The hydraulic properties of a layer — residual, field-capacity and saturation moisture, the evaporation stress threshold,
+the interface conductivity and the diffusion coefficient — are common to all cells and are supplied by the user. The matrix conductivity, suction and vegetation
+factor, the preferential-flow background coefficient, the species contributions, the cover, the friction factor, the initial wetting history and the active mask may
+be given as scalars or as per-cell maps. The texture reduction above is computed and retained so that a later method can use it, but it does not choose any of these
+values in this formulation; a user who wants properties that follow grain size must choose them explicitly. Values in the example parameter files are numerical test
+settings and are not field defaults.
+
+### 13.4 Vertical processes
+
+#### 13.4.1 Matrix infiltration with a persistent wetting front
+
+The top layer receives water from the cell's offered surface pool. Let K be the conductivity (m/s), ψ the suction (m), g the
+vegetation factor in [0, 1] and r the incoming rain rate. At the start of an attempt the local top-layer deficit is
+
+  b = ψ · max(θ_fc,1 − θ_1, 0)  (m),
+
+held fixed during the attempt. This follows the paper's definition of fillable porosity (field capacity minus the cell's own
+current moisture); the descendants instead use saturation minus the domain-mean top-layer moisture, a version difference
+that we have not classified as an error.
+
+A cell with standing water at the start of the interval is ponded. Otherwise, if r ≤ K every offered drop is admitted up to
+the layer's room. If r > K, ponding sets in once the history reaches the threshold
+
+  F_s = g b K / (r − K).
+
+From a fresh history this is the paper's ponding time t_s = g b /[(r/K − 1) r] multiplied by r. With an existing history the
+remaining time is max(F_s − J, 0)/r, so the history is never restarted at a call boundary. Before onset the admitted
+amount adds to J unscaled; after onset the hydraulic increment x over duration τ solves the exact implicit equation
+
+  x − b ln(1 + x/(J + b)) = K τ,
+
+the physical candidate is g·x, the admitted amount is the smaller of g·x, the pool still available and the room left, and J
+advances by the admitted amount divided by g (in this ponded branch only, g = 0 admits nothing and leaves J unchanged; the low-rate branch r ≤ K and the unscaled pre-ponding part still admit up to the available room even when g = 0, by the original placements). Newton iteration with a
+relative tolerance derived from MAPLE's floating-point bound solves the equation; a cell that fails to converge in 64
+iterations refuses the step and is never clipped. The pool is supplied once by the owner of the time step: matrix
+infiltration never adds r·dt itself, and r serves only as the onset descriptor.
+
+Two consequences are deliberate. First, the vegetation placements are those of the paper: g multiplies the entire ponded
+contribution while the pre-ponding part is unscaled (user decision, 2026-11-10). The intake capacity therefore drops from r to
+r − (1 − g)K at onset; the step reports the count of onsets and does not smooth the jump. Second, the reference's hourly
+Peschke approximation is replaced by the exact integration above, so the production law is a persistent cumulative
+Green–Ampt history and not the descendant's hourly formula. The hourly formula remains available only as a comparison
+helper. This is a numerical and physical extension and does not reproduce EcoHyD results identically.
+
+#### 13.4.2 Preferential (bypass) infiltration
+
+The reference sends a fraction of the standing water to the lower layer once per hour: FL2 = min(H·f·maxFL2, maxAmountFL2),
+where f = (a₃ + C)/(1 + C), C is the cover-weighted lower-layer root sum and a₃ = 0.1, 0.5 or 0.8 according to whether the
+geometric-mean conductivity K_geom = √(K_s K_u), with K_u = K_s/(1 + 30/26)³, lies below 1 mm/h, below 10 mm/h or above.
+
+SYRUP generalises this to L layers with *receiver weights*. A background soil vector b (explicit; absent or all zero disables
+the background pathway) and one vector u_s per LEAF species give the layer map
+
+  g_l = a₃ b_l + (1 − a₃)/(1 + C) Σ_s c_s u_sl,
+
+where c_s ≥ 0 is the species' per-cell contribution and C sums only species whose weights are not all zero. Weights are
+finite and nonnegative and need not sum to one; a positive vector is normalised for allocation, so [0, 1, 1] sends equal shares
+to layers 2 and 3, and an all-zero vector disables that species. These weights are species traits owned by LEAF and are not
+root-uptake fractions. When the background is enabled Σ_l g_l = (a₃ + C)/(1 + C), which reproduces the two-layer reference
+when every vector is [0, 1]; the module uses this closed form so the hourly fraction β = maxFL2 · Σ_l g_l never exceeds one in
+floating point.
+
+The hourly fraction becomes a continuous rate k = −ln(1 − β)/3600 s⁻¹ (infinite for β = 1, zero for β = 0), so that one
+isolated hour removes exactly the fraction β of the standing water. Over a step dt the attempted amount is
+H(1 − e^(−k dt)), limited by *one* aggregate cap, the maximum intake rate times dt, shared by the background and all species.
+The attempt is divided as r_l = g_l/Σg among the receivers from the top layer down; each receiver is limited by its remaining
+saturation room and by the water still standing. A share a receiver cannot take stays on the surface and is not offered to
+another layer. Background and vegetation therefore never spend the supply or the cap twice.
+
+#### 13.4.3 Drainage and redistribution
+
+After intake, a gravity cascade acts from the top: water above field capacity moves to the next layer, and with an *open* bottom
+the lowest layer's excess leaves the profile as drainage. With a *closed* bottom each layer forwards no more than the remaining
+pore space of all deeper layers, evaluated on the post-addition storage; the remainder stays above field capacity within
+saturation, nothing leaves, and nothing is pushed upward. Any water that would exceed a layer's saturation when it is added
+returns to the surface and is reported, never discarded.
+
+Redistribution between neighbouring layers is a diffusion-type exchange taken pair by pair from the top. For layers i and
+i + 1 define s = 1/h_i + 1/h_{i+1}, a conductance rate G s with G = D/(centre separation), and the exact two-compartment amount
+
+  Δ = (θ_i − θ_{i+1}) / s × (1 − e^(−G s dt)).
+
+The direction is taken from the pair gradient as it stands after the earlier pairs of the same step. The transfer is limited
+before it is applied by the donor's water above residual and by the receiver's remaining room, and both layers change by the same
+number. In the Tietjen mode D depends on the donor layer: D = d·K_ij·h_donor, with the dimensionless calibration coefficient d
+and the explicit interface conductivity K_ij; this is the donor-depth heuristic of Tietjen et al. (2009), section 2.2 (its printed equation number, 9, is not visually verified), and `WaterCell::layerDiffusion` in the
+descendants, which applies it once per hourly pass with K in mm/h, so the conversion to a per-second rate is direct.
+The historic mode with one D per interface is retained for earlier columns. Exchange coefficients, K_ij and d are inputs; neither
+the literature table nor the first observational fit constrains them as universal physical parameters.
+
+#### 13.4.4 Evaporation
+
+Evaporation draws on the shared terrain-applied PET (Section 13.5). Surface water loses PET·(1 − C/2)·dt at most, limited by the
+standing depth. The soil branch has two fields: a combined potential rate PET·(V₁ − V₂C)·E_P (V₁, V₂ the canopy coefficients,
+E_P the site factor, all dimensionless) and an evaporation share
+
+  s = 1 − clip(a C − b₀, 0, 1),
+
+where a and b₀ are the transpiration-fraction regression coefficients. The column then limits the combined loss by the water that
+can actually be withdrawn and applies the share afterwards:
+
+  demand = (combined potential rate)·dt·m(θ₁),  limited = min(demand, max(w₁ − w_r,1, 0)),  actual E = s · limited.
+
+The stress multiplier m is 0 at or below residual, (θ₁/θ_stress)² between residual and the stress threshold and 1 above it. Only the
+actual E is debited. The remaining (1 − s) part of the limited combined loss stays in the layer for LEAF's separate transpiration
+request. This ordering (cap, then share) is the user's decision of 2026-11-10, and it preserves the reference's order, which caps the
+combined upper-layer loss before labelling it evaporation or transpiration. A literal copy of the combined loss as evaporation
+plus a later transpiration debit would take the same water twice, and is refused by construction. The clip of the transpiration
+fraction at one is a bounded adaptation of the source, where the raw fraction can exceed one for some published coefficients;
+the evaporation diagnostic matches the source whenever a C − b₀ ≤ 1. No E + T ≤ PET cap exists, so LEAF must keep its own
+requests consistent with the PET it shares.
+
+#### 13.4.5 Transpiration withdrawals
+
+This section states the contract between LEAF and SYRUP. The SYRUP side (a zero-time, state-bound withdrawal on the layered lifecycle) is implemented. LEAF's side
+(the biology calendar, the per-plant PET reduction of Section 13.5 and the withdrawal request) is available in the LEAF source named in Appendix 13-C, and the file-driven scheduled run of Section 13.10 joins an actual LEAF session to the layered water owner.
+These are bounded components exercised on a small fixed-geometry fixture; Section 13.10 gives their exact status. For one interval LEAF
+forms, for each plant, a requested water volume spread over cells and layers by that plant's root weights, converts it with the cell area,
+adds the requests of all plants in each cell and layer, and sends SYRUP the aggregate request per cell and layer in metres of water. SYRUP's rule for
+each cell and layer is
+  available = max(w − w_r, 0),  accepted = min(requested, available),  unmet = requested − accepted.
+
+The common fulfilment fraction accepted/requested is returned to LEAF, which applies it to every root in that cell and layer;
+there is no priority among plants, no redistribution of unmet demand to wetter layers, and no root plasticity. LEAF computes
+the water-supported growth fraction as the root-weight-weighted sum of these common fractions (not the minimum over any one location), and growth is LEAF's calculation. SYRUP
+debits the accepted water exactly once. A withdrawal takes zero time, acts only in an interevent interval, and is bound to the
+current accepted state so a stale or repeated request is refused. The common fraction is a proportionate allocation: every requester in the cell and layer receives the
+same share of its request. Roots are allocated proportionally: a plant's request is spread over the cells and layers its roots occupy by fixed root weights, and nothing in the exchange changes those weights (no root plasticity, no preference for wetter layers). SYRUP never lets a withdrawal take more than the layer's water above residual, and it never takes the same water through the evaporation share (Section 13.4.4)
+and a transpiration debit; LEAF's request is placed against the water that remains after the accepted evaporation.
+
+*Worked example (water-supported growth).* A plant requests D = 100 units of water with root weights 0.5 and 0.5 on two layers of one cell. The layers hold 25 and 200
+units of available water. The requests are 50 and 50; the accepted amounts are 25 and 50, leaving 0 and 150; the supported fraction is
+S = 0.5·(25/50) + 0.5·(50/50) = 0.75, so 75 % of otherwise planned growth proceeds. The unmet 25 is not taken from the second layer. With several cells, the same
+rule runs per cell and layer. Suppose plant A (D = 100) has weight 0.5 in cell 1 and 0.5 in cell 2 in its top layer, plant B requests 50 in cell 1's top layer, and
+cell 1 has 25 units available while cell 2 has 200. In cell 1 the total request is 100, so the common fraction is 0.25 and A receives 12.5; in cell 2 the fraction is 1 and
+A receives 50. A's supported fraction is 0.5·0.25 + 0.5·1 = 0.625 (62.5 of 100 units), and B's is 0.25. Water amounts close independently of these growth fractions.
+
+### 13.5 Potential evapotranspiration and terrain
+
+Potential evapotranspiration is a daily reference demand supplied to both SYRUP and LEAF, with one calendar, one set of units
+and one derivation of humidity. The first computed method follows the descendants' Hargreaves form,
+
+  PET = 0.0023 (T_mean + 17.8) √(T_max − T_min) Ra  (mm day⁻¹),
+
+with Ra already expressed as an evaporation equivalent in mm day⁻¹:
+
+  Ra = 15.392 d_r (ω_s sin φ sin δ + cos φ cos δ sin ω_s),
+  d_r = 1 + 0.033 cos(2πJ/365),  δ = 0.4093 sin(2πJ/365 − 1.405),  ω_s = arccos(−tan φ tan δ).
+
+The source comments attribute the temperature form to Hargreaves (1974) and the radiation routine to Maidment's *Handbook of
+Hydrology* (p. 4.31); these are the descendants' attributions only, and no bibliographic entry for them is given here. The
+temperature form is the same as that of Hargreaves and Samani (1985). The constants are *not* interchangeable with the FAO-56 values
+(Allen et al., 1998) for reproduction: the radiation coefficient 15.392 differs from the FAO-56 equivalent 15.335 by about 0.37 % taken
+alone, and the declination phase 1.405 differs from 1.39, whose effect on Ra varies with date, latitude and polar regime. No single
+percentage difference in Ra is claimed. J is the Gregorian day of year of the explicit date, with leap days, and the denominator stays 365, so 31 December of a
+leap year is J = 366; the descendants index a fixed 365-day year and have no leap days. Polar day and night are handled analytically,
+and cold-day negative values (T_mean < −17.8 °C) are clamped to zero and reported. Penman–Monteith is a declared hook that refuses
+until its inputs are defined. A user may instead supply an explicit daily PET together with the daily mean temperature, which plant processes always need. Two levels must be kept apart. The low-level PET calculation can accept such a raw PET value with no latitude and no daily extrema. The integrated MAPLE–SYRUP case and layered setup, however, always require the MAPLE case's `location.latitude_deg`: the setup binds the latitude and its hemisphere, which also fixes the terrain table below, whatever the PET method. A user must therefore never omit the latitude field from the case, even when PET is supplied explicitly.
+
+The terrain factor multiplies PET once, by aspect and by cos(slope): flat (slope < 5°), 1.00; N 0.90; NE 0.95; E 0.98; SE 1.03; S 1.10;
+SW 1.05; W 1.02; NW 0.97, a table that the source and Tietjen et al. (2009), section 2.3 and Table 1, attribute to Shevenell; no separate Shevenell reference entry is given. For a negative latitude the user chose to
+reflect north and south (N↔S, NE↔SE, NW↔SW) and leave E, W and flat unchanged. The equator uses the northern table by declaration.
+Aspect labels are downslope compass directions with geographic north assumed; the caller maps grid orientation. The latitude comes
+from MAPLE's `case.yaml` `location.latitude_deg`, with no default. Because the terrain-applied PET already contains aspect and
+slope, downstream evaporation must not apply them again. Integration over an interevent interval uses the scheduler's exact
+(date, seconds) chunks at the uniform daily rate, and refuses to run for wind, rain or recession phases; there is no catch-up.
+
+**Per-plant (canopy-weighted) PET.** SYRUP owns the terrain PET field (mm day⁻¹ per cell). LEAF reduces it to one demand per plant by an area-weighted mean over
+the plant's canopy: PET_p = Σ_c A_pc·PET_c / Σ_c A_pc, where A_pc is the exact geometric overlap of plant p's canopy circle with cell c (chord-length integration;
+cells wholly inside contribute their full area; no sampling and no uniform touched-cell weights). The result is one number per plant that LEAF's existing demand law then
+uses; root weights and the allocation in Section 13.4.5 act afterwards and are unchanged. Canopy area outside the domain is dropped from numerator and denominator; a plant whose canopy
+covers no valid cell makes the build refuse, and there is no site-mean fallback. The weights are held as a sparse per-plant list, never as a plants-by-cells array. The weights depend only on canopy geometry and the valid-cell mask; they do not depend on roots, root layers or soil water, which are used only afterwards by the allocation of Section 13.4.5. This reduction
+is a LEAF function. It does not alter the PET the water kernels use, so soil evaporation (which uses the cell's own PET and cover) and a plant's demand are different uses of the same field.
+In the qualified interfaces the evaluation is available on CPU and CUDA; it is a bounded component, not a coupled run.
+
+### 13.6 Operator order and time stepping
+
+A *storm step* over [t, t + dt] does the following, each stage being the already-qualified function:
+(i) add rain once to the standing water; (ii) preferential infiltration from the pool; (iii) matrix infiltration of the remainder,
+with the original standing depth as the contact indicator and the actual rain rate as the onset descriptor; (iv) one column update
+with no added water and no evaporation (gravity, saturation return, redistribution); (v) the local-inertial surface router from the
+accepted start time, with the column's surface return added to the pool; (vi) one closure packet comparing every cell's and the
+whole domain's water balance against MAPLE's floating-point bound. An *interevent step* is the same chain with zero rain: retained
+pond water continues to enter by the preferential and matrix stages, the surface branch evaporates actual pond water, one column
+update applies gravity, the post-cap soil evaporation and redistribution, and the router runs afterwards.
+
+This is a first-order operator split. The reference runs infiltration, runoff and diffusion hourly and evapotranspiration once a day
+after diffusion; here evaporation precedes redistribution inside one call. The size of the splitting error depends on the step and is
+reported only for the numerical study in Section 13.8.
+
+Time stepping is explicit and bounded. A storm has a maximum and minimum step (defaults 1 s and 1/1024 s), a retry limit per step
+(12), a step budget and a recession limit (86 400 s). Only a late hydraulic rejection shortens the step: dt is halved and every stage
+reruns from the original accepted water, so trial intake, history advance and drainage of the failed attempt are discarded. After an
+undisturbed step at the cap the cap doubles up to the maximum; after retries the cap becomes the reduced step. Interevent forcing
+requires an explicit maximum and minimum and has no default daily step. An interval is complete only at its declared end, never
+because the surface became quiet. A storm is complete only when, for a 60 s hold, the largest depth change is ≤ 10⁻⁸ m, the largest
+unit discharge ≤ 10⁻¹⁰ m² s⁻¹, outlet discharge ≤ 10⁻⁹ m³ s⁻¹, depression excess depth ≤ 10⁻⁸ m and excess volume ≤ 10⁻⁶ m³ (the pond flow-end
+gates), after rain has ended. Rain ending and completion are different events.
+
+Every function returns a new state or raises; the caller adopts the whole candidate or drops it. A refused step publishes nothing.
+Closure uses only MAPLE's floating-point bound, 4·n·ε·(largest operand), with term counts derived from each stage's own operation
+count. The lifecycle layer above the storm and interevent owners carries soil water, retained surface water, face discharges, J
+and lifetime intake exactly across every boundary: storm → interevent (E, then zero-time withdrawals) → boundary → next storm.
+Time, ledgers and a native-clock generation advance in a way that is checked at every entry.
+
+**Process gates.** Which processes act in each kind of period:
+
+| Period | Rain, infiltration, routing, closure | Soil/surface evaporation | Transpiration withdrawals | LEAF growth | Calendar |
+|---|---|---|---|---|---|
+| Interevent | none (retained pond water still enters) | active if enabled by the event file | active if enabled | active if enabled, on the growth grid | advances |
+| Rain event, including its recession until quiet | active | inactive | inactive | inactive | advances |
+| Wind (not available in the dated scheduled run) | n/a | inactive | inactive | inactive | would advance |
+
+Inactive means not applied at all: nothing is caught up afterwards over the duration of a rain or wind period. Growth credit earned in interevent periods is flushed at the last growth-enabled endpoint before a rain or wind event, and a year end that falls inside an event is applied by the next open interevent step. The growth grid is a fixed cadence of 1 to 7 days (set in the run configuration), and records are split at local midnights and grid points.
+
+### 13.7 The wetting history across storms
+
+By default J is retained from one storm to the next. This is a choice, not a recovery model: neither the paper nor the descendants fix
+a physical drying rule, and automatic recovery is deferred while general repeated-storm infiltration remains unqualified. The one
+supported exception is an explicit, controlled test reset. It is available only at a closed boundary between episodes, requires the
+active surface to be *exactly* dry (bitwise zero) and the faces, outlet discharge and depression excess to lie within a declared quiet
+policy, and then sets J to zero on active cells. Soil water, lifetime intake, time, ledgers and counts are preserved bit for bit; a
+source-bound receipt records the hashes before and after. A pond, even a tiny one, is carried and refuses the reset. Nothing infers a
+reset from rain ending, a file name, wind, a checkpoint or a schedule boundary.
+
+### 13.8 Numerical behaviour and its limits
+
+Backends. The NumPy implementation is the definition of the operation order. The Numba kernels are compiled without fast-math and loop over cells and layers in that order, and the CUDA kernels use one thread per cell with the same expression order. The kernels are written to agree, but agreement is established by tests of each component, not by argument: in the bounded timestep study, twelve same-step NumPy–Numba pairs agreed bitwise, and the CUDA kernel tests declare a relative tolerance of 2×10⁻¹² and an absolute tolerance of 10⁻¹⁴ against the NumPy reference, requiring bitwise equality only in the specific cases those tests list (for example zero diffusivity). Differences between implementations can arise from library mathematical functions (`expm1`, `log1p`, `log`), from the order of floating-point operations and reductions, and from device arithmetic; this part does not claim that these are the only causes, nor that any other configuration is bitwise identical. The tolerances are those declared in the kernel tests; the results of running them are recorded in the release's qualification record, not in this part.
+
+GPU computation uses 64-bit floating point throughout. Conservation closure is checked against MAPLE's floating-point bound (4·n·ε times the largest operand) rather than an empirical epsilon, a failed closure refuses the step, and no tolerance is raised silently. Memory is handled by declared admission: for each stage the model's arrays that the water code and its caller hold are estimated from stated formulas and compared with a fresh availability reading before that stage allocates. This covers the declared model arrays only. Interpreter and library metadata, just-in-time compilation, allocator pools, device context and whole-process memory are excluded, some coefficients are analytical and have not been measured, and a reading of available memory is not a reservation. A single warm 32×48-cell probe of checkpoint saving measured a smaller peak than its plan, but one case is not a proof of an upper bound for other sizes. No run-time or speed-up claim is made.
+
+Evidence status of the numerics. Everything above rests on small fixtures: tiny flat beds, 2–3 layers and a native 9f dense test bed of a few tens of cells. These
+establish bounded closure, agreement between backends within the stated tolerances and exact continuation across a checkpoint on those cases. They do not establish performance, scaling to large
+domains or whole-process memory on CPU or CUDA, and no field validation has been done. Calendar runs, file initialization and checkpoints are components that
+have been exercised individually; Section 13.10 states which, and a statement in this part does not imply any of them for a different source or domain.
+
+Refinement study. A bounded study followed 24 trajectories (two and three layers, dry and wet, NumPy and Numba, three successive
+refinements) on a tiny flat bed to a final time of 249 s. Twelve same-step backend pairs agreed bitwise on every physical field, rainfall
+accounting was analytic in all cases, successive errors halved (first-order convergence), and the largest independent closure residual was
+1.7×10⁻¹⁶ m³. It supports the claim that the numerics are bounded and convergent in that setting. It does **not** establish a recommended
+time step, behaviour across the infiltration onset on sloping terrain, runoff, seasonal behaviour or field agreement.
+
+Quantities that remain outside the claim: calibrated K, ψ, g, d and retention thresholds for any site; the proportion of bypass flow in
+any soil; transpiration partition beyond the declared user law; and the temporal derivation of a daily PET from sub-daily weather. The Tabernas
+parameter file in the downloaded source (K_s 6.9 mm/h, ψ 166 mm, d 0.05) and the earlier diffusivity fit are illustrations only.
+
+### 13.9 Planned extensions (not part of the present formulation)
+
+These items are scope records, not features. **Phase 1.5 (daily small-rain recharge)** is queued, to begin only after Phase 1 is completed, independently validated, committed
+and pushed, and before Phase 2. Its intended rule, chosen by the user: zero rain is a no-operation; for 0 < P ≤ T (equality included, by the user's explicit choice, where P is the day's rain
+and T a declared threshold) a simplified recharge is attempted; for P > T the full native storm is used. Field capacity is to control gravity movement and saturation the maximum storage. Any
+closed-column capacity failure in an occurrence falls back, for the whole occurrence, to the full native storm from the unchanged original state with the full rainfall. It is to share the one daily water
+update with E/T, with no duplicated water, drainage or interval, and no reset of the wetting history; how the history should evolve under such recharge is to be audited before any rule is chosen. A nominal calendar separate from physical
+time (wind and storm durations falling between nominal days) would be a new, explicitly versioned contract; it is not retrofitted into the existing dated calendar or old locks. The caller would supply the day's rain P (mm), its intensity I (mm/h) and the threshold T (mm), with no default threshold; a full-storm fallback would last 3600 P/I seconds. No recharge interface or option exists yet.
+**Phase 2** (evolving soil geometry, conservative remapping after erosion and deposition and a texture-to-property method), **Phase 2.5** (an adapter from LEAF vegetation to the splash physics and LEAF-driven cover feedback)
+and **Phase 3** (observational validation design) are unchanged and not started here. Until Phase 2, the hydraulic properties and the layer geometry are the fixed, explicit inputs described in Sections 3 and 4.
+
+### 13.10 Component status and evidence
+
+*Status as of the preparation date on the cover. Identities are in Appendix 13-C. "Bounded" means exercised on small fixtures (a 4×6 dense native test bed, two or three layers), fixed geometry and fixed soil properties. No statement below is a field, wind, moving-soil, large-domain, repeated-storm-recovery, vegetation-cover-feedback or performance result.*
+
+| Component | Status |
+|---|---|
+| Layered water kernels, storm, interevent and lifecycle (NumPy, Numba) | Accepted for the stated sources. A portable scientific test lane of 154 selected low-level controls passed on the committed SYRUP against the exact native 9f MAPLE (150 on CPU with 4 GPU-opt-in tests unselected in the first run; all 154 including 4 CUDA controls in the later run). |
+| File-driven initialization on the native 9f dense bed, CPU and CUDA | Bounded component accepted, including same-source CPU/CUDA setup equivalence on the tested cases; the native 39 bed is refused by a negative test. |
+| Physical checkpoint save/load, CPU and CUDA codecs, including a completed storm | Bounded component accepted. A completed storm resumes as a completed storm and is never replayed. |
+| Scheduled water-only command (v1), CPU and CUDA, with calendar-and-physical restart | Bounded component accepted at whole-occurrence boundaries. |
+| LEAF biology and per-plant PET interfaces | Independently qualified as interfaces (CPU and a CUDA run). |
+| Scheduled LEAF-and-water command (v2), NumPy, Numba and CUDA, pause and resume, shared active mask, SURFACE anchors | Bounded qualification on the committed sources with the real committed runtime (see the next row for the evidence). |
+| Committed production runtime (v2, `production_committed`) on the committed SYRUP, LEAF, MASY and native 9f sources | Bounded qualification accepted: the real runtime preparation and verification and the model worker ran with the existing CPU and CUDA environments. The full public two-layer 4×6 dense example completed all three occurrences (1 day of interevent evaporation, transpiration and growth; a 0.25 s rain at 3600 mm/h with its native recession to genuine completion; 1 day of interevent) on NumPy, Numba and CUDA. Same-device pause after the first interevent, resume and pause after the completed storm, and resume to the end reproduced the uninterrupted run exactly on the CPU and on CUDA (the 44 state arrays identical; four biology files byte-identical). NumPy, Numba and CUDA agree on the physical state arrays with maximum relative difference 0 and on the biological arrays exactly. Of the 45 stored entries of a physical checkpoint, 29 are floating-point state arrays, 15 are other state arrays and one is a provenance record; the 44 state arrays are identical and the provenance record correctly differs by backend and source paths and is checked separately (13-C.5). The single plant (an initial 100 kg dry aboveground biomass) ended at 100.12256745482205 kg; its requested and accepted transpiration were equal (8.461372331859172e-5 m³, nothing unmet). Six refusal controls (unknown key, zero memory cap, wrong recipe pin, unreviewed receipt, wrong interpreter, wrong restart seal) refused before any step and left the accepted checkpoint unchanged. The run flags are `production_qualified: false` and `production_runtime_verified: true`; the first is not relabelled. The v1 water-only configuration still refuses `production_committed`. |
+| Wind in the dated scheduled run, evolving soil geometry, texture-to-property method | Not provided. |
+| Daily small-rain recharge (Phase 1.5) | Queued; no interface (Section 13.9). |
+| Field validation, large-domain, repeated-storm recovery, LEAF-driven cover feedback, performance or scaling results | Not provided. |
+
+The recorded recipe and receipt identities of the release run, and why they are not reusable elsewhere, are in Appendix 13-C and the practical guide (Section 14.10).
+
+### Appendix 13-A. Implementation-relevant order, bounds and parameters
+
+Use this with the equations above to reproduce the declared results. "Order" means the order of evaluation within one step; all values FP64.
+
+**A.1 Column parameters (user supplied, common to all cells in Phase 1).** Layer edges (m, from 0); θ_r, θ_fc, θ_s per layer; layer-0 stress threshold
+θ_stress (> θ_r,0); evaporation factor (must be exactly 1.0 when the staged E-only helper is used); `gravity_drainage` flag (false disables the whole
+cascade, whatever the bottom option); `bottom_drainage` open or closed; diffusion mode "constant" (D per interface, m² s⁻¹, ≥ 0) or
+"tietjen_donor_depth" (K_ij m s⁻¹ ≥ 0 and d ≥ 0). Every derived quantity must be finite and representable; one that overflows or vanishes is refused.
+
+**A.2 Column step, in order (dt > 0; dt = 0 is the identity and refuses added water).** validate → add water and return the excess above saturation to the
+surface → gravity cascade (open or closed bottom) → layer-0 evaporation (cap then optional share) → pair diffusion from the top, one pair at a time using
+the current water → output checks (finite, ≥ 0, ≤ saturation + tolerance, per-cell closure). A cell with an invalid evaporation share is reported for that
+reason. The per-interface exchange factors are computed once per step, not per cell.
+
+**A.3 Matrix infiltration, in order.** deficit b from the accepted layer-1 water → room = max(θ_s depth − w₁, 0) → regime (contact, low rate, high rate with
+history test) → unponded amount min(r·t_u, pool, room) → J += admitted → ponded duration τ → Newton solution of the implicit equation (≤ 64 iterations, relative step
+tolerance from 8 terms of the MAPLE bound; a zero-τ or zero-b cell takes x = K τ) → candidate g·x → admitted amount min(g·x, pool_left, room_left) → J += admitted/g for
+g > 0 → soil, pool, lifetime intake update. A cell with standing water at interval start is ponded for the whole interval, including recession with r = 0; with an empty pool it admits nothing and J is unchanged. A no-contact cell must satisfy pool ≤ r·dt within the bound.
+
+**A.4 Preferential infiltration, in order.** attempted = min(H(1 − e^(−k dt)), q_max dt) → for each layer from the top: allocation = attempted·r_l, limited by room and
+by remaining H → add to the layer, subtract from H. β = 0 → no intake; β = 1 → all of H (before the cap); dt = 0 → identity. Rejected shares are not reallocated.
+
+**A.5 Evaporation staging.** Fields: terrain PET (m s⁻¹), cover C ∈ [0, 1], surface water H. Outputs: new H, actual and unmet surface E, combined soil potential rate, soil share.
+Constructor refuses a canopy factor V₁ − V₂C that is negative at C = 0 or C = 1, a negative site factor and non-finite derived endpoints.
+
+**A.6 Transpiration.** accepted = min(request, max(w − w_r, 0)) per cell and layer; scale = accepted/request, 0 for a zero request; inactive cells must carry zero request.
+The operation is zero-time and advances a request sequence and revision counter.
+
+**A.7 PET.** Raw explicit PET needs no latitude, but the integrated case always needs `location.latitude_deg`. J from the explicit date; polar clamps; non-negative clamp; mm day⁻¹ → m s⁻¹ factor 10⁻³/86400; terrain factor applied once and bound into the demand's identity.
+
+**A.8 Conservation and tolerances.** Per-cell closure terms: preferential 4L + 4, matrix 2L + 16, column 4L + 7; global closures scale with N. Tolerance is MAPLE's
+`volume_roundoff_bound_m3`, never a new empirical epsilon. GPU parity tolerance as in Section 13.8.
+
+**A.9 Control defaults.** max_dt 1 s, min_dt 1/1024 s, retries 12, steps 100 000, recession 86 400 s; quiet hold 60 s with the five gates in Section 13.6. These are defaults of
+the storm owner, not recommended values.
+
+**A.10 Reference line map (tree-qualified).** GitHub snapshot: `WaterCell.cpp` 33–34 canopy factor; 48–75 surface evaporation; 84–92 soil potential and cap; 126–133 and 153–158
+T and E; 251–281 aspect table; 355–369 a₃, bypass fraction and FL2; 378 fillable porosity; 384–390 vegetation function; 393–437 matrix infiltration; 449–462 drainage; 475–503 layer
+diffusion; 549–552 K_u and K_geom. `WaterLandscape.cpp` 805–807 Hargreaves; 143–146 diffusion hourly; 153 ET gated at hour 23; 1281–1282 flat rule. `Weather.cpp` 141–144 radiation.
+The two Dryad copies (identical to each other) differ in line numbers, have no crust branch and apply the site factor only to the upper layer (EPL1 at 71 and 74, TL1 at 107,
+infiltration at 312–384, diffusion at 421–440, K_u and K_geom at 492–495).
+
+
+### Appendix 13-B. Source trace (modules, functions and reference lines)
+
+Module names refer to the SYRUP package `maple_syrup`. Line numbers of the reference source describe the downloaded descendant files; kernel line numbers are not given: the module and function names identify each element in the committed source. Reference-source lines are for the GitHub snapshot unless marked.
+
+| Element | Module : function | Reference source |
+|---|---|---|
+| Layer stack, column step (addition, cascade, evaporation, pair relaxation, checks) | `subsurface` : `soil_layers`, `reference_step`, `step` | `WaterCell.cpp` 449–462, 475–503 |
+| Matrix infiltration, persistent history | `matrix_infiltration` : `prepare_matrix`, `reference_step`, `_ga_increment_vec` | `WaterCell.cpp` 378–437 |
+| Preferential infiltration, receiver weights | `preferential_infiltration` : `prepare_preferential`, `receiver_weights`, `reference_step` | `WaterCell.cpp` 355–369, 549–552 |
+| Texture reduction | `soil_profile_texture` : `build_soil_profile_texture` | none (MAPLE native packing) |
+| Surface and soil evaporation staging | `soil_evaporation` : `EvaporationPartition`, `stage_evaporation` | `WaterCell.cpp` 33–34, 48–75, 84–92, 126–133, 153–158 |
+| Withdrawals | `subsurface_transpiration` : `withdraw_transpiration`; `interevent_transpiration` | none |
+| PET and terrain | `weather_pet` : `potential_demand`, `hargreaves_pet_mm_day`, `terrain_factor`, `apply_terrain`, `integrate_interevent_pet_chunks` | `WaterLandscape.cpp` 805–807; `Weather.cpp` 141–144; `WaterCell.cpp` 251–281 |
+| Storm and interevent steps, intervals | `layered_storm` : `layered_step`; `interevent_water`; `interevent_interval`; `layered_event` : `evolve_layered_event` | `WaterLandscape.cpp` 55–190 (order) |
+| Lifecycle, controlled reset | `water_lifecycle` : `evolve_storm`, `evolve_interevent`, `request_withdrawal`, `reset_controlled_wetting_history` | none |
+
+Appendix 13-C gives the source identities and storage schemas behind the component statuses of Section 13.10.
+
+Qualified limits: closure uses the MAPLE floating-point bound only; GPU tests declare relative 2×10⁻¹² and absolute 10⁻¹⁴ tolerances; the timestep study covers 24 tiny flat-bed trajectories. Statements beyond these are not claimed.
+
+### Appendix 13-C. Reproducibility: source identities, profiles and storage contracts
+
+*For readers who reproduce or audit a component. Identities are filled from the release metadata of this build. The recipe and receipt are bound to the per-machine runtime stores of the release run; another machine's preparation yields different object ids and a different recipe, so these values document the evidence and are not reusable.*
+
+| Item | Identity |
+|---|---|
+| SYRUP subsurface release | commit `{{syrup_commit}}` on branch `{{syrup_branch}}`; the layered-water source (109 files) has package SHA-256 `{{syrup_water_package_sha256}}` |
+| LEAF | commit `{{leaf_commit}}`; package (23 source files) SHA-256 `{{leaf_package_sha256}}` |
+| Native MAPLE (historical, explicitly pinned, not the latest MAPLE) | commit `{{maple_native_commit}}`; package SHA-256 `{{maple_native_package_sha256}}` |
+| Scheduler (MASY) | commit `{{masy_commit}}`; package SHA-256 `{{masy_package_sha256}}` |
+| Production recipe (SHA-256 of the recipe file) and component review receipt (SHA-256 of the receipt file), CPU | recipe `{{production_cpu_recipe_sha256}}`; receipt `{{production_cpu_receipt_sha256}}` |
+| Production recipe and receipt, CUDA | recipe `{{production_cuda_recipe_sha256}}`; receipt `{{production_cuda_receipt_sha256}}` |
+| Release state | the release source commits are pushed and verified against the remotes: {{sources_published}} |
+
+**13-C.1 Source profiles.** The run command accepts a closed set of named profiles: `native9f_layered_factory_afca_cpu_v1` and `native9f_layered_factory_afca_cuda_v1` (the same SYRUP digest, differing in backend capability), and the earlier `native9f_layered_factory_95ef_cpu_v1`, kept for its historical artifacts and never rebound to the newer source. A package digest identifies an exact file set; a different tree is a different source and is refused.
+
+**13-C.2 Physical checkpoint.** The physical state (soil water, J, lifetime intake, retained surface water and face discharges, a completed-but-not-ended storm, time and ledgers) is saved by named codecs: CPU `cpu_native9f_dense_lifecycle_v2` (profile `native9f_dense_lifecycle_cpu_v2`) and CUDA `cuda_native9f_dense_lifecycle_v2` (members `lifecycle_checkpoint_cuda_v2.json`, `maple_state.npz`, `lifecycle_state.npz`). A water-only combined artifact (`masy.native_water_combined_checkpoint.v1`) adds the schedule cursor and a sealed manifest; the LEAF run's joint artifact (`masy.native_water_leaf_checkpoint.v1`) holds `physical/`, `biology/`, `temporal.json` and a sealed manifest. An artifact loads only under the exact sources that wrote it, a water-only artifact is refused by a LEAF resume and the reverse, and a CPU checkpoint does not resume on CUDA.
+
+**13-C.3 LEAF package and layout.** In the LEAF source used here, per-species quantities A and T are host arrays while D and U follow the compute backend; a generic all-CuPy utility is not that layout. The release is the committed LEAF named above, which is an explicit qualified delta on the earlier LEAF base and not an unchanged earlier commit.
+
+**13-C.4 Dated clock.** In the LEAF scheduled run, native event and interevent instants must be exactly representable in the microsecond LEAF clock: a 0.05 s interval is refused with `leaf_instant_not_exact`, while a dyadic 0.0625 s interval is accepted. Old clocks are never rounded or rebound. The nominal-calendar convention of the queued Phase 1.5 is a separate future contract (Section 13.9).
+
+**13-C.5 Comparison of CPU and CUDA records.** Of the 45 stored entries of the physical checkpoint, 29 are floating-point state arrays, 15 are other state arrays and one is a provenance JSON record. The 44 state arrays and the plant arrays are exactly equal (maximum relative difference 0); the provenance record differs by backend and source paths and is checked separately, as follows. The comparison of the CPU and CUDA artifacts of the release run allows, in addition to the expected backend, runtime and cursor differences, one further difference in the recorded scenario hash. The two complete scenario, weather and event file sets are byte-identical. The recorded weather digest covers the imported weather library file, whose path differs because the CPU and CUDA runs used independently sealed stores at different roots; the file hash, all equations and parameters, and the normalized weather agree. The metadata comparison permits this one additional path-derived hash difference, with the witness stored. Numerical tolerances and the run's source, model and restart guards were unchanged.
+
 ## References and source availability
 
 Author–year citations identify scientific origins and numerical-method precedents. Source records identify the exact implemented variants, fitted constants and project-specific choices. A reference to an empirical relationship does not establish its calibration for a new terrain, grain-size range or hydraulic regime. Some older papers are subscription-access; where a source attribution could be checked only through reference-code comments and bibliographic records, that limit is retained below rather than asserting that every original coefficient was independently recovered from the paper.
@@ -514,10 +943,28 @@ Wischmeier, W.H. and Smith, D.D. (1958). Rainfall energy and its relationship to
 
 Wu, F.-C. and Lin, Y.-C. (2002). Pickup probability of sediment under log-normal velocity distribution. Journal of Hydraulic Engineering, 128(4), 438–442. https://doi.org/10.1061/%28ASCE%290733-9429%282002%29128:4%28438%29 . Equation 7 is the specific probability approximation used in equation (8) here.
 
+### Layered-water references (Section 13)
+
+Allen, R.G., Pereira, L.S., Raes, D. and Smith, M. (1998). Crop evapotranspiration — Guidelines for computing crop water requirements. FAO Irrigation and Drainage Paper 56. Food and Agriculture Organization of the United Nations, Rome. https://www.fao.org/4/x0490e/x0490e07.htm
+
+Green, W.H. and Ampt, G.A. (1911). Studies on soil physics. The Journal of Agricultural Science 4(1), 1–24. https://doi.org/10.1017/S0021859600001441
+
+Hargreaves, G.H. and Samani, Z.A. (1985). Reference crop evapotranspiration from temperature. Applied Engineering in Agriculture 1(2), 96–99. https://doi.org/10.13031/2013.26773
+
+Tietjen, B., Zehe, E. and Jeltsch, F. (2009). Simulating plant water availability in dry lands under climate change: A generic model of two soil layers. Water Resources Research 45, W01418. https://doi.org/10.1029/2007WR006589
+
+Tietjen, B., Jeltsch, F., Zehe, E., Classen, N., Groengroeft, A., Schiffers, K. and Oldeland, J. (2010). Effects of climate change on the coupled dynamics of water and vegetation in drylands. Ecohydrology 3(2), 226–237. https://doi.org/10.1002/eco.70
+
+Software and data used as reference sources for the layered-water part (descendants of the Tietjen hydrology, not verified original releases): Baldauf, Cantón and Tietjen (2023) EcoHyD biocrust extension, GitHub repository `selinaZitrone/Baldauf_et_al_Biocrust_Ecohydrology`, commit 80b10e6b6b82ad16e9fd41a31901cc3157d880e9; Irob et al., Dryad datasets https://doi.org/10.5061/dryad.4j0zpc8gn and https://doi.org/10.5061/dryad.ngf1vhj1t.
+
+Attributions that appear only in comments of the downloaded source (Hargreaves 1974; Maidment, *Handbook of Hydrology*; Peschke in Dyck and Peschke 1989; Shevenell 1999) are cited in the text as the source's attributions only; no bibliographic entries are given for them. The reference metadata above is publication metadata; it does not verify any formula.
+
 ### Pinned implementation sources
 
 SYRUP (2026). Committed source d05d8c6c66d9fd2969c007681916254e8d1c2c7c. https://github.com/gregokin/SYRUP/tree/d05d8c6c66d9fd2969c007681916254e8d1c2c7c . Includes `sediment_physics.py`, `infiltration.py`, directed and local-inertial hydraulics, characteristic transport, splash, bed transactions, checkpoints, recipes and tests. Section 12.4 maps methods to files. No separate peer-reviewed validation publication is asserted for SYRUP's new numerical and coupling choices.
 
 MAPLE (2026). Committed source 39bcf79e1e67b6ed960f78a923ddfedf1d173e68. https://github.com/gregokin/MAPLE/tree/39bcf79e1e67b6ed960f78a923ddfedf1d173e68 . Native sediment/storage authority; finite inventory, availability and publication/restart rules. Do not substitute an unrelated PyPI package with the same name.
+
+Subsurface release sources (Section 13). SYRUP commit {{syrup_commit}} (branch {{syrup_branch}}; layered-water source package SHA-256 `{{syrup_water_package_sha256}}`); LEAF commit {{leaf_commit}} (package SHA-256 `{{leaf_package_sha256}}`); native MAPLE commit {{maple_native_commit}} (historical, explicitly pinned; package SHA-256 `{{maple_native_package_sha256}}`); scheduler MASY commit {{masy_commit}} (package SHA-256 `{{masy_package_sha256}}`).
 
 MAHLERAN 1.2.3. Legacy reference source: storm control, `infilt.for`, `route_water.for`, `route_sediment_xml.f90`, `raindrop_detachment.for`, `flow_detachment.for`, `diffuse_flow_transport.for`, `conc_flow_transport.for`, `suspended_transport.for`, `flow_distrib.for` and `splash_transport.for`. This locally supplied implementation, including its inline scientific attributions, is distinct from the 2008 paper. Exact run XML, input rasters and applied-forcing captures must be supplied separately and hashed; they are not replaced by this narrative.

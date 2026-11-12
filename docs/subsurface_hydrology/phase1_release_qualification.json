@@ -1,0 +1,74 @@
+{
+  "schema": "syrup.phase1_public_qualification.v1",
+  "status": "ACCEPTED_BOUNDED_C1_DENSE_WATER_LEAF_RUNTIME",
+  "utc": "2026-11-12T09:36:17.442342+00:00",
+  "source_commits": {
+    "masy": "a70400230f26d7931624d49173196a1cfa05a90a",
+    "syrup": "e40a1b8fc56a96920db4ffbd182d4068fa5de3e8",
+    "leaf": "52f39fe06166a91e768740b19d3c26d4ffceaf6e",
+    "maple": "9f466d2cfcd52991b24496cf67f4562d6268afa9"
+  },
+  "source_packages": {
+    "maple": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "syrup": "afcad53691b9d295ed560116d313419c08fc5ffe9b227a4bdd9c922f93c52671",
+    "leaf": "8da24af5a672138bab335d8fd1d4518c5a17ae90db9b400c5d211cc0c768fa4b",
+    "masy": "89dc8b392da61f7a8c4f4f5eeef46e88b524af24bfd68de3836476f00718b157"
+  },
+  "case": {
+    "geometry": "4x6 cells at0.25m, Dense, fixed bed and2fixed layers",
+    "sequence": [
+      "1day interevent E/T/growth",
+      "0.25s rain at3600mm/h plus native recession to genuine completion",
+      "1day interevent E/T/growth"
+    ],
+    "initial_plants": "One LEAF A plant, SURFACE anchor,100kg dry AGB;2species catalog; fixed prescribed hydrology cover",
+    "soil_properties": "Explicit illustrative values; not site calibration"
+  },
+  "recipe_receipts": {
+    "cpu": {
+      "recipe_sha256": "3c81ac3282c2daacb63c0d5ecd214b836a2e7a4cc470d53aa4c8303f99f118fe",
+      "component_review_receipt_sha256": "7f884b59c1b123c183093475ab158f0e00644b598206dd4f2db686ae1aec4252",
+      "runtime_lock_id": "591dcf0f229cd2f255993fb53b573716d4da1efef5917e2f67eae3d3223780ee"
+    },
+    "cuda": {
+      "recipe_sha256": "7a9eecfad45c7b0ba920746a627f5e495289f76527a40ea0d00bcd213694ab67",
+      "component_review_receipt_sha256": "f9345fe8b3a52f7a513492eda2b6021df5c92a4bab28b04d02912e0f406e3537",
+      "runtime_lock_id": "ff23644e7c22d2f35a5df1aa980851c6103ce7d13ab51826072cd9eacc80a000"
+    }
+  },
+  "verification": {
+    "portable_science_passed": 154,
+    "portable_science_skipped": 0,
+    "metadata_capsule_passed": 92,
+    "native_delivery_reader_passed": 19,
+    "actual_cli_negative_passed": 6,
+    "npz_entries_checked": 45,
+    "floating_state_arrays_exact": 29,
+    "other_state_arrays_exact": 15,
+    "provenance_entries_compared_separately": 1,
+    "cpu_gpu_numpy_numba_max_relative_state_difference": 0.0,
+    "same_backend_restart_four_biology_files_exact": true,
+    "complete_occurrences": 3,
+    "storm_and_recession_s": 597.25,
+    "total_physical_elapsed_s": 173397.25,
+    "final_live_plant_agb_dry_kg": 100.12256745482205,
+    "actual_refusal_codes": [
+      "invalid_config",
+      "cold_memory",
+      "recipe_sha_mismatch",
+      "recipe_unreviewed",
+      "interpreter_mismatch",
+      "seal_mismatch"
+    ]
+  },
+  "limits": [
+    "This is bounded complete rain/interevent water+LEAF qualification, not wind-water-LEAF acceptance",
+    "No field validation, texture-to-hydraulic estimation, evolving-soil remapping, vegetation splash/cover feedback, repeated-storm recovery or large-domain scaling qualification",
+    "Native MAPLE9f explicitly historical pinned source, not current live latest",
+    "Nominal daily Phase1.5 clock/recharge remains queued",
+    "Source identity differences remain truthful and guards unchanged; comparison-only scenario witness explains immutable-store origin paths",
+    "production_qualified flag intentionally remains false; no universal production-readiness claim"
+  ],
+  "original_full_record_sha256": "d9a2e7f8088a0c0709805a81676a607ca650373b171e0deb05b196b7fbd48945",
+  "publication_note": "Code commits are actual qualified C1 sources. This document does not claim a future documentation commit or automatic rebinding."
+}

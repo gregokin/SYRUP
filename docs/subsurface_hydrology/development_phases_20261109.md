@@ -1,5 +1,7 @@
 # Shared scheduler and subsurface development program
 
+Current milestone: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Publish it before starting Phase 1.5. The scientific requirements and numbering below remain governing.
+
 User authorized implementation on 2026-11-09 after the planning discussion.
 Work uses automatic Codex–Claude implementation, independent review, correction
 and verification. Commit and push each complete validated phase and continue.
@@ -154,6 +156,17 @@ drainage, conductivity/depth/calibrated-coefficient moisture-gradient exchange,
 and moisture/vegetation-dependent evaporation without duplicate transpiration.
 Historical MAHLERAN Smith–Parlange comparison paths remain unchanged.
 
+User decisions, 2026-11-10: preserve Tietjen's separate vegetation placements
+in the pre-ponding onset rule and post-ponding intake, rather than replacing
+them with one vegetation-scaled conductivity throughout. Preserve persistent
+Green–Ampt history and declare the numerical extension from hourly source
+calculations. For soil evaporation, first limit the combined potential soil
+loss by current withdrawable soil water, then apply its evaporation share.
+Debit only actual evaporation; LEAF requests transpiration separately from the
+remaining available water. Never debit the reference combined ET and then
+debit LEAF transpiration again. Both choices are approved requirements;
+implementation and qualification remain separate milestones.
+
 User decisions, 2026-11-10: production matrix infiltration uses a persistent
 cumulative Green–Ampt wetting front rather than repeating the descendant's
 hourly Peschke approximation at every hydraulic substep. Retain the Tietjen
@@ -182,6 +195,54 @@ availability/accounting. Qualify NumPy, compiled Numba CPU and CUDA GPU paths.
 GPU acceleration, bounded memory, device residency, conservation and restart
 are requirements, not claims inferred from a small CPU example.
 
+## Approved bounded wetting-history qualification — 2026-11-10
+
+User chose the bounded approach: retain matrix wetting history by default;
+allow explicitly requested resets only between controlled, quiescent test
+episodes while preserving actual soil moisture and all physical water ledgers.
+Do not infer reset from rain-off, a filename, wind, checkpoint or schedule
+boundary. Automatic drying/recovery remains deferred and general repeated-storm
+infiltration unqualified. Implement explicit reset safeguards and source-bound
+receipts before offering that control; approval does not claim it already exists.
+Single-episode component, storm and restart work continues automatically.
+
+## Phase 1.5: daily small-rain recharge and full-storm fallback
+
+Added by the user on 2026-11-12 UTC. Complete, independently validate, commit
+and push Phase 1 first. Then implement, qualify, commit and push Phase 1.5
+before starting Phase 2; numbering and requirements of Phases 2, 2.5 and 3
+remain unchanged. Read the full binding
+[Phase 1.5 specification](phase15_daily_recharge.md) before work. This is queued,
+not an implemented API or acceptance of the current Phase 1 candidates.
+
+Provide a narrow native SYRUP rainfall-selection/recharge interface, not a
+complete daily MASY scheduler, CSV format or LEAF redesign. Caller supplies P
+(mm), I (mm/hour) and T (mm); no threshold default or extra intensity threshold.
+Zero rain is a no-op; **0 < P <= T attempts simplified recharge** (equality
+explicitly selected by the user); P > T uses an actual full native storm of
+3600 P/I seconds. Positive rain requires positive intensity. Full-storm
+fallback uses the unchanged original state and FULL rainfall when any active
+closed-bottom column cannot accommodate recharge after downward redistribution.
+Gravity movement starts above FIELD CAPACITY, storage is bounded by SATURATION,
+and a field-capacity profile still has storage. Coordinate addition/redistribution
+before premature upper-layer saturation return; preserve open/closed bottom rules.
+
+Combine recharge with ONE daily water update without extra subdaily interevent
+steps, duplicate drainage/E/T/time or invented positive dt. Preserve masks,
+actual bed, persistent moisture and non-reset matrix history, accounting,
+parent/generation/occurrence binding and explicitly versioned restart/source
+checks. Audit cumulative-intake/history semantics and ask only if a new scientific
+rule is needed. Qualify NumPy, compiled CPU and CUDA with independent controls,
+real native fallback, discarded-trial identity, subsequent storms and restart.
+
+The future daily contract orders listed wind events, then rain, then daily
+interevent hydrology/T and daily-or-coarser growth. Wind/full rain/recession add
+physical time BETWEEN nominal days; nominal dates and native physical clocks
+are separate. E/T/growth never run during transport. Document this approximation
+as a NEW explicit contract, preserving historical dated clocks/locks. Implement
+only the bounded native capability in this phase; retain full-storm completion
+rules, device residency, memory limits and scientific defaults.
+
 ## Phase 2: evolving soil geometry and properties
 
 Conservatively remap layers, water, texture and hydraulic properties following
@@ -195,6 +256,49 @@ deferred here by the user on 2026-11-10. Declare its scientific source, required
 inputs, calibration/domain and treatment of coarse or unmapped grain classes;
 do not treat mass-weighted texture as a unique hydraulic parameterization.
 
+## Phase 2.5: LEAF vegetation inputs for rainfall splash
+
+Added by the user on 2026-11-10. After Phase 2 is complete and validated,
+begin this phase automatically under the same Codex–Claude workflow; complete,
+validate, commit and push it before proceeding to Phase 3. This is a queued
+implementation requirement, not an implemented or qualified adapter.
+
+Adapt LEAF's individual-plant/species and spatial vegetation representation
+into the vegetation fields required by SYRUP's MAHLERAN-derived splash
+detachment/transport laws. LEAF remains the plant authority, SYRUP owns rainfall,
+water and sediment exchange, and MAPLE remains the sole sediment-bed authority.
+Reuse the existing splash physics and actual MAPLE supply/availability limits.
+Do not introduce a copied vegetation model or a second sediment inventory.
+
+First inventory the exact vegetation inputs read by the current splash and
+rain-impact laws, including units and cover conventions. The current
+`sediment_physics` rain-impact interfaces accept a cell vegetation-cover
+fraction; the pond event binds a cover field. Establish how actual LEAF plant
+footprints, species contributions and overlapping plants produce these fields,
+and which additional traits are genuinely required by the selected source law.
+Keep canopy/ground cover, root distributions and preferential-infiltration
+receiving weights distinct. Do not sum overlapping cover beyond one and silently
+clip it, or assume root weights are splash protection. Ask only unresolved
+material physics questions about the mapping or source laws.
+
+The existing kinetic-energy vegetation modes must remain explicit: the legacy
+literal expression has counterintuitive cover dependence, already documented
+in `sediment_physics.py`. Audit source correspondence and document the selected
+mode; this phase does not authorize silently correcting that relationship or
+changing historical benchmark defaults. Qualify an adapter against identical
+prescribed vegetation fields and source equations before interpreting coupled
+vegetation effects.
+
+Prepare bounded per-cell maps from actual LEAF state and refresh them when its
+relevant accepted vegetation generation changes. Plants do not grow and E/T do
+not run during wind/rain/recession, so event-held vegetation fields must have
+an explicit source/generation identity. Preserve calendar nonoverlap, native
+conservation and transaction/restart checks. CPU and GPU paths must agree under
+declared existing tolerances, with bounded memory and no dense plant-by-cell
+tensor or per-hydraulic-step reconstruction of plant footprints. Test bare soil,
+isolated plants, mixed species, overlapping footprints, masks and restart;
+distinguish field mapping, splash response and complete coupled-event evidence.
+
 ## Phase 3: observational validation design
 
 Evaluate shallow observed JORN and MOAB profiles for validation: declared layer
@@ -203,3 +307,12 @@ evaporation and vegetation/root treatment. Plan rain-free intervals first and
 later precipitation-driven tests when forcing is adequate. Distinguish fit from
 independent validation and physical parameter inference. Ask needed scientific
 questions and propose a defensible comparison before interpreting a fit.
+
+
+## Confirmed first coupled hydrology cover — 2026-11-11
+
+The user chose to retain prescribed hydrology vegetation-cover and species-infiltration maps for the first coupled qualification. LEAF-driven hydrology cover feedback is added to Phase 2.5, alongside the shared vegetation projection for splash. Plant growth does not silently change those prescribed hydrology maps before that follow-up. The subsequent answers resolve plant PET and disabled-growth credit as recorded below.
+
+## Confirmed plant PET and disabled-growth accounting — 2026-11-11
+
+Use terrain-adjusted PET averaged by canopy area for each plant’s potential demand, followed by unchanged root-weight allocation. Extend LEAF’s PET interface with bounded per-plant arrays and sparse canopy geometry; do not change root allocation or create dense plant-by-cell tensors. During interevent periods with transpiration enabled and growth explicitly disabled, withdraw and account for actual transpiration but give those hours no later biomass-growth credit. Evaporation, transpiration and growth remain excluded from wind, rain and their recession periods.

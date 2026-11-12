@@ -19,7 +19,80 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 HERE = Path(__file__).resolve().parent
-COMMIT = 'd05d8c6c66d9fd2969c007681916254e8d1c2c7c'
+OFFICIAL_NAME = 'Sediment Yield, Runoff, and Underground Plumbing'
+METADATA_SCHEMA = 'syrup.manual_release_metadata.v1'
+_SHA40, _SHA64 = re.compile(r'^[0-9a-f]{40}$'), re.compile(r'^[0-9a-f]{64}$')
+# Release fields that must be populated for a final build; their pending state is kept in the metadata file as @RELEASE_...@ tokens.
+# The production recipe is identified by the SHA-256 of the recipe file (the value pinned as source.recipe_sha256), the receipt by the SHA-256 of its file.
+RELEASE_FIELDS = {'syrup_commit': _SHA40, 'syrup_branch': None, 'syrup_water_package_sha256': _SHA64, 'leaf_commit': _SHA40, 'leaf_branch': None,
+                  'leaf_package_sha256': _SHA64, 'maple_native_commit': _SHA40, 'maple_native_package_sha256': _SHA64,
+                  'masy_commit': _SHA40, 'masy_branch': None, 'masy_package_sha256': _SHA64,
+                  'production_cpu_recipe_sha256': _SHA64, 'production_cpu_receipt_sha256': _SHA64,
+                  'production_cuda_recipe_sha256': _SHA64, 'production_cuda_receipt_sha256': _SHA64}
+# Release state flags (booleans) that a final build must find true.
+RELEASE_FLAGS = ('sources_published',)
+
+
+def load_metadata(path=None, require_final=False):
+    """Read the closed release metadata. A draft build tolerates null release fields (rendered as their @RELEASE_...@ token); a final build refuses them.
+    The metadata names source identities only; it never contains this documentation's own commit or hash."""
+    meta = json.loads((path or HERE / 'release_metadata.json').read_text())
+    top = {'schema', 'official_name', 'release_status', 'prepared_date', 'qualification_statement', 'surface_reference', 'subsurface_release', 'pending_tokens'}
+    if set(meta) != top or meta['schema'] != METADATA_SCHEMA:
+        raise SystemExit('release_metadata.json: unknown or missing top-level keys or wrong schema')
+    if meta['official_name'] != OFFICIAL_NAME:
+        raise SystemExit('release_metadata.json: official_name must be ' + OFFICIAL_NAME)
+    if meta['release_status'] not in ('draft', 'final'):
+        raise SystemExit('release_metadata.json: release_status must be draft or final')
+    datetime.date.fromisoformat(meta['prepared_date'])
+    if set(meta['surface_reference']) != {'syrup_commit', 'maple_commit'} or set(meta['subsurface_release']) != set(RELEASE_FIELDS) | set(RELEASE_FLAGS):
+        raise SystemExit('release_metadata.json: unknown or missing release fields')
+    for flag in RELEASE_FLAGS:
+        if type(meta['subsurface_release'][flag]) is not bool:
+            raise SystemExit(f'release_metadata.json: {flag} must be a Boolean')
+    for key, value in ((k, v) for k, v in meta['subsurface_release'].items() if k in RELEASE_FIELDS):
+        if value is None:
+            if key not in meta['pending_tokens'] or not re.fullmatch(r'@RELEASE_[A-Z0-9_]+@', meta['pending_tokens'][key]):
+                raise SystemExit(f'release_metadata.json: {key} is null without an @RELEASE_...@ token')
+        elif RELEASE_FIELDS[key] is not None and not RELEASE_FIELDS[key].match(value):
+            raise SystemExit(f'release_metadata.json: {key} is malformed')
+    for key, value in meta['surface_reference'].items():
+        if not _SHA40.match(value):
+            raise SystemExit(f'release_metadata.json: surface_reference.{key} is malformed')
+    pending = sorted([k for k, v in meta['subsurface_release'].items() if v is None] + [f for f in RELEASE_FLAGS if not meta['subsurface_release'][f]])
+    if require_final and (pending or meta['release_status'] != 'final'):
+        raise SystemExit('final build refused: release_status must be final and every release field populated and the sources published; pending: ' + ', '.join(pending))
+    if meta['release_status'] == 'final' and pending:
+        raise SystemExit('release_status final with pending fields: ' + ', '.join(pending))
+    return meta
+
+
+def substitutions(meta):
+    rel = meta['subsurface_release']
+    out = {'official_name': meta['official_name'], 'release_status': meta['release_status'], 'prepared_date': meta['prepared_date'],
+           'qualification_statement': meta['qualification_statement'],
+           'surface_syrup_commit': meta['surface_reference']['syrup_commit'], 'surface_maple_commit': meta['surface_reference']['maple_commit']}
+    for key, value in rel.items():
+        if key in RELEASE_FLAGS:
+            out[key] = 'yes' if value else 'no'
+        else:
+            out[key] = value if value is not None else meta['pending_tokens'][key]
+    out['surface_syrup_short'], out['surface_maple_short'] = out['surface_syrup_commit'][:7], out['surface_maple_commit'][:7]
+    out['syrup_short'] = out['syrup_commit'][:7]
+    return out
+
+
+def substitute(text, subs):
+    """Replace {{key}} markers of the Markdown sources; an unknown marker is an error, never silently kept."""
+    def one(m):
+        if m[1] not in subs:
+            raise SystemExit(f'unknown release marker {{{{{m[1]}}}}}')
+        return str(subs[m[1]])
+    return re.sub(r'\{\{([a-z0-9_]+)\}\}', one, text)
+
+
+META = load_metadata()
+SUBS = substitutions(META)
 NAVY, TEAL, INK = '18344A', '147D92', '243746'
 
 
@@ -126,7 +199,7 @@ def styles(doc, subtitle):
     header.style = doc.styles['Caption Text']
     footer = sec.footer.paragraphs[0]
     footer.paragraph_format.space_before = Pt(3)
-    footer.add_run('Source d05d8c6 • 20 October 2026                                      ')
+    footer.add_run(f"{META['release_status'].capitalize()} • SYRUP {SUBS['syrup_short']} • prepared {META['prepared_date']}                          ")
     field(footer, ' PAGE ')
     footer.add_run(' / ')
     field(footer, ' NUMPAGES ')
@@ -135,13 +208,13 @@ def styles(doc, subtitle):
         run.font.color.rgb = RGBColor.from_string(TEAL)
     doc.core_properties.author = 'MAPLE-SYRUP project'
     doc.core_properties.title = 'MAPLE-SYRUP — ' + subtitle
-    doc.core_properties.subject = 'Documentation of committed SYRUP ' + COMMIT
-    doc.core_properties.keywords = 'SYRUP, MAPLE, runoff, sediment, CPU, GPU'
+    doc.core_properties.subject = f"{OFFICIAL_NAME}: documentation of SYRUP {SUBS['syrup_commit']} ({META['release_status']})"
+    doc.core_properties.keywords = 'SYRUP, MAPLE, LEAF, runoff, sediment, soil water, CPU, GPU'
     doc.core_properties.created = datetime.datetime.now(datetime.timezone.utc)
     doc.core_properties.modified = doc.core_properties.created
     doc.core_properties.last_modified_by = 'MAPLE-SYRUP project'
     doc.core_properties.language = 'en-US'
-    doc.core_properties.version = 'd05d8c6'
+    doc.core_properties.version = f"{SUBS['syrup_short']}-{META['release_status']}"
     update = OxmlElement('w:updateFields')
     update.set(qn('w:val'), 'true')
     doc.settings.element.append(update)
@@ -160,15 +233,18 @@ def cover(doc, subtitle, description):
     r.font.color.rgb = RGBColor.from_string(TEAL)
     p.paragraph_format.space_after = Pt(20)
     doc.add_paragraph(description)
-    p = doc.add_paragraph('Sediment Yield, Runoff, and Uptake by Plants')
+    p = doc.add_paragraph(OFFICIAL_NAME)
     p.style = doc.styles['Caption Text']
     doc.add_paragraph()
-    for label, value in [('Model version', 'SYRUP d05d8c6'), ('Qualified MAPLE', '39bcf79'),
-                         ('Prepared', '20 October 2026'), ('Document type', 'Practical reference' if 'User' in subtitle else 'Scientific methods')]:
+    for label, value in [('Release status', META['release_status']), ('SYRUP subsurface release', SUBS['syrup_commit']),
+                         ('LEAF', SUBS['leaf_commit']), ('Native MAPLE (pinned, historical)', SUBS['maple_native_commit']),
+                         ('Scheduler (MASY)', SUBS['masy_commit']),
+                         ('Surface-erosion reference', f"SYRUP {SUBS['surface_syrup_short']}, MAPLE {SUBS['surface_maple_short']}"),
+                         ('Prepared', META['prepared_date']), ('Document type', 'Practical reference' if 'User' in subtitle else 'Scientific methods')]:
         p = doc.add_paragraph()
         p.add_run(label + '   ').bold = True
         p.add_run(value)
-    doc.add_paragraph('The acronym names future plant uptake; growth and nutrient/ecohydrological feedbacks are outside the implemented water-model scope.')
+    doc.add_paragraph(META['qualification_statement'])
     doc.add_page_break()
 
 
@@ -344,7 +420,7 @@ def build(source, filename, subtitle, description):
     doc = Document()
     styles(doc, subtitle)
     cover(doc, subtitle, description)
-    markdown(doc, source)
+    markdown(doc, substitute(source, SUBS))
     destination = HERE / filename
     doc.save(destination)
     # Drop stale layout counters and authoring-application claims from the default template.
@@ -374,7 +450,14 @@ def build(source, filename, subtitle, description):
             'headings': sum(p.style.name.startswith('Heading') for p in doc.paragraphs)}
 
 
-def main():
+def main(argv=None):
+    import argparse
+    parser = argparse.ArgumentParser(description='Build the two manuals. Default is a draft build; --final requires populated release metadata.')
+    parser.add_argument('--final', action='store_true', help='refuse unless release_metadata.json is final and fully populated')
+    args = parser.parse_args(argv)
+    global META, SUBS
+    META = load_metadata(require_final=args.final)
+    SUBS = substitutions(META)
     create_figure()
     guide = (HERE / 'user_guide.md').read_text() + '\n\n' + (HERE / 'cli_reference.md').read_text()
     theory = (HERE / 'model_structure_and_physics.md').read_text()
@@ -382,7 +465,9 @@ def main():
                      'Installation, input preparation, CPU and GPU runs, restart, outputs, plotting and the complete command reference.'),
                build(theory, 'SYRUP_Model_Structure_and_Physics.docx', 'Model Structure and Physics',
                      'Governing relationships, numerical methods and assumptions for a reproducible MAHLERAN-inspired water and sediment model.')]
-    (HERE / 'document_build.json').write_text(json.dumps({'source_commit': COMMIT, 'documents': records}, indent=2) + '\n')
+    (HERE / 'document_build.json').write_text(json.dumps({'release_status': META['release_status'], 'prepared_date': META['prepared_date'], 'metadata_file': 'release_metadata.json',
+                                                 'metadata_sha256': hashlib.sha256((HERE / 'release_metadata.json').read_bytes()).hexdigest(),
+                                                 'documents': records}, indent=2) + '\n')
     print(json.dumps(records, indent=2))
 
 

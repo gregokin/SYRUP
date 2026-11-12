@@ -1,5 +1,28 @@
 # Subsurface column: first implementation guide
 
+## Current Phase 1 status — 2026-11-12
+
+The opt-in fixed-bed layered water and LEAF calendar is now bounded-qualified
+on actual committed sources: SYRUP `e40a1b8`, LEAF `52f39fe`, MASY `a704002`,
+and explicitly historical MAPLE `9f466d2`. See
+[the release qualification](phase1_release_qualification.md) and the current
+[parameter reference](parameter_reference.md). NumPy, Numba and CUDA complete
+the small native example with equivalent state and exact same-backend restart.
+The original component/design sections below retain their dated scope; their
+statements that later integration is pending are historical, not a description
+of the qualified release. No wind, evolving-soil, field or scaling acceptance
+is implied. Phase 1.5 daily recharge remains the next implementation, after
+Phase 1 publication, before Phases 2, 2.5 and 3.
+
+Queued follow-up, 2026-11-12 UTC: the user added
+[Phase 1.5 daily recharge](phase15_daily_recharge.md) after Phase 1 is completed,
+validated, committed and pushed, and before Phase 2. It is not implemented by
+this document's current interfaces. Positive P <= T attempts simplified recharge;
+zero rain is a no-op; P > T uses the native full storm, with unchanged-parent
+whole-occurrence fallback. Its new nominal-calendar convention must be explicit
+and must not retrofit historical clocks. No Phase 1.5 parameter filenames or
+production API are established yet.
+
 Status: first bounded implementation on `feature/subsurface-hydrology`, task
 `agent_handoffs/tasks/subsurface_column_20261031/`. Opt-in only: no existing
 event, benchmark, dry-reset or default changes. Implemented by Claude and independently reviewed and tested by Codex.

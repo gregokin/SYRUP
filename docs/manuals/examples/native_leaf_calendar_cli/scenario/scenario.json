@@ -1,0 +1,36 @@
+{
+ "schema": "masy.scenario.v1",
+ "scenario_id": "native_run_test",
+ "calendar": {
+  "start": "2027-12-30T00:00:00+00:00",
+  "convention": "proleptic_gregorian",
+  "leap_seconds": "none"
+ },
+ "native_epoch_s": 0.0,
+ "gap_policy": "refuse",
+ "requires_continuous_soil_moisture": false,
+ "weather": {
+  "file": "weather.json",
+  "sha256": "07872afd0d78378c3e67324e51112095014ba4e4cfa51426303db23060454bce"
+ },
+ "events": [
+  {
+   "occurrence_id": "ie_a",
+   "file": "events/ie_a.json",
+   "sha256": "0af74878a9a0c88eeefedec656ddc28761ea7fd1875b64dd3979b28d3dfcdebf",
+   "scheduled_start": null
+  },
+  {
+   "occurrence_id": "rain_a",
+   "file": "events/rain_a.json",
+   "sha256": "74dd75055fdb7f136ca42a4ce52da6f232c0183908b37a37bad6ad55587f59c4",
+   "scheduled_start": null
+  },
+  {
+   "occurrence_id": "ie_b",
+   "file": "events/ie_b.json",
+   "sha256": "e5f50364f4d8a29f3b77f19404197ba2c7e1207b2335d0e4bd40958edec1c6dd",
+   "scheduled_start": null
+  }
+ ]
+}

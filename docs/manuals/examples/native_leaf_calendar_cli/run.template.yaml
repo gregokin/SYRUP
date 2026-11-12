@@ -1,0 +1,55 @@
+# masy.native_water_run.v2 template. Every @NAME@ is filled by fill_config.py (absolute paths of YOUR sealed trees); all other paths are relative to the written run.yaml.
+schema: masy.native_water_run.v2
+run_id: example_leaf_run_01
+maple_case_dir: case
+syrup_parameters: layered_water.yaml
+scenario: scenario/scenario.json
+profile_id: native9f_layered
+source:
+  mode: development_snapshot
+  origin:
+    label: example - operator-sealed read-only copies (declared by the operator)
+    declared_by: @DECLARED_BY@
+  profile: native9f_layered_factory_afca_cpu_v1
+  native_target: @NATIVE_TARGET@
+  masy_root: @MASY_ROOT@
+  masy_manifest: masy_manifest.json
+  syrup_root: @SYRUP_ROOT@
+  syrup_manifest: syrup_manifest.json
+execution:
+  quiet_policy: default
+limits:
+  interevent_max_dt_s: 600.0
+  interevent_min_dt_s: 9.5367431640625e-07
+  interevent_max_retries: 12
+  storm: {max_dt_s: 0.5, min_dt_s: 0.0009765625, max_retries: 12, max_steps: 4000, max_recession_s: 900.0}
+  max_occurrences: 16
+  max_dates_per_interevent: 400
+  max_accepted_steps_per_occurrence: 100000
+  call_step_budget: 100000
+  max_record_bytes: 1048576
+resources:
+  caller_reserve_bytes: 1048576
+  temporal_reserve_bytes: 1048576
+  lifecycle_extra_reserve_bytes: 1048576
+  preparation_reserve_bytes: 1048576
+  host_available_cap_bytes: null
+output:
+  run_dir: out/example_leaf_run
+  step_cadence: 1
+  max_output_bytes: 67108864
+  max_step_lines: 10000
+  max_file_bytes: 33554432
+  physical_checkpoint: combined_terminal   # none | combined_terminal (terminal_standalone is refused for LEAF runs)
+  compile_output_reserve_bytes: 8388608
+leaf:
+  leaf_variant: 8da
+  leaf_root: @LEAF_ROOT@          # the clean 24-file LEAF 8da reference capsule (absolute)
+  catalog: catalog.json
+  plants: plants.csv              # plants.metadata.json must sit beside it
+  cadence_days: 7                 # integer 1..7
+  geometry: {max_edges: 16384, max_bytes: 16777216, canopy_max_edges: 16384, canopy_max_bytes: 16777216, builder: numpy}
+  budgets:
+    leaf_budget_bytes: 16777216
+    checkpoint: {max_host_bytes: 8589934592, max_device_bytes: 0, max_disk_bytes: 1073741824, max_biology_bytes: 67108864}
+  io: {max_catalog_bytes: 1048576, max_plants_bytes: 4194304, max_plant_records: 100000}

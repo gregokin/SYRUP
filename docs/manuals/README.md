@@ -1,71 +1,14 @@
 # SYRUP user and scientific manuals
 
-These materials describe committed SYRUP **d05d8c6c66d9fd2969c007681916254e8d1c2c7c**
-with the qualified native MAPLE **39bcf79e1e67b6ed960f78a923ddfedf1d173e68**.
-They do not silently adopt a newer MAPLE checkout.
+*Sediment Yield, Runoff, and Underground Plumbing.* These materials are a **final** edition prepared 2026-11-12. Exact source identities come from `release_metadata.json`; a value shown as an `@RELEASE_...@` token has not been recorded, and a final build refuses to run while any field is pending or the sources are unpublished.
 
-- [CLI User Guide](SYRUP_CLI_User_Guide.docx): installation from GitHub,
-  declared dependencies, CPU/GPU choices, imported cases, run and restart
-  workflows, directory/output structure, maps/movies and exhaustive CLI tables.
-- [Model Structure and Physics](SYRUP_Model_Structure_and_Physics.docx):
-  journal-style explanation, governing equations, empirical coefficients,
-  boundaries, native bed authority, numerical choices and a reproduction appendix.
-- [Companion archive](SYRUP_Manuals_and_Examples.zip): both Word documents,
-  their editable sources and the plotting example. Unpack its contents into
-  the `$WORK/manuals` directory used by the guide. The materials are new;
-  they are not included in the model's pinned d05d8c6 commit.
+They describe two releases:
 
-The practical reference covers all nine installed commands and every other
-module in `src/maple_syrup` that exposes an argparse CLI: experimental hydraulic
-runs, RFID/Chastre import, extended CPU/GPU legacy replay, dependency delivery
-and the maintainer-only initial source-transition utility. Unreviewed initial
-transitions cannot be imported, and wet checkpoint source guards remain strict.
-The source reference is [cli_reference.json](cli_reference.json); the readable
-tables are [cli_reference.md](cli_reference.md).
+- the **surface-erosion reference**, SYRUP d05d8c6c66d9fd2969c007681916254e8d1c2c7c with native MAPLE 39bcf79e1e67b6ed960f78a923ddfedf1d173e68: installation from GitHub, imported cases, conservative event, legacy replay and benchmark workflows, outputs, maps and movies (unchanged);
+- the **subsurface release**, SYRUP e40a1b8fc56a96920db4ffbd182d4068fa5de3e8 (branch feature/subsurface-phase1), LEAF 52f39fe06166a91e768740b19d3c26d4ffceaf6e, the historical pinned native MAPLE 9f466d2cfcd52991b24496cf67f4562d6268afa9 and the scheduler MASY (a70400230f26d7931624d49173196a1cfa05a90a): layered soil water, evaporation, LEAF plant withdrawals and growth, run by a dated scheduled command (guide Section 14, physics Section 13). Its qualification is bounded: the committed runtime ran the full public 4×6 dense example to completion on NumPy, Numba and CUDA and resumed it exactly from pauses (see guide Section 14.1 and physics Section 13.10); no field validation, wind, moving-soil, large-domain or performance claim is made, and runs keep `production_qualified: false`. Whether the commits are published to GitHub is recorded in the build metadata (yes at this build).
 
-The guide and theoretical article have separate editable Markdown sources:
-[user_guide.md](user_guide.md) and
-[model_structure_and_physics.md](model_structure_and_physics.md).
-The Word guide includes the CLI-reference appendix as well as its main source.
+- [CLI User Guide](SYRUP_CLI_User_Guide.docx): installation, CPU/GPU choices, imported cases, run and restart workflows, directory/output structure, maps/movies, the scheduled water and LEAF commands and exhaustive CLI tables.
+- [Model Structure and Physics](SYRUP_Model_Structure_and_Physics.docx): journal-style explanation, governing equations, empirical coefficients, boundaries, native bed authority, numerical choices, the layered-water formulation with its references and a reproduction appendix.
+- [Companion archive](SYRUP_Manuals_and_Examples.zip): both Word documents, their editable sources and the plotting example, packaged separately for publication; its contents are the two Word documents, `user_guide.md`, `model_structure_and_physics.md`, the generated CLI reference, `release_metadata.json`, `build_manuals.py`, `render_outputs.py`, `assets/`, and the companion fixture folder `examples/native9f_metadata/` (the four genuine metadata files in `distribution/`, with `README.md` and `provenance_manifest.json` beside it). `build_manuals.py` builds the Word documents (a draft build is the default; `--final` requires complete release metadata). The documentation publication follows the pinned model-code commits.
 
-## Companion output example
-
-`render_outputs.py` requires NumPy and Matplotlib. It reads actual NPZ arrays,
-renders cell maps/hydrographs, and makes PNG frames from experimental or legacy
-snapshot archives. It does not create missing spatial history, run physics,
-decode checkpoints or access a GPU. FFmpeg is used separately to encode videos.
-Its format, orientation, time ordering, class selection and failure behavior
-were checked on small synthetic files, including a real CPU FFmpeg encode.
-
-## Rebuild the Word files
-
-Document generation additionally needs `python-docx==1.2.0` and Matplotlib:
-
-```bash
-python build_manuals.py
-```
-
-The builder creates editable Word headings, linked contents, repeating table
-headers, equation objects, page fields and an embedded schematic. The generated
-packages are reopened and checked structurally; native Word/LibreOffice page
-rendering was not available on the authoring machine. Word will paginate the
-files and update page fields on opening. No rendered page count is claimed.
-
-## Verification scope
-
-Codex checked the committed sources, all CLI help/parser actions, source
-identities and example syntax. Claude authored the practical draft and reviewed
-the theoretical description and plotting helper; Codex independently reviewed
-and reconciled the findings. Source and review records remain in
-`agent_handoffs/tasks/manuals_20261020/` locally. `documentation_verification.json`
-records the distributable checks. The physics document also has 25 scientific
-references cited beside the relevant relationships and numerical methods, with
-clickable DOI links and explicit distinctions between published theory,
-MAHLERAN source conventions and new SYRUP choices. Its additional citation
-audit and Claude review records are in
-`agent_handoffs/tasks/manual_citations_20261020/` locally.
-
-No new storm simulation, GPU computation, model-code change, environment
-installation, commit or push is part of this documentation task. New document
-generation dependencies were confined to a temporary tool directory. The
-existing model's scientific and performance qualification is unchanged.
+The Word documents have been rebuilt from the final release metadata. Their packages/XML, source pins, images and example-command syntax were checked; no paginated Office rendering is claimed. The generated CLI reference ([cli_reference.md](cli_reference.md), [cli_reference.json](cli_reference.json)) covers the nine installed console scripts and the other argparse modules of the surface release; the scheduled command is documented in guide Section 14. Sources: [user_guide.md](user_guide.md), [model_structure_and_physics.md](model_structure_and_physics.md).

@@ -1,0 +1,10 @@
+{
+ "schema": "masy.interevent.v1",
+ "event_id": "ie_b",
+ "duration_s": 86400.0,
+ "processes": {
+  "evaporation": true,
+  "transpiration": true,
+  "growth": true
+ }
+}
