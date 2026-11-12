@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "maple-syrup"
 version = "0.0.1.dev0"
-description = "MAPLE-SYRUP (Sediment Yield, Runoff, and Uptake by Plants): water extension for MAPLE"
+description = "MAPLE-SYRUP (Sediment Yield, Runoff, and Underground Plumbing): water extension for MAPLE"
 requires-python = ">=3.11"
 # MAPLE itself is deliberately NOT listed here. Its distribution name is
 # `maple` (version 0.0.1, /home/okin/MAPLE/pyproject.toml), which is also

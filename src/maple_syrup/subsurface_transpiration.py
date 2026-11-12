@@ -490,13 +490,20 @@ class CoupledStep:
                                                 self.actual_m, self.unmet_m, self.scale)))
 
 
-def estimate_combined_memory(column, *, extra_reserve_bytes=0, query_available=True):
+def estimate_combined_memory(column, *, extra_reserve_bytes=0, query_available=True, with_evaporation_share=False):
     '''Scalar combined estimate (no allocation): hydro step estimate + T estimate (state counted once)
-    + column reserve + caller reserve. query_available=False never calls available_bytes_fn.'''
+    + column reserve + caller reserve. query_available=False never calls available_bytes_fn.
+    with_evaporation_share=True counts the caller's optional (N,) post-cap evaporation share field.'''
     L, N = _as_size(column.n_layers, 'column.n_layers'), _as_size(column.n_cells, 'column.n_cells')
     reserve, extra = _as_bytes(column.reserve_bytes, 'column.reserve_bytes'), _as_bytes(extra_reserve_bytes, 'extra_reserve_bytes')
     backend = _check_backend(column.backend)
-    hm = ss.estimate_step_memory(L, N, backend=backend, reserve_bytes=0)
+    if type(with_evaporation_share) is not bool:
+        raise SubsurfaceError(f'with_evaporation_share must be a bool, got {with_evaporation_share!r}')
+    # the hydrology estimate must follow the column's ACTUAL diffusion mode (the donor-depth mode carries extra
+    # parameter vectors and a second factor scratch); the historical constant mode is the default and unchanged
+    hm = ss.estimate_step_memory(L, N, backend=backend, reserve_bytes=0,
+                                 diffusion_mode=getattr(column.layers, "diffusion_mode", "constant"),
+                                 with_evaporation_share=with_evaporation_share)
     tm = estimate_transpiration_memory(L, N, backend=backend, reserve_bytes=0, include_state=False)
     state_bytes = _F8 * L * N
     host = int(hm.host_bytes) + tm.host_bytes + (0 if backend == 'cuda' else state_bytes)
@@ -509,11 +516,12 @@ def estimate_combined_memory(column, *, extra_reserve_bytes=0, query_available=T
 
 
 def step_with_transpiration(operator, state, dt_s, *, added_water_m, potential_evaporation_m_s,
-                            requested_transpiration_m, extra_reserve_bytes=0):
+                            requested_transpiration_m, extra_reserve_bytes=0, evaporation_share=None):
     '''First-order splitting: native hydro `step` (advances t_s by dt once; its own packet) followed by
     the fused withdrawal (time preserved; ONE packet). dt=0 is an identity and rejects any positive
     requested transpiration (flagged from the fused packet, nothing published). Combined admission
-    precedes any work.'''
+    precedes any work. `evaporation_share` (optional (N,) field) is passed through to the native step's
+    post-cap evaporation share law (see subsurface.step); None keeps the historical law.'''
     op = operator
     if not isinstance(op, TranspirationOperator):
         raise SubsurfaceError('operator must come from prepare_transpiration')
@@ -523,9 +531,12 @@ def step_with_transpiration(operator, state, dt_s, *, added_water_m, potential_e
     dt = ss._check_dt(dt_s)
     ss._check_state(column, state)
     ss._check_dynamic(column, 'requested_transpiration_m', requested_transpiration_m, (op.n_layers, op.n_cells))
-    mem = estimate_combined_memory(column, extra_reserve_bytes=extra)
+    if evaporation_share is not None:
+        ss._check_dynamic(column, 'evaporation_share', evaporation_share, (op.n_cells,))
+    mem = estimate_combined_memory(column, extra_reserve_bytes=extra, with_evaporation_share=evaporation_share is not None)
     _admit(column, mem.required_bytes, 'step_with_transpiration')
-    hydro = ss.step(column, state, dt, added_water_m=added_water_m, potential_evaporation_m_s=potential_evaporation_m_s)
+    hydro = ss.step(column, state, dt, added_water_m=added_water_m, potential_evaporation_m_s=potential_evaporation_m_s,
+                    evaporation_share=evaporation_share)
     tr = _run_withdrawal(op, hydro.state, requested_transpiration_m, extra, 'step_with_transpiration')
     hb, tb = hydro.budget, tr.budget
     if dt == 0.0 and tb.max_requested_m > 0.0:

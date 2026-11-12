@@ -65,6 +65,14 @@ Qualification: the compiled forms are NEW and unqualified beyond the tests that 
 the local-inertial long-storm conditioning, velocity and Froude limitations documented in `experimental_hydrology` and the README
 are NOT addressed here.
 
+SURFACE STAGE (task phase1_surface_stage_20261110): `NumbaSurfaceRouter` is the compiled form of the surface-only
+lateral operation (`experimental_hydrology.CpuSurfaceRouter`, interface in `maple_syrup.surface_routing`): the same
+lateral kernels launched on a caller-supplied post-vertical depth and existing face momentum, no column context, no
+bucket. `NumbaHydraulicSolver` keeps its public API, checks, seal and bucket output: it runs the prepared compiled
+column first and delegates its lateral stage to that router (historical admission policy: none); its kernels and
+arithmetic are unchanged. A standalone router refuses a non-finite or negative INPUT depth anywhere (host check
+before the kernel) and admits its declared memory before preparation and before every step.
+
 Nothing here was run by its author (file-only tools); Codex records results.
 """
 
@@ -76,7 +84,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 
@@ -88,6 +96,7 @@ from maple_syrup.experimental_hydrology import (
     LOCAL_BITS,
     QUALIFICATION_STATUS,
     CpuHydraulicSolver,
+    CpuSurfaceRouter,
     ExperimentalHydrologyError,
     HydraulicControl,
     HydraulicState,
@@ -103,12 +112,19 @@ from maple_syrup.routing_numba import (
     numba_available,
     numba_versions,
 )
+from maple_syrup.surface_routing import (
+    INPUT_DEPTH_BITS,
+    UNLIMITED_ADMISSION,
+    SurfaceState,
+    SurfaceStep,
+)
 
 __all__ = [
     "NUMBA_TRANSFER_SCOPE",
     "ExperimentalNumbaUnavailableError",
     "NumbaExperimentalContext",
     "NumbaHydraulicSolver",
+    "NumbaSurfaceRouter",
     "kernel_provenance",
     "prepare_experimental_numba",
     "reset_compiled",
@@ -600,107 +616,104 @@ def _flat64(array: Any) -> np.ndarray:
 _HYDROLOGY_ARRAYS = (("active", np.bool_), ("conveyance", np.float64), ("column_static", np.float64))
 
 
-class NumbaHydraulicSolver(CpuHydraulicSolver):
-    """The compiled CPU form of `CpuHydraulicSolver` (see the module docstring). Same constructor arguments, same public
-    methods, same `HydraulicStep`; `implementation == "numba"`. Immutable after construction."""
+# --- the compiled surface router ----------------------------------------------------------------------------------------
+class NumbaSurfaceRouter(CpuSurfaceRouter):
+    """The compiled CPU form of `CpuSurfaceRouter` (see the module docstring): same constructor arguments plus the memory
+    admission arguments, same public methods, same `SurfaceStep`; `implementation == "numba"`. The lateral kernels are the
+    historical ones, now launched on a caller-supplied post-vertical depth. Immutable after construction; the seal is
+    re-checked before every compiled call."""
 
     implementation = "numba"
 
-    def __init__(self, method: str, graph: RoutingGraph, params: ColumnParameters, *,
-                 geometry: LocalInertialGeometry | None = None, control: HydraulicControl | None = None):
+    def __init__(self, method: str, graph: RoutingGraph, *, geometry: LocalInertialGeometry | None = None,
+                 control: HydraulicControl | None = None, reserve_bytes: int = 0,
+                 available_bytes_fn: Callable[[], int] | None = None):
         if not numba_available():
             raise ExperimentalNumbaUnavailableError(
                 "the compiled CPU hydraulics require Numba (optional extra maple-syrup[numba]), which is not importable; "
                 "there is no fallback to the NumPy reference (select it explicitly)")
-        super().__init__(method, graph, params, geometry=geometry, control=control)  # all public validation, as the reference
-        self._context = prepare_experimental_numba(method, graph, geometry)
-        self._hydrology = hn.prepare_hydrology(graph, params)  # the accepted column context, prepared ONCE
-        hyd = self._hydrology
-        if (hyd.shape != self._context.shape or hyd.n_cells != self._context.n_cells or hyd.dx_m != self._context.dx_m):
-            raise ExperimentalHydrologyError("the prepared column context does not match the lateral context")
-        self._hydrology_fingerprints = tuple(_fingerprint(name, getattr(hyd, name)) for name, _ in _HYDROLOGY_ARRAYS)
+        # all public validation and the memory admission (backend "numba" estimate) as the reference, BEFORE any owned copy;
+        # `_prepare_statics` (called by the reference constructor after admission) builds the compiled context
+        super().__init__(method, graph, geometry=geometry, control=control, reserve_bytes=reserve_bytes,
+                         available_bytes_fn=available_bytes_fn)
         self._seal = self._current_seal()
         object.__setattr__(self, "_sealed", True)
 
+    def _prepare_statics(self, graph: RoutingGraph, geometry: LocalInertialGeometry | None) -> None:
+        """The compiled router owns ONLY its sealed read-only context (no host donor table of the reference: `statics` stays
+        None, so the declared static bytes are exactly the context's)."""
+        self._context = prepare_experimental_numba(self.method, graph, geometry)
+
     def __setattr__(self, name: str, value: Any) -> None:
         if self.__dict__.get("_sealed"):
-            raise AttributeError(f"NumbaHydraulicSolver is immutable after construction (cannot set {name!r}); build a new "
-                                 "solver")
+            raise AttributeError(f"NumbaSurfaceRouter is immutable after construction (cannot set {name!r}); build a new "
+                                 "router")
         object.__setattr__(self, name, value)
 
     @property
     def context(self) -> NumbaExperimentalContext:
         return self._context
 
-    @property
-    def hydrology_context(self) -> hn.HydrologyContext:
-        return self._hydrology
-
     def _current_seal(self) -> tuple:
-        ctx, hyd = self._context, self._hydrology
-        ctl = self.control
+        ctx, ctl = self._context, self.control
         return (ctx.method, ctx.shape, ctx.dx_m, ctx.n_cells, ctx.n_active, ctl.cfl_max, ctl.limiter, ctl.friction_treatment,
-                id(ctx), id(hyd), hyd.shape, hyd.n_cells, hyd.dx_m, hyd.model_code)
+                id(ctx))
 
-    def _guard(self, method: str) -> tuple[NumbaExperimentalContext, hn.HydrologyContext, float, str]:
+    def _guard(self, method: str) -> tuple[NumbaExperimentalContext, float, str]:
         """BEFORE any compiled call: type, identity and fingerprint checks of everything a kernel indexes, and that the public
-        attributes still equal the sealed values. Returns `(context, column context, cfl_max, limiter)` taken from the SEAL,
-        never from mutable attributes."""
-        ctx, hyd = self._context, self._hydrology
-        if not isinstance(ctx, NumbaExperimentalContext) or not isinstance(hyd, hn.HydrologyContext):
-            raise ExperimentalHydrologyError("the solver's contexts are not the prepared context types; refusing before any "
+        attributes still equal the sealed values. Returns `(context, cfl_max, limiter)` taken from the SEAL."""
+        ctx = self._context
+        if not isinstance(ctx, NumbaExperimentalContext):
+            raise ExperimentalHydrologyError("the router's context is not the prepared context type; refusing before any "
                                              "compiled call")
         if not isinstance(self.control, HydraulicControl):
-            raise ExperimentalHydrologyError("the solver's control is not a HydraulicControl; refusing before any compiled call")
+            raise ExperimentalHydrologyError("the router's control is not a HydraulicControl; refusing before any compiled call")
         if self._current_seal() != self._seal or (self.method, self.shape, self.dx_m) != (ctx.method, ctx.shape, ctx.dx_m):
-            raise ExperimentalHydrologyError("the solver's method, shape, dx, control or contexts no longer match the values "
+            raise ExperimentalHydrologyError("the router's method, shape, dx, control or context no longer match the values "
                                              "sealed at construction; refusing before any compiled call")
         if ctx.method != method:
-            raise ExperimentalHydrologyError(f"the solver was prepared for {ctx.method!r}, not {method!r}")
+            raise ExperimentalHydrologyError(f"the router was prepared for {ctx.method!r}, not {method!r}")
         if sorted(ctx.arrays) != [fingerprint[0] for fingerprint in ctx.fingerprints]:
             raise ExperimentalHydrologyError("the static array set differs from the sealed one; refusing")
         for fingerprint in ctx.fingerprints:
             _check_array(fingerprint[0], ctx.arrays.get(fingerprint[0]), fingerprint, read_only=True)
-        for (name, _dtype), fingerprint in zip(_HYDROLOGY_ARRAYS, self._hydrology_fingerprints, strict=True):
-            _check_array(f"hydrology.{name}", getattr(hyd, name), (f"hydrology.{name}", *fingerprint[1:]), read_only=True)
-        n = ctx.n_cells
-        if (hyd.active.shape != (n,) or hyd.conveyance.shape != (n,) or hyd.column_static.shape != (n, 6)
-                or hyd.n_cells != n or hyd.shape != ctx.shape):
-            raise ExperimentalHydrologyError("the column context's arrays do not match the lateral context; refusing")
         if ctx.method == "explicit" and self.control.friction_treatment != "lagged":
             raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; refusing before any "
                                              "compiled call")
-        return ctx, hyd, float(self.control.cfl_max), str(self.control.limiter)
-
-    def _column(self, rain_rate_m_per_s: Any, state: HydraulicState, dt_s: float) -> ColumnStep:
-        _ctx, hyd, _cfl, _limiter = self._guard(self.method)
-        return hn.prepared_column_step(hyd, state.depth_m, state.soil_water_m, rain_rate_m_per_s, dt_s)
+        return ctx, float(self.control.cfl_max), str(self.control.limiter)
 
     @staticmethod
     def _cell_input(depth: Any, n: int) -> np.ndarray:
         flat = _flat64(depth)
         if flat.shape != (n,) or flat.dtype != np.float64:
-            raise ExperimentalHydrologyError("column depth does not match the prepared context; refusing")
+            raise ExperimentalHydrologyError("surface depth does not match the prepared context; refusing")
         return flat
 
     def describe(self) -> dict[str, Any]:
         info = super().describe()
         info.update({
-            "context": self._context.summary(), "hydrology_context": self._hydrology.summary(),
-            "kernels": kernel_provenance(), "transfer_scope": NUMBA_TRANSFER_SCOPE,
-            "array_policy": "exact host float64 ndarrays; strided or read-only state arrays are copied once per step to "
+            "context": self._context.summary(), "kernels": kernel_provenance(), "transfer_scope": NUMBA_TRANSFER_SCOPE,
+            "array_policy": "exact host float64 ndarrays; strided or read-only arrays are copied once per step to "
                             "C-contiguous writable flat arrays (never written); outputs are fresh C-contiguous arrays",
-            "qualification": QUALIFICATION_STATUS,
         })
         return info
 
-    # -- explicit -----------------------------------------------------------------------------------------------------
-    def _explicit(self, col: ColumnStep, state: HydraulicState, dt: float, t_new: float) -> HydraulicStep:
-        ctx, _hyd, cfl_limit, _limiter = self._guard("explicit")
+    # -- the compiled lateral core (called by `step` with check_depth=True and by the historical solver with False) -------
+    def _lateral(self, hc: Any, qx_old: Any, qy_old: Any, dt: float, t_new: float, *, check_depth: bool) -> SurfaceStep:
+        ctx, cfl_limit, limiter = self._guard(self.method)
+        n = ctx.n_cells
+        depth = self._cell_input(hc, n)
+        if check_depth and (not np.all(np.isfinite(depth)) or np.any(depth < 0.0)):
+            resolve_flags(ctx.method, INPUT_DEPTH_BITS[ctx.method], (False,) * 5, False, 0.0, cfl_limit, limiter)
+        if ctx.method == "explicit":
+            return self._explicit_kernel(ctx, cfl_limit, hc, depth, dt, t_new)
+        return self._local_kernel(ctx, cfl_limit, limiter, hc, depth, qx_old, qy_old, dt, t_new)
+
+    def _explicit_kernel(self, ctx: NumbaExperimentalContext, cfl_limit: float, hc_in: Any, hc: np.ndarray, dt: float,
+                         t_new: float) -> SurfaceStep:
         n, dx = ctx.n_cells, ctx.dx_m
         shape = ctx.shape
         area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
-        hc = self._cell_input(col.depth_m, n)
         q_used, out_vol, h_new, velocity = (np.empty(n, dtype=np.float64) for _ in range(4))
         scratch = np.empty((4, n), dtype=np.float64)  # operand rows of the four reference sums
         maxima = np.empty(2, dtype=np.float64)
@@ -718,24 +731,21 @@ class NumbaHydraulicSolver(CpuHydraulicSolver):
             flags |= EXPLICIT_BITS["cfl"]
         scalars = tuple(not math.isfinite(float(v)) for v in (storage, export, residual, gtol, outlet_q))
         resolve_flags("explicit", flags, scalars, bool(abs(residual) > gtol), max_cfl, cfl_limit, "off")
-        new_state = HydraulicState(t_new, h_new.reshape(shape), col.soil_water_m)
-        return HydraulicStep(
-            method="explicit", implementation=self.implementation, dt_s=dt, state=new_state, column=col,
+        return SurfaceStep(
+            method="explicit", implementation=self.implementation, dt_s=dt, state=SurfaceState(t_new, h_new.reshape(shape)),
             velocity_m_s=velocity.reshape(shape), face_volume_m3={"out": out_vol.reshape(shape)},
             used_flux_m2_s={"out": q_used.reshape(shape)}, export_m3=export, outlet_discharge_m3_s=outlet_q,
             storage_change_m3=storage, budget_residual_m3=residual, max_cfl=max_cfl,
             max_cell_balance_residual_m=float(maxima[1]), limited_cells=0, limited_volume_m3=0.0,
-            cfl_kind=CFL_NAMES["explicit"], face_flow_depth_m={"out": col.depth_m})
+            cfl_kind=CFL_NAMES["explicit"], face_flow_depth_m={"out": hc_in})
 
-    # -- local inertia ------------------------------------------------------------------------------------------------
-    def _local_inertial(self, col: ColumnStep, state: HydraulicState, dt: float, t_new: float) -> HydraulicStep:
-        ctx, _hyd, cfl_limit, limiter = self._guard("local_inertial")
+    def _local_kernel(self, ctx: NumbaExperimentalContext, cfl_limit: float, limiter: str, hc_in: Any, hc: np.ndarray,
+                      qx_in: Any, qy_in: Any, dt: float, t_new: float) -> SurfaceStep:
         ny, nx = ctx.shape
         n, dx = ctx.n_cells, ctx.dx_m
         nxf, nyf = ny * (nx + 1), (ny + 1) * nx
         area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
-        hc = self._cell_input(col.depth_m, n)
-        qx_old, qy_old = _flat64(state.qx_m2_s), _flat64(state.qy_m2_s)  # exact (ny, nx+1) / (ny+1, nx), checked by `step`
+        qx_old, qy_old = _flat64(qx_in), _flat64(qy_in)  # exact (ny, nx+1) / (ny+1, nx), checked by the caller
         if qx_old.shape != (nxf,) or qy_old.shape != (nyf,):
             raise ExperimentalHydrologyError("face fluxes do not match the prepared context; refusing")
         qx, hfx, fvx, ox = (np.empty(nxf, dtype=np.float64) for _ in range(4))
@@ -770,11 +780,120 @@ class NumbaHydraulicSolver(CpuHydraulicSolver):
         resolve_flags("local_inertial", flags, scalars, bool(abs(residual) > gtol), max_cfl, cfl_limit, limiter)
         shape_x, shape_y, shape = (ny, nx + 1), (ny + 1, nx), (ny, nx)
         qx2, qy2 = qx.reshape(shape_x), qy.reshape(shape_y)
-        new_state = HydraulicState(t_new, h_new.reshape(shape), col.soil_water_m, qx2, qy2)
-        return HydraulicStep(
-            method="local_inertial", implementation=self.implementation, dt_s=dt, state=new_state, column=col,
+        return SurfaceStep(
+            method="local_inertial", implementation=self.implementation, dt_s=dt,
+            state=SurfaceState(t_new, h_new.reshape(shape), qx2, qy2),
             velocity_m_s=speed.reshape(shape), face_volume_m3={"x": fvx.reshape(shape_x), "y": fvy.reshape(shape_y)},
             used_flux_m2_s={"x": qx2, "y": qy2}, export_m3=export, outlet_discharge_m3_s=outlet_q, storage_change_m3=storage,
             budget_residual_m3=residual, max_cfl=max_cfl, max_cell_balance_residual_m=float(maxima[0]),
             limited_cells=limited_cells, limited_volume_m3=limited_volume, cfl_kind=CFL_NAMES["local_inertial"],
             face_flow_depth_m={"x": hfx.reshape(shape_x), "y": hfy.reshape(shape_y)})
+
+
+# --- the historical solver ----------------------------------------------------------------------------------------------
+class NumbaHydraulicSolver(CpuHydraulicSolver):
+    """The compiled CPU form of `CpuHydraulicSolver` (see the module docstring). Same constructor arguments, same public
+    methods, same `HydraulicStep`; `implementation == "numba"`. Immutable after construction. The lateral stage is the
+    `NumbaSurfaceRouter` of the same graph/geometry/control (historical admission policy: none); the column stage is the
+    accepted prepared compiled column."""
+
+    implementation = "numba"
+
+    def __init__(self, method: str, graph: RoutingGraph, params: ColumnParameters, *,
+                 geometry: LocalInertialGeometry | None = None, control: HydraulicControl | None = None):
+        if not numba_available():
+            raise ExperimentalNumbaUnavailableError(
+                "the compiled CPU hydraulics require Numba (optional extra maple-syrup[numba]), which is not importable; "
+                "there is no fallback to the NumPy reference (select it explicitly)")
+        super().__init__(method, graph, params, geometry=geometry, control=control)  # all public validation, as the reference
+        self._context = self._surface.context
+        self._hydrology = hn.prepare_hydrology(graph, params)  # the accepted column context, prepared ONCE
+        hyd = self._hydrology
+        if (hyd.shape != self._context.shape or hyd.n_cells != self._context.n_cells or hyd.dx_m != self._context.dx_m):
+            raise ExperimentalHydrologyError("the prepared column context does not match the lateral context")
+        self._hydrology_fingerprints = tuple(_fingerprint(name, getattr(hyd, name)) for name, _ in _HYDROLOGY_ARRAYS)
+        self._seal = self._current_seal()
+        object.__setattr__(self, "_sealed", True)
+
+    def _build_surface(self, method: str, graph: RoutingGraph, geometry: LocalInertialGeometry | None,
+                       control: HydraulicControl) -> NumbaSurfaceRouter:
+        return NumbaSurfaceRouter(method, graph, geometry=geometry if method == "local_inertial" else None, control=control,
+                                  available_bytes_fn=UNLIMITED_ADMISSION)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if self.__dict__.get("_sealed"):
+            raise AttributeError(f"NumbaHydraulicSolver is immutable after construction (cannot set {name!r}); build a new "
+                                 "solver")
+        object.__setattr__(self, name, value)
+
+    @property
+    def context(self) -> NumbaExperimentalContext:
+        return self._context
+
+    @property
+    def hydrology_context(self) -> hn.HydrologyContext:
+        return self._hydrology
+
+    def _current_seal(self) -> tuple:
+        ctx, hyd = self._context, self._hydrology
+        ctl = self.control
+        return (ctx.method, ctx.shape, ctx.dx_m, ctx.n_cells, ctx.n_active, ctl.cfl_max, ctl.limiter, ctl.friction_treatment,
+                id(ctx), id(hyd), hyd.shape, hyd.n_cells, hyd.dx_m, hyd.model_code)
+
+    def _guard(self, method: str) -> tuple[NumbaExperimentalContext, hn.HydrologyContext, float, str]:
+        """BEFORE any compiled call: type, identity and fingerprint checks of everything a kernel indexes, and that the public
+        attributes still equal the sealed values. Returns `(context, column context, cfl_max, limiter)` taken from the SEAL,
+        never from mutable attributes."""
+        ctx, hyd = self._context, self._hydrology
+        if not isinstance(ctx, NumbaExperimentalContext) or not isinstance(hyd, hn.HydrologyContext):
+            raise ExperimentalHydrologyError("the solver's contexts are not the prepared context types; refusing before any "
+                                             "compiled call")
+        if not isinstance(self.control, HydraulicControl):
+            raise ExperimentalHydrologyError("the solver's control is not a HydraulicControl; refusing before any compiled call")
+        if self._current_seal() != self._seal or (self.method, self.shape, self.dx_m) != (ctx.method, ctx.shape, ctx.dx_m):
+            raise ExperimentalHydrologyError("the solver's method, shape, dx, control or contexts no longer match the values "
+                                             "sealed at construction; refusing before any compiled call")
+        surface = self._surface
+        if not isinstance(surface, NumbaSurfaceRouter) or surface.context is not ctx or surface.control != self.control:
+            raise ExperimentalHydrologyError("the solver's surface router no longer holds the sealed lateral context/control; "
+                                             "refusing before any compiled call")
+        if ctx.method != method:
+            raise ExperimentalHydrologyError(f"the solver was prepared for {ctx.method!r}, not {method!r}")
+        if sorted(ctx.arrays) != [fingerprint[0] for fingerprint in ctx.fingerprints]:
+            raise ExperimentalHydrologyError("the static array set differs from the sealed one; refusing")
+        for fingerprint in ctx.fingerprints:
+            _check_array(fingerprint[0], ctx.arrays.get(fingerprint[0]), fingerprint, read_only=True)
+        for (name, _dtype), fingerprint in zip(_HYDROLOGY_ARRAYS, self._hydrology_fingerprints, strict=True):
+            _check_array(f"hydrology.{name}", getattr(hyd, name), (f"hydrology.{name}", *fingerprint[1:]), read_only=True)
+        n = ctx.n_cells
+        if (hyd.active.shape != (n,) or hyd.conveyance.shape != (n,) or hyd.column_static.shape != (n, 6)
+                or hyd.n_cells != n or hyd.shape != ctx.shape):
+            raise ExperimentalHydrologyError("the column context's arrays do not match the lateral context; refusing")
+        if ctx.method == "explicit" and self.control.friction_treatment != "lagged":
+            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; refusing before any "
+                                             "compiled call")
+        return ctx, hyd, float(self.control.cfl_max), str(self.control.limiter)
+
+    def _column(self, rain_rate_m_per_s: Any, state: HydraulicState, dt_s: float) -> ColumnStep:
+        _ctx, hyd, _cfl, _limiter = self._guard(self.method)
+        return hn.prepared_column_step(hyd, state.depth_m, state.soil_water_m, rain_rate_m_per_s, dt_s)
+
+    def describe(self) -> dict[str, Any]:
+        info = super().describe()
+        info.update({
+            "context": self._context.summary(), "hydrology_context": self._hydrology.summary(),
+            "kernels": kernel_provenance(), "transfer_scope": NUMBA_TRANSFER_SCOPE,
+            "array_policy": "exact host float64 ndarrays; strided or read-only state arrays are copied once per step to "
+                            "C-contiguous writable flat arrays (never written); outputs are fresh C-contiguous arrays",
+            "qualification": QUALIFICATION_STATUS,
+        })
+        return info
+
+    # -- the lateral stage: the solver's own seal, then the router's compiled core on the column's depth -------------------
+    def _explicit(self, col: ColumnStep, state: HydraulicState, dt: float, t_new: float) -> HydraulicStep:
+        self._guard("explicit")
+        return super()._explicit(col, state, dt, t_new)
+
+    def _local_inertial(self, col: ColumnStep, state: HydraulicState, dt: float, t_new: float) -> HydraulicStep:
+        self._guard("local_inertial")
+        return super()._local_inertial(col, state, dt, t_new)

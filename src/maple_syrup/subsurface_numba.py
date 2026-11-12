@@ -12,6 +12,18 @@ loop (same expression order, same libm `expm1`) and reused by every cell. There 
 changed `dt` can never see a stale factor. This reuse is conditional on the CURRENT common properties; per-cell
 heterogeneous conductance maps would need the per-cell evaluation again.
 
+Phase 1 extensions (`subsurface.DIFFUSION_MODES`, `subsurface.BOTTOM_DRAINAGE_MODES`): in the donor-depth
+diffusion mode a SECOND local `(L - 1,)` factor array holds the upward-donor factor (`directional=1`, distinct
+conductance array); the per-cell exchange reads the current pair gradient `g = (ti - tj) / s` and multiplies it by
+the factor of the donor that gradient selects. In constant mode the second array IS the first (no allocation) and
+the arithmetic is the historical `((ti - tj) / s) e`, bit for bit. With `bottom_code=0` (closed bottom) the cascade
+first accumulates the deeper pore capacity bottom-up into the interface rows of `perc` (no per-thread scratch, no
+layer cap) and then forwards `min(excess, capacity)`; the bottom layer forwards nothing and `drain` is exactly 0.
+Optional post-cap evaporation share (`has_share != 0`, a caller (N,) field): the stage keeps the historical
+`limited = min(demand, available)` and debits `limited x share`, reporting `demand x share - actual` as unmet; with
+`has_share == 0` the historical statements run in their historical order; the share pointer then aliases the
+already resident `thickness_m` parameter buffer (never read, nothing allocated, the parameter ledger is unchanged).
+
 Numba is imported lazily; `prepare_runner` compiles the kernel once (a one-cell warm-up call, so the cost sits at
 `prepare_column`, outside steps). Missing Numba is a `SubsurfaceBackendUnavailableError`; there is no fallback to the
 reference. Every output array is freshly allocated per call; the kernel reads the caller's arrays and never writes
@@ -72,20 +84,30 @@ def _build(numba: Any):
 
     @jit
     def step_kernel(w_in, add, pet, active, dt, dz, res_m, fc_m, sat_m, cap_tol, cond, pair_inv, res_theta0, stress,
-                    factor, gravity, cell_tol, no_flag, w_out, perc, diff, ret, drain, evap, unmet, rows):
+                    factor, gravity, cell_tol, no_flag, cond_up, directional, bottom, share, has_share, w_out, perc,
+                    diff, ret, drain, evap, unmet, rows):
         n_layers = w_in.shape[0]
         n_cells = w_in.shape[1]
         n_if = n_layers - 1
         # Per-interface exchange factor -expm1(-((G s) dt)): the properties are COMMON to every cell in this first
         # implementation, so the factor is evaluated once per interface per call (a local array, never cached across
         # calls) with the very expression order of the per-cell form, then reused for all cells. A later per-cell
-        # heterogeneous conductance map would have to move this back inside the cell loop.
+        # heterogeneous conductance map would have to move this back inside the cell loop. In the donor-depth mode
+        # (directional != 0) a second local array holds the upward-donor factor; otherwise it aliases the first.
         relaxation_factors = np.empty(n_if, dtype=np.float64)  # distinct from the scalar evaporation `factor`
+        if directional != 0:
+            relaxation_factors_up = np.empty(n_if, dtype=np.float64)
+        else:
+            relaxation_factors_up = relaxation_factors
         for k in range(n_if):
             s = pair_inv[k]
             rate = cond[k] * s
             x = rate * dt
             relaxation_factors[k] = -math.expm1(-x)
+            if directional != 0:
+                rate_up = cond_up[k] * s
+                x_up = rate_up * dt
+                relaxation_factors_up[k] = -math.expm1(-x_up)
         for i in range(n_cells):
             a = active[i] != 0
             f = 0
@@ -118,6 +140,15 @@ def _build(numba: Any):
                 f |= 1 << 7
             if (not a) and e_pot != 0.0:
                 f |= 1 << 8
+            share_ok = True  # derived-output bits are withheld for a cell whose share is invalid (bits 15/16 name it)
+            if has_share != 0:  # every cell, inactive included
+                sv = share[i]
+                if not math.isfinite(sv):
+                    f |= 1 << 15
+                    share_ok = False
+                if sv < 0.0 or sv > 1.0:
+                    f |= 1 << 16
+                    share_ok = False
             for k in range(n_if):
                 perc[k, i] = 0.0
                 diff[k, i] = 0.0
@@ -137,19 +168,38 @@ def _build(numba: Any):
                     w_out[l, i] = w
                 # gravity cascade, top to bottom within the step
                 if gravity != 0:
+                    if bottom == 0:
+                        # closed bottom: deeper pore capacity (post-addition storage) accumulated bottom-up into the
+                        # interface rows of perc; exactly 0 beneath the bottom layer; overwritten by the forward amount
+                        capacity = 0.0
+                        for k in range(n_if - 1, -1, -1):
+                            term = sat_m[k + 1] - w_out[k + 1, i]
+                            if term < 0.0:  # noqa: PLR1730 - explicit ordered FP comparison, NaN-propagating; no max()
+                                term = 0.0
+                            capacity = capacity + term
+                            perc[k, i] = capacity
                     carry = 0.0
                     for l in range(n_layers):
                         w = w_out[l, i] + carry
                         ex = w - fc_m[l]
                         if ex > 0.0:
-                            w = w - ex
-                            carry = ex
+                            if bottom != 0:
+                                fwd = ex
+                            elif l < n_if:
+                                cap = perc[l, i]
+                                fwd = ex
+                                if not (ex < cap):
+                                    fwd = cap
+                            else:
+                                fwd = 0.0
+                            w = w - fwd
+                            carry = fwd
                         else:
                             carry = 0.0
                         w_out[l, i] = w
                         if l < n_if:
                             perc[l, i] = carry
-                    drain_v = carry
+                    drain_v = carry  # exactly 0 with a closed bottom
                 # evaporation from layer 0
                 w0 = w_out[0, i]
                 theta0 = w0 / dz[0]
@@ -165,11 +215,20 @@ def _build(numba: Any):
                 if avail0 < 0.0:  # noqa: PLR1730 - explicit ordered FP comparison, NaN-propagating; no max()
                     avail0 = 0.0
                 if demand <= avail0:
-                    evap_v = demand
+                    limited = demand
                 else:
-                    evap_v = avail0
-                w_out[0, i] = w0 - evap_v
-                unmet_v = demand - evap_v
+                    limited = avail0
+                if has_share != 0:
+                    # post-cap share: actual E = limited x s, unmet = demand x s - actual E (partitioned potential
+                    # minus actual); the (1 - s) remainder of `limited` stays for LEAF's separate T request
+                    sv = share[i]
+                    evap_v = limited * sv
+                    w_out[0, i] = w0 - evap_v
+                    unmet_v = demand * sv - evap_v
+                else:
+                    evap_v = limited
+                    w_out[0, i] = w0 - evap_v
+                    unmet_v = demand - evap_v
                 # sequential pair diffusion from the top
                 for k in range(n_if):
                     wi = w_out[k, i]
@@ -177,8 +236,12 @@ def _build(numba: Any):
                     ti = wi / dz[k]
                     tj = wj / dz[k + 1]
                     s = pair_inv[k]
-                    e = relaxation_factors[k]
-                    amount = ((ti - tj) / s) * e
+                    g = (ti - tj) / s  # the CURRENT pair gradient after the earlier pairs of this step
+                    if g > 0.0:
+                        e = relaxation_factors[k]  # upper layer donates (the common factor in constant mode)
+                    else:
+                        e = relaxation_factors_up[k]  # lower layer donates (aliases the common factor in constant mode)
+                    amount = g * e
                     if amount > 0.0:
                         down = True
                         amt = amount
@@ -212,28 +275,31 @@ def _build(numba: Any):
                         w_out[k + 1, i] = wj - act
                         w_out[k, i] = wi + act
                         diff[k, i] = -act
-                # output checks
+                # output checks (collected in fo, applied only when the share is valid)
+                fo = 0
                 after = 0.0
                 for l in range(n_layers):
                     w = w_out[l, i]
                     if not math.isfinite(w):
-                        f |= 1 << 10
+                        fo |= 1 << 10
                     if w < 0.0:
-                        f |= 1 << 11
+                        fo |= 1 << 11
                     if w > sat_m[l] + cap_tol[l]:
-                        f |= 1 << 12
+                        fo |= 1 << 12
                     after = after + w
                 closure = (after - before) - (((added - ret_v) - drain_v) - evap_v)
                 scale = ((((before + after) + added) + ret_v) + drain_v) + evap_v
                 if abs(closure) > cell_tol * scale:
-                    f |= 1 << 13
+                    fo |= 1 << 13
                 nonfinite = ((not math.isfinite(ret_v)) or (not math.isfinite(drain_v)) or (not math.isfinite(evap_v))
                              or (not math.isfinite(unmet_v)) or (not math.isfinite(closure)))
                 for k in range(n_if):
                     if (not math.isfinite(perc[k, i])) or (not math.isfinite(diff[k, i])):
                         nonfinite = True
                 if nonfinite:
-                    f |= 1 << 14
+                    fo |= 1 << 14
+                if share_ok:
+                    f |= fo
             ret[i] = ret_v
             drain[i] = drain_v
             evap[i] = evap_v
@@ -275,9 +341,12 @@ def reset_compiled() -> None:
 
 
 def _launch(kernel, params: KernelParameters, water_in: np.ndarray, added: np.ndarray, pet: np.ndarray,
-            active_u8: np.ndarray, dt: float) -> StepArrays:
+            active_u8: np.ndarray, dt: float, share: np.ndarray | None = None) -> StepArrays:
     n_layers, n_cells = water_in.shape
     n_if = n_layers - 1
+    # has_share == 0: the kernel never reads the share pointer, so an ALREADY resident nonempty FP64 parameter buffer
+    # (thickness_m, length L >= 1) is passed; no extra allocation exists and the parameter ledger stays exact
+    share_arr, has_share = (params.thickness_m, 0) if share is None else (share, 1)
     water_out = np.empty((n_layers, n_cells), dtype=np.float64)
     percolation = np.empty((n_if, n_cells), dtype=np.float64)
     diffusion = np.empty((n_if, n_cells), dtype=np.float64)
@@ -290,6 +359,7 @@ def _launch(kernel, params: KernelParameters, water_in: np.ndarray, added: np.nd
            params.saturation_m, params.capacity_tolerance_m, params.interface_conductance_m_s,
            params.pair_inverse_thickness, params.residual_theta0, params.theta_evaporation_stress,
            params.evaporation_factor, params.gravity_code, params.cell_closure_coefficient, NO_FLAG,
+           params.interface_conductance_up_m_s, params.directional, params.bottom_code, share_arr, has_share,
            water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
     return StepArrays(water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
 
@@ -305,13 +375,20 @@ def prepare_runner(layers: SoilLayers):
     # Warm-up on one inactive cell with zero state: compiles the single (float64 C arrays) specialisation here.
     _launch(kernel, params, np.zeros((n_layers, 1)), np.zeros((n_layers, 1)), np.zeros(1), np.zeros(1, np.uint8), 1.0)
 
-    def run(column, water_in, added, pet, dt):
-        return _launch(kernel, params, water_in, added, pet, column.active_u8, dt)
+    def run(column, water_in, added, pet, dt, share=None):
+        return _launch(kernel, params, water_in, added, pet, column.active_u8, dt, share)
 
-    info = {"implementation": "numba serial cell/layer loops, fastmath=False; per-interface expm1 factor evaluated "
-                              "once per call before the cell loop (common properties), local array of L-1 doubles",
+    directional = bool(params.directional)
+    info = {"implementation": "numba serial cell/layer loops, fastmath=False; per-interface expm1 factor(s) evaluated "
+                              "once per call before the cell loop (common properties), local array(s) of L-1 doubles",
             "versions": numba_versions(),
             "expm1": "LLVM/libm expm1 (may differ from NumPy by an ulp); declared bound rtol 2e-12 / atol 1e-14",
-            "parameter_host_bytes": int(sum(int(getattr(params, name).nbytes) for name in params._fields
-                                            if hasattr(getattr(params, name), "nbytes")))}
+            "diffusion_mode": layers.diffusion_mode,
+            "bottom_drainage": layers.bottom_drainage,
+            "factor_arrays_per_call": 2 if directional else 1,
+            "factor_scratch_host_bytes": (2 if directional else 1) * max(n_layers - 1, 1) * 8,
+            # the upward conductance aliases the downward array in constant mode: count each distinct buffer once
+            "parameter_host_bytes": int(sum(int(a.nbytes) for a in {id(getattr(params, name)): getattr(params, name)
+                                                                    for name in params._fields
+                                                                    if hasattr(getattr(params, name), "nbytes")}.values()))}
     return run, info

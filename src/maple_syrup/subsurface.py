@@ -24,15 +24,37 @@ Stage order of one step (dt > 0, active cells only; dt == 0 is the identity and 
   2. addition: `water += added_water_m` per layer; the part of an addition that would exceed the layer's saturation
      depth is returned to the surface (`surface_return_m`), never discarded or clipped,
   3. gravity cascade (`gravity_drainage=True`): top-to-bottom within the step, water above field capacity drains to
-     the layer below (`percolation_m`), the bottom layer's excess leaves as `drainage_m`. With `gravity_drainage=False`
-     nothing moves (isolated equation tests),
+     the layer below (`percolation_m`); with `bottom_drainage="open"` (the default, the historical behaviour) the
+     bottom layer's excess leaves as `drainage_m`. With `bottom_drainage="closed"` (Phase 1 extension) nothing
+     leaves the profile: each layer forwards min(its excess above field capacity, the remaining pore capacity of ALL
+     deeper layers measured on the post-addition storage) and keeps the rest above field capacity (bounded by its
+     saturation); `drainage_m` is exactly 0, nothing returns to the surface, nothing is filled upward. With
+     `gravity_drainage=False` nothing moves at all (isolated equation tests), whatever the bottom option,
   4. evaporation from layer 0 (the physically declared upper evaporation layer of this scope): multiplier 0 at/below
      residual, (theta / theta_stress)^2 between residual and theta_stress, 1 above; demand = factor x E x dt x
-     multiplier, withdrawn up to the water above residual; `evaporation_unmet_m` reports the rest,
+     multiplier, withdrawn up to the water above residual; `evaporation_unmet_m` reports the rest.
+     OPTIONAL post-cap evaporation share (`step(..., evaporation_share=s)`, user decision 2026-11-10, EcoHyD
+     `WaterCell.cpp:84-92` caps the COMBINED upper-layer loss by the available water BEFORE its E/T partition): with a
+     per-cell share s in [0, 1] (finite on EVERY cell, inactive included; a caller/LEAF-derived field), the supplied
+     `potential_evaporation_m_s` is the UNPARTITIONED combined potential soil loss rate and the stage computes
+         demand          = factor x E x dt x multiplier                 (potential combined soil loss)
+         limited         = min(demand, max(w0 - residual_0, 0))         (moisture-limited combined loss)
+         evaporation     = limited x s                                  (ACTUAL soil evaporation, the only debit)
+         unmet           = demand x s - evaporation                     (partitioned potential E minus actual E)
+     The remaining water (including the (1 - s) part of `limited`) stays in the layer for LEAF's later, separately
+     accounted transpiration request; nothing is subtracted for T here and no E + T <= PET cap exists. With
+     `evaporation_share=None` (default) the historical arithmetic runs in its historical order, bit for bit; s = 1
+     everywhere reproduces it exactly (x * 1.0 == x) and s = 0 removes no water,
   5. diffusive redistribution between adjacent layers, sequential pair exchange from the top: conductance
      G = D / (centre separation) [m/s], exact two-compartment amount (theta_i - theta_j) / (1/dz_i + 1/dz_j) x
      (-expm1(-G (1/dz_i + 1/dz_j) dt)), bounded BEFORE transfer by the donor's water above residual and the
-     receiver's saturation capacity, both sides updated by the same number,
+     receiver's saturation capacity, both sides updated by the same number. `diffusion_mode="constant"` (default,
+     historical) uses one common D per interface for both directions. `diffusion_mode="tietjen_donor_depth"`
+     (Phase 1 extension, Tietjen et al. 2009 eq. 9 / EcoHyD `WaterCell::layerDiffusion`) uses per interface the
+     explicit conductivity K_ij [m/s] and the dimensionless calibrated coefficient d >= 0 with the DONOR layer's
+     thickness: D_down = d K_ij h_i, D_up = d K_ij h_(i+1); the direction is chosen from the CURRENT pair gradient
+     (after the earlier pairs of the same step) and the matching factor is applied; the exact bounded pair update
+     is unchanged. The two factors per interface are evaluated once per step, never per cell,
   6. output checks (finite, >= 0, <= saturation, per-cell closure) and ONE host read of the batched packet.
 
 Every tolerance is the MAPLE-derived `conservation.volume_roundoff_bound_m3` (no new empirical floor): the per-cell
@@ -45,7 +67,9 @@ per-interface factor kernel then one CuPy RawKernel thread per column, bounded l
 count, `subsurface_cuda`). Because the layer properties are COMMON to every cell in this first implementation, the
 compiled backends evaluate the per-interface exchange factor `-expm1(-((G s) dt))` once per interface per step (same
 expression order, same math implementation) and reuse it for all cells; the reference keeps the scalar evaluation
-per interface it always had. That reuse is conditional on common properties, not a claim about per-cell maps. A missing backend
+per interface it always had. In the donor-depth mode there are two such factors per interface (downward/upward
+conductance), still once per interface per step; in the constant mode the single factor serves both directions and
+the old arrays/expressions are reused bit for bit. That reuse is conditional on common properties, not a claim about per-cell maps. A missing backend
 is a `SubsurfaceBackendUnavailableError`, never a silent fallback. Dynamic arrays must be genuine `numpy.ndarray` /
 `cupy.ndarray` objects (no subclass, no masked array) of the column's namespace, float64, C-contiguous and exactly
 shaped; nothing is converted implicitly.
@@ -84,6 +108,8 @@ from maple_syrup.conservation import volume_roundoff_bound_m3
 
 __all__ = [
     "BACKENDS",
+    "BOTTOM_DRAINAGE_MODES",
+    "DIFFUSION_MODES",
     "FLAG_MESSAGES",
     "KERNEL_SCRATCH_DOUBLES_PER_CELL",
     "LAYER_OPERATION_TERMS",
@@ -114,6 +140,7 @@ __all__ = [
     "column_state",
     "default_host_available_bytes",
     "estimate_step_memory",
+    "factor_scratch_doubles",
     "initialize_profile",
     "kernel_parameter_doubles",
     "kernel_parameters",
@@ -123,6 +150,7 @@ __all__ = [
     "reference_step",
     "soil_layers",
     "step",
+    "step_memory",
     "storage_m3",
     "summary",
     "uniform_state",
@@ -130,6 +158,13 @@ __all__ = [
 
 BACKENDS = ("numpy", "numba", "cuda")
 STAGE_ORDER = ("validation", "addition", "gravity_cascade", "evaporation", "diffusion", "output_checks")
+# Explicit public mode names. "constant": one common D [m2/s] per interface for both directions (historical default).
+# "tietjen_donor_depth": D = d x K_ij x h_donor per direction (Tietjen et al. 2009 eq. 9, EcoHyD layerDiffusion).
+DIFFUSION_MODES = ("constant", "tietjen_donor_depth")
+# "open": the bottom layer's excess above field capacity leaves as drainage (historical default). "closed": no water
+# leaves the profile; the cascade is capacity-limited by the deeper pore space and the remainder stays above field
+# capacity in place. Independent of `gravity_drainage`, which switches the whole cascade off.
+BOTTOM_DRAINAGE_MODES = ("open", "closed")
 # Floating-point accumulations one layer value undergoes in one step (addition, saturation return, cascade inflow,
 # cascade outflow, evaporation, diffusion with the pair above, diffusion with the pair below) plus one.
 LAYER_OPERATION_TERMS = 8
@@ -170,6 +205,8 @@ FLAG_MESSAGES = (
     "step produced soil water above the layer saturation depth",  # 12
     "per-cell water closure violated beyond the FP64 bound",  # 13
     "step produced a non-finite flux",  # 14
+    "evaporation_share must be finite everywhere (inactive cells included)",  # 15
+    "evaporation_share must lie within [0, 1] everywhere (inactive cells included)",  # 16
 )
 N_FLAGS = len(FLAG_MESSAGES)
 
@@ -258,7 +295,13 @@ def _require_finite(name: str, *arrays: np.ndarray) -> None:
 # --- layers ------------------------------------------------------------------------------------------------------------
 @dataclass(frozen=True, eq=False)
 class SoilLayers:
-    """Common per-layer soil properties (host, frozen, owned copies). Built by `soil_layers`."""
+    """Common per-layer soil properties (host, frozen, owned copies). Built by `soil_layers`.
+
+    Diffusion fields by mode: in "constant" mode `diffusivity_m2_s` / `interface_conductance_m_s` are the common
+    per-interface D and G (as before) and the `*_down_*` / `*_up_*` fields ALIAS those same frozen arrays (no new
+    storage, no reinterpretation); `interface_conductivity_m_s` and `diffusion_coefficient` are None. In
+    "tietjen_donor_depth" mode `diffusivity_m2_s` and `interface_conductance_m_s` are None (there is no single common
+    D to report) and the directional fields hold D_down = d K h_i, D_up = d K h_(i+1) and their conductances."""
 
     depth_edges_m: np.ndarray  # (L + 1,) strictly increasing from 0
     thickness_m: np.ndarray  # (L,)
@@ -266,56 +309,150 @@ class SoilLayers:
     theta_residual: np.ndarray  # (L,)
     theta_field_capacity: np.ndarray  # (L,)
     theta_saturation: np.ndarray  # (L,)
-    diffusivity_m2_s: np.ndarray  # (L - 1,) per interface
+    diffusivity_m2_s: np.ndarray | None  # (L - 1,) per interface, constant mode only
     theta_evaporation_stress: float  # layer 0 threshold of the quadratic evaporation reduction
     evaporation_factor: float  # nonnegative multiplier of the potential rate (1.2 = bare upper layer reference)
     gravity_drainage: bool
     residual_m: np.ndarray  # (L,) theta_residual x thickness
     field_capacity_m: np.ndarray  # (L,)
     saturation_m: np.ndarray  # (L,)
-    interface_conductance_m_s: np.ndarray  # (L - 1,) D / centre separation
+    interface_conductance_m_s: np.ndarray | None  # (L - 1,) D / centre separation, constant mode only
     pair_inverse_thickness: np.ndarray  # (L - 1,) 1/dz_k + 1/dz_{k+1}
     capacity_tolerance_m: np.ndarray  # (L,) MAPLE coefficient(LAYER_OPERATION_TERMS) x saturation_m
+    diffusion_mode: str = "constant"
+    bottom_drainage: str = "open"
+    interface_conductivity_m_s: np.ndarray | None = None  # (L - 1,) K_ij, donor-depth mode only
+    diffusion_coefficient: float | None = None  # dimensionless d, donor-depth mode only
+    diffusivity_down_m2_s: np.ndarray | None = None  # (L - 1,) D used when the upper layer donates
+    diffusivity_up_m2_s: np.ndarray | None = None  # (L - 1,) D used when the lower layer donates
+    interface_conductance_down_m_s: np.ndarray | None = None  # (L - 1,) D_down / centre separation
+    interface_conductance_up_m_s: np.ndarray | None = None  # (L - 1,) D_up / centre separation
 
     @property
     def n_layers(self) -> int:
         return int(self.thickness_m.shape[0])
 
+    @property
+    def directional_diffusion(self) -> bool:
+        """True when the downward and upward conductances are distinct arrays (donor-depth mode)."""
+        return self.interface_conductance_down_m_s is not self.interface_conductance_up_m_s
+
+    def identity(self) -> dict[str, Any]:
+        """Source-bound identity of this exact parameterisation: the modes, flags and the SHA-256 of every owned
+        vector's bytes in a fixed order (host, cold use: a restart/acceptance record, not a per-step check)."""
+        import hashlib
+
+        h = hashlib.sha256()
+        h.update(f"diffusion_mode={self.diffusion_mode};bottom_drainage={self.bottom_drainage};"
+                 f"gravity_drainage={self.gravity_drainage};stress={self.theta_evaporation_stress!r};"
+                 f"factor={self.evaporation_factor!r};d={self.diffusion_coefficient!r};".encode())
+        for name in ("depth_edges_m", "theta_residual", "theta_field_capacity", "theta_saturation",
+                     "diffusivity_m2_s", "interface_conductivity_m_s", "diffusivity_down_m2_s", "diffusivity_up_m2_s"):
+            value = getattr(self, name)
+            h.update(name.encode())
+            h.update(b"none" if value is None else np.ascontiguousarray(value).tobytes())
+        return {"sha256": h.hexdigest(), "diffusion_mode": self.diffusion_mode, "bottom_drainage": self.bottom_drainage,
+                "gravity_drainage": self.gravity_drainage, "n_layers": self.n_layers}
+
     def summary(self) -> dict[str, Any]:
+        def listed(a: np.ndarray | None) -> list[float] | None:
+            return None if a is None else a.tolist()
+
         return {
             "n_layers": self.n_layers,
             "depth_edges_m": self.depth_edges_m.tolist(),
             "theta_residual": self.theta_residual.tolist(),
             "theta_field_capacity": self.theta_field_capacity.tolist(),
             "theta_saturation": self.theta_saturation.tolist(),
-            "diffusivity_m2_s": self.diffusivity_m2_s.tolist(),
-            "interface_conductance_m_s": self.interface_conductance_m_s.tolist(),
+            "diffusion_mode": self.diffusion_mode,
+            "diffusivity_m2_s": listed(self.diffusivity_m2_s),
+            "interface_conductance_m_s": listed(self.interface_conductance_m_s),
+            "interface_conductivity_m_s": listed(self.interface_conductivity_m_s),
+            "diffusion_coefficient": self.diffusion_coefficient,
+            "diffusivity_down_m2_s": listed(self.diffusivity_down_m2_s),
+            "diffusivity_up_m2_s": listed(self.diffusivity_up_m2_s),
+            "interface_conductance_down_m_s": listed(self.interface_conductance_down_m_s),
+            "interface_conductance_up_m_s": listed(self.interface_conductance_up_m_s),
+            "diffusion_law": ("common D per interface, both directions" if self.diffusion_mode == "constant" else
+                              "D = d x K_ij x h_donor (Tietjen 2009 eq. 9 / EcoHyD layerDiffusion), direction from the "
+                              "current pair gradient, exact bounded pair update"),
+            "bottom_drainage": self.bottom_drainage,
             "theta_evaporation_stress": self.theta_evaporation_stress,
             "evaporation_factor": self.evaporation_factor,
             "gravity_drainage": self.gravity_drainage,
             "evaporation_layer": 0,
             "stage_order": list(STAGE_ORDER),
-            "vector_bytes": layer_vector_doubles(self.n_layers) * 8,
+            "vector_bytes": layer_vector_doubles(self.n_layers, self.diffusion_mode) * 8,
+            "identity": self.identity(),
         }
 
 
-def layer_vector_doubles(n_layers: int) -> int:
-    """Doubles held by the thirteen SoilLayers vectors: (L + 1) edges, nine length-L vectors, three length-(L-1)."""
+def _check_diffusion_mode(diffusion_mode: Any) -> str:
+    if not isinstance(diffusion_mode, str) or diffusion_mode not in DIFFUSION_MODES:
+        raise SubsurfaceError(f"diffusion_mode must be one of {DIFFUSION_MODES}, got {diffusion_mode!r}")
+    return diffusion_mode
+
+
+def _check_bottom_drainage(bottom_drainage: Any) -> str:
+    if not isinstance(bottom_drainage, str) or bottom_drainage not in BOTTOM_DRAINAGE_MODES:
+        raise SubsurfaceError(f"bottom_drainage must be one of {BOTTOM_DRAINAGE_MODES}, got {bottom_drainage!r}")
+    return bottom_drainage
+
+
+def layer_vector_doubles(n_layers: int, diffusion_mode: str = "constant") -> int:
+    """Doubles held by the SoilLayers vectors: (L + 1) edges, nine length-L vectors, and per interface three
+    length-(L-1) vectors in constant mode (D, G, pair inverse thickness; the directional fields alias D and G) or six
+    in donor-depth mode (K, D_down, D_up, G_down, G_up, pair inverse thickness)."""
     n = int(n_layers)
-    return (n + 1) + 9 * n + 3 * max(n - 1, 0)
+    per_interface = 3 if _check_diffusion_mode(diffusion_mode) == "constant" else 6
+    return (n + 1) + 9 * n + per_interface * max(n - 1, 0)
+
+
+def _interface_array(value: Any, n: int, name: str) -> np.ndarray:
+    """A nonnegative finite float64 `(L-1,)` interface array from a scalar or sequence; for one layer a scalar or an
+    empty sequence (there is no interface) is accepted and the result is empty."""
+    if n > 1:
+        arr = _layer_array(value, n - 1, name)
+    else:
+        if isinstance(value, (bool, np.bool_)):
+            raise SubsurfaceError(f"{name} must be numeric, got a Boolean")
+        raw = np.asarray(value)
+        if raw.dtype.kind not in "iuf" or raw.ndim > 1 or (raw.ndim == 1 and raw.shape[0] != 0):
+            raise SubsurfaceError(f"a single layer accepts a scalar or an empty {name}")
+        if raw.ndim == 0 and not np.isfinite(float(raw)):
+            raise SubsurfaceError(f"{name} must be finite")
+        if raw.ndim == 0 and float(raw) < 0.0:
+            raise SubsurfaceError(f"{name} must be >= 0")
+        arr = np.zeros(0, dtype=np.float64)
+    if np.any(arr < 0.0):
+        raise SubsurfaceError(f"{name} must be >= 0")
+    return arr
 
 
 def soil_layers(depth_edges_m: Any, *, theta_residual: Any, theta_field_capacity: Any, theta_saturation: Any,
-                diffusivity_m2_s: Any, theta_evaporation_stress: Any, evaporation_factor: Any = 1.0,
-                gravity_drainage: bool = True) -> SoilLayers:
+                diffusivity_m2_s: Any = None, theta_evaporation_stress: Any, evaporation_factor: Any = 1.0,
+                gravity_drainage: bool = True, diffusion_mode: str = "constant",
+                interface_conductivity_m_s: Any = None, diffusion_coefficient: Any = None,
+                bottom_drainage: str = "open") -> SoilLayers:
     """Validate and freeze a common layer stack. `depth_edges_m` are strictly increasing from 0 (L = len - 1 >= 1
     layers). Retention values are scalars or length-L sequences with 0 <= residual <= field capacity <= saturation <= 1
-    and residual < saturation in every layer. `diffusivity_m2_s` (D, m2/s, >= 0) is a scalar or a length-(L-1)
-    sequence per interface; the conductance is D / (centre separation) and is NOT rescaled by the pair thickness
-    (for the two-layer MAHLERAN adaptation D = K_mean x d x (dz0 + dz1) reproduces its exchange). The evaporation
-    stress threshold applies to layer 0 and must exceed its residual. Every DERIVED quantity (thickness inverses,
-    centre separations, conductances, exchange rates, storage depths, tolerances) must be finite and representable;
-    a setup whose derived values overflow or vanish in FP64 is refused, never floored."""
+    and residual < saturation in every layer. The evaporation stress threshold applies to layer 0 and must exceed its
+    residual. Every DERIVED quantity (thickness inverses, centre separations, conductances, exchange rates, storage
+    depths, tolerances) must be finite and representable; a setup whose derived values overflow or vanish in FP64 is
+    refused, never floored.
+
+    Diffusion: `diffusion_mode="constant"` (default) REQUIRES `diffusivity_m2_s` (D, m2/s, >= 0; a scalar or a
+    length-(L-1) sequence per interface) and refuses `interface_conductivity_m_s` / `diffusion_coefficient`; the
+    conductance is D / (centre separation), NOT rescaled by the pair thickness (for the two-layer MAHLERAN
+    adaptation D = K_mean x d x (dz0 + dz1) reproduces its exchange). `diffusion_mode="tietjen_donor_depth"` REQUIRES
+    BOTH `interface_conductivity_m_s` (K_ij, m/s, >= 0, scalar or per interface; the user's explicit interface
+    conductivity, no mixing rule is invented here) and `diffusion_coefficient` (d, dimensionless, >= 0) and refuses
+    `diffusivity_m2_s`; per interface D_down = d K_ij h_i, D_up = d K_ij h_(i+1). Missing or conflicting mode
+    parameters are refused. Common per-layer properties are kept in this bounded extension.
+
+    `bottom_drainage`: "open" (default) lets the bottom layer's excess leave as drainage; "closed" keeps every drop in
+    the profile (capacity-limited internal cascade, see the module docstring). `gravity_drainage=False` disables the
+    whole cascade regardless of the bottom option."""
     try:
         edges = np.asarray(depth_edges_m)
     except Exception as exc:  # noqa: BLE001
@@ -346,21 +483,28 @@ def soil_layers(depth_edges_m: Any, *, theta_residual: Any, theta_field_capacity
         raise SubsurfaceError("theta_saturation must be <= 1")
     if np.any(sat <= res):
         raise SubsurfaceError("theta_residual must be strictly below theta_saturation in every layer")
-    if n > 1:
-        diffusivity = _layer_array(diffusivity_m2_s, n - 1, "diffusivity_m2_s")
+    mode = _check_diffusion_mode(diffusion_mode)
+    bottom = _check_bottom_drainage(bottom_drainage)
+    if mode == "constant":
+        if diffusivity_m2_s is None:
+            raise SubsurfaceError("diffusion_mode='constant' requires diffusivity_m2_s (common D per interface, m2/s)")
+        if interface_conductivity_m_s is not None or diffusion_coefficient is not None:
+            raise SubsurfaceError("diffusion_mode='constant' refuses interface_conductivity_m_s / diffusion_coefficient; "
+                                  "select diffusion_mode='tietjen_donor_depth' to use them (no silent reinterpretation)")
+        diffusivity = _interface_array(diffusivity_m2_s, n, "diffusivity_m2_s")
+        conductivity, coefficient_d = None, None
     else:
-        if isinstance(diffusivity_m2_s, (bool, np.bool_)):
-            raise SubsurfaceError("diffusivity_m2_s must be numeric, got a Boolean")
-        raw = np.asarray(diffusivity_m2_s)
-        if raw.dtype.kind not in "iuf" or raw.ndim > 1 or (raw.ndim == 1 and raw.shape[0] != 0):
-            raise SubsurfaceError("a single layer accepts a scalar or an empty diffusivity_m2_s")
-        if raw.ndim == 0 and not np.isfinite(float(raw)):
-            raise SubsurfaceError("diffusivity_m2_s must be finite")
-        if raw.ndim == 0 and float(raw) < 0.0:
-            raise SubsurfaceError("diffusivity_m2_s must be >= 0")
-        diffusivity = np.zeros(0, dtype=np.float64)
-    if np.any(diffusivity < 0.0):
-        raise SubsurfaceError("diffusivity_m2_s must be >= 0")
+        if diffusivity_m2_s is not None:
+            raise SubsurfaceError("diffusion_mode='tietjen_donor_depth' refuses diffusivity_m2_s; the diffusivity is "
+                                  "derived as d x K_ij x h_donor from interface_conductivity_m_s and diffusion_coefficient")
+        if interface_conductivity_m_s is None or diffusion_coefficient is None:
+            raise SubsurfaceError("diffusion_mode='tietjen_donor_depth' requires BOTH interface_conductivity_m_s "
+                                  "(K_ij, m/s) and diffusion_coefficient (dimensionless d >= 0)")
+        conductivity = _interface_array(interface_conductivity_m_s, n, "interface_conductivity_m_s")
+        coefficient_d = _real(diffusion_coefficient, "diffusion_coefficient")
+        if coefficient_d < 0.0:
+            raise SubsurfaceError(f"diffusion_coefficient must be >= 0, got {coefficient_d!r}")
+        diffusivity = None
     stress = _real(theta_evaporation_stress, "theta_evaporation_stress")
     if stress <= res[0]:
         raise SubsurfaceError(f"theta_evaporation_stress must exceed the layer-0 residual {res[0]!r}, got {stress!r}")
@@ -370,13 +514,27 @@ def soil_layers(depth_edges_m: Any, *, theta_residual: Any, theta_field_capacity
     if type(gravity_drainage) is not bool:
         raise SubsurfaceError(f"gravity_drainage must be a bool, got {gravity_drainage!r}")
     # Derived quantities, each required to be finite and representable (finite inputs can still overflow or vanish).
+    empty = np.zeros(0, dtype=np.float64)
     with np.errstate(all="ignore"):
         inverse_thickness = 1.0 / thickness
         centres = edges[:-1] + thickness / 2.0
         separation = centres[1:] - centres[:-1]
-        conductance = diffusivity / separation if n > 1 else np.zeros(0, dtype=np.float64)
-        pair_inv = inverse_thickness[:-1] + inverse_thickness[1:] if n > 1 else np.zeros(0, dtype=np.float64)
-        exchange_rate = conductance * pair_inv  # 1/s, the argument scale of expm1 per unit dt
+        pair_inv = inverse_thickness[:-1] + inverse_thickness[1:] if n > 1 else empty
+        if mode == "constant":
+            conductance = diffusivity / separation if n > 1 else empty
+            diffusivity_down = diffusivity_up = diffusivity
+            conductance_down = conductance_up = conductance
+        else:
+            conductance = None
+            if n > 1:
+                diffusivity_down = (coefficient_d * conductivity) * thickness[:-1]  # D_down = d K h_i
+                diffusivity_up = (coefficient_d * conductivity) * thickness[1:]  # D_up = d K h_(i+1)
+                conductance_down = diffusivity_down / separation
+                conductance_up = diffusivity_up / separation
+            else:
+                diffusivity_down = diffusivity_up = conductance_down = conductance_up = empty
+        exchange_rate_down = conductance_down * pair_inv  # 1/s, the argument scale of expm1 per unit dt
+        exchange_rate_up = conductance_up * pair_inv
         residual_m, field_capacity_m, saturation_m = res * thickness, fc * thickness, sat * thickness
         coefficient = volume_roundoff_bound_m3(LAYER_OPERATION_TERMS, 1.0)  # MAPLE's dimensionless FP64 coefficient
         capacity_tolerance = coefficient * saturation_m
@@ -385,9 +543,10 @@ def soil_layers(depth_edges_m: Any, *, theta_residual: Any, theta_field_capacity
     _require_finite("centre separation", separation)
     if n > 1 and not np.all(separation > 0.0):
         raise SubsurfaceError("derived centre separations must be positive (layers too thin to be representable)")
-    _require_finite("interface conductance", conductance)
+    _require_finite("directional diffusivity (d x K x h_donor)", diffusivity_down, diffusivity_up)
+    _require_finite("interface conductance", conductance_down, conductance_up)
     _require_finite("pair inverse thickness sum", pair_inv)
-    _require_finite("interface exchange rate (conductance x inverse thickness sum)", exchange_rate)
+    _require_finite("interface exchange rate (conductance x inverse thickness sum)", exchange_rate_down, exchange_rate_up)
     _require_finite("storage depths", residual_m, field_capacity_m, saturation_m)
     if not np.all(saturation_m > 0.0):
         raise SubsurfaceError("derived saturation depth vanished in FP64 (layer too thin); refused, not floored")
@@ -399,37 +558,66 @@ def soil_layers(depth_edges_m: Any, *, theta_residual: Any, theta_field_capacity
     def own(a: np.ndarray) -> np.ndarray:
         return freeze(np.ascontiguousarray(np.array(a, dtype=np.float64)))
 
+    if mode == "constant":
+        owned_d, owned_g = own(diffusivity), own(conductance)
+        # the directional fields alias the common arrays: same object, no extra storage, no second interpretation
+        directional = {"diffusivity_down_m2_s": owned_d, "diffusivity_up_m2_s": owned_d,
+                           "interface_conductance_down_m_s": owned_g, "interface_conductance_up_m_s": owned_g}
+        owned_k = None
+    else:
+        owned_d, owned_g = None, None
+        directional = {"diffusivity_down_m2_s": own(diffusivity_down), "diffusivity_up_m2_s": own(diffusivity_up),
+                           "interface_conductance_down_m_s": own(conductance_down),
+                           "interface_conductance_up_m_s": own(conductance_up)}
+        owned_k = own(conductivity)
     return SoilLayers(
         depth_edges_m=own(edges), thickness_m=own(thickness), centre_depth_m=own(centres), theta_residual=own(res),
-        theta_field_capacity=own(fc), theta_saturation=own(sat), diffusivity_m2_s=own(diffusivity),
+        theta_field_capacity=own(fc), theta_saturation=own(sat), diffusivity_m2_s=owned_d,
         theta_evaporation_stress=stress, evaporation_factor=factor, gravity_drainage=gravity_drainage,
         residual_m=own(residual_m), field_capacity_m=own(field_capacity_m), saturation_m=own(saturation_m),
-        interface_conductance_m_s=own(conductance), pair_inverse_thickness=own(pair_inv),
-        capacity_tolerance_m=own(capacity_tolerance))
+        interface_conductance_m_s=owned_g, pair_inverse_thickness=own(pair_inv),
+        capacity_tolerance_m=own(capacity_tolerance), diffusion_mode=mode, bottom_drainage=bottom,
+        interface_conductivity_m_s=owned_k, diffusion_coefficient=coefficient_d, **directional)
 
 
 class KernelParameters(NamedTuple):
     """Host float64 copies in kernel order; interface arrays are padded to length max(L - 1, 1) so a one-layer stack
-    passes non-empty buffers (the kernels loop to L - 1 and never read the padding)."""
+    passes non-empty buffers (the kernels loop to L - 1 and never read the padding). In constant mode
+    `interface_conductance_up_m_s` IS `interface_conductance_m_s` (the same padded array object; `directional` is 0
+    and the kernels evaluate one factor per interface); in donor-depth mode it is a distinct array (`directional` 1,
+    two factors per interface)."""
 
     thickness_m: np.ndarray
     residual_m: np.ndarray
     field_capacity_m: np.ndarray
     saturation_m: np.ndarray
     capacity_tolerance_m: np.ndarray
-    interface_conductance_m_s: np.ndarray
+    interface_conductance_m_s: np.ndarray  # downward-donor conductance (the common G in constant mode)
     pair_inverse_thickness: np.ndarray
     residual_theta0: float
     theta_evaporation_stress: float
     evaporation_factor: float
     gravity_code: int
     cell_closure_coefficient: float
+    interface_conductance_up_m_s: np.ndarray  # upward-donor conductance; aliases the field above in constant mode
+    directional: int  # 0: one factor per interface; 1: distinct downward/upward factors
+    bottom_code: int  # 1: open bottom (historical); 0: closed bottom
 
 
-def kernel_parameter_doubles(n_layers: int) -> int:
-    """Doubles of one KernelParameters copy: five length-L vectors and two padded interface vectors."""
+def kernel_parameter_doubles(n_layers: int, diffusion_mode: str = "constant") -> int:
+    """Doubles of one KernelParameters copy: five length-L vectors and the padded interface vectors (two in constant
+    mode, where the upward conductance aliases the downward one; three in donor-depth mode)."""
     n = int(n_layers)
-    return 5 * n + 2 * max(n - 1, 1)
+    per_interface = 2 if _check_diffusion_mode(diffusion_mode) == "constant" else 3
+    return 5 * n + per_interface * max(n - 1, 1)
+
+
+def factor_scratch_doubles(n_layers: int, diffusion_mode: str = "constant") -> int:
+    """Per-step per-interface exchange-factor scratch of the compiled backends: max(L-1, 1) doubles per factor array,
+    one array in constant mode, two (downward/upward) in donor-depth mode."""
+    n = int(n_layers)
+    arrays = 1 if _check_diffusion_mode(diffusion_mode) == "constant" else 2
+    return arrays * max(n - 1, 1)
 
 
 def cell_closure_coefficient(n_layers: int) -> float:
@@ -445,12 +633,16 @@ def kernel_parameters(layers: SoilLayers) -> KernelParameters:
         out[: n - 1] = a
         return out
 
+    conductance_down = padded(layers.interface_conductance_down_m_s)
+    directional = layers.directional_diffusion
+    conductance_up = padded(layers.interface_conductance_up_m_s) if directional else conductance_down
     return KernelParameters(
         np.array(layers.thickness_m), np.array(layers.residual_m), np.array(layers.field_capacity_m),
         np.array(layers.saturation_m), np.array(layers.capacity_tolerance_m),
-        padded(layers.interface_conductance_m_s), padded(layers.pair_inverse_thickness),
+        conductance_down, padded(layers.pair_inverse_thickness),
         float(layers.theta_residual[0]), float(layers.theta_evaporation_stress), float(layers.evaporation_factor),
-        1 if layers.gravity_drainage else 0, cell_closure_coefficient(n))
+        1 if layers.gravity_drainage else 0, cell_closure_coefficient(n),
+        conductance_up, 1 if directional else 0, 1 if layers.bottom_drainage == "open" else 0)
 
 
 # --- memory ------------------------------------------------------------------------------------------------------------
@@ -477,21 +669,32 @@ class MemoryEstimate:
     scope: str = MEMORY_SCOPE
 
 
-def estimate_step_memory(n_layers: int, n_cells: int, *, backend: str, reserve_bytes: int = 0) -> MemoryEstimate:
-    """Conservative, backend-specific working-array bytes of ONE step (see MEMORY_SCOPE). Pure arithmetic."""
+def estimate_step_memory(n_layers: int, n_cells: int, *, backend: str, reserve_bytes: int = 0,
+                         diffusion_mode: str = "constant", with_evaporation_share: bool = False) -> MemoryEstimate:
+    """Conservative, backend-specific working-array bytes of ONE step (see MEMORY_SCOPE). Pure arithmetic. The
+    `diffusion_mode` adds the donor-depth mode's extra host/device parameter vectors and the second per-interface
+    factor scratch of the compiled backends; the constant mode counts are the historical ones.
+    `with_evaporation_share=True` adds the caller's optional (N,) post-cap share field to the input bytes (the only
+    change that option makes to the working set: no extra output, scratch or parameter)."""
     n_layers = _checked_int(n_layers, "n_layers")
     n_cells = _checked_int(n_cells, "n_cells")
     if n_layers < 1 or n_cells < 1:
         raise SubsurfaceError("n_layers and n_cells must be >= 1")
     if backend not in BACKENDS:
         raise SubsurfaceError(f"backend must be one of {BACKENDS}, got {backend!r}")
+    mode = _check_diffusion_mode(diffusion_mode)
+    if type(with_evaporation_share) is not bool:
+        raise SubsurfaceError(f"with_evaporation_share must be a bool, got {with_evaporation_share!r}")
     reserve = _checked_int(reserve_bytes, "reserve_bytes")
     f8 = 8
     n_if = n_layers - 1
     inputs = (2 * n_layers * n_cells + n_cells) * f8  # state, added water, evaporation rate
+    if with_evaporation_share:
+        inputs += n_cells * f8  # the caller's post-cap evaporation share field
     column = 2 * n_cells + n_layers * f8  # bool + uint8 masks, thickness copy
-    layers = layer_vector_doubles(n_layers) * f8
-    params_host = kernel_parameter_doubles(n_layers) * f8
+    layers = layer_vector_doubles(n_layers, mode) * f8
+    params_host = kernel_parameter_doubles(n_layers, mode) * f8
+    factor_scratch = factor_scratch_doubles(n_layers, mode) * f8
     outputs = (n_layers * n_cells + 2 * n_if * n_cells + 4 * n_cells + ROW_COUNT * n_cells) * f8
     if backend == "numpy":
         scratch = NUMPY_SCRATCH_DOUBLES_PER_CELL * n_cells * f8 + SCRATCH_MASK_BYTES_PER_CELL * n_cells + _PACKET_SCRATCH_BYTES
@@ -499,16 +702,16 @@ def estimate_step_memory(n_layers: int, n_cells: int, *, backend: str, reserve_b
         host = inputs + column + layers + outputs + scratch
         device = 0
     elif backend == "numba":
-        # + the per-call local (L-1,) exchange-factor array of the compiled kernel (host)
+        # + the per-call local (L-1,) exchange-factor array(s) of the compiled kernel (host)
         scratch = (KERNEL_SCRATCH_DOUBLES_PER_CELL * n_cells * f8 + SCRATCH_MASK_BYTES_PER_CELL * n_cells
-                   + _PACKET_SCRATCH_BYTES + max(n_if, 1) * f8)
+                   + _PACKET_SCRATCH_BYTES + factor_scratch)
         parameters = params_host
         host = inputs + column + layers + parameters + outputs + scratch
         device = 0
     else:
-        # + the per-step (max(L-1,1),) exchange-factor scratch written by the factor kernel (device)
+        # + the per-step (max(L-1,1),) exchange-factor scratch array(s) written by the factor kernel (device)
         scratch = (KERNEL_SCRATCH_DOUBLES_PER_CELL * n_cells * f8 + SCRATCH_MASK_BYTES_PER_CELL * n_cells
-                   + _PACKET_SCRATCH_BYTES + max(n_if, 1) * f8)
+                   + _PACKET_SCRATCH_BYTES + factor_scratch)
         parameters = 2 * params_host  # host copies and owned device copies
         host = layers + params_host + _PACKET_SCRATCH_BYTES
         device = inputs + column + params_host + outputs + scratch - _PACKET_SCRATCH_BYTES
@@ -695,7 +898,8 @@ def prepare_column(layers: SoilLayers, active_mask: Any, cell_area_m2: Any, *, b
             available_bytes_fn = default_host_available_bytes
     n_cells = int(active_mask.shape[0])
     n_layers = layers.n_layers
-    memory = estimate_step_memory(n_layers, n_cells, backend=backend, reserve_bytes=reserve)
+    memory = estimate_step_memory(n_layers, n_cells, backend=backend, reserve_bytes=reserve,
+                                  diffusion_mode=layers.diffusion_mode)
     _admit(memory, available_bytes_fn, "column preparation")  # BEFORE any bulk copy, compilation or warm-up
     active = xp.ascontiguousarray(xp.array(active_mask, dtype=np.bool_, copy=True))
     active_u8 = xp.ascontiguousarray(active.astype(np.uint8))
@@ -713,11 +917,21 @@ def prepare_column(layers: SoilLayers, active_mask: Any, cell_area_m2: Any, *, b
                       runner=runner, preflight=preflight, backend_info=dict(info))
 
 
-def admit_step(column: SoilColumn) -> int:
-    """Compare the column's per-step requirement (reserve included) with the reported available bytes and raise
-    `SubsurfaceMemoryError` BEFORE anything is allocated. Returns the reading."""
+def step_memory(column: SoilColumn, *, with_evaporation_share: bool = False) -> MemoryEstimate:
+    """The column's per-step estimate; with the optional post-cap share field counted when requested (pure
+    arithmetic, recomputed from the column's own parameters, never from a caller record)."""
     _check_column(column)
-    return _admit(column.memory, column.available_bytes_fn, "step")
+    if not with_evaporation_share:
+        return column.memory
+    return estimate_step_memory(column.n_layers, column.n_cells, backend=column.backend,
+                                reserve_bytes=column.reserve_bytes, diffusion_mode=column.layers.diffusion_mode,
+                                with_evaporation_share=True)
+
+
+def admit_step(column: SoilColumn, *, with_evaporation_share: bool = False) -> int:
+    """Compare the column's per-step requirement (reserve included; the optional share field when requested) with
+    the reported available bytes and raise `SubsurfaceMemoryError` BEFORE anything is allocated. Returns the reading."""
+    return _admit(step_memory(column, with_evaporation_share=with_evaporation_share), column.available_bytes_fn, "step")
 
 
 # --- states ------------------------------------------------------------------------------------------------------------
@@ -775,11 +989,12 @@ def storage_m3(column: SoilColumn, state: SoilColumnState) -> float:
 
 
 # --- the reference step -------------------------------------------------------------------------------------------------
-def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float) -> StepArrays:
+def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None) -> StepArrays:
     """NumPy reference of one step: loops over layers, vectorised over cells, the SAME IEEE operations in the SAME order
     as the compiled kernels (only `expm1` may differ by an ulp between libraries), evaluated IN PLACE on the fresh
     output arrays with a counted transient peak (see NUMPY_SCRATCH_DOUBLES_PER_CELL). Validation is recorded in flag
-    rows, not raised here; `step` reads the packet once and raises. Inputs are never written."""
+    rows, not raised here; `step` reads the packet once and raises. Inputs are never written. `share` is the optional
+    (N,) post-cap evaporation share (None: historical evaporation arithmetic in its historical order)."""
     from maple.core.backend import errstate
 
     xp = np
@@ -790,7 +1005,10 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
     inactive = ~active
     dz = lay.thickness_m
     res_m, fc_m, sat_m, cap_tol = lay.residual_m, lay.field_capacity_m, lay.saturation_m, lay.capacity_tolerance_m
-    cond, pair_inv = lay.interface_conductance_m_s, lay.pair_inverse_thickness
+    cond_down, cond_up, pair_inv = (lay.interface_conductance_down_m_s, lay.interface_conductance_up_m_s,
+                                    lay.pair_inverse_thickness)
+    directional = lay.directional_diffusion  # donor-depth mode: distinct downward/upward factors
+    closed_bottom = lay.bottom_drainage == "closed"
     res_theta0, stress, factor = float(lay.theta_residual[0]), lay.theta_evaporation_stress, lay.evaporation_factor
     cell_tol = cell_closure_coefficient(n_layers)
 
@@ -825,6 +1043,16 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
         flag(~xp.isfinite(pet), 6)
         flag(pet < 0.0, 7)
         flag(inactive & (pet != 0.0), 8)
+        if share is None:
+            checked = active  # cells whose derived outputs are checked (same object as before: no new array)
+        else:  # every cell, inactive included: a share field is a whole-domain declaration
+            bad_share = ~xp.isfinite(share) | (share < 0.0) | (share > 1.0)
+            flag(~xp.isfinite(share), 15)
+            flag((share < 0.0) | (share > 1.0), 16)
+            # a cell with an invalid share is refused for THAT reason: its derived outputs (which the invalid share
+            # pollutes) are not flagged, so the lowest reported bit names the actual cause
+            checked = active & ~bad_share
+            del bad_share
 
         if dt > 0.0:
             # 2. addition with saturation return
@@ -838,19 +1066,44 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
                 del ex, pos
             # 3. gravity cascade, top to bottom within the step
             if lay.gravity_drainage:
+                if closed_bottom:
+                    # Remaining pore capacity of ALL deeper layers, measured on the post-addition storage, accumulated
+                    # bottom-up into the interface rows of `percolation` (rows[k] = capacity below layer k; the row is
+                    # overwritten by the actual forward amount below). Exactly 0 beneath the bottom layer by
+                    # construction (no suffix-sum roundoff); a layer within its capacity tolerance counts as full.
+                    capacity = xp.zeros(n_cells, dtype=np.float64)
+                    for k in range(n_if - 1, -1, -1):
+                        term = sat_m[k + 1] - water_out[k + 1]
+                        xp.copyto(term, 0.0, where=term < 0.0)
+                        xp.add(capacity, term, out=capacity)
+                        percolation[k][...] = capacity
+                        del term
+                    del capacity
                 carry = xp.zeros(n_cells, dtype=np.float64)
                 for layer in range(n_layers):
                     w = water_out[layer]
                     xp.add(w, carry, out=w)
                     ex = w - fc_m[layer]
                     pos = ex > 0.0
-                    xp.subtract(w, ex, out=w, where=pos)
+                    if closed_bottom:
+                        # forward = min(excess, deeper capacity) where excess > 0; the bottom layer forwards nothing
+                        forward = xp.array(ex)
+                        if layer < n_if:
+                            cap = percolation[layer]
+                            xp.copyto(forward, cap, where=~(ex < cap))  # kernel: fwd = ex if ex < cap else cap
+                            del cap
+                        else:
+                            forward[...] = 0.0
+                        xp.copyto(forward, 0.0, where=~pos)
+                    else:
+                        forward = ex
+                    xp.subtract(w, forward, out=w, where=pos)
                     carry[...] = 0.0
-                    xp.copyto(carry, ex, where=pos)
+                    xp.copyto(carry, forward, where=pos)
                     if layer < n_if:
                         percolation[layer] = carry
-                    del ex, pos
-                drain[...] = carry
+                    del ex, pos, forward
+                drain[...] = carry  # exactly 0 with a closed bottom (the bottom layer never forwards)
                 del carry
             # 4. evaporation from layer 0
             w0 = water_out[0]
@@ -866,23 +1119,40 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
             avail0 = w0 - res_m[0]
             xp.copyto(avail0, 0.0, where=avail0 < 0.0)
             xp.copyto(evap, avail0)
-            xp.copyto(evap, demand, where=demand <= avail0)
-            xp.subtract(w0, evap, out=w0)
-            xp.subtract(demand, evap, out=unmet)
+            xp.copyto(evap, demand, where=demand <= avail0)  # limited = min(demand, avail0)
+            if share is None:
+                xp.subtract(w0, evap, out=w0)
+                xp.subtract(demand, evap, out=unmet)
+            else:
+                # post-cap share: actual E = limited x s; unmet = demand x s - actual E (partitioned potential minus
+                # actual); the (1 - s) remainder of `limited` stays in the layer for LEAF's separate T request
+                xp.multiply(evap, share, out=evap)
+                xp.subtract(w0, evap, out=w0)
+                xp.multiply(demand, share, out=unmet)
+                xp.subtract(unmet, evap, out=unmet)
             del theta0, demand, avail0
-            # 5. sequential pair diffusion from the top
+            # 5. sequential pair diffusion from the top; the per-interface factor(s) are scalars here (once per
+            # interface per step, never per cell): one in constant mode, downward/upward in donor-depth mode
             for k in range(n_if):
                 wi, wj = water_out[k], water_out[k + 1]
                 s = pair_inv[k]
-                rate = cond[k] * s
+                rate = cond_down[k] * s
                 x = rate * dt
-                e = -xp.expm1(-x)
+                e = -xp.expm1(-x)  # the common factor (constant mode) / the downward-donor factor
                 amount = wi / dz[k]
                 tj = wj / dz[k + 1]
                 xp.subtract(amount, tj, out=amount)
                 del tj
-                xp.divide(amount, s, out=amount)
-                xp.multiply(amount, e, out=amount)  # ((ti - tj) / s) e
+                xp.divide(amount, s, out=amount)  # g = (ti - tj) / s: the CURRENT pair gradient after earlier pairs
+                if directional:
+                    rate_up = cond_up[k] * s
+                    x_up = rate_up * dt
+                    e_up = -xp.expm1(-x_up)
+                    e = xp.where(amount > 0.0, e, e_up)  # donor chosen from the current gradient sign
+                    xp.multiply(amount, e, out=amount)  # g e_donor
+                    del e
+                else:
+                    xp.multiply(amount, e, out=amount)  # ((ti - tj) / s) e
                 down = amount > 0.0
                 act = -amount
                 xp.copyto(act, amount, where=down)  # where(down, amount, -amount)
@@ -902,12 +1172,12 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
                 del act, down
                 xp.subtract(wi, signed, out=wi)  # down: wi - act; up: wi - (-act) == wi + act bit for bit
                 xp.add(wj, signed, out=wj)  # down: wj + act; up: wj + (-act) == wj - act bit for bit
-            # 6. output checks (active cells only)
+            # 6. output checks (active cells only; cells with an invalid share are reported by bits 15/16 instead)
             for layer in range(n_layers):
                 wl = water_out[layer]
-                flag(active & ~xp.isfinite(wl), 10)
-                flag(active & (wl < 0.0), 11)
-                flag(active & (wl > sat_m[layer] + cap_tol[layer]), 12)
+                flag(checked & ~xp.isfinite(wl), 10)
+                flag(checked & (wl < 0.0), 11)
+                flag(checked & (wl > sat_m[layer] + cap_tol[layer]), 12)
                 xp.add(after, wl, out=after)
             flux = added_row - ret
             xp.subtract(flux, drain, out=flux)
@@ -921,14 +1191,14 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
             xp.add(scale, evap, out=scale)
             xp.multiply(scale, cell_tol, out=scale)  # cell_tol * scale
             xp.abs(closure, out=flux)
-            flag(active & (flux > scale), 13)
+            flag(checked & (flux > scale), 13)
             nonfinite = ~xp.isfinite(ret)
             for vector in (drain, evap, unmet, closure):
                 nonfinite |= ~xp.isfinite(vector)
             for k in range(n_if):
                 nonfinite |= ~xp.isfinite(percolation[k])
                 nonfinite |= ~xp.isfinite(diffusion[k])
-            flag(active & nonfinite, 14)
+            flag(checked & nonfinite, 14)
             del flux, closure, scale, nonfinite
             # inactive cells: identity state, zero fluxes
             for layer in range(n_layers):
@@ -951,8 +1221,8 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
     return StepArrays(water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
 
 
-def reference_runner(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float) -> StepArrays:
-    return reference_step(column, water_in, added, pet, dt)
+def reference_runner(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None) -> StepArrays:
+    return reference_step(column, water_in, added, pet, dt, share)
 
 
 # --- step ------------------------------------------------------------------------------------------------------------
@@ -1022,12 +1292,15 @@ def _resolve(column: SoilColumn, packet: np.ndarray) -> StepBudget:
 
 
 def step(column: SoilColumn, state: SoilColumnState, dt_s: Any, *, added_water_m: Any,
-         potential_evaporation_m_s: Any) -> SubsurfaceStep:
+         potential_evaporation_m_s: Any, evaporation_share: Any = None) -> SubsurfaceStep:
     """One pure step (see the module docstring for the stage order). `added_water_m` (L, N) is water ACTUALLY directed
     into each layer during `dt_s` (matrix intake in layer 0, separately admitted bypass in its target layer), counted
     once; `potential_evaporation_m_s` (N,) is the supplied potential rate (a forcing, not an actual flux). Both are 0
-    on inactive cells. The source time and the candidate time `t + dt` must be finite. Inputs are never written; a
-    refused step allocates no result."""
+    on inactive cells. `evaporation_share` (optional, (N,) float64 of the column namespace, finite and within [0, 1]
+    on EVERY cell) selects the post-cap evaporation share law of stage 4: then `potential_evaporation_m_s` must be the
+    UNPARTITIONED combined potential soil loss rate and only `limited x share` is debited as actual evaporation.
+    None keeps the historical law and arithmetic order. The source time and the candidate time `t + dt` must be finite.
+    Inputs are never written; a refused step allocates no result."""
     _check_column(column)
     t0 = _check_state(column, state)
     dt = _check_dt(dt_s)
@@ -1038,10 +1311,12 @@ def step(column: SoilColumn, state: SoilColumnState, dt_s: Any, *, added_water_m
     shape = (column.n_layers, column.n_cells)
     _check_dynamic(column, "added_water_m", added_water_m, shape)
     _check_dynamic(column, "potential_evaporation_m_s", potential_evaporation_m_s, (column.n_cells,))
+    if evaporation_share is not None:
+        _check_dynamic(column, "evaporation_share", evaporation_share, (column.n_cells,))
     if column.preflight is not None:
         column.preflight()
-    admit_step(column)
-    arrays = column.runner(column, state.water_m, added_water_m, potential_evaporation_m_s, dt)
+    admit_step(column, with_evaporation_share=evaporation_share is not None)
+    arrays = column.runner(column, state.water_m, added_water_m, potential_evaporation_m_s, dt, evaporation_share)
     packet = _read_packet(column.xp, arrays)  # synchronising read: queued kernels have finished with any scratch
     budget = _resolve(column, packet)
     # `arrays.scratch` (CUDA factor keep-alive) dies with this frame; the published step never carries it.
@@ -1060,6 +1335,7 @@ class ForcingRecord:
     dt_s: float
     added_water_m: Any
     potential_evaporation_m_s: Any
+    evaporation_share: Any = None  # optional (N,) post-cap share field; None keeps the historical law
 
 
 @dataclass(frozen=True)
@@ -1118,7 +1394,8 @@ def initialize_profile(column: SoilColumn, state: SoilColumnState, records: Iter
                                         completed_steps=completed, last_state=current, cumulative=cumulative)
         try:
             result = step(column, current, record.dt_s, added_water_m=record.added_water_m,
-                          potential_evaporation_m_s=record.potential_evaporation_m_s)
+                          potential_evaporation_m_s=record.potential_evaporation_m_s,
+                          evaporation_share=record.evaporation_share)
         except (SubsurfaceError, SubsurfaceMemoryError, SubsurfaceBackendUnavailableError) as exc:
             raise SubsurfaceStreamError(f"record {completed} failed: {exc}", completed_steps=completed,
                                         last_state=current, cumulative=cumulative) from exc
@@ -1166,6 +1443,11 @@ def summary(column: SoilColumn) -> dict[str, Any]:
                      "uniform_state and every step; a reading, not a reservation",
         "closure": "conservation.volume_roundoff_bound_m3: per cell 4 L + 7 terms, global 4 L N + 7 terms, capacity "
                    f"{LAYER_OPERATION_TERMS} terms on the layer saturation depth",
+        "diffusion_mode": column.layers.diffusion_mode,
+        "bottom_drainage": column.layers.bottom_drainage,
+        "evaporation_share_option": "step(..., evaporation_share=None|(N,) field in [0,1]); None keeps the historical "
+                                    "law; a field selects actual E = min(demand, available) x share after the moisture "
+                                    "cap (EcoHyD WaterCell.cpp:84-92 order), unmet = demand x share - actual E",
         "packet_length": PACKET_LENGTH,
         "host_reads_per_step": 1,
         "backend_info": dict(column.backend_info),

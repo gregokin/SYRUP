@@ -25,12 +25,24 @@ fingerprints, BEFORE every launch; a forged context is refused before any enqueu
 mutation is not detected, and `is_bound_to` ties an external context to the very graph/params/geometry objects prepared from.
 No NumPy/Numba fallback: a missing CuPy/device/compiler raises `CudaUnavailableError`; Numba is never imported.
 
+SURFACE STAGE (task phase1_surface_stage_20261110): `CudaSurfaceRouter` on a `CudaSurfaceContext` is the device form of the
+surface-only lateral operation (`experimental_hydrology.CpuSurfaceRouter`, interface in `maple_syrup.surface_routing`): the
+same lateral kernels, launched on a caller-supplied post-vertical depth and existing face momentum, ONE counted packet read per
+attempted step, no bucket context and no `prepared_column_step`. The standalone context validates the CuPy graph itself
+(structure without transfer, one counted download checked by `routing_cuda._validate_host_graph`), admits its declared
+memory BEFORE any allocation and owns every array its kernels read; `ExperimentalCudaContext.surface` is the COMPOSED form
+for the historical solver (cell arrays shared with the validated bucket context, method tables owned, no admission: the old
+API never had one). The reduce kernels additionally flag a non-finite/negative INPUT depth (`INPUT_DEPTH_BITS`: explicit 16,
+local 128); the standalone router resolves it first, the historical solver masks it (its depth is the validated column
+output), so the historical bucket output and host traffic (two packets per attempted step) are unchanged.
+
 Nothing here was run by its author (file-only tools); Codex records results.
 """
 
 from __future__ import annotations
 
 import hashlib
+import math
 import threading
 import time
 import weakref
@@ -54,15 +66,29 @@ from maple_syrup.experimental_hydrology import (
     HydraulicState,
     HydraulicStep,
     LocalInertialGeometry,
+    _check_control,
     advance_time,
     check_dt_cap,
     check_state_time,
+    compose_hydraulic_step,
     resolve_flags,
     validate_hydraulic_state,
 )
 from maple_syrup.infiltration import _check_dt
-from maple_syrup.routing import BALANCE_RTOL, GRAVITY_M_S2, RoutingGraph
+from maple_syrup.routing import BALANCE_RTOL, GRAVITY_M_S2, RoutingError, RoutingGraph
 from maple_syrup.routing_cuda import CudaUnavailableError
+from maple_syrup.surface_routing import (
+    INPUT_DEPTH_BITS,
+    SURFACE_PACKET_BYTES,
+    SurfaceState,
+    SurfaceStep,
+    admit_bytes,
+    check_positive_dt,
+    check_surface_structure,
+    default_device_available_bytes_fn,
+    estimate_surface_memory,
+    validate_surface_state,
+)
 
 __all__ = [
     "COMPILE_OPTIONS",
@@ -70,9 +96,12 @@ __all__ = [
     "PACKET_WORDS",
     "REDUCE_THREADS",
     "CudaHydraulicSolver",
+    "CudaSurfaceContext",
+    "CudaSurfaceRouter",
     "ExperimentalCudaContext",
     "kernel_provenance",
     "kernel_source",
+    "prepare_cuda_surface",
     "prepare_experimental_cuda",
 ]
 
@@ -209,8 +238,9 @@ extern "C" __global__ void maple_syrup_exp_cell(
     sc_row[i] = sc;
 }
 
-// packet: 0 flags (1 nonfinite, 2 negative, 4 cfl, 8 balance) 1 max cfl 2 max cell balance 3 storage change 4 export
-// 5 residual 6 global tolerance 7 outlet discharge 8 nonfinite-scalar mask 9 residual failed 10 max velocity
+// packet: 0 flags (1 nonfinite, 2 negative, 4 cfl, 8 balance, 16 input depth non-finite or negative) 1 max cfl 2 max cell
+// balance 3 storage change 4 export 5 residual 6 global tolerance 7 outlet discharge 8 nonfinite-scalar mask 9 residual failed
+// 10 max velocity
 extern "C" __global__ void maple_syrup_exp_reduce(
     const long long n, const unsigned char* outlet, const double* h_c, const double* h_new, const double* f_out,
     const double* q_used, const double* q_inst, const double* vel, const double* cfl_row, const double* bal_row,
@@ -219,10 +249,12 @@ extern "C" __global__ void maple_syrup_exp_reduce(
 {
     const int tid = threadIdx.x;
     const int bd = blockDim.x;
-    unsigned int f_nonfinite = 0u, f_negative = 0u, f_balance = 0u;
+    unsigned int f_nonfinite = 0u, f_negative = 0u, f_balance = 0u, f_depth = 0u;
     double m_cfl = 0.0, m_bal = 0.0, m_vel = 0.0, s0 = 0.0, s1 = 0.0, s2 = 0.0, s3 = 0.0;
     for (long long i = tid; i < n; i += bd) {
         const double hn = h_new[i];
+        const double hc0 = h_c[i];
+        if (!isfinite(hc0) || hc0 < 0.0) f_depth = 1u;  // INPUT depth (standalone surface router; masked by the bucket path)
         if (!isfinite(hn) || !isfinite(f_out[i]) || !isfinite(q_used[i]) || !isfinite(q_inst[i]) || !isfinite(vel[i])
             || !isfinite(sc_row[i]) || !isfinite(bal_row[i])) f_nonfinite = 1u;
         if (hn < 0.0) f_negative = 1u;
@@ -239,6 +271,7 @@ extern "C" __global__ void maple_syrup_exp_reduce(
     const unsigned int g_nonfinite = block_or(f_nonfinite);
     const unsigned int g_negative = block_or(f_negative);
     const unsigned int g_balance = block_or(f_balance);
+    const unsigned int g_depth = block_or(f_depth);
     const double g_cfl = block_max(m_cfl);
     const double g_bal = block_max(m_bal);
     const double g_vel = block_max(m_vel);
@@ -262,6 +295,7 @@ extern "C" __global__ void maple_syrup_exp_reduce(
         if (g_negative != 0u) flags |= 2ull;
         if (g_cfl > cfl_max) flags |= 4ull;
         if (g_balance != 0u) flags |= 8ull;
+        if (g_depth != 0u) flags |= 16ull;
         packet[0] = flags;
         put_double(packet, 1, g_cfl);
         put_double(packet, 2, g_bal);
@@ -459,8 +493,8 @@ extern "C" __global__ void maple_syrup_li_cell(
     sc_row[c] = sc;
 }
 
-// packet: 0 flags (1 state nonfinite, 2 closed-face flux, 4 open-face inflow, 8 cfl, 16 negative, 32 nonfinite, 64 balance)
-// 1 max wave cfl 2 max cell balance 3 storage change 4 export 5 residual 6 global tolerance 7 outlet discharge
+// packet: 0 flags (1 state nonfinite, 2 closed-face flux, 4 open-face inflow, 8 cfl, 16 negative, 32 nonfinite, 64 balance,
+// 128 input depth non-finite or negative) 1 max wave cfl 2 max cell balance 3 storage change 4 export 5 residual 6 global tolerance 7 outlet discharge
 // 8 nonfinite-scalar mask 9 residual failed 10 max speed 11 limited cells 12 limited volume 13 max face depth
 extern "C" __global__ void maple_syrup_li_reduce(
     const long long ny, const long long nx, const signed char* ftype_x, const signed char* fsign_x,
@@ -478,6 +512,8 @@ extern "C" __global__ void maple_syrup_li_reduce(
     long long n_limited = 0;
     for (long long c = tid; c < ny * nx; c += bd) {
         const double hn = h_new[c];
+        const double hc0 = h_c[c];
+        if (!isfinite(hc0) || hc0 < 0.0) f_input |= 128u;  // INPUT depth (standalone surface router; masked by the bucket path)
         if (!isfinite(hn) || !isfinite(speed[c]) || !isfinite(bal_row[c]) || !isfinite(sc_row[c])) f_nonfinite = 1u;
         if (hn < 0.0) f_negative = 1u;
         if (bal_row[c] > bal_rtol * sc_row[c]) f_balance = 1u;
@@ -603,13 +639,279 @@ def kernel_provenance() -> dict[str, Any]:
         "kernels": {m: list(v) for m, v in _KERNELS.items()}, "element_threads": ELEMENT_THREADS,
         "reduce_threads": REDUCE_THREADS, "packet_words": PACKET_WORDS, "packet_bytes": PACKET_WORDS * 8,
         "launches_per_step": {"explicit": 3, "local_inertial_limiter_off": 4, "local_inertial_limiter_donor": 7},
-        "column": "hydrology_cuda.prepared_column_step (baseline, one more counted packet read per step)",
+        "column": "hydrology_cuda.prepared_column_step (baseline, one more counted packet read per step; the standalone "
+                  "CudaSurfaceRouter has no column stage and reads one packet per step)",
+        "input_depth_bits": dict(INPUT_DEPTH_BITS),
         "numba_required": False, "libm": "none in the lateral kernels (+ - * / sqrt only); the baseline column uses expm1",
     })
     return info
 
 
-# --- context --------------------------------------------------------------------------------------------------------
+# --- the surface-only static context -------------------------------------------------------------------------------------
+def _surface_static_names(method: str) -> tuple[str, ...]:
+    """Every device array the lateral kernels of `method` read (the method-specific tables PLUS the cell masks/conveyance)."""
+    if method == "explicit":
+        return ("active", "outlet", "conveyance", "donors")
+    return ("active", "z", "fx_type", "fx_zmax", "fx_fric", "fx_kb", "fx_sign", "fy_type", "fy_zmax", "fy_fric", "fy_kb",
+            "fy_sign")
+
+
+def _surface_expected(method: str, shape: tuple[int, int], n_cells: int) -> tuple:
+    """(shape, dtype name) of every array of `_surface_static_names(method)`, in order."""
+    ny, nx = shape
+    if method == "explicit":
+        return (((n_cells,), "uint8"), ((n_cells,), "uint8"), ((n_cells,), "float64"), ((4, n_cells), "int64"))
+    nxf, nyf = ny * (nx + 1), (ny + 1) * nx
+    face = lambda count: (((count,), "int8"), ((count,), "float64"), ((count,), "float64"), ((count,), "float64"),  # noqa: E731
+                          ((count,), "int8"))
+    return (((n_cells,), "uint8"), ((n_cells,), "float64"), *face(nxf), *face(nyf))
+
+
+@dataclass(frozen=True, eq=False)
+class CudaSurfaceContext:
+    """Owned, validated static DEVICE data of the surface-only lateral operation on one graph (and geometry): the cell masks,
+    conveyance and the method tables the lateral kernels read, sealed (pointer/shape/dtype/device fingerprints and scalar
+    signature) and bound to the current device. Build with `prepare_cuda_surface` (standalone: every array owned, graph
+    validated here, memory admitted first) or obtain it as `ExperimentalCudaContext.surface` (the historical composition:
+    `active`/`outlet`/`conveyance` are SHARED with the bucket context that validated them, `shared_names`; the method
+    tables are owned). Immutable by contract: content mutation of a device array is not detected. `memory` is the
+    `SurfaceMemory` estimate admitted at preparation (None for a composed context, whose admission policy is the bucket's)."""
+
+    method: str
+    device_id: int
+    shape: tuple[int, int]
+    n_cells: int
+    n_active: int
+    dx_m: float
+    names: tuple[str, ...]
+    shared_names: tuple[str, ...]
+    arrays: dict
+    owned_fingerprints: tuple
+    scalar_signature: tuple
+    graph_input_sha256: str
+    geometry_ref: Any
+    geometry_sha256: Any
+    source_refs: tuple
+    source_fingerprints: tuple
+    static_bytes: int
+    preparation_s: float
+    kernel_load_s: float
+    host_to_device_bytes: int
+    device_to_host_bytes: int
+    kernel_attributes: dict
+    memory: Any
+
+    def array(self, name: str):
+        return self.arrays[name]
+
+    def is_bound_to(self, graph: Any, geometry: Any = None) -> bool:
+        """The very graph (and, for local inertia, geometry) objects prepared from, with the graph's runtime-array metadata
+        unchanged; weak identity, no strong reference, no content hash (an in-place content change is not detected)."""
+        (graph_ref,) = self.source_refs
+        if graph_ref() is not graph or graph is None:
+            return False
+        try:
+            fp = tuple(routing_cuda._fingerprint(getattr(graph, name)) for name in routing_cuda._GRAPH_RUNTIME_FIELDS)
+        except (AttributeError, TypeError, ValueError):
+            return False
+        if fp != self.source_fingerprints:
+            return False
+        if self.method == "local_inertial":
+            return self.geometry_ref is not None and geometry is not None and self.geometry_ref() is geometry
+        return geometry is None
+
+    def summary(self) -> dict[str, Any]:
+        return {"operation": "surface-only lateral stage", "method": self.method, "shape": list(self.shape),
+                "n_cells": self.n_cells, "n_active": self.n_active, "dx_m": self.dx_m, "device_id": self.device_id,
+                "static_names": list(self.names), "shared_names": list(self.shared_names), "static_bytes": self.static_bytes,
+                "preparation_s": self.preparation_s, "kernel_load_s": self.kernel_load_s,
+                "host_to_device_bytes": self.host_to_device_bytes, "device_to_host_bytes": self.device_to_host_bytes,
+                "kernel_attributes": self.kernel_attributes, "graph_input_sha256": self.graph_input_sha256,
+                "geometry_sha256": self.geometry_sha256, "packet_bytes": PACKET_WORDS * 8,
+                "memory": None if self.memory is None else self.memory.as_dict(),
+                "numba_required": False, "fastmath": False, "device_resident": True}
+
+
+def _surface_signature(ctx: CudaSurfaceContext) -> tuple:
+    if not isinstance(ctx.shape, tuple) or not isinstance(ctx.names, tuple) or not isinstance(ctx.shared_names, tuple):
+        raise TypeError("shape, names and shared_names must be tuples")
+    return (ctx.method, ctx.device_id, ctx.shape, ctx.n_cells, ctx.n_active, ctx.dx_m, ctx.names, ctx.shared_names)
+
+
+def _check_surface_context(cp: Any, ctx: Any) -> None:
+    """Every public entry, BEFORE any launch: type, the current device, the sealed scalars, the array set, extents, dtypes and
+    fingerprints of a `CudaSurfaceContext`."""
+    if not isinstance(ctx, CudaSurfaceContext):
+        raise ExperimentalHydrologyError("ctx must be a CudaSurfaceContext (use prepare_cuda_surface)")
+    device_id = routing_cuda._current_device_id(cp)
+    if ctx.device_id != device_id:
+        raise ExperimentalHydrologyError(f"the surface context was prepared on CUDA device {ctx.device_id} but the current "
+                                         f"device is {device_id}; prepare again on purpose (no peer access or migration)")
+    try:
+        current = _surface_signature(ctx)
+    except (TypeError, ValueError):
+        current = None
+    if current is None or ctx.scalar_signature != current:
+        raise ExperimentalHydrologyError("the surface context's scalar metadata no longer matches the values sealed at "
+                                         "preparation; refusing before any launch")
+    ok = (ctx.method in METHODS and ctx.names == _surface_static_names(ctx.method)
+          and len(ctx.shape) == 2 and ctx.shape[0] >= 1 and ctx.shape[1] >= 1 and ctx.shape[0] * ctx.shape[1] == ctx.n_cells
+          and 1 <= ctx.n_active <= ctx.n_cells and isinstance(ctx.dx_m, float) and math.isfinite(ctx.dx_m) and ctx.dx_m > 0.0
+          and isinstance(ctx.arrays, dict) and set(ctx.arrays) == set(ctx.names) and set(ctx.shared_names) <= set(ctx.names))
+    arrays = tuple(ctx.arrays[name] for name in ctx.names) if ok else ()
+    expected = _surface_expected(ctx.method, ctx.shape, ctx.n_cells) if ok else ()
+    if (not ok or tuple((tuple(a.shape), str(a.dtype)) for a in arrays) != expected
+            or ctx.owned_fingerprints != tuple(routing_cuda._fingerprint(a) for a in arrays)):
+        raise ExperimentalHydrologyError("the surface context's device arrays no longer match their prepared extents/dtypes/"
+                                         "metadata; refusing before any launch")
+
+
+def _dx_checked(graph: Any) -> float:
+    dx = graph.dx_m
+    if isinstance(dx, bool) or not isinstance(dx, (int, float, np.integer, np.floating)):
+        raise ExperimentalHydrologyError(f"graph.dx_m must be a real number, got {type(dx).__name__}")
+    dx = float(dx)
+    if not (math.isfinite(dx) and dx > 0.0 and math.isfinite(dx * dx) and dx * dx > 0.0):
+        raise ExperimentalHydrologyError(f"graph.dx_m must be finite with a finite positive cell area, got {dx!r}")
+    return dx
+
+
+def _geometry_host_arrays(g: LocalInertialGeometry) -> dict[str, np.ndarray]:
+    return {"z": g.z.reshape(-1), "fx_type": g.fx_type.reshape(-1), "fx_zmax": g.fx_zmax.reshape(-1),
+            "fx_fric": g.fx_fric.reshape(-1), "fx_kb": g.fx_kb.reshape(-1), "fx_sign": g.fx_sign.reshape(-1),
+            "fy_type": g.fy_type.reshape(-1), "fy_zmax": g.fy_zmax.reshape(-1), "fy_fric": g.fy_fric.reshape(-1),
+            "fy_kb": g.fy_kb.reshape(-1), "fy_sign": g.fy_sign.reshape(-1)}
+
+
+def _check_geometry_against(g: Any, shape: tuple[int, int], dx: float, active_host: np.ndarray, graph: Any) -> None:
+    if not isinstance(g, LocalInertialGeometry):
+        raise ExperimentalHydrologyError("the local-inertial method needs a LocalInertialGeometry")
+    if (tuple(g.shape) != tuple(shape) or g.dx_m != dx or not np.array_equal(g.active, active_host.reshape(shape))
+            or not np.array_equal(g.friction, np.asarray(graph.friction_factor))):
+        raise ExperimentalHydrologyError("the geometry does not match the graph (shape, dx, active mask, friction)")
+
+
+def prepare_cuda_surface(method: str, graph: RoutingGraph, *, geometry: LocalInertialGeometry | None = None,
+                         reserve_bytes: int = 0, available_bytes_fn: Any = None) -> CudaSurfaceContext:
+    """Validate the CuPy `graph` (structure without transfer, then ONE counted download of its runtime arrays checked by
+    `routing_cuda._validate_host_graph`, the native graph binding of the bucket path), admit the declared surface memory
+    (static + one step + reserve against `available_bytes_fn`, default the device/pool reading) BEFORE any allocation, compile/
+    load the kernels, and upload owned copies of the cell masks, conveyance and the method tables for the CURRENT device.
+    Raises `CudaUnavailableError` (no CuPy/device/compiler), `SurfaceMemoryError` or `ExperimentalHydrologyError` before anything
+    is returned; no NumPy/Numba fallback, no bucket parameters."""
+    from maple.core.backend import read_transfer_counters, to_device, to_host
+
+    t0 = time.perf_counter()
+    if method not in METHODS:
+        raise ExperimentalHydrologyError(f"method must be one of {METHODS}, got {method!r}")
+    cp = routing_cuda._cupy()
+    device_id = routing_cuda._current_device_id(cp)
+    if method == "local_inertial":
+        if not isinstance(geometry, LocalInertialGeometry):
+            raise ExperimentalHydrologyError("the local-inertial method needs a LocalInertialGeometry")
+    elif geometry is not None:
+        raise ExperimentalHydrologyError("the explicit method takes no geometry")
+    try:
+        graph_arrays = routing_cuda._graph_arrays(cp, graph, device_id)  # structure, dtype, device: no transfer
+    except CudaUnavailableError:
+        raise
+    except RoutingError as exc:
+        raise ExperimentalHydrologyError(str(exc)) from exc
+    shape = (int(graph.shape[0]), int(graph.shape[1]))
+    n = shape[0] * shape[1]
+    dx = _dx_checked(graph)
+    memory = estimate_surface_memory(method, shape, backend="cuda", reserve_bytes=reserve_bytes)
+    query = default_device_available_bytes_fn(cp, device_id) if available_bytes_fn is None else available_bytes_fn
+    if not callable(query):
+        raise ExperimentalHydrologyError("available_bytes_fn must be callable")
+    admit_bytes(memory, query, "preparation", need=memory.preparation_required_bytes)  # BEFORE the download/load/uploads
+    t_load = time.perf_counter()
+    attributes = _load_all(method)
+    kernel_load_s = time.perf_counter() - t_load
+    before = read_transfer_counters()
+    host = {nm: to_host(graph_arrays[nm]) for nm in routing_cuda._GRAPH_RUNTIME_FIELDS}
+    try:
+        routing_cuda._validate_host_graph(graph, host["active_flat"], host["outlet_flat"], host["conveyance"],
+                                          host["level_order"], host["conveyance_lo"], host["donor_position"], host["donor_mask"])
+    except RoutingError as exc:
+        raise ExperimentalHydrologyError(str(exc)) from exc
+    active = host["active_flat"]
+    n_active = int(np.count_nonzero(active))
+    staged: dict[str, np.ndarray] = {"active": active.astype(np.uint8)}
+    geometry_ref = geometry_sha = None
+    if method == "explicit":
+        order = np.ascontiguousarray(host["level_order"], dtype=np.int64)
+        donor_cell = np.where(host["donor_mask"], order[host["donor_position"]], -1).astype(np.int64)
+        donors = np.full((4, n), -1, dtype=np.int64)
+        donors[:, order] = donor_cell
+        staged.update({"outlet": host["outlet_flat"].astype(np.uint8),
+                       "conveyance": np.ascontiguousarray(host["conveyance"], dtype=np.float64), "donors": donors})
+    else:
+        _check_geometry_against(geometry, shape, dx, active, graph)
+        staged.update(_geometry_host_arrays(geometry))
+        geometry_ref, geometry_sha = weakref.ref(geometry), geometry.input_sha256
+    names = _surface_static_names(method)
+    arrays = {name: to_device(np.ascontiguousarray(staged[name]), cp) for name in names}
+    cp.cuda.get_current_stream().synchronize()
+    delta = read_transfer_counters().delta(before)
+    ctx = CudaSurfaceContext(
+        method=method, device_id=device_id, shape=shape, n_cells=n, n_active=n_active, dx_m=dx, names=names, shared_names=(),
+        arrays=arrays, owned_fingerprints=tuple(routing_cuda._fingerprint(arrays[name]) for name in names),
+        scalar_signature=(), graph_input_sha256=str(graph.input_sha256), geometry_ref=geometry_ref, geometry_sha256=geometry_sha,
+        source_refs=(weakref.ref(graph),),
+        source_fingerprints=tuple(routing_cuda._fingerprint(graph_arrays[nm]) for nm in routing_cuda._GRAPH_RUNTIME_FIELDS),
+        static_bytes=int(sum(a.nbytes for a in arrays.values())), preparation_s=time.perf_counter() - t0,
+        kernel_load_s=kernel_load_s, host_to_device_bytes=int(delta.host_to_device_bytes),
+        device_to_host_bytes=int(delta.device_to_host_bytes), kernel_attributes=attributes, memory=memory)
+    object.__setattr__(ctx, "scalar_signature", _surface_signature(ctx))  # sealed once, here; frozen afterwards
+    return ctx
+
+
+def _compose_surface_context(method: str, hydrology: Any, graph: Any, geometry: Any, attributes: dict,
+                             kernel_load_s: float, cp: Any) -> CudaSurfaceContext:
+    """The historical composition: the surface context of a prepared bucket context. `active`/`outlet`/`conveyance` are the
+    bucket context's own validated device arrays (shared, not copied); the method tables are uploaded as owned copies exactly
+    as the original experimental context did (explicit: one counted download of the level order/donor tables). No admission
+    (the historical bucket API never had one) and no second graph validation (the bucket context already performed it)."""
+    from maple.core.backend import read_transfer_counters, to_device, to_host
+
+    t0 = time.perf_counter()
+    before = read_transfer_counters()
+    n, shape = hydrology.n_cells, hydrology.shape
+    geometry_ref = geometry_sha = None
+    if method == "explicit":
+        order = to_host(hydrology.level_order)
+        donor_cell = to_host(hydrology.donor_cell)
+        donors = np.full((4, n), -1, dtype=np.int64)
+        donors[:, order] = donor_cell
+        staged = {"donors": donors}
+    else:
+        _check_geometry_against(geometry, tuple(shape), hydrology.dx_m, np.asarray(graph.active).reshape(-1), graph)
+        staged = _geometry_host_arrays(geometry)
+        geometry_ref, geometry_sha = weakref.ref(geometry), geometry.input_sha256
+    names = _surface_static_names(method)
+    shared = tuple(name for name in names if name in ("active", "outlet", "conveyance"))
+    arrays = {name: getattr(hydrology, name) for name in shared}
+    arrays.update({name: to_device(np.ascontiguousarray(staged[name]), cp) for name in names if name not in shared})
+    arrays = {name: arrays[name] for name in names}
+    cp.cuda.get_current_stream().synchronize()
+    delta = read_transfer_counters().delta(before)
+    graph_fp = hydrology.source_fingerprints[0]
+    ctx = CudaSurfaceContext(
+        method=method, device_id=hydrology.device_id, shape=tuple(shape), n_cells=n, n_active=hydrology.n_active,
+        dx_m=hydrology.dx_m, names=names, shared_names=shared, arrays=arrays,
+        owned_fingerprints=tuple(routing_cuda._fingerprint(arrays[name]) for name in names), scalar_signature=(),
+        graph_input_sha256=str(hydrology.graph_input_sha256), geometry_ref=geometry_ref, geometry_sha256=geometry_sha,
+        source_refs=(weakref.ref(graph),), source_fingerprints=graph_fp,
+        static_bytes=int(sum(arrays[name].nbytes for name in names if name not in shared)),
+        preparation_s=time.perf_counter() - t0, kernel_load_s=kernel_load_s,
+        host_to_device_bytes=int(delta.host_to_device_bytes), device_to_host_bytes=int(delta.device_to_host_bytes),
+        kernel_attributes=attributes, memory=None)
+    object.__setattr__(ctx, "scalar_signature", _surface_signature(ctx))
+    return ctx
+
+
+# --- the historical (bucket + surface) context --------------------------------------------------------------------------
 def _static_names(method: str) -> tuple[str, ...]:
     if method == "explicit":
         return ("donors",)
@@ -628,7 +930,8 @@ def _expected_shapes(method: str, shape: tuple[int, int], n_cells: int) -> tuple
 class ExperimentalCudaContext:
     """Owned, validated static device data of one experimental solver on one graph. Wraps the baseline
     `CudaHydrologyContext` (column physics, active/outlet/conveyance, its own seal and binding) and adds the method-specific
-    arrays. Immutable by contract; build with `prepare_experimental_cuda`."""
+    arrays (`names`/`arrays`, the same objects the composed `surface` context reads together with the baseline's cell
+    arrays). Immutable by contract; build with `prepare_experimental_cuda`."""
 
     method: str
     hydrology: Any
@@ -649,6 +952,7 @@ class ExperimentalCudaContext:
     host_to_device_bytes: int
     device_to_host_bytes: int
     kernel_attributes: dict
+    surface: Any
 
     def array(self, name: str):
         return self.arrays[name]
@@ -670,6 +974,7 @@ class ExperimentalCudaContext:
                 "host_to_device_bytes": self.host_to_device_bytes, "device_to_host_bytes": self.device_to_host_bytes,
                 "kernel_attributes": self.kernel_attributes, "geometry_sha256": self.geometry_sha256,
                 "column_context": self.hydrology.summary(), "packet_bytes": PACKET_WORDS * 8,
+                "surface_context": self.surface.summary() if isinstance(self.surface, CudaSurfaceContext) else None,
                 "numba_required": False, "fastmath": False, "device_resident": True}
 
 
@@ -681,7 +986,8 @@ def _signature(ctx: ExperimentalCudaContext) -> tuple:
 
 def _check_context(cp: Any, ctx: Any) -> None:
     """Every public entry, BEFORE any launch: type, the baseline context's own checks (current device, fingerprints, sealed
-    metadata), this context's sealed scalars, array extents and fingerprints."""
+    metadata), this context's sealed scalars, array extents and fingerprints, then the composed surface context and its
+    consistency with the baseline and method arrays."""
     if not isinstance(ctx, ExperimentalCudaContext):
         raise ExperimentalHydrologyError("ctx must be an ExperimentalCudaContext (use prepare_experimental_cuda)")
     hc._check_context(cp, ctx.hydrology)
@@ -702,6 +1008,17 @@ def _check_context(cp: Any, ctx: Any) -> None:
             or ctx.owned_fingerprints != tuple(routing_cuda._fingerprint(a) for a in arrays):
         raise ExperimentalHydrologyError("the experimental context's owned device arrays no longer match their prepared "
                                          "extents/metadata; refusing before any launch")
+    surface = ctx.surface
+    _check_surface_context(cp, surface)
+    hyd = ctx.hydrology
+    composed = (surface.method == ctx.method and surface.shape == ctx.shape and surface.n_cells == ctx.n_cells
+                and surface.n_active == ctx.n_active and surface.dx_m == ctx.dx_m and surface.device_id == ctx.device_id
+                and all(surface.arrays.get(name) is ctx.arrays[name] for name in ctx.names)
+                and all(surface.arrays.get(name) is getattr(hyd, name) for name in surface.shared_names)
+                and set(surface.shared_names) == {n for n in ("active", "outlet", "conveyance") if n in surface.names})
+    if not composed:
+        raise ExperimentalHydrologyError("the experimental context's surface context is not the one composed from its baseline "
+                                         "and method arrays; refusing before any launch")
 
 
 def prepare_experimental_cuda(method: str, graph: RoutingGraph, params: Any, *,
@@ -709,9 +1026,8 @@ def prepare_experimental_cuda(method: str, graph: RoutingGraph, params: Any, *,
     """Validate and upload once. The baseline context is prepared first (graph/column validation, counted download, owned
     copies, sealed and bound; `mode` selects its launch structure and is irrelevant to this module's kernels); local inertia
     additionally validates `geometry` (a host `LocalInertialGeometry`) against the graph and uploads its static face arrays.
+    The composed surface context (`.surface`) shares the baseline's cell arrays and owns the method tables.
     Raises `CudaUnavailableError` (no CuPy/device/compiler) or a preparation error before anything is returned."""
-    from maple.core.backend import read_transfer_counters, to_device, to_host
-
     t0 = time.perf_counter()
     if method not in METHODS:
         raise ExperimentalHydrologyError(f"method must be one of {METHODS}, got {method!r}")
@@ -726,39 +1042,19 @@ def prepare_experimental_cuda(method: str, graph: RoutingGraph, params: Any, *,
     attributes = _load_all(method)  # compile/load before any transfer
     kernel_load_s = time.perf_counter() - t_load
     hydrology = hc.prepare_cuda_hydrology(graph, params, mode=mode)  # validation, counted transfers, seal, binding
-    before = read_transfer_counters()
-    n, shape = hydrology.n_cells, hydrology.shape
-    host: dict[str, np.ndarray]
-    if method == "explicit":
-        order = to_host(hydrology.level_order)
-        donor_cell = to_host(hydrology.donor_cell)
-        donors = np.full((4, n), -1, dtype=np.int64)
-        donors[:, order] = donor_cell
-        host = {"donors": donors}
-        geometry_ref = geometry_sha = None
-    else:
-        g = geometry
-        if (tuple(g.shape) != tuple(shape) or g.dx_m != hydrology.dx_m or not np.array_equal(g.active, np.asarray(graph.active))
-                or not np.array_equal(g.friction, np.asarray(graph.friction_factor))):
-            raise ExperimentalHydrologyError("the geometry does not match the graph (shape, dx, active mask, friction)")
-        host = {"z": g.z.reshape(-1), "fx_type": g.fx_type.reshape(-1), "fx_zmax": g.fx_zmax.reshape(-1),
-                "fx_fric": g.fx_fric.reshape(-1), "fx_kb": g.fx_kb.reshape(-1), "fx_sign": g.fx_sign.reshape(-1),
-                "fy_type": g.fy_type.reshape(-1), "fy_zmax": g.fy_zmax.reshape(-1), "fy_fric": g.fy_fric.reshape(-1),
-                "fy_kb": g.fy_kb.reshape(-1), "fy_sign": g.fy_sign.reshape(-1)}
-        geometry_ref, geometry_sha = weakref.ref(g), g.input_sha256
+    surface = _compose_surface_context(method, hydrology, graph, geometry, attributes, kernel_load_s, cp)
     names = _static_names(method)
-    arrays = {name: to_device(np.ascontiguousarray(host[name]), cp) for name in names}
-    cp.cuda.get_current_stream().synchronize()
-    delta = read_transfer_counters().delta(before)
+    arrays = {name: surface.arrays[name] for name in names}
     ctx = ExperimentalCudaContext(
-        method=method, hydrology=hydrology, device_id=hydrology.device_id, shape=tuple(shape), n_cells=n,
+        method=method, hydrology=hydrology, device_id=hydrology.device_id, shape=tuple(hydrology.shape), n_cells=hydrology.n_cells,
         n_active=hydrology.n_active, dx_m=hydrology.dx_m, names=names, arrays=arrays,
         owned_fingerprints=tuple(routing_cuda._fingerprint(arrays[name]) for name in names), scalar_signature=(),
-        geometry_ref=geometry_ref, geometry_sha256=geometry_sha, static_bytes=int(sum(a.nbytes for a in arrays.values())),
+        geometry_ref=surface.geometry_ref, geometry_sha256=surface.geometry_sha256,
+        static_bytes=int(sum(a.nbytes for a in arrays.values())),
         preparation_s=time.perf_counter() - t0, kernel_load_s=kernel_load_s,
-        host_to_device_bytes=int(delta.host_to_device_bytes) + hydrology.host_to_device_bytes,
-        device_to_host_bytes=int(delta.device_to_host_bytes) + hydrology.device_to_host_bytes,
-        kernel_attributes=attributes)
+        host_to_device_bytes=surface.host_to_device_bytes + hydrology.host_to_device_bytes,
+        device_to_host_bytes=surface.device_to_host_bytes + hydrology.device_to_host_bytes,
+        kernel_attributes=attributes, surface=surface)
     object.__setattr__(ctx, "scalar_signature", _signature(ctx))  # sealed once, here; frozen afterwards
     return ctx
 
@@ -778,9 +1074,256 @@ def _blocks(count: int) -> int:
     return (int(count) + ELEMENT_THREADS - 1) // ELEMENT_THREADS
 
 
+def _resolve_packet(words: np.ndarray, method: str, control: HydraulicControl, *, mask_input_bit: bool) -> None:
+    """Raise the first failure recorded in the lateral packet (the CPU reference's order and messages). The historical bucket
+    path masks the INPUT-depth bit (its depth is the accepted column's validated output); the standalone router keeps it."""
+    flags = int(words[0])
+    if mask_input_bit:
+        flags &= ~INPUT_DEPTH_BITS[method]
+    nonfinite = int(words[8])
+    scalars = tuple(bool((nonfinite >> k) & 1) for k in range(5))
+    resolve_flags(method, flags, scalars, bool(words[9]), float(words.view(np.float64)[1]),
+                  control.cfl_max, control.limiter if method == "local_inertial" else "off")
+
+
+def _explicit_lateral(cp, sctx: CudaSurfaceContext, control: HydraulicControl, h_c, dt: float, t_new: float, to_host, *,
+                      implementation: str, mask_input_bit: bool) -> SurfaceStep:
+    """The explicit kinematic-wave lateral stage on the device depth `h_c` (flat or `(ny, nx)`, exact float64 on the context's
+    device, checked by the caller): face kernel, cell kernel, one-block reduction, ONE counted packet read."""
+    n, dx = sctx.n_cells, sctx.dx_m
+    a = sctx.array
+    area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
+    f_out, q_used, cfl_row, h_new, q_inst, vel, bal_row, sc_row = (cp.empty(n, dtype=np.float64) for _ in range(8))
+    packet = cp.empty(PACKET_WORDS, dtype=np.uint64)
+    f64, i64 = np.float64, np.int64
+    _launch("maple_syrup_exp_face", _blocks(n), ELEMENT_THREADS,
+            (i64(n), a("active"), a("conveyance"), h_c, f_out, q_used, cfl_row, f64(dtdx_area), f64(dt_over_dx)))
+    _launch("maple_syrup_exp_cell", _blocks(n), ELEMENT_THREADS,
+            (i64(n), a("active"), a("conveyance"), a("donors"), h_c, f_out, h_new, q_inst, vel, bal_row, sc_row, f64(area)))
+    _launch("maple_syrup_exp_reduce", 1, REDUCE_THREADS,
+            (i64(n), a("outlet"), h_c, h_new, f_out, q_used, q_inst, vel, cfl_row, bal_row, sc_row, packet, f64(area),
+             f64(dx), f64(control.cfl_max), f64(BALANCE_RTOL), f64(BALANCE_RTOL * (sctx.n_active + 2) * area)))
+    _resolve_packet(to_host(packet), "explicit", control, mask_input_bit=mask_input_bit)  # the ONE counted read
+    view_f = packet.view(np.float64)
+    grid = sctx.shape
+    return SurfaceStep(
+        method="explicit", implementation=implementation, dt_s=dt, state=SurfaceState(t_new, h_new.reshape(grid)),
+        velocity_m_s=vel.reshape(grid), face_volume_m3={"out": f_out.reshape(grid)},
+        used_flux_m2_s={"out": q_used.reshape(grid)}, export_m3=view_f[4], outlet_discharge_m3_s=view_f[7],
+        storage_change_m3=view_f[3], budget_residual_m3=view_f[5], max_cfl=view_f[1],
+        max_cell_balance_residual_m=view_f[2], limited_cells=0, limited_volume_m3=0.0, cfl_kind=CFL_NAMES["explicit"],
+        face_flow_depth_m={"out": h_c.reshape(grid)})
+
+
+def _local_inertial_lateral(cp, sctx: CudaSurfaceContext, control: HydraulicControl, h_c, qx_old, qy_old, dt: float,
+                            t_new: float, to_host, *, implementation: str, mask_input_bit: bool) -> SurfaceStep:
+    """The local-inertial lateral stage on the device depth and face fluxes (exact float64 of the right shapes on the context's
+    device, checked by the caller): x-face, y-face (+ phi, scale x/y with the donor limiter), cell kernel, one-block reduction,
+    ONE counted packet read."""
+    ny, nx = sctx.shape
+    n, dx = sctx.n_cells, sctx.dx_m
+    a = sctx.array
+    area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
+    z = a("z")
+    nxf, nyf = ny * (nx + 1), (ny + 1) * nx
+    qx_new, hfx = cp.empty(nxf, dtype=np.float64), cp.empty(nxf, dtype=np.float64)
+    qy_new, hfy = cp.empty(nyf, dtype=np.float64), cp.empty(nyf, dtype=np.float64)
+    fflag_x, fflag_y = cp.empty(nxf, dtype=np.uint8), cp.empty(nyf, dtype=np.uint8)
+    h_new, speed, bal_row, sc_row, phi, outv_row = (cp.empty(n, dtype=np.float64) for _ in range(6))
+    packet = cp.empty(PACKET_WORDS, dtype=np.uint64)
+    f64, i64, i32 = np.float64, np.int64, np.int32
+    limiter = control.limiter == "donor"
+    implicit = control.friction_treatment == "implicit_quadratic"  # `control` comes from the caller's guard (sealed value)
+    _launch("maple_syrup_li_face_x", _blocks(nxf), ELEMENT_THREADS,
+            (i64(ny), i64(nx), z, h_c, a("fx_type"), a("fx_zmax"), a("fx_fric"), a("fx_kb"), a("fx_sign"), qx_old, qx_new,
+             hfx, fflag_x, f64(dt), f64(dx), f64(GRAVITY_M_S2), i32(1 if implicit else 0)))
+    _launch("maple_syrup_li_face_y", _blocks(nyf), ELEMENT_THREADS,
+            (i64(ny), i64(nx), z, h_c, a("fy_type"), a("fy_zmax"), a("fy_fric"), a("fy_kb"), a("fy_sign"), qy_old, qy_new,
+             hfy, fflag_y, f64(dt), f64(dx), f64(GRAVITY_M_S2), i32(1 if implicit else 0)))
+    if limiter:
+        _launch("maple_syrup_li_phi", _blocks(n), ELEMENT_THREADS,
+                (i64(ny), i64(nx), qx_new, qy_new, h_c, phi, outv_row, f64(dtdx_area), f64(area), f64(LIMITER_SAFETY)))
+        _launch("maple_syrup_li_scale_x", _blocks(nxf), ELEMENT_THREADS, (i64(ny), i64(nx), phi, qx_new))
+        _launch("maple_syrup_li_scale_y", _blocks(nyf), ELEMENT_THREADS, (i64(ny), i64(nx), phi, qy_new))
+    _launch("maple_syrup_li_cell", _blocks(n), ELEMENT_THREADS,
+            (i64(ny), i64(nx), a("active"), qx_new, qy_new, h_c, h_new, speed, bal_row, sc_row, f64(dt_over_dx)))
+    _launch("maple_syrup_li_reduce", 1, REDUCE_THREADS,
+            (i64(ny), i64(nx), a("fx_type"), a("fx_sign"), a("fy_type"), a("fy_sign"), h_c, h_new, qx_new, qy_new, speed,
+             bal_row, sc_row, hfx, hfy, fflag_x, fflag_y, phi, outv_row, packet, i32(1 if limiter else 0), f64(area), f64(dx),
+             f64(dtdx_area), f64(dt_over_dx), f64(GRAVITY_M_S2), f64(control.cfl_max), f64(BALANCE_RTOL),
+             f64(BALANCE_RTOL * (sctx.n_active + 2) * area)))
+    _resolve_packet(to_host(packet), "local_inertial", control, mask_input_bit=mask_input_bit)  # the ONE counted read
+    view_f, view_i = packet.view(np.float64), packet.view(np.int64)
+    grid = sctx.shape
+    qx_state, qy_state = qx_new.reshape(ny, nx + 1), qy_new.reshape(ny + 1, nx)
+    return SurfaceStep(
+        method="local_inertial", implementation=implementation, dt_s=dt,
+        state=SurfaceState(t_new, h_new.reshape(grid), qx_state, qy_state),
+        velocity_m_s=speed.reshape(grid), face_volume_m3={"x": dtdx_area * qx_state, "y": dtdx_area * qy_state},
+        used_flux_m2_s={"x": qx_state, "y": qy_state}, export_m3=view_f[4], outlet_discharge_m3_s=view_f[7],
+        storage_change_m3=view_f[3], budget_residual_m3=view_f[5], max_cfl=view_f[1],
+        max_cell_balance_residual_m=view_f[2], limited_cells=view_i[11], limited_volume_m3=view_f[12],
+        cfl_kind=CFL_NAMES["local_inertial"],
+        face_flow_depth_m={"x": hfx.reshape(ny, nx + 1), "y": hfy.reshape(ny + 1, nx)})
+
+
+# --- the standalone surface router --------------------------------------------------------------------------------------
+class CudaSurfaceRouter:
+    """The CUDA form of `experimental_hydrology.CpuSurfaceRouter` (same `step`/`initial_state`/`validate_state`/`describe`
+    interface on `SurfaceState`/`SurfaceStep`, arrays on the context's device). Pure, fresh outputs, ONE counted packet read per
+    attempted step, no upload, no full-grid download, no bucket. Every public entry re-checks the sealed context (current device,
+    fingerprints, scalars) and the solver seal BEFORE any raw enqueue; the INPUT depth is validated ON THE DEVICE inside the
+    lateral packet (non-finite or negative anywhere, inactive cells included, refuses the step first). Memory: the declared
+    estimate (`memory`) is admitted at preparation and before every step against `available_bytes_fn` (default: the device
+    driver/pool reading of the context's device)."""
+
+    implementation = "cuda"
+
+    def __init__(self, method: str, graph: RoutingGraph, *, geometry: LocalInertialGeometry | None = None,
+                 control: HydraulicControl | None = None, context: CudaSurfaceContext | None = None, reserve_bytes: int = 0,
+                 available_bytes_fn: Any = None):
+        if method not in METHODS:
+            raise ExperimentalHydrologyError(f"method must be one of {METHODS}, got {method!r}")
+        control = _check_control(method, control)
+        cp = routing_cuda._cupy()  # CuPy must be importable (no fallback)
+        if context is None:
+            context = prepare_cuda_surface(method, graph, geometry=geometry, reserve_bytes=reserve_bytes,
+                                           available_bytes_fn=available_bytes_fn)
+        elif (not isinstance(context, CudaSurfaceContext) or context.method != method
+              or not context.is_bound_to(graph, geometry)):
+            raise ExperimentalHydrologyError("context must be the CudaSurfaceContext prepared for exactly this method, graph "
+                                             "and geometry")
+        memory = estimate_surface_memory(method, context.shape, backend="cuda", limiter=control.limiter,
+                                         reserve_bytes=reserve_bytes)
+        query = default_device_available_bytes_fn(cp, context.device_id) if available_bytes_fn is None else available_bytes_fn
+        if not callable(query):
+            raise ExperimentalHydrologyError("available_bytes_fn must be callable")
+        self._context, self._control, self._memory, self._available = context, control, memory, query
+        self._seal = self._current_seal(context, control)
+        object.__setattr__(self, "_sealed", True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if self.__dict__.get("_sealed"):
+            raise AttributeError(f"CudaSurfaceRouter is immutable after construction (cannot set {name!r}); build a new router")
+        object.__setattr__(self, name, value)
+
+    @staticmethod
+    def _current_seal(ctx: Any, control: Any) -> tuple:
+        return (ctx.method, ctx.shape, ctx.dx_m, control.cfl_max, control.limiter, control.friction_treatment, id(ctx))
+
+    @property
+    def xp(self):
+        return routing_cuda._cupy()
+
+    @property
+    def context(self) -> CudaSurfaceContext:
+        return self._context
+
+    @property
+    def control(self) -> HydraulicControl:
+        return self._control
+
+    @property
+    def memory(self):
+        return self._memory
+
+    @property
+    def available_bytes_fn(self):
+        return self._available
+
+    @property
+    def method(self) -> str:
+        return self._context.method
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return self._context.shape
+
+    @property
+    def dx_m(self) -> float:
+        return self._context.dx_m
+
+    def _guard(self) -> tuple[Any, CudaSurfaceContext, HydraulicControl]:
+        cp = routing_cuda._cupy()
+        ctx, control = self._context, self._control
+        _check_surface_context(cp, ctx)
+        if not isinstance(control, HydraulicControl):
+            raise ExperimentalHydrologyError("the router's control is not a HydraulicControl; refusing before any launch")
+        control.validated()
+        if self._current_seal(ctx, control) != self._seal:
+            raise ExperimentalHydrologyError("the router's method, shape, dx, control or context no longer match the values "
+                                             "sealed at construction; refusing before any launch")
+        if ctx.method == "explicit" and control.limiter != "off":
+            raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method")
+        if ctx.method == "explicit" and control.friction_treatment != "lagged":
+            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method")
+        return cp, ctx, control
+
+    def _faces(self, ctx: CudaSurfaceContext):
+        ny, nx = ctx.shape
+        if ctx.method == "explicit":
+            return None
+        return (ctx.array("fx_type").reshape(ny, nx + 1), ctx.array("fx_sign").reshape(ny, nx + 1),
+                ctx.array("fy_type").reshape(ny + 1, nx), ctx.array("fy_sign").reshape(ny + 1, nx))
+
+    def validate_state(self, state: SurfaceState) -> None:
+        cp, ctx, _control = self._guard()
+        validate_surface_state(cp, state, method=ctx.method, shape=ctx.shape, faces=self._faces(ctx))
+
+    def initial_state(self, depth_m: Any, *, t_s: float = 0.0) -> SurfaceState:
+        """Validated fresh copy of a surface at rest; `depth_m` an exact float64 `cupy.ndarray` on the context's device."""
+        cp, ctx, _control = self._guard()
+        time_s = check_state_time(t_s, "t_s")
+        hc._dynamic(cp, depth_m, "depth_m", ctx.shape, ExperimentalHydrologyError, ctx.device_id)
+        admit_bytes(self._memory, self._available, "initialization", need=self._memory.initialization_required_bytes)
+        ny, nx = ctx.shape
+        faces = (None, None) if ctx.method == "explicit" else (cp.zeros((ny, nx + 1)), cp.zeros((ny + 1, nx)))
+        state = SurfaceState(time_s, cp.array(depth_m, copy=True), *faces)
+        self.validate_state(state)
+        return state
+
+    def admit_step(self) -> int:
+        """Compare the declared requirement (static + one step + reserve) with the device reading; raises `SurfaceMemoryError`
+        before anything is allocated."""
+        return admit_bytes(self._memory, self._available, "step")
+
+    def describe(self) -> dict[str, Any]:
+        return {"operation": "surface-only lateral stage", "method": self.method, "implementation": self.implementation,
+                "control": {"cfl_max": self.control.cfl_max, "limiter": self.control.limiter,
+                            "friction_treatment": self.control.friction_treatment},
+                "cfl_kind": CFL_NAMES[self.method], "context": self.context.summary(), "memory": self._memory.as_dict(),
+                "kernels": kernel_provenance(), "transfer_scope": TRANSFER_SCOPE, "qualification": QUALIFICATION_STATUS,
+                "host_reads_per_step": "one counted lateral packet (the input depth is validated inside it)"}
+
+    def step(self, state: SurfaceState, dt_s: float) -> SurfaceStep:
+        """ONE pure lateral step. Order: sealed context/control, record type and time, dt, exact device arrays (type, device,
+        shape, dtype, contiguity), memory admission, then the launches; the input-depth and momentum value checks are resolved
+        from the packet before any result exists."""
+        from maple.core.backend import to_host
+
+        cp, ctx, control = self._guard()
+        t_state = check_surface_structure(cp, state, method=ctx.method, shape=ctx.shape)
+        ny, nx = ctx.shape
+        hc._dynamic(cp, state.depth_m, "state.depth_m", ctx.shape, ExperimentalHydrologyError, ctx.device_id)
+        if ctx.method == "local_inertial":
+            hc._dynamic(cp, state.qx_m2_s, "state.qx_m2_s", (ny, nx + 1), ExperimentalHydrologyError, ctx.device_id)
+            hc._dynamic(cp, state.qy_m2_s, "state.qy_m2_s", (ny + 1, nx), ExperimentalHydrologyError, ctx.device_id)
+        dt = check_positive_dt(dt_s)
+        t_new = advance_time(t_state, dt)
+        self.admit_step()
+        if ctx.method == "explicit":
+            return _explicit_lateral(cp, ctx, control, state.depth_m, dt, t_new, to_host, implementation=self.implementation,
+                                     mask_input_bit=False)
+        return _local_inertial_lateral(cp, ctx, control, state.depth_m, state.qx_m2_s, state.qy_m2_s, dt, t_new, to_host,
+                                       implementation=self.implementation, mask_input_bit=False)
+
+
+# --- the historical solver ------------------------------------------------------------------------------------------------
 class CudaHydraulicSolver:
     """The CUDA form of `CpuHydraulicSolver` (same `step`/`initial_state`/`validate_state`/`describe` interface, so one driver
-    `experimental_storm.evolve_experimental` serves both). Pure, fresh outputs, no hidden transfer."""
+    `experimental_storm.evolve_experimental` serves both). Pure, fresh outputs, no hidden transfer. The column stage is the
+    accepted `hydrology_cuda.prepared_column_step`; the lateral stage is the surface-only launch sequence on the composed
+    `context.surface` (the same kernels and arguments as before the extraction; bucket output stays bucket output)."""
 
     implementation = "cuda"
 
@@ -788,13 +1331,7 @@ class CudaHydraulicSolver:
                  control: HydraulicControl | None = None, mode: str = "auto", context: ExperimentalCudaContext | None = None):
         if method not in METHODS:
             raise ExperimentalHydrologyError(f"method must be one of {METHODS}, got {method!r}")
-        control = (HydraulicControl() if control is None else control).validated()
-        if method == "explicit" and control.limiter != "off":
-            raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method; the explicit "
-                                             "method is positive by its CFL bound")
-        if method == "explicit" and control.friction_treatment != "lagged":
-            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; the explicit "
-                                             "kinematic wave has no momentum friction")
+        control = _check_control(method, control)
         routing_cuda._cupy()  # CuPy must be importable (no fallback)
         if context is None:
             context = prepare_experimental_cuda(method, graph, params, geometry=geometry, mode=mode)
@@ -827,6 +1364,11 @@ class CudaHydraulicSolver:
         return self._context
 
     @property
+    def surface(self) -> CudaSurfaceContext:
+        """The composed surface-only context this solver's lateral stage launches on (read-only)."""
+        return self._context.surface
+
+    @property
     def control(self) -> HydraulicControl:
         return self._control
 
@@ -843,9 +1385,9 @@ class CudaHydraulicSolver:
         return self._context.dx_m
 
     def _guard(self) -> tuple[Any, ExperimentalCudaContext, HydraulicControl]:
-        """BEFORE any launch: the context (baseline + experimental seals, fingerprints, current device) and that the solver's
-        method/shape/dx/control/context still equal the values sealed at construction. Returns `(cupy, context, control)`
-        from which every launch parameter must be taken (never from mutable solver attributes)."""
+        """BEFORE any launch: the context (baseline + experimental + composed surface seals, fingerprints, current device) and
+        that the solver's method/shape/dx/control/context still equal the values sealed at construction. Returns
+        `(cupy, context, control)` from which every launch parameter must be taken (never from mutable solver attributes)."""
         cp = routing_cuda._cupy()
         ctx, control = self._context, self._control
         _check_context(cp, ctx)
@@ -921,93 +1463,15 @@ class CudaHydraulicSolver:
             return self._explicit(cp, ctx, control, col, dt, t_new, to_host)
         return self._local_inertial(cp, ctx, control, col, state, dt, t_new, to_host)
 
-    @staticmethod
-    def _resolve(words: np.ndarray, method: str, control: HydraulicControl) -> None:
-        """Raise the first failure recorded in the lateral packet (the CPU reference's order and messages)."""
-        nonfinite = int(words[8])
-        scalars = tuple(bool((nonfinite >> k) & 1) for k in range(5))
-        resolve_flags(method, int(words[0]), scalars, bool(words[9]), float(words.view(np.float64)[1]),
-                      control.cfl_max, control.limiter if method == "local_inertial" else "off")
-
     def _explicit(self, cp, ctx, control, col, dt, t_new, to_host) -> HydraulicStep:
-        n, dx = ctx.n_cells, ctx.dx_m
-        hyd = ctx.hydrology
-        area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
-        h_c = col.depth_m
-        f_out, q_used, cfl_row, h_new, q_inst, vel, bal_row, sc_row = (cp.empty(n, dtype=np.float64) for _ in range(8))
-        packet = cp.empty(PACKET_WORDS, dtype=np.uint64)
-        f64, i64 = np.float64, np.int64
-        _launch("maple_syrup_exp_face", _blocks(n), ELEMENT_THREADS,
-                (i64(n), hyd.active, hyd.conveyance, h_c, f_out, q_used, cfl_row, f64(dtdx_area), f64(dt_over_dx)))
-        _launch("maple_syrup_exp_cell", _blocks(n), ELEMENT_THREADS,
-                (i64(n), hyd.active, hyd.conveyance, ctx.array("donors"), h_c, f_out, h_new, q_inst, vel, bal_row, sc_row,
-                 f64(area)))
-        _launch("maple_syrup_exp_reduce", 1, REDUCE_THREADS,
-                (i64(n), hyd.outlet, h_c, h_new, f_out, q_used, q_inst, vel, cfl_row, bal_row, sc_row, packet, f64(area),
-                 f64(dx), f64(control.cfl_max), f64(BALANCE_RTOL),
-                 f64(BALANCE_RTOL * (ctx.n_active + 2) * area)))
-        self._resolve(to_host(packet), "explicit", control)  # the ONE counted read of the lateral stage
-        view_f = packet.view(np.float64)
-        grid = ctx.shape
-        new_state = HydraulicState(t_new, h_new.reshape(grid), col.soil_water_m)
-        return HydraulicStep(
-            method="explicit", implementation=self.implementation, dt_s=dt, state=new_state, column=col,
-            velocity_m_s=vel.reshape(grid), face_volume_m3={"out": f_out.reshape(grid)},
-            used_flux_m2_s={"out": q_used.reshape(grid)}, export_m3=view_f[4], outlet_discharge_m3_s=view_f[7],
-            storage_change_m3=view_f[3], budget_residual_m3=view_f[5], max_cfl=view_f[1],
-            max_cell_balance_residual_m=view_f[2], limited_cells=0, limited_volume_m3=0.0, cfl_kind=CFL_NAMES["explicit"],
-            face_flow_depth_m={"out": h_c.reshape(grid)})
+        surface = _explicit_lateral(cp, ctx.surface, control, col.depth_m, dt, t_new, to_host,
+                                    implementation=self.implementation, mask_input_bit=True)
+        return compose_hydraulic_step(surface, col)
 
     def _local_inertial(self, cp, ctx, control, col, state, dt, t_new, to_host) -> HydraulicStep:
-        ny, nx = ctx.shape
-        n, dx = ctx.n_cells, ctx.dx_m
-        hyd = ctx.hydrology
-        area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
-        h_c = col.depth_m
-        z = ctx.array("z")
-        nxf, nyf = ny * (nx + 1), (ny + 1) * nx
-        qx_new, hfx = cp.empty(nxf, dtype=np.float64), cp.empty(nxf, dtype=np.float64)
-        qy_new, hfy = cp.empty(nyf, dtype=np.float64), cp.empty(nyf, dtype=np.float64)
-        fflag_x, fflag_y = cp.empty(nxf, dtype=np.uint8), cp.empty(nyf, dtype=np.uint8)
-        h_new, speed, bal_row, sc_row, phi, outv_row = (cp.empty(n, dtype=np.float64) for _ in range(6))
-        packet = cp.empty(PACKET_WORDS, dtype=np.uint64)
-        f64, i64, i32 = np.float64, np.int64, np.int32
-        limiter = control.limiter == "donor"
-        implicit = control.friction_treatment == "implicit_quadratic"  # `control` comes from `_guard` (sealed value)
-        _launch("maple_syrup_li_face_x", _blocks(nxf), ELEMENT_THREADS,
-                (i64(ny), i64(nx), z, h_c, ctx.array("fx_type"), ctx.array("fx_zmax"), ctx.array("fx_fric"),
-                 ctx.array("fx_kb"), ctx.array("fx_sign"), state.qx_m2_s, qx_new, hfx, fflag_x, f64(dt), f64(dx),
-                 f64(GRAVITY_M_S2), i32(1 if implicit else 0)))
-        _launch("maple_syrup_li_face_y", _blocks(nyf), ELEMENT_THREADS,
-                (i64(ny), i64(nx), z, h_c, ctx.array("fy_type"), ctx.array("fy_zmax"), ctx.array("fy_fric"),
-                 ctx.array("fy_kb"), ctx.array("fy_sign"), state.qy_m2_s, qy_new, hfy, fflag_y, f64(dt), f64(dx),
-                 f64(GRAVITY_M_S2), i32(1 if implicit else 0)))
-        if limiter:
-            _launch("maple_syrup_li_phi", _blocks(n), ELEMENT_THREADS,
-                    (i64(ny), i64(nx), qx_new, qy_new, h_c, phi, outv_row, f64(dtdx_area), f64(area),
-                     f64(LIMITER_SAFETY)))
-            _launch("maple_syrup_li_scale_x", _blocks(nxf), ELEMENT_THREADS, (i64(ny), i64(nx), phi, qx_new))
-            _launch("maple_syrup_li_scale_y", _blocks(nyf), ELEMENT_THREADS, (i64(ny), i64(nx), phi, qy_new))
-        _launch("maple_syrup_li_cell", _blocks(n), ELEMENT_THREADS,
-                (i64(ny), i64(nx), hyd.active, qx_new, qy_new, h_c, h_new, speed, bal_row, sc_row, f64(dt_over_dx)))
-        _launch("maple_syrup_li_reduce", 1, REDUCE_THREADS,
-                (i64(ny), i64(nx), ctx.array("fx_type"), ctx.array("fx_sign"), ctx.array("fy_type"), ctx.array("fy_sign"),
-                 h_c, h_new, qx_new, qy_new, speed, bal_row, sc_row, hfx, hfy, fflag_x, fflag_y, phi, outv_row, packet,
-                 i32(1 if limiter else 0), f64(area), f64(dx), f64(dtdx_area), f64(dt_over_dx), f64(GRAVITY_M_S2),
-                 f64(control.cfl_max), f64(BALANCE_RTOL), f64(BALANCE_RTOL * (ctx.n_active + 2) * area)))
-        self._resolve(to_host(packet), "local_inertial", control)  # the ONE counted read of the lateral stage
-        view_f, view_i = packet.view(np.float64), packet.view(np.int64)
-        grid = ctx.shape
-        qx_state, qy_state = qx_new.reshape(ny, nx + 1), qy_new.reshape(ny + 1, nx)
-        new_state = HydraulicState(t_new, h_new.reshape(grid), col.soil_water_m, qx_state, qy_state)
-        return HydraulicStep(
-            method="local_inertial", implementation=self.implementation, dt_s=dt, state=new_state, column=col,
-            velocity_m_s=speed.reshape(grid), face_volume_m3={"x": dtdx_area * qx_state, "y": dtdx_area * qy_state},
-            used_flux_m2_s={"x": qx_state, "y": qy_state}, export_m3=view_f[4], outlet_discharge_m3_s=view_f[7],
-            storage_change_m3=view_f[3], budget_residual_m3=view_f[5], max_cfl=view_f[1],
-            max_cell_balance_residual_m=view_f[2], limited_cells=view_i[11], limited_volume_m3=view_f[12],
-            cfl_kind=CFL_NAMES["local_inertial"],
-            face_flow_depth_m={"x": hfx.reshape(ny, nx + 1), "y": hfy.reshape(ny + 1, nx)})
+        surface = _local_inertial_lateral(cp, ctx.surface, control, col.depth_m, state.qx_m2_s, state.qy_m2_s, dt, t_new,
+                                          to_host, implementation=self.implementation, mask_input_bit=True)
+        return compose_hydraulic_step(surface, col)
 
 
 # the flag-bit tables are shared with the CPU reference; the kernels above hard-code the same numbers
@@ -1015,3 +1479,5 @@ if EXPLICIT_BITS != {"nonfinite": 1, "negative": 2, "cfl": 4, "balance": 8} or L
         "state_nonfinite": 1, "closed_face": 2, "open_inflow": 4, "cfl": 8, "negative": 16, "nonfinite": 32,
         "balance": 64}:
     raise ImportError("experimental flag-bit tables disagree with the CUDA kernels")
+if INPUT_DEPTH_BITS != {"explicit": 16, "local_inertial": 128} or SURFACE_PACKET_BYTES != PACKET_WORDS * 8:
+    raise ImportError("surface input-depth bits or packet size disagree with the CUDA kernels")

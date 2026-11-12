@@ -129,6 +129,10 @@ writable owned storage:
   * `TerrainFactor.verify_identity()`: recomputes the SHA-256 of the owned payload (ONE N-sized host read on CuPy)
     and compares it with the recorded identity; an explicitly declared cold boundary (checkpoint, restart,
     acceptance), never called implicitly.
+  * `PotentialDemand.payload_device_id` (Phase 1 correction 01): read-only, allocation-free device metadata of the
+    owned per-cell payload (CUDA device id on CuPy, None on NumPy or without terrain), so a device-bound consumer
+    can refuse a wrong-device payload BEFORE asking for a detached copy. No PET equation, constant or ownership
+    changed by this accessor.
 
 The identity recorded at build therefore covers exactly the payload every later `apply_terrain` reads.
 
@@ -693,6 +697,15 @@ class _OwnedArray:
     def shape(self) -> tuple[int, ...]:
         return tuple(int(s) for s in self._array.shape)
 
+    @property
+    def device_id(self) -> int | None:
+        """Metadata only (no allocation, no transfer, no device switch): the CUDA device id that OWNS the payload
+        (`ndarray.device.id`) for a CuPy payload, None for a NumPy payload. A consumer bound to one device compares
+        this with its own binding BEFORE asking for a copy, so no cross-device copy is ever made implicitly."""
+        if self._xp is np:
+            return None
+        return int(self._array.device.id)
+
     def _internal(self) -> Any:
         """Zero-copy handle for module-internal READ use only."""
         return self._array
@@ -932,6 +945,13 @@ class PotentialDemand:
     def pet_mm_day_cells(self) -> Any:
         """Per-cell mm/day (terrain applied): NumPy read-only view / CuPy detached copy; None otherwise."""
         return None if self._cells is None else self._cells.readonly()
+
+    @property
+    def payload_device_id(self) -> int | None:
+        """Read-only, allocation-free device metadata of the owned per-cell payload: the CUDA device id that holds
+        it when terrain was applied on CuPy, None for a NumPy payload and None for a scalar (no terrain) demand.
+        Lets a device-bound consumer refuse a wrong-device payload BEFORE requesting `detached_cells()`."""
+        return None if self._cells is None else self._cells.device_id
 
     def detached_cells(self) -> Any:
         """A fresh writable copy of the per-cell array (allocates); None without terrain."""
