@@ -1,6 +1,6 @@
 # Shared scheduler and subsurface development program
 
-Current milestone: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Phase 1.5 (daily recharge) is implemented as a separate native source and bounded-qualified through Root S4; its public record is [phase15_qualification.md](phase15_qualification.md) (bounded whole-phase acceptance recorded; publication pending). The scientific requirements and numbering below remain governing.
+Current milestone: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Phase 1.5 (daily recharge) is implemented as a separate native source and bounded-qualified through Root S4; its public record is [phase15_qualification.md](phase15_qualification.md) (bounded whole-phase acceptance recorded; source committed and pushed at `06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`). The scientific requirements and numbering below remain governing.
 
 User authorized implementation on 2026-11-09 after the planning discussion.
 Work uses automatic Codex–Claude implementation, independent review, correction

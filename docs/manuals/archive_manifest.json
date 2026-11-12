@@ -2,16 +2,16 @@
   "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results); no model source/third-party environment/deep bed",
   "files": {
     "README.md": {
-      "sha256": "d74400be4958f309ca80e5d705bb018ff6502a0b29328fa9ab3db4a3f32a00c9",
-      "bytes": 4614
+      "sha256": "7f7a21677bae46254d34816f3e150aeb376d7a8ddb209fe46b6145f763c25291",
+      "bytes": 4745
     },
     "SYRUP_CLI_User_Guide.docx": {
-      "sha256": "ffc89c8d901c23656008e320acb06aa181f9074e6888ab4a2383de26091c8c29",
-      "bytes": 242906
+      "sha256": "672a831d9e9954d71f06da7669ca4a013534df854c2f51358af58ce76ed9c01c",
+      "bytes": 242938
     },
     "SYRUP_Model_Structure_and_Physics.docx": {
-      "sha256": "c0cf0463a0d22a8ac8b09ecfa82ce1e9b4d43dc4372f3dc7a365eb2fb256c0d5",
-      "bytes": 181889
+      "sha256": "3c49947ec43af644cf46f5061b5f1c2b95828fefa8ca97e85022f54f2f40bca8",
+      "bytes": 181918
     },
     "assets/layered_water_ownership.png": {
       "sha256": "b713a57b0da81547825a19c7d710b8f12e0023ba440237a2fc162297bc3b5c4b",
@@ -38,12 +38,12 @@
       "bytes": 43763
     },
     "document_build.json": {
-      "sha256": "d0465f557e063ad78c391a10aa1754fde2f704095fb8b87fe8910bfff79d6db4",
+      "sha256": "34022a0f21a6f5ae628b34ac3a39cbbfd3f943464f7fffff400dd361b5f33ef4",
       "bytes": 690
     },
     "documentation_verification.json": {
-      "sha256": "8f8829f196aa1ddc5c8cf6896131ffb085d56a9adaefd120411bb2bb070ab65f",
-      "bytes": 6174
+      "sha256": "7d8660f46b907c8a72c43fd40a3ea4bddbbcdcb0f1be9d2d5451e054d9c9987e",
+      "bytes": 6455
     },
     "examples/native9f_metadata/README.md": {
       "sha256": "7e426a992a560d9cb171e8707b805bbbd6ef2e2197594bce6bec088f202dcc02",
@@ -190,20 +190,20 @@
       "bytes": 136977
     },
     "qualification/design.md": {
-      "sha256": "ebc8efe56fd0bdca3f3d0e8350eea103cd6301a5a4e74821e1ab3d7ede79166d",
-      "bytes": 25183
+      "sha256": "d9e67c78026c87e168fd3bde46b65a0253ee9a77adc2fa950f46e73dd502cf67",
+      "bytes": 25225
     },
     "qualification/development_phases_20261109.md": {
-      "sha256": "653cc29fed71eea3d66b01384e02fe7a9e63397eec3e593b4221d38699666d24",
-      "bytes": 21333
+      "sha256": "cccd34af2d4208430950f0143a7b1b9345f6b179aec3551a000e227aaea71901",
+      "bytes": 21387
     },
     "qualification/ecohyd_reference_sources.md": {
       "sha256": "15d97d48d1e54e732606c92f0c36f118d081d212b873fbea490990ffd3e359df",
       "bytes": 3247
     },
     "qualification/implementation.md": {
-      "sha256": "6505a081628dc9917d88cc0e062e02ffd4ae294dfc479ca4c7dac08c63b538d2",
-      "bytes": 19746
+      "sha256": "971b288dc5502e48eb91a489eea4f7fbabfacc3095703fcd61413943d245f9db",
+      "bytes": 19788
     },
     "qualification/leaf_water_contract.md": {
       "sha256": "9359d577b41614790addbc6bc1c2ea692e53313f0c351672b487a30f5b8a9a9c",
@@ -218,20 +218,20 @@
       "bytes": 9993
     },
     "qualification/phase15_daily_recharge.md": {
-      "sha256": "2cee5f43e287ba3015226e5b9ae39b579f332d8ef4b1b51cdb1273b23d5ea924",
-      "bytes": 8291
+      "sha256": "fe18b019d83668c56106feacd3827e5a51eac3dce38ac5dc48cb217928093bce",
+      "bytes": 8345
     },
     "qualification/phase15_native_acceptance.json": {
       "sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
       "bytes": 2589
     },
     "qualification/phase15_qualification.json": {
-      "sha256": "4b3d8673b2ecb9803af083d32a03e9202ba3908f323655ad6c93cd600113bacc",
-      "bytes": 1726
+      "sha256": "64e244420c8001f4c74d5f7e4291825b03c7fdcc4c9aaa2a6c659ed77c88d0e4",
+      "bytes": 1855
     },
     "qualification/phase15_qualification.md": {
-      "sha256": "b3bc9a4fea5de19e875609ac0f07f336be8ff369efd2a3cf9e9a79608df698b7",
-      "bytes": 10665
+      "sha256": "8c7946c695d630e3cc00ab844634cb5a5a7a410273d30d9066383abc9132861d",
+      "bytes": 10786
     },
     "qualification/phase15_source_manifest.json": {
       "sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
@@ -282,8 +282,8 @@
       "bytes": 22449
     },
     "release_metadata.json": {
-      "sha256": "4eb0d2f4fd1cfb29a9e727f1c7c0a74432065d410a6840cc434aad2dbaf08c40",
-      "bytes": 2816
+      "sha256": "6c1846d55da92afa768c1da500114b363075198f22cc1271e7df5a9fb0f97f18",
+      "bytes": 2853
     },
     "render_outputs.py": {
       "sha256": "b47baba3875a4132e9afe62df9e6f6248a5fddd1c3ac7137d4216da978d4ec87",
@@ -292,6 +292,10 @@
     "user_guide.md": {
       "sha256": "6b38216c93be4db007339b583a1128f00989a49595a1bb3ed0885c121b20c2c0",
       "bytes": 120041
+    },
+    "qualification/phase15_publication.json": {
+      "sha256": "f731988ffdd67ae0aa4b1ffb8d165c91a4e4241837f23a64ab675e88687702a4",
+      "bytes": 981
     }
   },
   "native_phase15": {

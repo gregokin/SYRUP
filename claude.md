@@ -1,3 +1,7 @@
+## Phase 1.5 completed and published — 2026-11-12
+
+The accepted native daily recharge source and both manuals are committed and pushed on `feature/subsurface-daily-recharge`, source commit `06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`, package `82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107` (114 files). Read `docs/subsurface_hydrology/phase15_acceptance.json`, `phase15_qualification.md` and `phase15_publication.json` for exact controls/limits. This supersedes older pending-status notes below. Continue Phase 2 automatically, then 2.5 and 3; unresolved material physics decisions require user input, independent engineering continues meanwhile. Historical C1 clocks/locks/checkpoints are unchanged; no main merge, large-domain or field acceptance.
+
 # MAPLE-SYRUP: Sediment Yield, Runoff, and Underground Plumbing
 
 ## Accepted Phase 1 source foundation — 2026-11-12

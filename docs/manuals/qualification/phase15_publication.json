@@ -1,0 +1,13 @@
+{
+  "schema": "syrup.phase15.publication.v1",
+  "utc": "2026-11-12T14:36:01.587125+00:00",
+  "source_commit": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
+  "branch": "feature/subsurface-daily-recharge",
+  "remote": "https://github.com/gregokin/SYRUP.git",
+  "remote_head_verified": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
+  "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+  "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
+  "published": true,
+  "scope": "Qualified bounded native daily recharge, CPU/Numba/CUDA, Dense V3 physical restart, examples and both manuals. Not a main merge or coupled scheduler/field/large-domain acceptance.",
+  "verification": "git push -u origin feature/subsurface-daily-recharge exited 0; git ls-remote returned this exact source commit. A later docs-only commit records this already-published identity; old source/acceptance receipts are unchanged."
+}

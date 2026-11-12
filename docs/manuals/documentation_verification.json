@@ -1,11 +1,11 @@
 {
-  "utc": "2026-11-12T14:33:32.098866+00:00",
+  "utc": "2026-11-12T14:36:22.084694+00:00",
   "release_status": "final",
   "documents": [
     {
       "file": "SYRUP_CLI_User_Guide.docx",
-      "sha256": "ffc89c8d901c23656008e320acb06aa181f9074e6888ab4a2383de26091c8c29",
-      "bytes": 242906,
+      "sha256": "672a831d9e9954d71f06da7669ca4a013534df854c2f51358af58ce76ed9c01c",
+      "bytes": 242938,
       "xml_and_relationship_parts_parse": true,
       "media_count": 1,
       "unresolved_source_tokens": false,
@@ -17,12 +17,13 @@
         "c1_masy": true,
         "maple_9f": true
       },
-      "phase15_text_present": true
+      "phase15_text_present": true,
+      "phase15_published_source_commit_present": true
     },
     {
       "file": "SYRUP_Model_Structure_and_Physics.docx",
-      "sha256": "c0cf0463a0d22a8ac8b09ecfa82ce1e9b4d43dc4372f3dc7a365eb2fb256c0d5",
-      "bytes": 181889,
+      "sha256": "3c49947ec43af644cf46f5061b5f1c2b95828fefa8ca97e85022f54f2f40bca8",
+      "bytes": 181918,
       "xml_and_relationship_parts_parse": true,
       "media_count": 1,
       "unresolved_source_tokens": false,
@@ -36,7 +37,8 @@
         "c1_masy": true,
         "maple_9f": true
       },
-      "phase15_text_present": true
+      "phase15_text_present": true,
+      "phase15_published_source_commit_present": true
     }
   ],
   "shell_python_fenced_blocks_syntax_checked": [
@@ -225,8 +227,9 @@
     "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
     "whole_phase_receipt_status": "recorded",
     "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
-    "source_commit": null,
-    "published": false
+    "source_commit": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
+    "published": true
   },
-  "scientific_render_review": "Source formulas and citations retained; layered figure previously visually reviewed; Phase 1.5 prose adds no new figure"
+  "scientific_render_review": "Source formulas and citations retained; layered figure previously visually reviewed; Phase 1.5 prose adds no new figure",
+  "publication_refresh": "Root XML/CRC/identity verification after verified actual source push. No model source or command changes."
 }

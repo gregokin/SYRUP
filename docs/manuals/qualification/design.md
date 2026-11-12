@@ -15,7 +15,7 @@ is implied. Phase 1.5 daily recharge remains the next implementation, after
 Phase 1 publication, before Phases 2, 2.5 and 3.
 
 Phase 1.5 daily recharge status, 2026-11-12 UTC: implemented as a **separate native source (N15)** in the candidate and independently accepted by Root through
-S4 (bounded native daily lifecycle, CPU/CUDA, V3 physical restart); a bounded whole-phase acceptance is **recorded** (`phase15_acceptance.json`); publication (commit and push) is **pending**. See
+S4 (bounded native daily lifecycle, CPU/CUDA, V3 physical restart); a bounded whole-phase acceptance is **recorded** (`phase15_acceptance.json`); publication is **complete** (source commit `06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`). See
 [phase15_qualification.md](phase15_qualification.md) for the exact source (package `82e9c011…`, 114 files), controls and limits. The user rule is unchanged: P = 0 is a
 no-op, 0 < P <= T attempts simplified recharge (equality included), P > T uses the native full storm, with whole-occurrence fallback from the unchanged parent. It is a
 Python API (`maple_syrup.daily_water`), not a CLI option or weather/CSV reader; the nominal ordinal and native physical seconds are an explicit new versioned
