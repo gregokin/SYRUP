@@ -1,7 +1,7 @@
 # Phase 1.5: daily small-rain recharge and native storm fallback
 
 Status: user-authorized queued phase, 2026-11-12 UTC (2026-11-11 local).
-This specification records requirements, not an implemented or qualified API.
+This specification records the binding requirements. Implementation status and the actual bounded qualification are in [phase15_qualification.md](phase15_qualification.md) (source N15; bounded whole-phase acceptance recorded in phase15_acceptance.json; publication pending).
 Finish, validate, commit and push Phase 1 first; then implement, independently
 qualify, commit and push Phase 1.5 before starting Phase 2. Preserve Phases 2,
 2.5 and 3 and all their existing requirements. Follow automatic Codex–Claude

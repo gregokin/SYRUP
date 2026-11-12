@@ -1,0 +1,22 @@
+{
+  "purpose": "immutable WRONG-VERSION control: a genuine historical C1-produced native9f CUDA V2 lifecycle checkpoint directory (role boundary). Used only to prove the V3 CUDA loader refuses a real V2 archive and that V2 is not rebound to the new Phase 1.5 sources. NOT a runtime/hardware migration, NOT a new qualified simulation, NOT a Phase 1.5 artifact.",
+  "copied_from": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/cuda_cli/out/example_production_run/combined_checkpoint/physical/",
+  "copied_bytes_unchanged": true,
+  "directory_files_exactly": {
+    "maple_state.npz": {"bytes": 12052, "sha256": "6c4da5840527565f0c6855bb7ff949d8dc69ac5f9ea1c0b6c4c5ecd653bc3e69"},
+    "lifecycle_state.npz": {"bytes": 43344, "sha256": "cea3250662f00092d670a9c953de9445e160d6d7a9f2c7a2fe791b754d7a08ce"},
+    "lifecycle_checkpoint_cuda_v2.json": {"bytes": 11898, "sha256": "4ec7bad29d8695479a41a2fbadcfdd21d27dfa891b15a7f7e733a6e66440a5cc"}
+  },
+  "manifest_facts_read_from_the_file": {
+    "schema": "maple-syrup-water-lifecycle-checkpoint-cuda/2",
+    "profile": "native9f_dense_lifecycle_cuda_v2",
+    "role": "boundary",
+    "source": {"algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1", "maple_syrup_tree_sha256": "afcad53691b9d295ed560116d313419c08fc5ffe9b227a4bdd9c922f93c52671", "maple_syrup_n_files": 109,
+               "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"},
+    "runtime": {"cupy": "14.2.0", "cuda_runtime": "12090", "cuda_driver": "13000", "compute_capability": "6.1", "device_name": "NVIDIA GeForce GTX 1080 Ti", "python_version": "3.12.3"}
+  },
+  "producer": "the accepted bounded Phase 1 C1 production run (MASY a70400230f26d7931624d49173196a1cfa05a90a, SYRUP e40a1b8fc56a96920db4ffbd182d4068fa5de3e8 package afcad536..., LEAF 52f39fe06166a91e768740b19d3c26d4ffceaf6e, MAPLE 9f466d2cfcd52991b24496cf67f4562d6268afa9 package fbc504bb...)",
+  "original_qualification": "phase1_publication_c1_20261112/root_c1_full_qualification.json (status ACCEPTED_BOUNDED_C1_DENSE_WATER_LEAF_RUNTIME; 4x6 Dense fixed-bed, 1 day E/T/growth, 0.25 s rain + native recession to completion, 1 day E/T/growth). The historical receipts/artifacts were not modified.",
+  "scope": "This directory is a V2 (cursor-free, C1-source-bound) archive. The new N15 candidate sources necessarily differ (package digest, changed CPU helper lifecycle_checkpoint.py ff4d228e... -> a new hash), so the C1 helper pins correctly refuse V2 saving under the new sources and the V3 loader correctly refuses this archive by schema/profile. Those refusals are the expected, intentional behavior the tests assert; source fences are never relaxed to read it.",
+  "layout_note": "the checkpoint directory fixtures/c1_cuda_v2/ must hold EXACTLY the three files above (the strict loaders refuse extra files); this receipt and README live outside it."
+}

@@ -1,17 +1,17 @@
 {
-  "scope": "Documentation, exact dependency metadata and public configuration examples; no model source/third-party environment/deep bed",
+  "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results); no model source/third-party environment/deep bed",
   "files": {
     "README.md": {
-      "sha256": "f2891f93b452cda38ed829a29f39a212c8d0ea01f6fd2687ce0bca2561bf9cec",
-      "bytes": 3364
+      "sha256": "d74400be4958f309ca80e5d705bb018ff6502a0b29328fa9ab3db4a3f32a00c9",
+      "bytes": 4614
     },
     "SYRUP_CLI_User_Guide.docx": {
-      "sha256": "be40d8a2bc8076d550c98b0aad8682379aeff8fbbc85271e322b008da4ecf993",
-      "bytes": 238171
+      "sha256": "ffc89c8d901c23656008e320acb06aa181f9074e6888ab4a2383de26091c8c29",
+      "bytes": 242906
     },
     "SYRUP_Model_Structure_and_Physics.docx": {
-      "sha256": "419f268358ef8f5439dbaadfe83a0ec3277a38212ce0b7ba20ccc796493d1b01",
-      "bytes": 179041
+      "sha256": "c0cf0463a0d22a8ac8b09ecfa82ce1e9b4d43dc4372f3dc7a365eb2fb256c0d5",
+      "bytes": 181889
     },
     "assets/layered_water_ownership.png": {
       "sha256": "b713a57b0da81547825a19c7d710b8f12e0023ba440237a2fc162297bc3b5c4b",
@@ -26,8 +26,8 @@
       "bytes": 92552
     },
     "build_manuals.py": {
-      "sha256": "43a455adef5ad890c609f292b1861c1406ba51a532a43f7569ccd78651f5d75c",
-      "bytes": 22474
+      "sha256": "add97fe460dd64c418bd918443c676e7eaf894fc33f4db7c62a5810095a92734",
+      "bytes": 25817
     },
     "cli_reference.json": {
       "sha256": "25cdcddcda31a68f85e216e30a719da620bac25a22105d35bbdb10a7a9e9443e",
@@ -38,12 +38,12 @@
       "bytes": 43763
     },
     "document_build.json": {
-      "sha256": "fe02ce8ba07571f82e2d94d6fd3812d926010ace88aa16348e334437a0ac907c",
+      "sha256": "d0465f557e063ad78c391a10aa1754fde2f704095fb8b87fe8910bfff79d6db4",
       "bytes": 690
     },
     "documentation_verification.json": {
-      "sha256": "5b0ebb78d5ed1c8f3758c56e4c629a8ff05a2fc2b16baf6c53a7fdab0836da0c",
-      "bytes": 4277
+      "sha256": "8f8829f196aa1ddc5c8cf6896131ffb085d56a9adaefd120411bb2bb070ab65f",
+      "bytes": 6174
     },
     "examples/native9f_metadata/README.md": {
       "sha256": "7e426a992a560d9cb171e8707b805bbbd6ef2e2197594bce6bec088f202dcc02",
@@ -68,6 +68,54 @@
     "examples/native9f_metadata/provenance_manifest.json": {
       "sha256": "0ca1b0e11e4454cde9539b03597a793ce90ad9a1305247363a2db68028ba9550",
       "bytes": 925
+    },
+    "examples/native_daily_recharge/README.md": {
+      "sha256": "ca24b57fd464bfddac99661028e7c7f3d321fd6d70c8257ca7985fe518883e25",
+      "bytes": 5771
+    },
+    "examples/native_daily_recharge/check_preservation.py": {
+      "sha256": "91ea81b0ad6f0bdedd99088bc96f9412e98440b2c4ad8160b82e0790a3b26960",
+      "bytes": 2712
+    },
+    "examples/native_daily_recharge/check_results.py": {
+      "sha256": "078690d60b79cdcf3783acdc95b813a3b067aec8f8a9867c1399131b5a34f023",
+      "bytes": 1884
+    },
+    "examples/native_daily_recharge/daily_recharge_example.py": {
+      "sha256": "09fa6369431c67535d7304d1ce2e7d14dc8444c3733f7828eb3a66aba77bd60e",
+      "bytes": 22608
+    },
+    "examples/native_daily_recharge/results/closed_retention.numba.json": {
+      "sha256": "26ec172316fed57f40eb84b5aca883afe2542410560f918c8b90ed7f7ed022ce",
+      "bytes": 3837
+    },
+    "examples/native_daily_recharge/results/closed_retention.numpy.json": {
+      "sha256": "67d2ad1c9754cb817345868bb26c5cf2bda9fdc73bc5b772b7902719b08f8a65",
+      "bytes": 3837
+    },
+    "examples/native_daily_recharge/results/fallback.numba.json": {
+      "sha256": "4369ae50ef50bf4aee84c7e28e0aea7b6ba583144ec34f3d9b70b1d68239f0cd",
+      "bytes": 4519
+    },
+    "examples/native_daily_recharge/results/fallback.numpy.json": {
+      "sha256": "fda988289424aadb007622bac8e3ac47f0fc2158af9f87ed9fafd30139ab5347",
+      "bytes": 4519
+    },
+    "examples/native_daily_recharge/results/fallback_cfl_refusal.numpy.err": {
+      "sha256": "cfcbb7a786c6a55e03caf932c6e55de0e8da954306b3e1183b790f11d44c0129",
+      "bytes": 1310
+    },
+    "examples/native_daily_recharge/results/open_drainage.numpy.json": {
+      "sha256": "c13019c983a79caddcdf7721f6d66702018f650e7cb28ce321f738d5d4ef2ec2",
+      "bytes": 3882
+    },
+    "examples/native_daily_recharge/results/recharge.numpy.json": {
+      "sha256": "72e8b08d78c768f4a70424db3bf41eb6ed8e480223c7300a161a3088fa0a880d",
+      "bytes": 3806
+    },
+    "examples/native_daily_recharge/results/rerun_existing_workdir.refusal.err": {
+      "sha256": "a0c76fde849df34f0ad383fe75c46900811f6876fb62c1242806722e91a8c003",
+      "bytes": 112
     },
     "examples/native_leaf_calendar_cli/README.md": {
       "sha256": "ea5ce3c32e204d52be4cd83c08cb3758bbd8ff23d304029cbba0a66d4cb448e8",
@@ -138,36 +186,56 @@
       "bytes": 2383
     },
     "model_structure_and_physics.md": {
-      "sha256": "84450b5e1ff9fb304e67923638d5fc2ab1b80fd3de1cd1ac7696f89e8f54393b",
-      "bytes": 130823
+      "sha256": "cf001f428a334035fcf6a108166dc0127ef61563687795ee5d0274832b22fab4",
+      "bytes": 136977
     },
     "qualification/design.md": {
-      "sha256": "05b0c28f9f98e9ebb9788c95dc0ab422b8d451becca983414fe626caca5ae1a6",
-      "bytes": 24657
+      "sha256": "ebc8efe56fd0bdca3f3d0e8350eea103cd6301a5a4e74821e1ab3d7ede79166d",
+      "bytes": 25183
     },
     "qualification/development_phases_20261109.md": {
-      "sha256": "8f8e531c7b4ec959e18a5b293162d425e26756620636b95d4abd4cb5ef0b98d8",
-      "bytes": 20932
+      "sha256": "653cc29fed71eea3d66b01384e02fe7a9e63397eec3e593b4221d38699666d24",
+      "bytes": 21333
     },
     "qualification/ecohyd_reference_sources.md": {
       "sha256": "15d97d48d1e54e732606c92f0c36f118d081d212b873fbea490990ffd3e359df",
       "bytes": 3247
     },
     "qualification/implementation.md": {
-      "sha256": "0074a2274e72c5cd06406c1cce82c9eefe93cfdd9c61b6991e7e4d7db02f5256",
-      "bytes": 19220
+      "sha256": "6505a081628dc9917d88cc0e062e02ffd4ae294dfc479ca4c7dac08c63b538d2",
+      "bytes": 19746
     },
     "qualification/leaf_water_contract.md": {
       "sha256": "9359d577b41614790addbc6bc1c2ea692e53313f0c351672b487a30f5b8a9a9c",
       "bytes": 4701
     },
     "qualification/parameter_reference.md": {
-      "sha256": "8d24485a4a9d363b464bbbabe2e962cfc0f47e3e0220161c9e0b95a331a13f6b",
-      "bytes": 22369
+      "sha256": "f7c07e827f9847d73baaa7a62a4870303863b30b7959268df6ffa84f1ad6dea8",
+      "bytes": 22595
+    },
+    "qualification/phase15_acceptance.json": {
+      "sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
+      "bytes": 9993
     },
     "qualification/phase15_daily_recharge.md": {
-      "sha256": "93029a0d41c07949288740743eb444bde27dc4111407726bde00986403ab1ff8",
-      "bytes": 8094
+      "sha256": "2cee5f43e287ba3015226e5b9ae39b579f332d8ef4b1b51cdb1273b23d5ea924",
+      "bytes": 8291
+    },
+    "qualification/phase15_native_acceptance.json": {
+      "sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
+      "bytes": 2589
+    },
+    "qualification/phase15_qualification.json": {
+      "sha256": "4b3d8673b2ecb9803af083d32a03e9202ba3908f323655ad6c93cd600113bacc",
+      "bytes": 1726
+    },
+    "qualification/phase15_qualification.md": {
+      "sha256": "b3bc9a4fea5de19e875609ac0f07f336be8ff369efd2a3cf9e9a79608df698b7",
+      "bytes": 10665
+    },
+    "qualification/phase15_source_manifest.json": {
+      "sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+      "bytes": 15246
     },
     "qualification/phase1_recipes/README.md": {
       "sha256": "7e07b6dde8601359d04a9cc627eae459dd406a7c4b5e0cd061a3078ed8e293e3",
@@ -205,21 +273,42 @@
       "sha256": "bbcee5337633f378fdade96711890a6c3eb80d467b747d90fae6f305e2d7caf3",
       "bytes": 6801
     },
+    "qualification/verify_phase15_source.py": {
+      "sha256": "42d4402f4cc6042404876ee76a2672f8a9941be99016f51b4ffd77887e3b3e82",
+      "bytes": 2477
+    },
     "qualification/weather_pet.md": {
       "sha256": "f33493506cd1ac1a5e4dd5d66c5ea55e5a8af7c86ef66a9d9fbc34e4f94afb19",
       "bytes": 22449
     },
     "release_metadata.json": {
-      "sha256": "52968f0926f766bdbf41e8f36f11923e5d2e5f4a06ff116c1e7e32521f947b74",
-      "bytes": 2004
+      "sha256": "4eb0d2f4fd1cfb29a9e727f1c7c0a74432065d410a6840cc434aad2dbaf08c40",
+      "bytes": 2816
     },
     "render_outputs.py": {
       "sha256": "b47baba3875a4132e9afe62df9e6f6248a5fddd1c3ac7137d4216da978d4ec87",
       "bytes": 8433
     },
     "user_guide.md": {
-      "sha256": "db2f28121459cf56e4a26ce066837244c0181e3de1af119ea9a10575fee40d3a",
-      "bytes": 109626
+      "sha256": "6b38216c93be4db007339b583a1128f00989a49595a1bb3ed0885c121b20c2c0",
+      "bytes": 120041
     }
+  },
+  "native_phase15": {
+    "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "package_file_count": 114,
+    "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "whole_phase_receipt_status": "recorded",
+    "published": false,
+    "note": "a separate source identity; the C1 identities in release_metadata.json are unchanged",
+    "source_commit": null,
+    "shipped_portable_evidence": [
+      "qualification/phase15_acceptance.json",
+      "qualification/phase15_native_acceptance.json",
+      "qualification/phase15_source_manifest.json",
+      "qualification/verify_phase15_source.py"
+    ],
+    "root_receipt_scope": "S4 capability receipt (phase15_native_acceptance.json) and the bounded whole-phase acceptance (phase15_acceptance.json); publication pending",
+    "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3"
   }
 }

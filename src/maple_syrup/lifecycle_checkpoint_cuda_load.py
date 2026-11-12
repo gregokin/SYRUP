@@ -134,6 +134,18 @@ def _gather(lop: Any, owner: Any, role: str, kind: str | None, reference_bed: An
                                audit_device_bytes=int(lop.memory.audit_bytes), reset_device_bytes=reset_dev, reset_host_bytes=reset_host)
 
 
+def _storm_tree(srec: Any) -> dict:
+    """V3: decode the saved storm scalar record WITHOUT requiring completion (a PARTIAL storm is a genuine accepted state); only the exact types the rebuild helper needs are checked here,
+    the closed key set/exact types/event identity are enforced by `lk._storm_state_from`, and the completed flag must be an exact bool."""
+    try:
+        tree = cc.decode_tree(srec)
+    except cc.CheckpointCapabilityError as exc:
+        raise Err(f"the saved storm record is malformed: {exc}") from None
+    if type(tree) is not dict or type(tree.get("completed")) is not bool or type(tree.get("generation")) is not int or type(tree.get("ledger")) is not dict:
+        _refuse("the saved storm record is malformed (completed must be an exact bool); refused")
+    return tree
+
+
 def _completed_storm_tree(srec: Any) -> dict:
     """Decode the saved storm scalar record and require EXACTLY `completed is True` (the backend-neutral rebuild helper `lk._storm_state_from` does not itself refuse a flipped flag)."""
     try:
@@ -335,7 +347,8 @@ def _select_policy(policy: Any) -> Any:
 
 def _load_engine(path: Any, lop: Any, expected_identity: dict, *, expected_role: str, expected_source_kind: str | None = None, limits: Any, reference_bed: Any,
                  caller_host_reserve_bytes: int, caller_device_reserve_bytes: int, host_available_bytes_fn: Any = None, device_available_bytes_fn: Any = None,
-                 disk_available_bytes_fn: Any = None, extra_reserve_bytes: int = 0, expected_physical_digest: Any = None, _storm: Any = None, _policy: Any = None) -> CudaRestoration:
+                 disk_available_bytes_fn: Any = None, extra_reserve_bytes: int = 0, expected_physical_digest: Any = None, _storm: Any = None, _policy: Any = None,
+                 _expected_plan: Any = None) -> CudaRestoration:
     """The load body under a registered private policy (V1 for every public entry point); the policy is validated first, before any side effect."""
     pol = _select_policy(_policy)
     hr = cs._reserve(caller_host_reserve_bytes, "caller_host_reserve_bytes")
@@ -360,6 +373,12 @@ def _load_engine(path: Any, lop: Any, expected_identity: dict, *, expected_role:
         _refuse("a StormSpec is required for (and only for) the storm role")
     if _storm is not None and type(_storm) is not lk.StormSpec:
         _refuse("storm must be an exact lifecycle_checkpoint.StormSpec")
+    if _expected_plan is not None and not pol.daily:
+        _refuse("expected_plan is accepted only by the V3 daily codec")
+    try:
+        lk._validate_expected_plan(_expected_plan)  # EVERY supplied plan is re-derived canonically before any fence, budget, source audit or I/O
+    except lk.LifecycleCheckpointError as exc:
+        raise Err(str(exc)) from None
     if expected_physical_digest is not None:
         _hex64(expected_physical_digest, "expected_physical_digest")
     _fence_lop(lop)
@@ -392,7 +411,12 @@ def _load_engine(path: Any, lop: Any, expected_identity: dict, *, expected_role:
             if role == "storm":
                 v2.validate_storm_spec(_storm, lop, owner.device_id)
             meta, storm_terms = _gather_v2(lop, owner, role, kind, reference_bed, _storm)
-            budget = v2.estimate_load_budget_cuda_v2(meta, caller_host_reserve_bytes=hr, caller_device_reserve_bytes=dr, extra_reserve_bytes=ex, storm=storm_terms)
+            if pol.daily:
+                from maple_syrup import lifecycle_checkpoint_cuda_v3 as v3
+
+                budget = v3.estimate_load_budget_cuda_v3(meta, caller_host_reserve_bytes=hr, caller_device_reserve_bytes=dr, extra_reserve_bytes=ex, storm=storm_terms)
+            else:
+                budget = v2.estimate_load_budget_cuda_v2(meta, caller_host_reserve_bytes=hr, caller_device_reserve_bytes=dr, extra_reserve_bytes=ex, storm=storm_terms)
     except (wl.LifecycleError, sp.CudaSavePlanError, lp.CudaLoadPlanError, wlc.CudaLifecycleError, it.GeneralIntereventError, iw.InterEventWaterError, ls.LayeredStormError) as exc:
         raise _cv(exc) from None
     _admit_limits(budget, limits)
@@ -409,7 +433,7 @@ def _load_engine(path: Any, lop: Any, expected_identity: dict, *, expected_role:
     if budget.device_required_with_reserves > avail_d:
         raise QuotaErr(f"load needs {budget.device_required_with_reserves} B device (stage prefixes) but only {avail_d} B are reported free; nothing was read")
     _admit_stage(budget, "pre", host_reader, None)
-    source = cs._fresh_source_pair()
+    source = cs._fresh_source_pair(pol)
     runtime = cs._runtime_record(lop, owner.device_id)
     material_ref = cs._material_sha(reference_bed, lop.context)  # cold source/material guard of the caller's reference bed (streamed; D2H counted)
     transfers: dict = {}
@@ -434,7 +458,7 @@ def _load_engine(path: Any, lop: Any, expected_identity: dict, *, expected_role:
         _check_directory_names(dirfd, pol)
         data = _read_manifest(dirfd, budget.manifest_cap_bytes, budget.manifest_max_nodes, pol)
         return _load_body(data, dirfd, private, lop, owner, reference_bed, material_ref, expected, role, kind, limits, budget, source, runtime, shim, meta, host_reader, dev_reader,
-                          expected_physical_digest, caps, transfers, root, pol, _storm, storm_binding)
+                          expected_physical_digest, caps, transfers, root, pol, _storm, storm_binding, _expected_plan)
     except Err:
         raise
     except Exception as exc:
@@ -535,13 +559,20 @@ def _host_stages(data: dict, dirfd: int, private: Path, lop: Any, owner: Any, re
 
 def _load_body(data: dict, dirfd: int, private: Path, lop: Any, owner: Any, reference_bed: Any, material_ref: str, expected: dict, role: str, kind: str | None, limits: Any,
                budget: lp.CudaLoadBudget, source: dict, runtime: dict, shim: Any, meta: lp.CudaLoadMetadata, host_reader: Callable, dev_reader: Callable,
-               expected_physical_digest: Any, caps: list, transfers: dict, root: Path, _policy: Any = None, _storm_spec: Any = None, _storm_binding: Any = None) -> CudaRestoration:
+               expected_physical_digest: Any, caps: list, transfers: dict, root: Path, _policy: Any = None, _storm_spec: Any = None, _storm_binding: Any = None,
+               _expected_plan: Any = None) -> CudaRestoration:
     from maple.core.backend import to_device, to_device_tree
 
     pol = pol_mod.policy_of(_policy)
 
     host_bed, arrays, life, scalars, t_s, revision, host_material, ref_ledger_type = _host_stages(
         data, dirfd, private, lop, owner, reference_bed, material_ref, expected, role, kind, limits, budget, source, runtime, shim, meta, host_reader, pol, _storm_binding)
+    daily = None
+    if pol.daily:  # V3: the saved cursor decoded STRICTLY + role<->pending + the supplied StormSpec/expected plan bound to the saved pending occurrence, on the HOST scalars, BEFORE any device allocation
+        try:
+            daily = lk._daily_cursor_checked(lk._V3_9F, role, scalars, _storm_spec, _expected_plan)
+        except lk.LifecycleCheckpointError as exc:
+            raise Err(str(exc)) from None
     # ---- ONE cold host->device reconstruction of the FULL BedState (nonmemoizing occurrences)
     try:
         owner2 = wl._cuda_checkpoint_owner(lop)  # re-gate the CURRENT device immediately before the allocation
@@ -609,7 +640,7 @@ def _load_body(data: dict, dirfd: int, private: Path, lop: Any, owner: Any, refe
             if sop is None or storm_op.sha256 != sop:
                 _refuse("the re-prepared storm operator identity differs from the saved one (native material or bindings differ)")
             srec = scalars["storm"]
-            stree = _completed_storm_tree(srec)
+            stree = _storm_tree(srec) if pol.partial_storm else _completed_storm_tree(srec)
             event = ev.prepare_layered_event(storm_op, _storm_spec.schedule, _storm_spec.field, event_origin_s=_storm_spec.event_origin_s, control=_storm_spec.control,
                                              policy=_storm_spec.policy, **hk)
             water = ls.LayeredWaterState(t_s, surface, qx, qy, soil, history, dev_bed, it._typed_ledger(ls.LayeredWaterLedger, stree["ledger"], "ledger"), stree["generation"], storm_op.sha256)
@@ -647,9 +678,9 @@ def _load_body(data: dict, dirfd: int, private: Path, lop: Any, owner: Any, refe
         if pol is pol_mod.V1:
             state = wl._restore_checkpoint_lifecycle_cuda(new_lop, cap, records["lifecycle"], role=role, arrays=base, storm_op=storm_op, prep=prep, gop=gop, tstate=tstate,
                                                            _phase_kinds=wl._V2_PHASE_KINDS)
-        else:  # V2: boundary/interevent delegate to the G1 restorer inside the sibling; a completed storm is restored through O5
+        else:  # V2/V3: boundary/interevent delegate to the G1 restorer inside the sibling; a storm is restored through O5 (V3: partial allowed, the cursor supplied at CONSTRUCTION)
             state = wl._restore_checkpoint_lifecycle_cuda_v2(new_lop, cap, records["lifecycle"], role=role, arrays=base, storm_op=storm_op, event=event, estate=estate, prep=prep, gop=gop,
-                                                              tstate=tstate, _phase_kinds=wl._V2_PHASE_KINDS)
+                                                              tstate=tstate, _phase_kinds=wl._V2_PHASE_KINDS, daily=daily, _partial_ok=pol.partial_storm)
         lk._v2_cross_checks(state, role, kind)
         digest = cs.physical_digest_cuda(new_lop, state)
         if expected_physical_digest is not None and digest != expected_physical_digest:
@@ -662,6 +693,8 @@ def _load_body(data: dict, dirfd: int, private: Path, lop: Any, owner: Any, refe
     receipt = {"profile": pol.profile, "role": role, "source_kind": kind, "t_s": float(t_s), "revision": int(state.revision), "manifest_sha256": data["manifest_sha256"], "files": dict(data["files"]),
                "source": dict(data["source"]), "runtime": dict(data["runtime"]), "state_digest": state.digest, "physical_digest": digest, "material_sha256": material_ref,
                "lop_sha256": new_lop.sha256, "budget": budget.as_dict(), "transfers": transfers, "device_id": owner.device_id, "adopted": False}
+    if pol.daily:
+        receipt["daily_cursor_digest"] = state.daily.digest()
     return CudaRestoration(new_lop, state, receipt)
 
 

@@ -22,6 +22,12 @@ HERE = Path(__file__).resolve().parent
 OFFICIAL_NAME = 'Sediment Yield, Runoff, and Underground Plumbing'
 METADATA_SCHEMA = 'syrup.manual_release_metadata.v1'
 _SHA40, _SHA64 = re.compile(r'^[0-9a-f]{40}$'), re.compile(r'^[0-9a-f]{64}$')
+# Explicitly versioned closed extension (v2): v1 fields keep their meaning unchanged (the historical C1 subsurface release); v2 adds ONE closed block that names the
+# SEPARATE native Phase 1.5 (N15) source package and its Root acceptance. It is not an open key bag, and nothing in it rebinds a C1 identity.
+METADATA_SCHEMA_V2 = 'syrup.manual_release_metadata.v2'
+N15_FIELDS = {'syrup_package_sha256': _SHA64, 'package_file_count': int, 'source_manifest_sha256': _SHA64, 'maple_native_commit': _SHA40,
+              'maple_native_cpu_package_sha256': _SHA64, 'root_s4_acceptance_sha256': _SHA64, 'root_s4_acceptance_status': str,
+              'whole_phase_receipt_status': ('pending', 'recorded'), 'whole_phase_receipt_sha256': _SHA64, 'source_commit': _SHA40, 'published': bool}
 # Release fields that must be populated for a final build; their pending state is kept in the metadata file as @RELEASE_...@ tokens.
 # The production recipe is identified by the SHA-256 of the recipe file (the value pinned as source.recipe_sha256), the receipt by the SHA-256 of its file.
 RELEASE_FIELDS = {'syrup_commit': _SHA40, 'syrup_branch': None, 'syrup_water_package_sha256': _SHA64, 'leaf_commit': _SHA40, 'leaf_branch': None,
@@ -38,8 +44,36 @@ def load_metadata(path=None, require_final=False):
     The metadata names source identities only; it never contains this documentation's own commit or hash."""
     meta = json.loads((path or HERE / 'release_metadata.json').read_text())
     top = {'schema', 'official_name', 'release_status', 'prepared_date', 'qualification_statement', 'surface_reference', 'subsurface_release', 'pending_tokens'}
-    if set(meta) != top or meta['schema'] != METADATA_SCHEMA:
+    if meta.get('schema') == METADATA_SCHEMA_V2:
+        top = top | {'native_phase15'}
+    if set(meta) != top or meta['schema'] not in (METADATA_SCHEMA, METADATA_SCHEMA_V2):
         raise SystemExit('release_metadata.json: unknown or missing top-level keys or wrong schema')
+    if 'native_phase15' in meta:
+        n15 = meta['native_phase15']
+        if set(n15) != set(N15_FIELDS):
+            raise SystemExit('release_metadata.json: unknown or missing native_phase15 fields')
+        for key, rule in N15_FIELDS.items():
+            value = n15[key]
+            if key == 'source_commit':
+                # Nullable: the FIRST phase commit that holds the accepted code and both manuals cannot name itself, so it is filled in by a later docs-only refresh
+                # after the real commit and push; `published` is true only together with that exact 40-hex commit.
+                if value is not None and not rule.match(value):
+                    raise SystemExit('release_metadata.json: native_phase15.source_commit must be null or 40 lowercase hex')
+                if (value is None) == n15['published']:
+                    raise SystemExit('release_metadata.json: native_phase15.published must be true exactly when source_commit is set')
+            elif key == 'whole_phase_receipt_sha256':
+                if (n15['whole_phase_receipt_status'] == 'pending') != (value is None):
+                    raise SystemExit('release_metadata.json: whole_phase_receipt_sha256 must be null exactly while the receipt status is pending')
+                if value is not None and not rule.match(value):
+                    raise SystemExit(f'release_metadata.json: native_phase15.{key} is malformed')
+            elif isinstance(rule, tuple):
+                if value not in rule:
+                    raise SystemExit(f'release_metadata.json: native_phase15.{key} must be one of {rule}')
+            elif rule is int or rule is bool or rule is str:
+                if type(value) is not rule:
+                    raise SystemExit(f'release_metadata.json: native_phase15.{key} has the wrong type')
+            elif not isinstance(value, str) or not rule.match(value):
+                raise SystemExit(f'release_metadata.json: native_phase15.{key} is malformed')
     if meta['official_name'] != OFFICIAL_NAME:
         raise SystemExit('release_metadata.json: official_name must be ' + OFFICIAL_NAME)
     if meta['release_status'] not in ('draft', 'final'):
@@ -79,6 +113,11 @@ def substitutions(meta):
             out[key] = value if value is not None else meta['pending_tokens'][key]
     out['surface_syrup_short'], out['surface_maple_short'] = out['surface_syrup_commit'][:7], out['surface_maple_commit'][:7]
     out['syrup_short'] = out['syrup_commit'][:7]
+    n15 = meta.get('native_phase15')
+    if n15 is not None:  # only the explicit separate N15 block yields n15_* markers; the C1 markers above are never overwritten
+        for key, value in n15.items():
+            out['n15_' + key] = 'yes' if value is True else 'no' if value is False else (('not yet recorded' if key == 'source_commit' else 'pending') if value is None else value)
+        out['n15_syrup_package_short'] = n15['syrup_package_sha256'][:12]
     return out
 
 

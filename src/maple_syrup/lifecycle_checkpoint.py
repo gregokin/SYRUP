@@ -126,7 +126,7 @@ class _Policy:
     subclass or override one: the engine accepts only the two registered literal objects (`_policy_of`)."""
 
     __slots__ = ("name", "schema", "native_profile", "bedless_profile", "files", "package_pins", "manifest_keys", "scalar_parts",
-                 "source_kinds", "v2", "envelope_bytes", "envelope_nodes", "native_label", "snapshot_census", "census_bytes")
+                 "source_kinds", "v2", "envelope_bytes", "envelope_nodes", "native_label", "snapshot_census", "census_bytes", "daily")
 
     def __init__(self, seal: object, **kw: Any) -> None:
         if seal is not _POLICY_SEAL:
@@ -212,12 +212,12 @@ _ENV_BYTES, _ENV_NODES = _derive_envelope_allowance()
 
 _V1 = _Policy(_POLICY_SEAL, name="v1", schema=SCHEMA, native_profile=NATIVE_PROFILE, bedless_profile=BEDLESS_PROFILE, files=FILES,
               package_pins={NATIVE_PROFILE: NATIVE39_PACKAGE_SHA256}, manifest_keys=MANIFEST_KEYS, scalar_parts=_PARTS_V1,
-              source_kinds=(), v2=False, envelope_bytes=0, envelope_nodes=0, native_label="native39", snapshot_census=None, census_bytes=0)
+              source_kinds=(), v2=False, envelope_bytes=0, envelope_nodes=0, native_label="native39", snapshot_census=None, census_bytes=0, daily=False)
 _V2 = _Policy(_POLICY_SEAL, name="v2", schema=SCHEMA_V2, native_profile=NATIVE_PROFILE_V2, bedless_profile=BEDLESS_PROFILE_V2,
               files={NATIVE_PROFILE_V2: (PAYLOAD_NATIVE, PAYLOAD_COMPANION), BEDLESS_PROFILE_V2: (PAYLOAD_COMPANION,)},
               package_pins={NATIVE_PROFILE_V2: NATIVE39_PACKAGE_SHA256}, manifest_keys=MANIFEST_KEYS | {"source_kind"},
               scalar_parts=_PARTS_V2, source_kinds=SOURCE_KINDS_V2, v2=True, envelope_bytes=_ENV_BYTES, envelope_nodes=_ENV_NODES,
-              native_label="native39", snapshot_census=None, census_bytes=0)
+              native_label="native39", snapshot_census=None, census_bytes=0, daily=False)
 # Stage B: the actual MAPLE 9f466d2c ordinary (absent fixed base, absent regional source) snapshot reader returns EXACTLY these 34 keys (32 of the 39 reader
 # plus the two unconditional `fixed_base` / `regional_slope_wind_source`); the conditional admission/contract keys are never part of this census.
 NATIVE9F_PACKAGE_SHA256 = "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
@@ -233,8 +233,33 @@ _V2_9F = _Policy(_POLICY_SEAL, name="v2-native9f", schema=SCHEMA_V2, native_prof
                  files={NATIVE9F_PROFILE_V2: (PAYLOAD_NATIVE, PAYLOAD_COMPANION)}, package_pins={NATIVE9F_PROFILE_V2: NATIVE9F_PACKAGE_SHA256},
                  manifest_keys=MANIFEST_KEYS | {"source_kind"}, scalar_parts=_PARTS_V2, source_kinds=SOURCE_KINDS_V2, v2=True,
                  envelope_bytes=_ENV_BYTES, envelope_nodes=_ENV_NODES, native_label="native9f", snapshot_census=NATIVE9F_SNAPSHOT_CENSUS,
-                 census_bytes=len(NATIVE9F_SNAPSHOT_CENSUS) * lc.NODE_BYTES)
-_POLICIES = (_V1, _V2, _V2_9F)
+                 census_bytes=len(NATIVE9F_SNAPSHOT_CENSUS) * lc.NODE_BYTES, daily=False)
+
+
+def _derive_daily_allowance() -> tuple[int, int]:
+    """Closed worst-case bytes/nodes of the V3 `daily` scalar part (closed key sets, every digest 64 hex, every count at 2**63-1, the clock-contract literal),
+    derived like the v2 envelope (indentation at the manifest nesting depth), never from one observed manifest."""
+    from maple_syrup import recharge as rc
+
+    sha, big = "f" * 64, rc.MAX_RECORD_COUNT  # the DECLARED interface bound (`recharge._count` enforces it on every counter, so encode and decode can never exceed this allowance)
+    rec = {"run_digest": sha, "ordinal": big, "last_plan_digest": sha, "last_branch": "storm_fallback", "last_parent_digest": sha, "clock_contract": rc.CLOCK_CONTRACT,
+           "pending": {"ordinal": big, "plan_digest": sha, "branch": "storm_fallback", "forcing_digest": sha, "event_sha256": sha, "capacity_failing_columns": big}}
+    text = json.dumps({"daily": rec}, indent=1, sort_keys=True)
+    return len(text) + 3 * text.count("\n") + len('"daily": ') + 2, _count_json_nodes(text) + 2
+
+
+# --- V3 (Phase 1.5 DAILY lineages): schema /3, its own native9f CPU profile literal and the closed `daily` scalar part for EVERY role. A state without a cursor is refused;
+# V1/V2 keep refusing a state WITH a cursor; the three schemas never load each other's directories (schema/profile literals differ). ---
+SCHEMA_V3 = "maple-syrup-water-lifecycle-checkpoint/3"
+NATIVE9F_PROFILE_V3 = "native9f_dense_lifecycle_cpu_v3"
+_PARTS_V3 = {key: set(parts) | {"daily"} for key, parts in _PARTS_V2.items()}
+_DAILY_BYTES, _DAILY_NODES = _derive_daily_allowance()
+_V3_9F = _Policy(_POLICY_SEAL, name="v3-native9f", schema=SCHEMA_V3, native_profile=NATIVE9F_PROFILE_V3, bedless_profile=None,
+                 files={NATIVE9F_PROFILE_V3: (PAYLOAD_NATIVE, PAYLOAD_COMPANION)}, package_pins={NATIVE9F_PROFILE_V3: NATIVE9F_PACKAGE_SHA256},
+                 manifest_keys=MANIFEST_KEYS | {"source_kind"}, scalar_parts=_PARTS_V3, source_kinds=SOURCE_KINDS_V2, v2=True,
+                 envelope_bytes=_ENV_BYTES + _DAILY_BYTES, envelope_nodes=_ENV_NODES + _DAILY_NODES, native_label="native9f",
+                 snapshot_census=NATIVE9F_SNAPSHOT_CENSUS, census_bytes=len(NATIVE9F_SNAPSHOT_CENSUS) * lc.NODE_BYTES, daily=True)
+_POLICIES = (_V1, _V2, _V2_9F, _V3_9F)
 
 
 def _policy_of(policy: Any) -> "_Policy":
@@ -594,7 +619,11 @@ def _storm_record(lop: Any, state: Any) -> dict:
 
 def _scalar_records(lop: Any, state: Any, pol: "_Policy | None" = None) -> dict:
     pol = _policy_of(pol)
-    out = {"lifecycle": wl.checkpoint_state_record(lop, state)}
+    out = {"lifecycle": wl.checkpoint_state_record_daily(lop, state) if pol.daily else wl.checkpoint_state_record(lop, state)}
+    if pol.daily:
+        from maple_syrup import recharge as rc
+
+        out["daily"] = cc.encode_tree(rc.cursor_record(state.daily))
     if state.role == "storm":
         out["storm"] = _storm_record(lop, state)
     elif state.role == "interevent":
@@ -757,6 +786,11 @@ def _save(path: Any, lop: Any, state: Any, identity: dict, *, limits: Any, host_
         _refuse(f"lop must be a genuine LifecycleOperator, got {type(lop).__name__}")
     if type(state) is not wl.LifecycleState:
         _refuse("state must be a genuine accepted LifecycleState")
+    if pol.daily:  # V3 records DAILY lineages only (cursor, pending occurrence, versioned clock contract); a cursor-free state is refused before any I/O
+        if state.daily is None:
+            _refuse("the V3 daily checkpoint codec records only states of a daily lineage (this state carries no cursor); use the V1/V2 codec")
+    elif state.daily is not None:  # V1/V2 have no cursor/pending/clock-contract fields; refuse before any I/O, never drop them
+        _refuse("the state belongs to a daily lineage (it carries a daily cursor) that this checkpoint codec cannot record; use the V3 daily codec")
     try:
         wl._check_state(lop, state)  # owner-side genuineness (minted, scalar digest, bindings); metadata only, before the budget
     except wl.LifecycleError as exc:
@@ -998,7 +1032,7 @@ def _load_path(path: Any, lop: Any, expected_identity: dict, *, expected_role: s
                host_available_bytes_fn: Callable[[], int], reference_bed: Any = None, storm: Any = None,
                device_available_bytes_fn: Any = None, disk_available_bytes_fn: Callable[[], int] | None = None,
                extra_reserve_bytes: int = 0, _policy: "_Policy | None" = None, _profile: str | None = None,
-               expected_source_kind: str | None = None) -> LifecycleRestoration:
+               expected_source_kind: str | None = None, expected_plan: Any = None) -> LifecycleRestoration:
     """The whole former body of `load_lifecycle_checkpoint` (fences, limits, identity, path, whole-call admission, fresh source audit,
     directory descriptor, private stable directory, manifest, payload, typed conversion, cleanup) under a private registered policy
     (`None` = the v1 default). v2 reaches the payload-level `_load` ONLY through here, so its admitted stable-FD lifetime is identical."""
@@ -1021,6 +1055,10 @@ def _load_path(path: Any, lop: Any, expected_identity: dict, *, expected_role: s
             _refuse("a v2 interevent load needs a closed expected_source_kind and every other role must give none")
     elif expected_source_kind is not None:
         _refuse("the v1 codec has no source kind")
+    if expected_plan is not None:  # the caller's ORIGINAL canonical plan is an EXPECTED input of the V3 daily codec only (checked against the saved immutable cursor)
+        if not pol.daily:
+            _refuse("expected_plan is accepted only by the V3 daily codec")
+        _validate_expected_plan(expected_plan)
     event_extra = 0
     if storm is not None:
         if type(storm) is not StormSpec:
@@ -1058,7 +1096,7 @@ def _load_path(path: Any, lop: Any, expected_identity: dict, *, expected_role: s
             _refuse(f"checkpoint directory must contain exactly {sorted({MANIFEST_NAME, *pol.files[profile]})}, found {sorted(names)}")
         data = _read_manifest(dirfd, budget.manifest_cap_bytes, budget.manifest_max_nodes)
         return _load(data, dirfd, private, lop, reference_bed, storm, expected, expected_role, profile, budget, limits,
-                     native_snapshot, source, pol, expected_source_kind)
+                     native_snapshot, source, pol, expected_source_kind, expected_plan)
     except LifecycleCheckpointError:
         raise
     except lc.LayeredCheckpointQuotaError as exc:
@@ -1075,7 +1113,7 @@ def _load_path(path: Any, lop: Any, expected_identity: dict, *, expected_role: s
 
 def _load(data: dict, dirfd: int, private: Path, lop: Any, ref_bed: Any, storm: Any, expected: dict, role: str, profile: str,
           budget: LifecycleBudget, limits: Any, native_snapshot: Any, source: dict, pol: "_Policy | None" = None,
-          expected_kind: str | None = None) -> LifecycleRestoration:
+          expected_kind: str | None = None, expected_plan: Any = None) -> LifecycleRestoration:
     pol = _policy_of(pol)
     # -- manifest and every binding BEFORE any payload is opened ---------------------------------------------------------------
     keys = pol.manifest_keys
@@ -1165,7 +1203,7 @@ def _load(data: dict, dirfd: int, private: Path, lop: Any, ref_bed: Any, storm: 
         _check_snapshot(snapshot, data, t_s, revision, pol)
     arrays, ledger_node, committed_node = _decode_companion(stable[PAYLOAD_COMPANION], table, payload["native"], profile, pol)
     lc._check_topology(arrays["topo_source_full"], lop.topology, data["binding"]["topology"])
-    return _restore(lop, ref_bed, storm, data, scalars, arrays, snapshot, ledger_node, committed_node, budget, t_s, pol)
+    return _restore(lop, ref_bed, storm, data, scalars, arrays, snapshot, ledger_node, committed_node, budget, t_s, pol, expected_plan)
 
 
 def _check_snapshot(snapshot: dict, data: dict, t_s: float, revision: int, pol: "_Policy | None" = None) -> None:
@@ -1387,10 +1425,66 @@ def _v2_cross_checks(state: Any, role: str, kind: str | None) -> None:
             _refuse("the untouched boundary-origin entry's current hydraulic evidence differs from the saved entry evidence")
 
 
+def _validate_expected_plan(expected_plan: Any) -> None:
+    """None is the documented optional case; anything else must be EXACTLY a `DailyRainPlan` that re-derives canonically (`recharge.verify_plan`: every field, digest, selection
+    and unit recomputed from the finite descriptor); a string, a namespace holding a digest, or a dataclass-forged plan is a typed refusal BEFORE any heavy I/O or restore."""
+    if expected_plan is None:
+        return
+    from maple_syrup import recharge as rc
+
+    if type(expected_plan) is not rc.DailyRainPlan:
+        _refuse(f"expected_plan must be a genuine DailyRainPlan, got {type(expected_plan).__name__}")
+    try:
+        rc.verify_plan(expected_plan)
+    except rc.RechargeError as exc:
+        raise LifecycleCheckpointError(f"expected_plan refused: {exc}") from None
+
+
+def _daily_cursor_checked(pol: "_Policy", role: str, scalars: dict, storm: Any, expected_plan: Any) -> Any:
+    """V3 only (None otherwise): the saved cursor decoded STRICTLY (closed keys/exact types/the cursor's own validators incl. the versioned clock contract), the role <->
+    pending pairing, and the binding of the saved pending occurrence to the caller's EXPECTED forcing: the supplied `StormSpec` must reproduce the saved forcing digest (local
+    schedule [0, D] + physical origin/end) and the saved event identity; an optional ORIGINAL canonical plan must equal the saved plan identity/ordinal/run. Nothing is
+    inferred from soil or hydraulic state and no threshold is read from the file."""
+    if not pol.daily:
+        return None
+    from maple_syrup import recharge as rc
+
+    _validate_expected_plan(expected_plan)  # EVERY supplied plan is a genuine canonical DailyRainPlan (re-derived), whatever the role and whichever wrapper called this
+    try:
+        daily = rc.cursor_from_record(cc.decode_tree(scalars["daily"]))
+    except (rc.RechargeError, cc.CheckpointCapabilityError, KeyError, TypeError, ValueError) as exc:
+        raise LifecycleCheckpointError(f"daily cursor record refused: {exc}") from None
+    pend = daily.pending
+    if (role == "storm") != (pend is not None):
+        _refuse("the daily cursor's pending storm occurrence and the saved role disagree (a storm carries exactly one pending occurrence, no other role any)")
+    if role == "storm":
+        storm_rec = cc.decode_tree(scalars["storm"])
+        if pend.event_sha256 is None or pend.event_sha256 != storm_rec.get("event_sha256") or pend.ordinal != daily.ordinal:
+            _refuse("the pending occurrence's event identity/ordinal differ from the saved storm; refused")
+        origin = float(storm.event_origin_s)
+        edges = [float(x) for x in storm.schedule.edges_s]
+        if len(edges) != 2 or edges[0] != 0.0:
+            _refuse("the daily storm forcing must be the single LOCAL segment [0, D] (the native event adds its physical origin); refused")
+        if rc._forcing_digest(storm.schedule, origin, origin + edges[-1]) != pend.forcing_digest:
+            _refuse("the supplied StormSpec does not reproduce the saved pending forcing (local schedule, physical origin/end); refused")
+        if expected_plan is not None:
+            try:
+                forcing = expected_plan.bind_forcing(origin)
+            except rc.RechargeError as exc:
+                raise LifecycleCheckpointError(f"expected plan forcing refused: {exc}") from None
+            if (forcing is None or expected_plan.digest != pend.plan_digest or forcing.digest != pend.forcing_digest or expected_plan.ordinal != pend.ordinal
+                    or expected_plan.run_digest != daily.run_digest):
+                _refuse("the expected canonical plan is not the saved pending occurrence (plan/forcing/ordinal/run differ); refused")
+    elif expected_plan is not None and expected_plan.digest != daily.last_plan_digest:
+        _refuse("the expected canonical plan is not the saved last consumed occurrence; refused")
+    return daily
+
+
 def _restore(lop: Any, ref_bed: Any, storm: Any, data: dict, scalars: dict, arrays: dict, snapshot: Any, ledger: Any,
-             committed: Any, budget: LifecycleBudget, t_s: float, pol: "_Policy | None" = None) -> LifecycleRestoration:
+             committed: Any, budget: LifecycleBudget, t_s: float, pol: "_Policy | None" = None, expected_plan: Any = None) -> LifecycleRestoration:
     pol = _policy_of(pol)
     role = data["role"]
+    daily = _daily_cursor_checked(pol, role, scalars, storm, expected_plan)  # strict decode + role/pending/forcing/plan binding BEFORE any native state is built
     kind = data["source_kind"] if pol.v2 else None
     dense = lop.context is not None
     new_bed = None
@@ -1495,7 +1589,7 @@ def _restore(lop: Any, ref_bed: Any, storm: Any, data: dict, scalars: dict, arra
             state = wl._restore_checkpoint_lifecycle(
                 new_lop, cap, records["lifecycle"], role=role, arrays=base, storm_op=extra.get("storm_op"),
                 event=extra.get("event"), estate=extra.get("estate"), prep=extra.get("prep"), gop=extra.get("gop"),
-                tstate=tstate, _phase_kinds=wl._V2_PHASE_KINDS if pol.v2 else None)
+                tstate=tstate, _phase_kinds=wl._V2_PHASE_KINDS if pol.v2 else None, daily=daily)
             if pol.v2:
                 _v2_cross_checks(state, role, kind)
         finally:
@@ -1508,4 +1602,6 @@ def _restore(lop: Any, ref_bed: Any, storm: Any, data: dict, scalars: dict, arra
                "manifest_sha256": data["manifest_sha256"], "files": dict(data["files"]), "source": data["source"],
                "state_digest": state.digest, "physical_digest": physical_digest(new_lop, state), "budget": budget.as_dict(),
                "lop_sha256": new_lop.sha256, "adopted": False}
+    if pol.daily:
+        receipt["daily_cursor_digest"] = state.daily.digest()
     return LifecycleRestoration(new_lop, state, receipt)

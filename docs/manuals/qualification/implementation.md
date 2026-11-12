@@ -14,14 +14,13 @@ of the qualified release. No wind, evolving-soil, field or scaling acceptance
 is implied. Phase 1.5 daily recharge remains the next implementation, after
 Phase 1 publication, before Phases 2, 2.5 and 3.
 
-Queued follow-up, 2026-11-12 UTC: the user added
-[Phase 1.5 daily recharge](phase15_daily_recharge.md) after Phase 1 is completed,
-validated, committed and pushed, and before Phase 2. It is not implemented by
-this document's current interfaces. Positive P <= T attempts simplified recharge;
-zero rain is a no-op; P > T uses the native full storm, with unchanged-parent
-whole-occurrence fallback. Its new nominal-calendar convention must be explicit
-and must not retrofit historical clocks. No Phase 1.5 parameter filenames or
-production API are established yet.
+Phase 1.5 daily recharge status, 2026-11-12 UTC: implemented as a **separate native source (N15)** in the candidate and independently accepted by Root through
+S4 (bounded native daily lifecycle, CPU/CUDA, V3 physical restart); a bounded whole-phase acceptance is **recorded** (`phase15_acceptance.json`); publication (commit and push) is **pending**. See
+[phase15_qualification.md](phase15_qualification.md) for the exact source (package `82e9c011…`, 114 files), controls and limits. The user rule is unchanged: P = 0 is a
+no-op, 0 < P <= T attempts simplified recharge (equality included), P > T uses the native full storm, with whole-occurrence fallback from the unchanged parent. It is a
+Python API (`maple_syrup.daily_water`), not a CLI option or weather/CSV reader; the nominal ordinal and native physical seconds are an explicit new versioned
+contract that does not retrofit historical clocks. The C1 source and its dated clocks, recipes, locks and checkpoints are preserved and are never repointed to N15.
+Phases 2, 2.5 and 3 remain queued with their numbering and requirements.
 
 Status: first bounded implementation on `feature/subsurface-hydrology`, task
 `agent_handoffs/tasks/subsurface_column_20261031/`. Opt-in only: no existing

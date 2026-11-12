@@ -203,12 +203,21 @@ def _plan(admission: Any, config: Any, g: dict, host_available_bytes_fn: Any, de
     maps_dev = 3 * _F8 * N + _F8 * N  # matrix/preferential map transients (sequential) + the lifecycle's device cover copy
     h_stage = {
         "R": int(rplan.host_required_bytes),
-        "Z": N + friction_exp + _F8 * N * K + scan + _F8 * N + _F8 * R + largest_map,
+        # (Z) host: the mask/friction expansion, the N-surface DOWNLOADED from the device bed (8N) and the closed-ring work array (8R). The dense routing-surface
+        # diagnostic itself (partition validation + depth sum) now runs on the DEVICE bed (stage S); the host no longer scans the compiled column for the surface and
+        # builds no host initial-fraction copy for it.
+        "Z": N + friction_exp + _F8 * N + _F8 * R + largest_map,
         "B": N + friction_exp + _F8 * N + int(tex.required_bytes),
         "T": N + friction_exp + _F8 * N + tex_retained + _F8 * R + int(tg["construction_peak_bytes"]),
         "O": tex_retained + topo_host_retained + int(own.host_bytes) + int(evap.host_bytes) + int(life["host_bytes"]) + largest_map,
     }
+    # (S) device: the COLD initial routing surface from the ACTUAL device bed (`sediment_bed.current_routing_surface_m(prep.bed, prep.context)`): the dense commit
+    # diagnostic's temporaries (the same scan arithmetic counted before for the host: partition masks, (N, V) depth temporaries, (N, K) class temporaries, six (N,)
+    # vectors), the (N,) result and the reference/arithmetic temporaries (3 x 8N), plus one allocator-rounding leaf; the resident bed itself is BORROWED (listed). The
+    # result is transferred to the host ONCE (8N) and released.
+    surface_peak = scan + 3 * _F8 * N + ALLOCATOR_ROUNDING_BYTES
     d_stage = {
+        "S": int(surface_peak),
         "R": int(dict(rplan.device_terms)["validation_scratch"]),
         "G": graph_dev + ALLOCATOR_ROUNDING_BYTES * GRAPH_DEVICE_LEAVES_ALLOWANCE,
         "O": graph_dev + int(own.required_bytes) + int(own.initialization_bytes) + int(own.build_bytes) + int(evap.device_bytes) + int(life["device_bytes"])
@@ -218,14 +227,14 @@ def _plan(admission: Any, config: Any, g: dict, host_available_bytes_fn: Any, de
     plan = {
         "schema": lc.SCHEMA, "profile": SETUP_PROFILE, "lifecycle_profile": LIFECYCLE_PROFILE, "backend": "cuda", "device_id": g["dev"], "shape": (ny, nx),
         "n_cells": N, "n_active": n_active, "n_layers": L, "n_classes": K, "n_voxels": V, "n_species": S,
-        "host_terms": {"R_cold_recheck": h_stage["R"], "Z_surface_stage": h_stage["Z"], "B_texture_stage": h_stage["B"], "B_texture_required": int(tex.required_bytes),
+        "host_terms": {"R_cold_recheck": h_stage["R"], "Z_surface_stage": h_stage["Z"], "Z_downloaded_surface": _F8 * N, "B_texture_stage": h_stage["B"], "B_texture_required": int(tex.required_bytes),
                        "B_texture_retained_output": int(tex.output_bytes), "B_texture_retained_total": tex_retained, "T_topology_graph_construction_peak": int(tg["construction_peak_bytes"]),
                        "T_topology_host_retained_bound": topo_host_retained, "O_owners_host": int(own.host_bytes), "O_evaporation_host": int(evap.host_bytes),
                        "O_lifecycle_prepare_host": int(life["host_bytes"]), "O_stage": h_stage["O"], "texture_batch_cells": batch,
                        "scalar_friction_expansion": friction_exp, "largest_map_staging_allowance": largest_map,
                        "caller_compiled_host_bytes_borrowed_not_counted": borrowed_host,
                        "loaded_config_map_bytes_already_allocated_not_counted": sum(int(m.array.nbytes) for m in maps)},
-        "device_terms": {"R_recheck_validation_scratch": d_stage["R"], "G_graph_retained": graph_dev, "G_stage": d_stage["G"], "O_owners_required": int(own.required_bytes),
+        "device_terms": {"S_cold_routing_surface_peak": int(surface_peak), "S_surface_d2h_transfer_bytes": _F8 * N, "R_recheck_validation_scratch": d_stage["R"], "G_graph_retained": graph_dev, "G_stage": d_stage["G"], "O_owners_required": int(own.required_bytes),
                          "O_owners_initialization": int(own.initialization_bytes), "O_owners_build": int(own.build_bytes), "O_evaporation": int(evap.device_bytes),
                          "O_lifecycle_prepare": int(life["device_bytes"]), "O_map_and_cover_transients": maps_dev, "O_initial_state": state_dev, "O_stage": d_stage["O"],
                          "resident_prep_bed_bytes_borrowed_not_counted": int(rplan.transfer_bytes), "extra_reserve_bytes": extra, "native_reserve_bytes": native},
@@ -233,7 +242,8 @@ def _plan(admission: Any, config: Any, g: dict, host_available_bytes_fn: Any, de
         "host_required_bytes": host_required, "device_required_bytes": device_required, "caller_host_reserve_bytes": hr, "caller_device_reserve_bytes": dr,
         "host_required_with_reserve": host_required + hr, "device_required_with_reserve": device_required + dr,
         "texture_location": "host (numpy), retained; arrays are not write-locked by the production builder", "topology_location": "host", "graph_location": "hybrid: host read-only NumPy static metadata (aspect, slope, slope_before_edge_rule, edge_rule_applied, friction_factor, active, outlet, receiver, level, level_order_host, pit_storage, flat_storage) + device runtime arrays (conveyance, active_flat, outlet_flat, level_order, conveyance_lo, donor_position, donor_mask)",
-        "actual": {"texture_host_bytes": None, "topology_host_bytes": None, "graph_host_bytes": None, "graph_device_bytes": None},
+        "actual": {"texture_host_bytes": None, "topology_host_bytes": None, "graph_host_bytes": None, "graph_device_bytes": None, "cold_surface_transfer_bytes": None,
+                   "cold_surface_source": None},
         "scope": "metadata-only; host and device separate; sequential stages take the max, retained items add; each nested stage admits itself against a fresh reading "
                  "with the caller reserve; a reading is not a reservation; excludes CuPy import, NVRTC/JIT, context, allocator pools/fragmentation, pinned-pool retention, "
                  "native compile, OS cache and the whole process; the resident prep bed and the caller's compiled host case are borrowed and only listed",
@@ -305,7 +315,25 @@ def _admit_stage(plan: dict, host_fn: Callable[[], int], device_fn: Callable[[],
 
 
 
-def _host_stage(compiled: Any, config: lc.LayeredCaseConfig, plan: dict, cp: Any) -> tuple[Any, Any, Any]:
+def _cold_device_surface(bed: Any, ctx: Any, ny: int, nx: int) -> np.ndarray:
+    """The COLD initial routing source from the ACTUAL native bed the lifecycle will own: `sediment_bed.current_routing_surface_m(bed, ctx)` on the bed's own namespace/device
+    with its own BedContext (the very call `layered_storm.prepare_layered_storm` re-evaluates for its strict held-source equality), validated for shape/dtype/finite BEFORE any
+    topology is built, then ONE bounded (ny, nx) transfer to the host. No deep-bed download or copy; the device surface temporary is released before return. Initial setup only."""
+    try:
+        surface = sb.current_routing_surface_m(bed, ctx)
+        if tuple(surface.shape) != (ny, nx) or surface.dtype != np.float64:
+            raise ValueError(f"the native routing surface is {tuple(surface.shape)} {surface.dtype}, not a float64 ({ny}, {nx}) field")
+        host = surface.get() if hasattr(surface, "get") else np.asarray(surface)  # the single N-surface transfer (a NumPy namespace: no transfer)
+        z = np.array(host, dtype=np.float64)
+        del surface, host
+        if not np.all(np.isfinite(z)):
+            raise ValueError("the native routing surface is not finite")
+    except (sb.BedIntegrationError, ValueError, KeyError, AttributeError, TypeError) as exc:
+        raise _wrap("cold routing surface of the actual native bed", exc) from None
+    return z
+
+
+def _host_stage(compiled: Any, config: lc.LayeredCaseConfig, plan: dict, cp: Any, bed: Any = None, ctx: Any = None) -> tuple[Any, Any, Any]:
     """The HYBRID cold host stage on the ALIASED host compiled bed: routing surface (the real `current_routing_surface_m` with a host `BedContext` from the same public
     MAPLE calls the A3b preparation uses) -> retained HOST texture (streaming batches; mass/overlap weighted once; no PTF) -> pond topology (host) -> routing graph
     (`xp=cp`: host construction; the static metadata stays host NumPy and only the runtime arrays move to the device; with `cp=numpy` it is the CPU graph, used only by the CPU equivalence control). Construction-only arrays are released
@@ -314,20 +342,25 @@ def _host_stage(compiled: Any, config: lc.LayeredCaseConfig, plan: dict, cp: Any
     mask = np.ones((ny, nx), dtype=bool) if config.active_mask is None else np.array(config.active_mask.array, dtype=bool)
     friction2d = config.friction_factor.array if lc._is_map(config.friction_factor) else np.full((ny, nx), float(config.friction_factor))
     thickness = np.array(config.layers.thickness_m)
-    try:
-        from maple.core.parameters.case_initialization import resolve_initial_available_fraction_array
+    cfg = compiled.config
+    geometry, grains, mres = cfg.geometry, cfg.grain_classes, cfg.numerics.mass_resolution_kg
+    dx = float(geometry.dx_m)
+    if bed is not None:
+        # AUTHORITY: the routing source is the ACTUAL (device) bed's current routing surface, never a host re-computation (the host and device arithmetic can
+        # differ in the last bit, which the native strict held-source equality correctly refuses). The host COMPILED bed stays the input of the streamed texture below.
+        z = _cold_device_surface(bed, ctx, ny, nx)
+    else:  # legacy host-only control (the CPU equivalence control with `cp=numpy`): the compiled host bed through the same public MAPLE calls
+        try:
+            from maple.core.parameters.case_initialization import resolve_initial_available_fraction_array
 
-        cfg = compiled.config
-        frac = resolve_initial_available_fraction_array(compiled.sediment_availability_spec, cfg.geometry, [c.class_id for c in cfg.grain_classes.classes])
-        hctx = sb.BedContext(cfg.geometry, cfg.grain_classes, cfg.numerics.mass_resolution_kg, cfg.topographic_commit, cfg.avalanching, frac)
-        shell = sb.BedState(compiled.voxel_column, compiled.active_layer, compiled.water, compiled.sediment_ledger, compiled.committed_topography,
-                            compiled.sediment_availability)
-        z = np.array(sb.current_routing_surface_m(shell, hctx), dtype=np.float64)
-        dx = float(hctx.geometry.dx_m)
-        geometry, grains, mres = cfg.geometry, cfg.grain_classes, cfg.numerics.mass_resolution_kg
-    except (sb.BedIntegrationError, ValueError, KeyError, AttributeError, TypeError) as exc:
-        raise _wrap("host routing surface of the compiled native bed", exc) from None
-    del frac, hctx, shell
+            frac = resolve_initial_available_fraction_array(compiled.sediment_availability_spec, cfg.geometry, [c.class_id for c in cfg.grain_classes.classes])
+            hctx = sb.BedContext(cfg.geometry, cfg.grain_classes, cfg.numerics.mass_resolution_kg, cfg.topographic_commit, cfg.avalanching, frac)
+            shell = sb.BedState(compiled.voxel_column, compiled.active_layer, compiled.water, compiled.sediment_ledger, compiled.committed_topography,
+                                compiled.sediment_availability)
+            z = np.array(sb.current_routing_surface_m(shell, hctx), dtype=np.float64)
+        except (sb.BedIntegrationError, ValueError, KeyError, AttributeError, TypeError) as exc:
+            raise _wrap("host routing surface of the compiled native bed", exc) from None
+        del frac, hctx, shell
     try:
         texture = st.build_soil_profile_texture(compiled.voxel_column, compiled.active_layer, geometry, grains, mres, tuple(float(t) for t in thickness),
                                                 active_mask=mask, memory_budget_bytes=int(plan["host_terms"]["B_texture_required"]), backend="numpy",
@@ -391,7 +424,9 @@ def prepare_layered_cuda_case(prep: Any, config: Any, *, caller_host_reserve_byt
     thickness = np.array(config.layers.thickness_m)
     by_layer = np.array(config.moisture_by_layer)
     depth0 = by_layer * thickness if config.moisture_units == "theta" else by_layer.copy()
-    texture, topo, graph = _host_stage(compiled, config, plan, cp)
+    # explicit host+device admission of the COLD routing-surface stage (a fresh reading) BEFORE the device diagnostic helper runs
+    _admit_stage(plan, host_fn, device_fn, int(plan["stage_bytes"]["host"]["Z"]), int(plan["stage_bytes"]["device"]["S"]), "cold routing surface (device bed)")
+    texture, topo, graph = _host_stage(compiled, config, plan, cp, bed, ctx)
     th, td = _leaf_split(texture)
     gh_t, gd_t = _leaf_split(topo)
     gh_g, gd_g = _leaf_split(graph)
@@ -405,7 +440,8 @@ def prepare_layered_cuda_case(prep: Any, config: Any, *, caller_host_reserve_byt
     h2 = max(plan["stage_bytes"]["host"]["O"] - planned_host + gh_t + gh_g, 0)
     d2 = max(plan["stage_bytes"]["device"]["O"] - planned_graph_dev + gd_g + gd_t, 0)
     _admit_stage(plan, host_fn, device_fn, h2, d2, "owners")
-    plan = {**plan, "actual": {"texture_host_bytes": th, "topology_host_bytes": gh_t, "graph_host_bytes": gh_g, "graph_device_bytes": gd_g + gd_t}}
+    plan = {**plan, "actual": {"texture_host_bytes": th, "topology_host_bytes": gh_t, "graph_host_bytes": gh_g, "graph_device_bytes": gd_g + gd_t,
+                               "cold_surface_transfer_bytes": int(np.asarray(topo.source_bed_m).nbytes), "cold_surface_source": "actual device native bed (current_routing_surface_m)"}}
     # --- device owners ---------------------------------------------------------------------------------------------------------------------------------
     from maple.core.backend import to_device
 

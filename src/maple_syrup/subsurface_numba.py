@@ -46,6 +46,7 @@ from maple_syrup.subsurface import (
     StepArrays,
     SubsurfaceBackendUnavailableError,
     SubsurfaceError,
+    cell_closure_coefficient,
     kernel_parameters,
 )
 
@@ -84,7 +85,7 @@ def _build(numba: Any):
 
     @jit
     def step_kernel(w_in, add, pet, active, dt, dz, res_m, fc_m, sat_m, cap_tol, cond, pair_inv, res_theta0, stress,
-                    factor, gravity, cell_tol, no_flag, cond_up, directional, bottom, share, has_share, w_out, perc,
+                    factor, gravity, cell_tol, no_flag, cond_up, directional, bottom, share, has_share, pulse, pulse_on, w_out, perc,
                     diff, ret, drain, evap, unmet, rows):
         n_layers = w_in.shape[0]
         n_cells = w_in.shape[1]
@@ -115,23 +116,24 @@ def _build(numba: Any):
             added = 0.0
             for l in range(n_layers):
                 wl = w_in[l, i]
-                al = add[l, i]
                 if not math.isfinite(wl):
                     f |= 1 << 0
                 if wl < 0.0:
                     f |= 1 << 1
                 if wl > sat_m[l] + cap_tol[l]:
                     f |= 1 << 2
-                if not math.isfinite(al):
-                    f |= 1 << 3
-                if al < 0.0:
-                    f |= 1 << 4
-                if (not a) and al != 0.0:
-                    f |= 1 << 5
-                if dt == 0.0 and al != 0.0:
-                    f |= 1 << 9
+                if pulse_on == 0:  # the pulse-aware step has no added-water tensor (the pointer is never read then)
+                    al = add[l, i]
+                    if not math.isfinite(al):
+                        f |= 1 << 3
+                    if al < 0.0:
+                        f |= 1 << 4
+                    if (not a) and al != 0.0:
+                        f |= 1 << 5
+                    if dt == 0.0 and al != 0.0:
+                        f |= 1 << 9
+                    added = added + al
                 before = before + wl
-                added = added + al
                 w_out[l, i] = wl
             e_pot = pet[i]
             if not math.isfinite(e_pot):
@@ -160,12 +162,18 @@ def _build(numba: Any):
             if a and dt > 0.0:
                 # addition with saturation return
                 for l in range(n_layers):
-                    w = w_out[l, i] + add[l, i]
+                    if pulse_on == 0:
+                        w = w_out[l, i] + add[l, i]
+                    else:
+                        w = w_out[l, i] + 0.0  # zero added water: the historical return statements still run
                     ex = w - sat_m[l]
                     if ex > 0.0:
                         w = w - ex
                         ret_v = ret_v + ex
                     w_out[l, i] = w
+                if pulse_on != 0:  # Phase 1.5: the uniform pulse enters the top layer with NO saturation return
+                    w_out[0, i] = w_out[0, i] + pulse
+                    added = added + pulse
                 # gravity cascade, top to bottom within the step
                 if gravity != 0:
                     if bottom == 0:
@@ -200,6 +208,13 @@ def _build(numba: Any):
                         if l < n_if:
                             perc[l, i] = carry
                     drain_v = carry  # exactly 0 with a closed bottom
+                fit_ok = True
+                if pulse_on != 0:  # fit test right after the ONE movement, BEFORE evaporation/diffusion (also gravity off)
+                    for l in range(n_layers):
+                        if w_out[l, i] > sat_m[l] + cap_tol[l]:
+                            fit_ok = False
+                    if not fit_ok:
+                        f |= 1 << 17
                 # evaporation from layer 0
                 w0 = w_out[0, i]
                 theta0 = w0 / dz[0]
@@ -298,7 +313,7 @@ def _build(numba: Any):
                         nonfinite = True
                 if nonfinite:
                     fo |= 1 << 14
-                if share_ok:
+                if share_ok and fit_ok:  # a fit-failed cell keeps bit 17 as the named cause
                     f |= fo
             ret[i] = ret_v
             drain[i] = drain_v
@@ -340,9 +355,14 @@ def reset_compiled() -> None:
         _KERNEL = None
 
 
-def _launch(kernel, params: KernelParameters, water_in: np.ndarray, added: np.ndarray, pet: np.ndarray,
-            active_u8: np.ndarray, dt: float, share: np.ndarray | None = None) -> StepArrays:
+def _launch(kernel, params: KernelParameters, water_in: np.ndarray, added: np.ndarray | None, pet: np.ndarray,
+            active_u8: np.ndarray, dt: float, share: np.ndarray | None = None, recharge: float | None = None) -> StepArrays:
     n_layers, n_cells = water_in.shape
+    # Phase 1.5 pulse-aware step: no added-water tensor (an ALREADY resident parameter buffer is passed as the never-read
+    # pointer, exactly like the share), the uniform pulse is a scalar and the closure coefficient counts the one extra term
+    pulse_on = 0 if recharge is None else 1
+    added_arr = added if recharge is None else params.thickness_m.reshape(-1, 1)  # a (L, 1) VIEW (same compiled specialisation; never read)
+    cell_tol = params.cell_closure_coefficient if recharge is None else cell_closure_coefficient(n_layers, True)
     n_if = n_layers - 1
     # has_share == 0: the kernel never reads the share pointer, so an ALREADY resident nonempty FP64 parameter buffer
     # (thickness_m, length L >= 1) is passed; no extra allocation exists and the parameter ledger stays exact
@@ -355,12 +375,12 @@ def _launch(kernel, params: KernelParameters, water_in: np.ndarray, added: np.nd
     evap = np.empty(n_cells, dtype=np.float64)
     unmet = np.empty(n_cells, dtype=np.float64)
     rows = np.empty((ROW_COUNT, n_cells), dtype=np.float64)
-    kernel(water_in, added, pet, active_u8, float(dt), params.thickness_m, params.residual_m, params.field_capacity_m,
+    kernel(water_in, added_arr, pet, active_u8, float(dt), params.thickness_m, params.residual_m, params.field_capacity_m,
            params.saturation_m, params.capacity_tolerance_m, params.interface_conductance_m_s,
            params.pair_inverse_thickness, params.residual_theta0, params.theta_evaporation_stress,
-           params.evaporation_factor, params.gravity_code, params.cell_closure_coefficient, NO_FLAG,
+           params.evaporation_factor, params.gravity_code, cell_tol, NO_FLAG,
            params.interface_conductance_up_m_s, params.directional, params.bottom_code, share_arr, has_share,
-           water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
+           0.0 if recharge is None else float(recharge), pulse_on, water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
     return StepArrays(water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
 
 
@@ -375,8 +395,8 @@ def prepare_runner(layers: SoilLayers):
     # Warm-up on one inactive cell with zero state: compiles the single (float64 C arrays) specialisation here.
     _launch(kernel, params, np.zeros((n_layers, 1)), np.zeros((n_layers, 1)), np.zeros(1), np.zeros(1, np.uint8), 1.0)
 
-    def run(column, water_in, added, pet, dt, share=None):
-        return _launch(kernel, params, water_in, added, pet, column.active_u8, dt, share)
+    def run(column, water_in, added, pet, dt, share=None, recharge=None):
+        return _launch(kernel, params, water_in, added, pet, column.active_u8, dt, share, recharge)
 
     directional = bool(params.directional)
     info = {"implementation": "numba serial cell/layer loops, fastmath=False; per-interface expm1 factor(s) evaluated "

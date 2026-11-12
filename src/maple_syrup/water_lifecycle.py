@@ -34,6 +34,8 @@ claim of general repeated-storm physical validation. Nothing here was run on a G
 
 from __future__ import annotations
 
+import contextlib
+import contextvars
 import copy
 import hashlib
 import json
@@ -53,6 +55,7 @@ from maple_syrup import layered_event as ev
 from maple_syrup import layered_storm as ls
 from maple_syrup import matrix_infiltration as mi
 from maple_syrup import preferential_infiltration as pi
+from maple_syrup import recharge as rc
 from maple_syrup import soil_evaporation as se
 from maple_syrup import subsurface as ss
 from maple_syrup import subsurface_transpiration as st
@@ -401,7 +404,9 @@ class LifecycleMemory:
 #: Map of the public `_admit` labels to the CUDA plan entries.
 _ENTRY_OF = {"enter_interevent_from_boundary": "enter_from_boundary", "reset": "reset", "start": "start", "begin_storm": "begin_storm", "evolve_storm": "evolve_storm", "enter_interevent": "enter_interevent",
              "evolve_interevent": "evolve_interevent", "request_withdrawal": "request", "close": "close", "audit": "audit_boundary",
-             "audit_storm": "audit_storm", "audit_interevent": "audit_interevent", "cover inspection": "cover_inspection"}
+             "audit_storm": "audit_storm", "audit_interevent": "audit_interevent", "cover inspection": "cover_inspection",
+             # Phase 1.5 daily transactions: registered CUDA entries with their own separate host/device whole-call plans
+             "daily_start": "daily_start", "daily": "daily", "daily_begin_storm": "daily_begin_storm", "daily_finish": "daily_finish"}
 
 
 def _cuda_source_record_bytes(profile: Any) -> int:
@@ -453,6 +458,60 @@ def _cuda_boundary_enter_stage_table(lop: LifecycleOperator) -> dict[str, int]:
             "audit_with_nested_packet": int(gm.audit_required_bytes + pk + fixed)}
 
 
+#: Device bytes of the uniform active rain field built by `rainfall.rainfall_field` on the device (`ones`, the `where` result and at most one frozen copy; the
+#: active-mask reshape is a device VIEW, never a copy): 3 x 8 N, declared.
+_DEVICE_FIELD_DOUBLES = 3
+
+
+def _daily_step_device_bytes(lop: LifecycleOperator, gm: Any, feedback: int, live_event: int) -> int:
+    """Device figure of the ONE 86400 s day step beside the live parent: the general owner's step/audit/post figures (which count its resident operands,
+    including the retained zero-added tensor the pulse step does not read), the nested wrapper packet, the live storm event maps (0 for a boundary parent),
+    the call-parent arrays, the lifecycle's owned fixed leaves and the caller's retained feedback."""
+    m = lop.memory
+    after = gm.resident_bytes + gm.reserves_bytes + gm.column_reserve_bytes + m.audit_scratch_bytes
+    return int(max(int(gm.step_required_bytes), int(gm.audit_required_bytes), int(after)) + lop._cuda.memory.nested_general_packet_bytes + m.owned_fixed_bytes
+               + m.call_parent_bytes + live_event + feedback)
+
+
+def _cuda_daily_plan(lop: LifecycleOperator, entry: str, parent: Any, schedule: Any, feedback: int) -> dict[str, Any]:
+    """METADATA-ONLY whole-call host+device plan of one Phase 1.5 daily CUDA transaction (no array, no read/hash/query): the largest simultaneous DEVICE stage of
+    the genuine entry (the existing stage tables) and of the one day step beside the live parent, composed with the separate HOST figure by the registered
+    composer. Only the native9f BOUNDARY-capable lifecycle has these entries."""
+    cap = lop._cuda
+    if cap.profile != wlc.CUDA9F_BOUNDARY_PROFILE:
+        raise LifecycleError(f"the daily CUDA entries need the explicit native9f CUDA9F_BOUNDARY_PROFILE lifecycle (this one is {cap.profile!r}); refused")
+    stages: dict[str, int] | None = None
+    if entry == "daily_start":
+        _check_role(parent, "boundary")
+        raw = _raw_audit_bytes(lop, parent)
+    elif entry == "daily_begin_storm":
+        _check_role(parent, "boundary")
+        raw = _raw_begin_storm_bytes(lop, schedule) + _DEVICE_FIELD_DOUBLES * _F8 * lop.n_cells
+    elif entry == "daily":
+        _check_role(parent, "boundary")
+        stages = dict(_cuda_boundary_enter_stage_table(lop))
+        _, _, gm = _boundary_estimates(lop)
+        stages["day_step_with_pulse"] = _daily_step_device_bytes(lop, gm, feedback, 0)
+        raw = max(stages.values())
+    else:  # daily_finish
+        _check_role(parent, "storm")
+        stages = dict(_cuda_enter_stage_table(lop, parent))
+        op, event = parent.binding.op, parent.binding.event
+        _, gm = _interevent_estimates(lop, op)
+        stages["day_step_beside_completed_storm"] = _daily_step_device_bytes(lop, gm, feedback, max(int(event.required_bytes) - int(op.memory.required_bytes), 0))
+        raw = max(stages.values())
+    sched = () if schedule is None else (schedule.edges_s.nbytes, schedule.intensity_mm_per_h.nbytes, schedule.rate_m_per_s.nbytes)
+    iw_host = (_interevent_estimates(lop, parent.binding.op)[0].build_host_bytes if entry == "daily_finish"
+               else _boundary_estimates(lop)[0].build_host_bytes if entry == "daily" else 0)
+    plan = wlc.compose_entry_plan(lop.n_layers, lop.n_cells, entry, device_raw_bytes=int(raw), host_reserve_bytes=cap.host_reserve_bytes,
+                                  source_cold=it._windowed_source_cold(), schedule_bytes=sched, n_faces=lop.memory.n_faces,
+                                  storm_host_stage_bytes=int(lop.memory.storm.get("host_bytes", 0)), interevent_build_host_bytes=int(iw_host),
+                                  source_record_bytes=_cuda_source_record_bytes(cap.profile))
+    if stages is not None:
+        plan["device_stage_table"] = stages
+    return plan
+
+
 def cuda_entry_plan(lop: LifecycleOperator, entry: str, *, parent: Any = None, schedule: Any = None, retained_feedback_bytes: int = 0) -> dict[str, Any]:
     """The ONE authoritative, METADATA-ONLY complete host+device plan of a public CUDA entry; `_admit` uses exactly this on every CUDA entry. It performs
     the sealed type/component/source/cover-metadata checks (`_check_lop(preflight=False)`: no IO) but NO device or host availability read, NO current-device
@@ -471,6 +530,8 @@ def cuda_entry_plan(lop: LifecycleOperator, entry: str, *, parent: Any = None, s
               "begin_storm": lambda: _raw_begin_storm_bytes(lop, schedule),
               "cover_inspection": lambda: lop.memory.storm_required_bytes + lop.memory.owned_fixed_bytes}
     stages = None
+    if entry in wlc.DAILY_ENTRIES:
+        return _cuda_daily_plan(lop, entry, parent, schedule, fb)
     if entry in ("enter_from_boundary", "reset") and not cap.boundary_capable:
         raise LifecycleError(f"the {entry} entry needs the explicit CUDA_BOUNDARY_PROFILE lifecycle (this one is the storm-first profile); refused")
     if entry == "enter_interevent":
@@ -502,6 +563,9 @@ def cuda_entry_plan(lop: LifecycleOperator, entry: str, *, parent: Any = None, s
 def _admit(lop: LifecycleOperator, need: int, what: str, *, parent: Any = None, schedule: Any = None, feedback: int = 0) -> int:
     """Device-side (column) admission. CPU: exactly the unchanged check of `need`. CUDA: the authoritative `cuda_entry_plan` is computed once and its
     SEPARATE host figure and complete device figure are both admitted (host first; wrong device was refused earlier by `_check_lop`)."""
+    if lop._cuda is not None and what not in _ENTRY_OF:
+        # a CUDA lifecycle has no CPU-integer fallthrough: an unregistered operation would silently admit a host/CPU figure against the device
+        raise LifecycleError(f"no CUDA admission plan is registered for the lifecycle operation {what!r}; refused (never a CPU-integer admission on a CUDA lifecycle)")
     if lop._cuda is not None and what in _ENTRY_OF:
         entry = _ENTRY_OF[what]
         plan = cuda_entry_plan(lop, entry, parent=parent, schedule=schedule, retained_feedback_bytes=feedback)  # pure metadata (no device query)
@@ -1076,12 +1140,13 @@ class LifecycleState:
     phase `binding`, the `lifetime` ledger, the `mark` (last accounted local ledger), counters and bounded receipts. The scalar
     `digest` detects an in-place edit; it is NOT a physical branch identity (see `expect_parent`)."""
 
-    __slots__ = ("__weakref__", "binding", "digest", "last_control_receipt", "last_phase_receipt", "lifetime", "mark",
+    __slots__ = ("__weakref__", "binding", "daily", "digest", "last_control_receipt", "last_phase_receipt", "lifetime", "mark",
                  "payload", *_STATE_SCALARS)
 
     def __init__(self, seal: object, **fields: Any) -> None:
         if seal is not _SEAL:
             raise LifecycleError("LifecycleState is minted only by the lifecycle functions")
+        fields.setdefault("daily", None)  # Phase 1.5: the optional bounded daily cursor; every Phase 1 constructor/restore leaves it None
         _take(self, fields, skip=("__weakref__", "digest"), kind="state")
         object.__setattr__(self, "digest", _state_digest(self))
         _MINTED.add(self)
@@ -1131,12 +1196,14 @@ def _state_digest(s: Any) -> str:
     body["payload"] = _payload_scalars(s.role, s.payload)
     body["phase"] = None if s.last_phase_receipt is None else s.last_phase_receipt.digest()
     body["control"] = None if s.last_control_receipt is None else s.last_control_receipt.digest()
+    if s.daily is not None:  # only a daily lineage carries (and digests) a cursor: every Phase 1 state digest is unchanged
+        body["daily"] = s.daily.digest()
     return _digest("maple_syrup.water_lifecycle.state/1", body)
 
 
 def _mint(parent: LifecycleState, **over: Any) -> LifecycleState:
     f = {name: getattr(parent, name) for name in _STATE_SCALARS}
-    f.update(binding=parent.binding, last_control_receipt=parent.last_control_receipt,
+    f.update(binding=parent.binding, daily=parent.daily, last_control_receipt=parent.last_control_receipt,
              last_phase_receipt=parent.last_phase_receipt, lifetime=parent.lifetime, mark=parent.mark, payload=parent.payload)
     f.update(over)
     return LifecycleState(_SEAL, **f)
@@ -1282,6 +1349,11 @@ def _check_state(lop: LifecycleOperator, s: Any) -> float:
         raise LifecycleError("the state is bound to a different lifecycle operator; refused")
     if s.role not in ("boundary", "storm", "interevent"):
         raise LifecycleError("unknown lifecycle role; refused")
+    if s.daily is not None:
+        if type(s.daily) is not rc.DailyCursor:
+            raise LifecycleError("state.daily must be a genuine DailyCursor; refused")
+        if (s.role == "storm") != (s.daily.pending is not None):
+            raise LifecycleError("a daily lineage's storm state carries exactly its pending storm occurrence (and no other role does); refused")
     for name in ("revision", "episode", "reset_count", "request_sequence"):
         _count(getattr(s, name), "state." + name)
     _check_lifetime(s.lifetime)
@@ -1428,6 +1500,50 @@ def _prepare_current_operator(lop: LifecycleOperator, parent: LifecycleState) ->
     return op
 
 
+_DAILY_PERMIT: contextvars.ContextVar = contextvars.ContextVar("maple_syrup_daily_engine_permit", default=None)
+
+
+class _DailyPermit:
+    """Module-private engine permit: while active for ONE exact parent instance, the three Phase 1 transitions run on that TRUE cursor-carrying
+    parent (their bodies are unchanged and receive the real parent and ExpectedParent) and stamp the STAGED result with the cursor the daily
+    contract prescribes (`daily_for(payload)`), so role/cursor checks stay strict. It is a context variable, not a flag on the state or a public
+    argument; ordinary public calls on a daily state still refuse."""
+
+    __slots__ = ("daily_for", "parent")
+
+    def __init__(self, parent: Any, daily_for: Any) -> None:
+        self.parent, self.daily_for = parent, daily_for
+
+
+@contextlib.contextmanager
+def _daily_engine(parent: Any, daily_for: Any):
+    token = _DAILY_PERMIT.set(_DailyPermit(parent, daily_for))
+    try:
+        yield
+    finally:
+        _DAILY_PERMIT.reset(token)
+
+
+def _daily_over(parent: Any, payload: Any) -> dict[str, Any]:
+    """The staged cursor of a permitted daily engine call ({} for every ordinary call: nothing is overridden)."""
+    permit = _DAILY_PERMIT.get()
+    if permit is None or permit.parent is not parent or getattr(parent, "daily", None) is None:
+        return {}
+    return {"daily": permit.daily_for(payload)}
+
+
+def _refuse_daily(parent: Any, what: str) -> None:
+    """A Phase 1.5 DAILY lineage (its state carries a cursor) is advanced only by the daily transactions (`daily_water`, which holds the private
+    engine permit for the exact parent): the old freely callable transition functions would add a day, a storm or an entry behind the cursor and
+    are refused before any work. A state WITHOUT a cursor (every Phase 1 lineage) takes exactly the unchanged path."""
+    if getattr(parent, "daily", None) is None:
+        return
+    permit = _DAILY_PERMIT.get()
+    if permit is not None and permit.parent is parent:
+        return
+    raise LifecycleError(f"{what} is not available on a daily lineage (its state carries a daily cursor); use the daily_water transactions")
+
+
 def begin_storm(lop: LifecycleOperator, parent: LifecycleState, *, expected_parent: ExpectedParent, schedule: Any, field: Any,
                 control: ev.LayeredEventControl = ev.LayeredEventControl(),
                 policy: ev.LayeredQuietPolicy = ev.LayeredQuietPolicy()) -> LifecycleState:
@@ -1437,6 +1553,7 @@ def begin_storm(lop: LifecycleOperator, parent: LifecycleState, *, expected_pare
     never the original) with the same fixed components; its identity must equal the lifecycle's (changed material refused)."""
     _check_lop(lop)
     _require_parent(parent, expected_parent)
+    _refuse_daily(parent, "begin_storm")
     if parent.role != "boundary":
         raise LifecycleError(f"begin_storm needs a closed 'boundary' parent, got {parent.role!r}")
     need = required_begin_storm_bytes(lop, schedule)
@@ -1454,7 +1571,7 @@ def begin_storm(lop: LifecycleOperator, parent: LifecycleState, *, expected_pare
     estate = ev.initial_event_state(event, water)
     return _mint(parent, role="storm", revision=parent.revision + 1, episode=parent.episode + 1,
                  storm_operator_sha256=op.sha256, binding=_Binding(op=op, event=event), payload=estate,
-                 mark=_mark_from_storm(water.ledger))
+                 mark=_mark_from_storm(water.ledger), **_daily_over(parent, estate))
 
 
 def evolve_storm(lop: LifecycleOperator, parent: LifecycleState, *, expected_parent: ExpectedParent, until_s: Any,
@@ -1493,6 +1610,7 @@ def enter_interevent_phase(lop: LifecycleOperator, parent: LifecycleState, *, ex
     the lifetime request sequence."""
     _check_lop(lop)
     _require_parent(parent, expected_parent)
+    _refuse_daily(parent, "enter_interevent_phase")
     if parent.role != "storm":
         raise LifecycleError(f"enter_interevent_phase needs a 'storm' parent, got {parent.role!r}")
     if parent.payload.completed is not True:
@@ -1522,7 +1640,7 @@ def enter_interevent_phase(lop: LifecycleOperator, parent: LifecycleState, *, ex
                            int(parent.payload.accepted_steps), asdict(parent.payload.water.ledger), t0.source.digest,
                            parent.digest)
     return _mint(parent, role="interevent", revision=parent.revision + 1, binding=_Binding(op=op, prep=prep, gop=gop),
-                 payload=g0, mark=mark, last_phase_receipt=receipt)
+                 payload=g0, mark=mark, last_phase_receipt=receipt, **_daily_over(parent, g0))
 
 
 def enter_interevent_from_boundary(lop: LifecycleOperator, parent: LifecycleState, *, expected_parent: ExpectedParent,
@@ -1551,6 +1669,7 @@ def enter_interevent_from_boundary(lop: LifecycleOperator, parent: LifecycleStat
                              "preparation, hash or physical work; prepare the lifecycle with the separate explicit CUDA_BOUNDARY_PROFILE; a zero-rain "
                              "storm is never used to emulate it)")
     _require_parent(parent, expected_parent)
+    _refuse_daily(parent, "enter_interevent_from_boundary")
     if parent.role != "boundary":
         raise LifecycleError(f"enter_interevent_from_boundary needs a closed 'boundary' parent, got {parent.role!r}")
     if type(policy) is not ev.LayeredQuietPolicy:
@@ -1585,7 +1704,7 @@ def enter_interevent_from_boundary(lop: LifecycleOperator, parent: LifecycleStat
     receipt = PhaseReceipt("boundary_origin", int(parent.episode), float(parent.t_s), float(parent.t_s), 0,
                            g0.ledger.as_dict(), t0.source.digest, parent.digest)
     new = _mint(parent, role="interevent", revision=parent.revision + 1, storm_operator_sha256=op.sha256,
-                binding=_Binding(op=op, prep=prep, gop=gop), payload=g0, mark=mark, last_phase_receipt=receipt)
+                binding=_Binding(op=op, prep=prep, gop=gop), payload=g0, mark=mark, last_phase_receipt=receipt, **_daily_over(parent, g0))
     _check_state(lop, new)
     _audit_core(lop, new, _arrays_of(new), new.t_s)
     return new
@@ -1599,11 +1718,11 @@ class LifecycleIntereventResult:
     rejected_attempts: int
 
 
-def _fold_interevent(lop: LifecycleOperator, parent: LifecycleState, payload: Any, *, revision_inc: int = 1) -> LifecycleState:
+def _fold_interevent(lop: LifecycleOperator, parent: LifecycleState, payload: Any, *, revision_inc: int = 1, **over: Any) -> LifecycleState:
     cur = _mark_from_general(payload.ledger)
     lt, mark = _fold(parent.lifetime, parent.mark, cur)
     new = _mint(parent, revision=parent.revision + revision_inc, t_s=float(payload.t_s),
-                request_sequence=int(payload.next_request_sequence), payload=payload, lifetime=lt, mark=mark)
+                request_sequence=int(payload.next_request_sequence), payload=payload, lifetime=lt, mark=mark, **over)
     return new
 
 
@@ -1616,6 +1735,7 @@ def evolve_interevent(lop: LifecycleOperator, parent: LifecycleState, *, expecte
     (`max_steps`) returns the valid partial interevent."""
     _check_lop(lop)
     _require_parent(parent, expected_parent)
+    _refuse_daily(parent, "evolve_interevent")  # a daily lineage's day is the ONE fixed 86400 s transaction, never a sub-stepped interval
     if parent.role != "interevent":
         raise LifecycleError(f"evolve_interevent needs an 'interevent' parent, got {parent.role!r}")
     end = _real(until_s, "until_s")
@@ -1872,9 +1992,31 @@ _EVIDENCE_KEYS = frozenset({"max_unit_discharge_m2_s", "max_excess_depth_m", "ex
                             "max_active_surface_depth_m"})
 
 
+def _refuse_daily_checkpoint(state: Any) -> None:
+    """The existing (Phase 1 / C1) checkpoint writers have no field for the daily cursor, the pending storm occurrence or the versioned daily
+    clock contract; they refuse such a state BEFORE any I/O instead of silently dropping them. A versioned codec that carries them is a later
+    stage (S4); there is no migration path and no cursor-stripping."""
+    if getattr(state, "daily", None) is not None:
+        raise LifecycleError("this lifecycle state belongs to a daily lineage (it carries a daily cursor); the existing checkpoint codecs cannot "
+                             "record it and refuse rather than drop the cursor (a daily checkpoint version is a later stage); refused before any I/O")
+
+
 def checkpoint_state_record(lop: LifecycleOperator, state: LifecycleState) -> dict[str, Any]:
     """Bounded scalar record (an ENCODED tree) of a GENUINE accepted lifecycle state: scalars, lifetime ledger, accounted
     watermark and the last phase/control receipts. No array, no payload, no past state."""
+    _refuse_daily_checkpoint(state)
+    return _checkpoint_state_record_body(lop, state)
+
+
+def checkpoint_state_record_daily(lop: LifecycleOperator, state: LifecycleState) -> dict[str, Any]:
+    """The SAME closed lifecycle record for a state of a DAILY lineage (the V3 codec; its digest already includes the cursor, which travels as the separate
+    closed `daily` scalar part). A state without a cursor is refused (the V3 codec records daily lineages only)."""
+    if getattr(state, "daily", None) is None:
+        raise LifecycleError("the daily checkpoint record needs a state of a daily lineage (a cursor); refused")
+    return _checkpoint_state_record_body(lop, state)
+
+
+def _checkpoint_state_record_body(lop: LifecycleOperator, state: LifecycleState) -> dict[str, Any]:
     from maple_syrup import checkpoint_capability as cc
 
     if lop._cuda is not None:
@@ -1999,8 +2141,9 @@ def _revalidate_immediate_reset(lop: LifecycleOperator, control: ResetReceipt, a
 
 def _restore_checkpoint_lifecycle(lop: LifecycleOperator, cap: Any, record: Any, *, role: str, arrays: tuple,
                                   storm_op: Any = None, event: Any = None, estate: Any = None, prep: Any = None,
-                                  gop: Any = None, tstate: Any = None, _phase_kinds: Any = None) -> LifecycleState:
-    """Owner-controlled restoration of the CURRENT accepted lifecycle state from a verified checkpoint. `arrays` is the exact
+                                  gop: Any = None, tstate: Any = None, _phase_kinds: Any = None, daily: Any = None) -> LifecycleState:
+    """Owner-controlled restoration of the CURRENT accepted lifecycle state from a verified checkpoint. `daily` (V3 only) is the already STRICTLY decoded
+    `DailyCursor`, supplied at CONSTRUCTION so the recomputed scalar digest (which includes the cursor) must equal the saved one; no cursor is ever attached later. `arrays` is the exact
     decoded `(surface_m, qx, qy, soil, history, bed)` tuple (a boundary payload is minted from it; the storm / interevent
     payloads are the genuine, already restored `estate` / `tstate`). Nothing here replays an entry, closure or reset: counters,
     lifetime ledger, watermark and bounded receipts are the saved accepted values, re-validated by the ordinary `_check_state`,
@@ -2053,7 +2196,7 @@ def _restore_checkpoint_lifecycle(lop: LifecycleOperator, cap: Any, record: Any,
     state = LifecycleState(
         _SEAL, role=role, t_s=tree["t_s"], revision=tree["revision"], episode=tree["episode"], reset_count=tree["reset_count"],
         request_sequence=tree["request_sequence"], storm_operator_sha256=sop, lop_sha256=lop.sha256, binding=binding,
-        last_control_receipt=control, last_phase_receipt=phase, lifetime=lifetime, mark=mark, payload=payload)
+        last_control_receipt=control, last_phase_receipt=phase, lifetime=lifetime, mark=mark, payload=payload, daily=daily)
     if state.digest != _hex64(tree["digest"], "digest"):
         raise LifecycleError("the saved lifecycle digest differs from its recomputed digest; refused")
     if mark.n_steps > lifetime.n_hydro_steps or mark.n_requests > lifetime.n_t_requests:
@@ -2140,6 +2283,11 @@ def _cuda_checkpoint_role_fence(cap: wlc.CudaLifecycleCapability, role: Any, pha
 
 def _checkpoint_state_record_cuda(lop: LifecycleOperator, state: LifecycleState) -> dict[str, Any]:
     """CUDA sibling of `checkpoint_state_record` (same bounded scalar/ledger/watermark/phase/control encoding; no array, payload or past state)."""
+    _refuse_daily_checkpoint(state)
+    return _cuda_record_body(lop, state)
+
+
+def _cuda_record_body(lop: LifecycleOperator, state: LifecycleState) -> dict[str, Any]:
     from maple_syrup import checkpoint_capability as cc
 
     cap = _cuda9f_lop(lop)
@@ -2187,7 +2335,7 @@ def _revalidate_immediate_reset_cuda(lop: LifecycleOperator, control: ResetRecei
 
 
 def _restore_checkpoint_lifecycle_cuda(lop: LifecycleOperator, cap: Any, record: Any, *, role: str, arrays: tuple, storm_op: Any = None,
-                                       prep: Any = None, gop: Any = None, tstate: Any = None, _phase_kinds: Any = None) -> LifecycleState:
+                                       prep: Any = None, gop: Any = None, tstate: Any = None, _phase_kinds: Any = None, daily: Any = None) -> LifecycleState:
     """CUDA sibling of `_restore_checkpoint_lifecycle` for a closed 'boundary' or an accepted 'interevent' of the native9f CUDA lifecycle (the storm role is refused).
     Nothing replays an entry, closure or reset: counters, ledgers, watermark, clock and bounded receipts are the saved accepted values, re-validated by the ordinary
     `_check_state`, the recomputed scalar digest and the whole `audit_lifecycle`. The immediate-reset recheck is device-aware (streamed hashes, device packets, the
@@ -2247,7 +2395,7 @@ def _restore_checkpoint_lifecycle_cuda(lop: LifecycleOperator, cap: Any, record:
     state = LifecycleState(
         _SEAL, role=role, t_s=tree["t_s"], revision=tree["revision"], episode=tree["episode"], reset_count=tree["reset_count"],
         request_sequence=tree["request_sequence"], storm_operator_sha256=sop, lop_sha256=lop.sha256, binding=binding,
-        last_control_receipt=control, last_phase_receipt=phase, lifetime=lifetime, mark=mark, payload=payload)
+        last_control_receipt=control, last_phase_receipt=phase, lifetime=lifetime, mark=mark, payload=payload, daily=daily)
     if state.digest != _hex64(tree["digest"], "digest"):
         raise LifecycleError("the saved lifecycle digest differs from its recomputed digest; refused")
     if mark.n_steps > lifetime.n_hydro_steps or mark.n_requests > lifetime.n_t_requests:
@@ -2286,17 +2434,36 @@ def _checkpoint_state_record_cuda_v2(lop: LifecycleOperator, state: LifecycleSta
 
     if type(state) is not LifecycleState:
         raise LifecycleError("state must be a genuine accepted LifecycleState")
+    _refuse_daily_checkpoint(state)
     if state.role in ("boundary", "interevent"):
         return _checkpoint_state_record_cuda(lop, state)
+    return _cuda_storm_record(lop, state, require_completed=True)
+
+
+def _checkpoint_state_record_cuda_v3(lop: LifecycleOperator, state: LifecycleState) -> dict[str, Any]:
+    """The V3 (Phase 1.5 DAILY) CUDA lifecycle record: the same closed record as V1/V2 for a state of a daily lineage (a state without a cursor is refused); a storm may be PARTIAL
+    (the codec's storm record carries the progress; completion is never fabricated or required)."""
+    if type(state) is not LifecycleState:
+        raise LifecycleError("state must be a genuine accepted LifecycleState")
+    if state.daily is None:
+        raise LifecycleError("the V3 CUDA checkpoint records only states of a daily lineage (a cursor); refused")
+    if state.role in ("boundary", "interevent"):
+        return _cuda_record_body(lop, state)
+    return _cuda_storm_record(lop, state, require_completed=False)
+
+
+def _cuda_storm_record(lop: LifecycleOperator, state: LifecycleState, *, require_completed: bool) -> dict[str, Any]:
+    from maple_syrup import checkpoint_capability as cc
+
     if state.role != "storm":
-        raise LifecycleError(f"the CUDA lifecycle checkpoint covers only a closed 'boundary', an accepted 'interevent' or a COMPLETED 'storm', got {state.role!r}; refused")
+        raise LifecycleError(f"the CUDA lifecycle checkpoint covers only a closed 'boundary', an accepted 'interevent' or a 'storm', got {state.role!r}; refused")
     cap = _cuda9f_lop(lop)
     _check_state(lop, state)
     b = state.binding
     if type(b) is not _Binding or b.op is None or b.event is None or b.prep is not None or b.gop is not None:
         raise LifecycleError("a storm checkpoint needs exactly its storm operator and event binding; refused")
-    if type(state.payload) is not ev.LayeredEventState or state.payload.completed is not True:
-        raise LifecycleError("only a COMPLETED storm is checkpointed (an incomplete rain/recession storm is not a public accepted boundary); refused")
+    if type(state.payload) is not ev.LayeredEventState or (require_completed and state.payload.completed is not True):
+        raise LifecycleError("only a COMPLETED storm is checkpointed by this codec version (an incomplete rain/recession storm is not a public accepted boundary); refused")
     if not cap.boundary_capable and (state.last_control_receipt is not None or getattr(state.last_phase_receipt, "kind", None) == "boundary_origin"):
         raise LifecycleError("a boundary-origin entry or a controlled reset exists only under the explicit CUDA9F_BOUNDARY_PROFILE; refused")
     body = {name: getattr(state, name) for name in _STATE_SCALARS}
@@ -2309,7 +2476,8 @@ def _checkpoint_state_record_cuda_v2(lop: LifecycleOperator, state: LifecycleSta
 
 
 def _restore_checkpoint_lifecycle_cuda_v2(lop: LifecycleOperator, cap: Any, record: Any, *, role: str, arrays: tuple, storm_op: Any = None, event: Any = None, estate: Any = None,
-                                          prep: Any = None, gop: Any = None, tstate: Any = None, _phase_kinds: Any = None) -> LifecycleState:
+                                          prep: Any = None, gop: Any = None, tstate: Any = None, _phase_kinds: Any = None, daily: Any = None,
+                                          _partial_ok: bool = False) -> LifecycleState:
     """O5: trusted restoration of the CURRENT accepted state for the V2 CUDA codec. boundary/interevent delegate to the accepted G1 restorer (no event/estate allowed); a COMPLETED storm is restored from its
     already re-prepared real operator, event and `LayeredEventState` (bound to the exact decoded arrays by identity through the call-local capability); nothing is replayed or fabricated."""
     from maple_syrup import checkpoint_capability as cc
@@ -2317,7 +2485,8 @@ def _restore_checkpoint_lifecycle_cuda_v2(lop: LifecycleOperator, cap: Any, reco
     if role in ("boundary", "interevent"):
         if event is not None or estate is not None:
             raise LifecycleError("a boundary/interevent restores without a storm event or event state; refused")
-        return _restore_checkpoint_lifecycle_cuda(lop, cap, record, role=role, arrays=arrays, storm_op=storm_op, prep=prep, gop=gop, tstate=tstate, _phase_kinds=_phase_kinds)
+        return _restore_checkpoint_lifecycle_cuda(lop, cap, record, role=role, arrays=arrays, storm_op=storm_op, prep=prep, gop=gop, tstate=tstate, _phase_kinds=_phase_kinds,
+                                                  daily=daily)
     if role != "storm":
         raise LifecycleError("the CUDA lifecycle checkpoint covers only 'boundary', 'interevent' and a COMPLETED 'storm'; refused")
     lcap = _cuda9f_lop(lop)
@@ -2328,8 +2497,10 @@ def _restore_checkpoint_lifecycle_cuda_v2(lop: LifecycleOperator, cap: Any, reco
         raise LifecycleError("the restored storm needs a genuine native Dense BedState (no Windowed or foreign bed); refused")
     if storm_op is None or event is None or estate is None or prep is not None or gop is not None or tstate is not None:
         raise LifecycleError("a storm restores from its storm operator, event and event state only")
-    if type(estate) is not ev.LayeredEventState or estate.completed is not True:
-        raise LifecycleError("only a COMPLETED storm is restored (completed is never fabricated or defaulted); refused")
+    if type(estate) is not ev.LayeredEventState or (estate.completed is not True and not _partial_ok):
+        raise LifecycleError("only a COMPLETED storm is restored by this codec version (completed is never fabricated or defaulted); refused")
+    if _partial_ok and type(estate.completed) is not bool:
+        raise LifecycleError("the storm completed flag must be an exact bool; refused")
     if getattr(event, "op", None) is not storm_op:
         raise LifecycleError("the event was not prepared on this storm operator; refused")
     w = estate.water
@@ -2368,7 +2539,7 @@ def _restore_checkpoint_lifecycle_cuda_v2(lop: LifecycleOperator, cap: Any, reco
     state = LifecycleState(
         _SEAL, role="storm", t_s=tree["t_s"], revision=tree["revision"], episode=tree["episode"], reset_count=tree["reset_count"], request_sequence=tree["request_sequence"],
         storm_operator_sha256=sop, lop_sha256=lop.sha256, binding=_Binding(op=storm_op, event=event), last_control_receipt=control, last_phase_receipt=phase, lifetime=lifetime,
-        mark=mark, payload=estate)
+        mark=mark, payload=estate, daily=daily)
     if state.digest != _hex64(tree["digest"], "digest"):
         raise LifecycleError("the saved lifecycle digest differs from its recomputed digest; refused")
     if mark.n_steps > lifetime.n_hydro_steps or mark.n_requests > lifetime.n_t_requests:

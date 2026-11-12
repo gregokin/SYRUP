@@ -117,6 +117,7 @@ __all__ = [
     "NO_FLAG",
     "NUMPY_SCRATCH_DOUBLES_PER_CELL",
     "PACKET_LENGTH",
+    "RECHARGE_FIT_BIT",
     "SCRATCH_MASK_BYTES_PER_CELL",
     "STAGE_ORDER",
     "CumulativeBudget",
@@ -131,6 +132,7 @@ __all__ = [
     "StepBudget",
     "SubsurfaceBackendUnavailableError",
     "SubsurfaceError",
+    "SubsurfaceFitFailure",
     "SubsurfaceMemoryError",
     "SubsurfaceStep",
     "SubsurfaceStepError",
@@ -150,6 +152,7 @@ __all__ = [
     "reference_step",
     "soil_layers",
     "step",
+    "step_with_recharge",
     "step_memory",
     "storage_m3",
     "summary",
@@ -207,7 +210,9 @@ FLAG_MESSAGES = (
     "step produced a non-finite flux",  # 14
     "evaporation_share must be finite everywhere (inactive cells included)",  # 15
     "evaporation_share must lie within [0, 1] everywhere (inactive cells included)",  # 16
+    "recharge pulse does not fit: a layer is above saturation after the single gravity movement (candidate rejected)",  # 17
 )
+RECHARGE_FIT_BIT = 17  # Phase 1.5: a distinct TRIAL outcome (never an input/memory/backend/conservation failure)
 N_FLAGS = len(FLAG_MESSAGES)
 
 
@@ -223,6 +228,13 @@ class SubsurfaceStepError(SubsurfaceError):
         super().__init__(message)
         self.bit = bit
         self.n_flagged = int(n_flagged)
+
+
+class SubsurfaceFitFailure(SubsurfaceStepError):
+    """Phase 1.5 pulse-aware step only: after the pulse was added and the existing gravity movement ran ONCE, at least one active
+    cell still holds a layer above saturation (+ the existing capacity tolerance). The candidate is rejected (never accepted,
+    clipped or partly evaporated); the caller falls back to the full native storm from the unchanged accepted parent. Distinct
+    from invalid prior state, memory, backend and conservation failures, which keep their own types/bits."""
 
 
 class SubsurfaceBackendUnavailableError(RuntimeError):
@@ -620,9 +632,10 @@ def factor_scratch_doubles(n_layers: int, diffusion_mode: str = "constant") -> i
     return arrays * max(n - 1, 1)
 
 
-def cell_closure_coefficient(n_layers: int) -> float:
-    """MAPLE's dimensionless FP64 bound coefficient for the 4 L + 7 terms of one cell's step balance."""
-    return volume_roundoff_bound_m3(4 * int(n_layers) + 7, 1.0)
+def cell_closure_coefficient(n_layers: int, recharge: bool = False) -> float:
+    """MAPLE's dimensionless FP64 bound coefficient for the 4 L + 7 terms of one cell's step balance; the Phase 1.5 pulse-aware
+    step performs exactly ONE more accumulation on the top layer (the unreturned pulse), counted as one more term."""
+    return volume_roundoff_bound_m3(4 * int(n_layers) + 7 + (1 if recharge else 0), 1.0)
 
 
 def kernel_parameters(layers: SoilLayers) -> KernelParameters:
@@ -670,12 +683,15 @@ class MemoryEstimate:
 
 
 def estimate_step_memory(n_layers: int, n_cells: int, *, backend: str, reserve_bytes: int = 0,
-                         diffusion_mode: str = "constant", with_evaporation_share: bool = False) -> MemoryEstimate:
+                         diffusion_mode: str = "constant", with_evaporation_share: bool = False,
+                         with_recharge: bool = False) -> MemoryEstimate:
     """Conservative, backend-specific working-array bytes of ONE step (see MEMORY_SCOPE). Pure arithmetic. The
     `diffusion_mode` adds the donor-depth mode's extra host/device parameter vectors and the second per-interface
     factor scratch of the compiled backends; the constant mode counts are the historical ones.
     `with_evaporation_share=True` adds the caller's optional (N,) post-cap share field to the input bytes (the only
-    change that option makes to the working set: no extra output, scratch or parameter)."""
+    change that option makes to the working set: no extra output, scratch or parameter). `with_recharge=True` (the
+    Phase 1.5 pulse-aware step) has NO (L, N) added-water input (a uniform host scalar replaces it) and its fit mask is
+    covered by the declared per-cell mask bytes, so it removes L x N doubles from the input bytes and adds nothing."""
     n_layers = _checked_int(n_layers, "n_layers")
     n_cells = _checked_int(n_cells, "n_cells")
     if n_layers < 1 or n_cells < 1:
@@ -689,6 +705,10 @@ def estimate_step_memory(n_layers: int, n_cells: int, *, backend: str, reserve_b
     f8 = 8
     n_if = n_layers - 1
     inputs = (2 * n_layers * n_cells + n_cells) * f8  # state, added water, evaporation rate
+    if type(with_recharge) is not bool:
+        raise SubsurfaceError(f"with_recharge must be a bool, got {with_recharge!r}")
+    if with_recharge:
+        inputs -= n_layers * n_cells * f8  # no added-water tensor: the pulse is one host scalar
     if with_evaporation_share:
         inputs += n_cells * f8  # the caller's post-cap evaporation share field
     column = 2 * n_cells + n_layers * f8  # bool + uint8 masks, thickness copy
@@ -917,21 +937,22 @@ def prepare_column(layers: SoilLayers, active_mask: Any, cell_area_m2: Any, *, b
                       runner=runner, preflight=preflight, backend_info=dict(info))
 
 
-def step_memory(column: SoilColumn, *, with_evaporation_share: bool = False) -> MemoryEstimate:
+def step_memory(column: SoilColumn, *, with_evaporation_share: bool = False, with_recharge: bool = False) -> MemoryEstimate:
     """The column's per-step estimate; with the optional post-cap share field counted when requested (pure
     arithmetic, recomputed from the column's own parameters, never from a caller record)."""
     _check_column(column)
-    if not with_evaporation_share:
+    if not with_evaporation_share and not with_recharge:
         return column.memory
     return estimate_step_memory(column.n_layers, column.n_cells, backend=column.backend,
                                 reserve_bytes=column.reserve_bytes, diffusion_mode=column.layers.diffusion_mode,
-                                with_evaporation_share=True)
+                                with_evaporation_share=with_evaporation_share, with_recharge=with_recharge)
 
 
-def admit_step(column: SoilColumn, *, with_evaporation_share: bool = False) -> int:
+def admit_step(column: SoilColumn, *, with_evaporation_share: bool = False, with_recharge: bool = False) -> int:
     """Compare the column's per-step requirement (reserve included; the optional share field when requested) with
     the reported available bytes and raise `SubsurfaceMemoryError` BEFORE anything is allocated. Returns the reading."""
-    return _admit(step_memory(column, with_evaporation_share=with_evaporation_share), column.available_bytes_fn, "step")
+    return _admit(step_memory(column, with_evaporation_share=with_evaporation_share, with_recharge=with_recharge),
+                  column.available_bytes_fn, "step")
 
 
 # --- states ------------------------------------------------------------------------------------------------------------
@@ -989,7 +1010,8 @@ def storage_m3(column: SoilColumn, state: SoilColumnState) -> float:
 
 
 # --- the reference step -------------------------------------------------------------------------------------------------
-def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None) -> StepArrays:
+def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None,
+                   recharge: float | None = None) -> StepArrays:
     """NumPy reference of one step: loops over layers, vectorised over cells, the SAME IEEE operations in the SAME order
     as the compiled kernels (only `expm1` may differ by an ulp between libraries), evaluated IN PLACE on the fresh
     output arrays with a counted transient peak (see NUMPY_SCRATCH_DOUBLES_PER_CELL). Validation is recorded in flag
@@ -1010,7 +1032,10 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
     directional = lay.directional_diffusion  # donor-depth mode: distinct downward/upward factors
     closed_bottom = lay.bottom_drainage == "closed"
     res_theta0, stress, factor = float(lay.theta_residual[0]), lay.theta_evaporation_stress, lay.evaporation_factor
-    cell_tol = cell_closure_coefficient(n_layers)
+    pulse = recharge is not None
+    if pulse and (added is not None or not dt > 0.0):
+        raise SubsurfaceError("the pulse-aware step takes no added-water tensor and requires dt > 0")
+    cell_tol = cell_closure_coefficient(n_layers, pulse)
 
     water_out = xp.array(water_in, dtype=np.float64, copy=True)
     percolation = xp.zeros((n_if, n_cells), dtype=np.float64)
@@ -1029,17 +1054,18 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
     with errstate(xp=xp, all="ignore"):
         for layer in range(n_layers):
             wl = water_in[layer]
-            al = added[layer]
             flag(~xp.isfinite(wl), 0)
             flag(wl < 0.0, 1)
             flag(wl > sat_m[layer] + cap_tol[layer], 2)
-            flag(~xp.isfinite(al), 3)
-            flag(al < 0.0, 4)
-            flag(inactive & (al != 0.0), 5)
-            if dt == 0.0:
-                flag(al != 0.0, 9)
             xp.add(before, wl, out=before)
-            xp.add(added_row, al, out=added_row)
+            if not pulse:  # the pulse-aware step has no added-water forcing tensor (the historical statements are unchanged)
+                al = added[layer]
+                flag(~xp.isfinite(al), 3)
+                flag(al < 0.0, 4)
+                flag(inactive & (al != 0.0), 5)
+                if dt == 0.0:
+                    flag(al != 0.0, 9)
+                xp.add(added_row, al, out=added_row)
         flag(~xp.isfinite(pet), 6)
         flag(pet < 0.0, 7)
         flag(inactive & (pet != 0.0), 8)
@@ -1058,12 +1084,18 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
             # 2. addition with saturation return
             for layer in range(n_layers):
                 w = water_out[layer]
-                xp.add(w, added[layer], out=w)
+                if not pulse:
+                    xp.add(w, added[layer], out=w)
                 ex = w - sat_m[layer]
                 pos = ex > 0.0
                 xp.subtract(w, ex, out=w, where=pos)
                 xp.add(ret, ex, out=ret, where=pos)
                 del ex, pos
+            if pulse:  # the uniform pulse enters the top layer of every active cell WITHOUT a saturation return
+                w0p = water_out[0]
+                xp.add(w0p, recharge, out=w0p, where=active)
+                xp.add(added_row, recharge, out=added_row, where=active)
+                del w0p
             # 3. gravity cascade, top to bottom within the step
             if lay.gravity_drainage:
                 if closed_bottom:
@@ -1105,6 +1137,17 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
                     del ex, pos, forward
                 drain[...] = carry  # exactly 0 with a closed bottom (the bottom layer never forwards)
                 del carry
+            if pulse:  # fit test right after the ONE movement and BEFORE evaporation/diffusion (also with gravity disabled)
+                # liveness (NumPy): `fit_fail` (N bytes) + the two comparison/AND temporaries of the loop (freed each pass), then `~fit_fail` and
+                # the replacement `checked` (N bytes each) beside the old `checked`; at most four N-byte masks beyond the historical ones are
+                # live at once. This happens BEFORE the diffusion stage, whose float temporaries set the call's peak, so the measured peak
+                # is within ~1 byte/cell of the historical step (tests: test_numpy_pulse_mode_actual_live_bytes_...)
+                fit_fail = xp.zeros(n_cells, dtype=np.bool_)
+                for layer in range(n_layers):
+                    xp.logical_or(fit_fail, active & (water_out[layer] > sat_m[layer] + cap_tol[layer]), out=fit_fail)
+                flag(fit_fail, 17)
+                checked = checked & ~fit_fail  # a fit-failed cell's output-check bits are withheld: bit 17 stays the named cause
+                del fit_fail
             # 4. evaporation from layer 0
             w0 = water_out[0]
             theta0 = w0 / dz[0]
@@ -1221,8 +1264,11 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
     return StepArrays(water_out, percolation, diffusion, ret, drain, evap, unmet, rows)
 
 
-def reference_runner(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None) -> StepArrays:
-    return reference_step(column, water_in, added, pet, dt, share)
+def reference_runner(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None,
+                     recharge: float | None = None) -> StepArrays:
+    if recharge is None:  # the historical call, positionally identical
+        return reference_step(column, water_in, added, pet, dt, share)
+    return reference_step(column, water_in, added, pet, dt, share, recharge)
 
 
 # --- step ------------------------------------------------------------------------------------------------------------
@@ -1268,18 +1314,20 @@ def _read_packet(xp: ModuleType, arrays: StepArrays) -> np.ndarray:
     return np.asarray(to_host(stacked), dtype=np.float64)
 
 
-def _resolve(column: SoilColumn, packet: np.ndarray) -> StepBudget:
+def _resolve(column: SoilColumn, packet: np.ndarray, recharge: bool = False) -> StepBudget:
     if packet.shape != (PACKET_LENGTH,):
         raise SubsurfaceError(f"internal: packet shape {packet.shape}")
     low, n_flagged = float(packet[7]), int(packet[8])
     if not math.isfinite(low) or low < NO_FLAG:
         bit = int(low).bit_length() - 1 if math.isfinite(low) and low >= 1.0 else None
         message = FLAG_MESSAGES[bit] if bit is not None and 0 <= bit < N_FLAGS else "validation packet is corrupt"
+        if bit == RECHARGE_FIT_BIT:  # the lowest recorded bit: no lower (input) failure exists anywhere in the domain
+            raise SubsurfaceFitFailure(f"{message} ({n_flagged} cell(s) flagged)", bit=bit, n_flagged=n_flagged)
         raise SubsurfaceStepError(f"{message} ({n_flagged} cell(s) flagged)", bit=bit, n_flagged=n_flagged)
     area = column.cell_area_m2
     before, after, added, ret, drain, evap, unmet = (float(v) * area for v in packet[:7])
     residual = (after - before) - (((added - ret) - drain) - evap)
-    n_terms = 4 * column.n_layers * column.n_cells + 7
+    n_terms = 4 * column.n_layers * column.n_cells + 7 + (column.n_cells if recharge else 0)  # + the one pulse accumulation per cell
     operands = (abs(before), abs(after), abs(added), abs(ret), abs(drain), abs(evap))
     if not all(math.isfinite(v) for v in (*operands, unmet, residual)):
         raise SubsurfaceStepError("non-finite global water budget", bit=None, n_flagged=n_flagged)
@@ -1320,6 +1368,48 @@ def step(column: SoilColumn, state: SoilColumnState, dt_s: Any, *, added_water_m
     packet = _read_packet(column.xp, arrays)  # synchronising read: queued kernels have finished with any scratch
     budget = _resolve(column, packet)
     # `arrays.scratch` (CUDA factor keep-alive) dies with this frame; the published step never carries it.
+    return SubsurfaceStep(state=SoilColumnState(arrays.water_m, t1), dt_s=dt,
+                          surface_return_m=arrays.surface_return_m, drainage_m=arrays.drainage_m,
+                          evaporation_m=arrays.evaporation_m, evaporation_unmet_m=arrays.evaporation_unmet_m,
+                          percolation_m=arrays.percolation_m, diffusion_m=arrays.diffusion_m, budget=budget)
+
+
+def step_with_recharge(column: SoilColumn, state: SoilColumnState, dt_s: Any, *, recharge_depth_m: Any,
+                       potential_evaporation_m_s: Any, evaporation_share: Any = None) -> SubsurfaceStep:
+    """Phase 1.5 pulse-aware ONE daily column step (explicit sibling entry; the historical `step` and its addition semantics are
+    unchanged). `recharge_depth_m` is ONE finite non-negative host depth [m] of water added uniformly to the top layer of every
+    ACTIVE cell (no (L, N) forcing tensor). Order inside the single call, on the runner/body shared with `step`: historical
+    addition-with-return stage (zero added water) -> pulse added with NO saturation return -> the existing gravity cascade ONCE
+    (FC triggers movement, saturation limits storage, open/closed bottom and the gravity switch exactly as in `step`) -> FIT test of
+    every active cell (layer <= saturation + capacity tolerance) -> the historical evaporation and pair diffusion ONCE, in their
+    historical order. A cell that does not fit rejects the whole candidate with `SubsurfaceFitFailure` (distinct from invalid prior
+    state, memory, backend and conservation errors); nothing is clipped, accepted or partially evaporated, the inputs are never
+    written and a refused call allocates no result. `dt_s` must be > 0 (no zero-time rain step, no fake dt). Time, scalar, mode,
+    mask and array validation precede any numerical work."""
+    _check_column(column)
+    t0 = _check_state(column, state)
+    dt = _check_dt(dt_s)
+    if not dt > 0.0:
+        raise SubsurfaceError("the pulse-aware daily step requires dt_s > 0 (no zero-time rain step)")
+    pulse = _real(recharge_depth_m, "recharge_depth_m")
+    if pulse < 0.0:
+        raise SubsurfaceError(f"recharge_depth_m must be >= 0, got {pulse!r}")
+    t1 = t0 + dt
+    if not math.isfinite(t1):
+        raise SubsurfaceError(f"the candidate time t + dt = {t0!r} + {dt!r} is not finite; the step is refused before "
+                              "any numerical work (state untouched)")
+    if not t1 > t0:  # a positive interval the native FP64 clock cannot represent would add water and evaporate with no time passing
+        raise SubsurfaceError(f"the positive interval dt = {dt!r} s does not advance the native clock at t = {t0!r} s "
+                              "(t + dt == t); the pulse-aware step is refused before any numerical work or allocation (state untouched)")
+    _check_dynamic(column, "potential_evaporation_m_s", potential_evaporation_m_s, (column.n_cells,))
+    if evaporation_share is not None:
+        _check_dynamic(column, "evaporation_share", evaporation_share, (column.n_cells,))
+    if column.preflight is not None:
+        column.preflight()
+    admit_step(column, with_evaporation_share=evaporation_share is not None, with_recharge=True)
+    arrays = column.runner(column, state.water_m, None, potential_evaporation_m_s, dt, evaporation_share, pulse)
+    packet = _read_packet(column.xp, arrays)
+    budget = _resolve(column, packet, recharge=True)
     return SubsurfaceStep(state=SoilColumnState(arrays.water_m, t1), dt_s=dt,
                           surface_return_m=arrays.surface_return_m, drainage_m=arrays.drainage_m,
                           evaporation_m=arrays.evaporation_m, evaporation_unmet_m=arrays.evaporation_unmet_m,

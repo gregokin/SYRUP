@@ -90,6 +90,7 @@ __all__ = [
     "InterEventState",
     "InterEventStepError",
     "InterEventStepReceipt",
+    "RechargeStepReceipt",
     "InterEventVertical",
     "InterEventWaterError",
     "InterEventWaterOperator",
@@ -340,7 +341,7 @@ class WaterWindowLedger:
         _check_ledger(self)
         col = receipt.column
         result = WaterWindowLedger(
-            int(self.n_steps) + 1, float(self.elapsed_s) + float(receipt.dt_s), float(self.rain_m3),
+            int(self.n_steps) + 1, float(self.elapsed_s) + float(receipt.dt_s), _rain_after(self, receipt),
             float(self.preferential_intake_m3) + float(receipt.preferential.intake_m3),
             float(self.matrix_intake_m3) + float(receipt.matrix.intake_m3),
             float(self.surface_return_m3) + float(col.surface_return_m3), float(self.drainage_m3) + float(col.drainage_m3),
@@ -356,6 +357,16 @@ class WaterWindowLedger:
 
     def as_dict(self) -> dict[str, Any]:
         return dict(self.__dict__)
+
+
+def _rain_after(ledger: WaterWindowLedger, receipt: InterEventStepReceipt) -> float:
+    """The window rain after one step: unchanged for an ordinary interevent receipt (rain is exactly 0 there), plus the applied
+    recharge pulse ONCE for a genuine `RechargeStepReceipt`."""
+    if type(receipt) is InterEventStepReceipt:
+        return float(ledger.rain_m3)
+    if type(receipt) is not RechargeStepReceipt:
+        raise InterEventWaterError("an unknown step receipt type cannot be credited")
+    return float(ledger.rain_m3) + float(receipt.recharge_m3)
 
 
 def _check_ledger(ledger: Any, steps: int | None = None) -> None:
@@ -623,6 +634,17 @@ class InterEventStepReceipt:
             value = out[key]
             out[key] = value.as_dict() if hasattr(value, "as_dict") else dict(value.__dict__)
         return out
+
+
+@dataclass(frozen=True)
+class RechargeStepReceipt(InterEventStepReceipt):
+    """The receipt of ONE Phase 1.5 daily step that carried the uniform recharge pulse through the shared column movement. It IS an
+    `InterEventStepReceipt` (every shared field/check unchanged) plus the applied pulse; ordinary steps still return the unchanged base
+    class. `recharge_m3` is rain (an external source) distinct from the modeled preferential/matrix intake; it is credited once."""
+
+    recharge_depth_m: float
+    recharge_m3: float
+    recharge_terms: int
 
 
 @dataclass(frozen=True, eq=False)
@@ -1283,12 +1305,18 @@ class _PhysicalTrial(NamedTuple):
 
 
 def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: float, surface_m: Any, qx_m2_s: Any,
-                    qy_m2_s: Any, soil: Any, history: Any, bed: Any, pet_terrain_m_s: Any) -> _PhysicalTrial:
+                    qy_m2_s: Any, soil: Any, history: Any, bed: Any, pet_terrain_m_s: Any,
+                    recharge_depth_m: Any = None) -> _PhysicalTrial:
     """The ONE existing physical stage body (preferential -> matrix(H0, zero rate) -> helper(surface + post-cap soil E) ->
     ONE column step -> return -> genuine router -> optional native `with_water` -> per-cell/stage/global checks), extracted
     unchanged from `interevent_water_step` so the T0 wrapper and the general (requested-transpiration) wrapper run the SAME
     code on their already-validated physical operands. It never reads a ledger, generation or profile and does not branch
-    on T: a T debit made earlier is already in `soil`. Pure; the operands are never written."""
+    on T: a T debit made earlier is already in `soil`. Pure; the operands are never written.
+
+    Phase 1.5: `recharge_depth_m` (default None = the unchanged body, bit for bit) selects the ONE pulse-aware column call
+    `subsurface.step_with_recharge` in place of the zero-added `ss.step` (never both: no second movement); every other stage, check and
+    bound is the same code, with the applied pulse entering the per-cell soil balance, the global closure (as an external source) and
+    the operation counts honestly. A column capacity failure (`SubsurfaceFitFailure`) propagates to the caller unchanged."""
     op = prep.op
     column, xp = op.column, op.xp
     ny, nx = op.shape
@@ -1309,7 +1337,10 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
     e = se.stage_evaporation(prep.evaporation, pet_terrain_m_s=pet_terrain_m_s, cover=prep._cover,
                              surface_water_m=m.surface_pool_m, dt_s=dt)
     # 5. ONE column step on the credited soil: zero added water, the helper's exact pair; T is exactly 0
-    c = ss.step(column, m.state, dt, added_water_m=op._zero_added, **e.native_step_kwargs())
+    if recharge_depth_m is None:
+        c = ss.step(column, m.state, dt, added_water_m=op._zero_added, **e.native_step_kwargs())
+    else:
+        c = ss.step_with_recharge(column, m.state, dt, recharge_depth_m=recharge_depth_m, **e.native_step_kwargs())
     # 6. the actual saturation return rejoins the post-E pool once; lateral stage from the ACCEPTED time t0
     post = e.surface_water_after_m + c.surface_return_m
     s = op.router.step(SurfaceState(t0, post.reshape(ny, nx), qx_m2_s, qy_m2_s), dt)
@@ -1330,6 +1361,10 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
     pool = m.surface_pool_m
     vx, vy = s.face_volume_m3["x"], s.face_volume_m3["y"]
     soil0, soil1 = soil.water_m, c.state.water_m
+    soil_coefficient, soil_terms = prep.soil_cell_coefficient, soil_cell_terms(L)
+    if recharge_depth_m is not None:  # one more term (the pulse) in each cell's soil balance and scale: counted, not assumed
+        soil_terms += 1
+        soil_coefficient = volume_roundoff_bound_m3(soil_terms, 1.0)
     flags = xp.zeros(N, dtype=np.int64)
 
     def flag(mask: Any, bit: int) -> None:
@@ -1366,6 +1401,8 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
         xp.multiply(scale_s, prep.surface_cell_coefficient, out=scale_s)
         flag(active & (res_s > scale_s), 3)
         flux_w = pref_tot + mat_in
+        if recharge_depth_m is not None:
+            xp.add(flux_w, float(recharge_depth_m), out=flux_w)  # the pulse enters every ACTIVE cell's soil balance (inactive cells are not flagged here)
         xp.subtract(flux_w, ret, out=flux_w)
         xp.subtract(flux_w, drain, out=flux_w)
         xp.subtract(flux_w, eso_arr, out=flux_w)
@@ -1379,7 +1416,9 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
         xp.add(scale_w, ret, out=scale_w)
         xp.add(scale_w, drain, out=scale_w)
         xp.add(scale_w, eso_arr, out=scale_w)
-        xp.multiply(scale_w, area * prep.soil_cell_coefficient, out=scale_w)
+        if recharge_depth_m is not None:
+            xp.add(scale_w, float(recharge_depth_m), out=scale_w)
+        xp.multiply(scale_w, area * soil_coefficient, out=scale_w)
         flag(active & (res_w > scale_w), 4)
         flag(active & (~xp.isfinite(res_s) | ~xp.isfinite(res_w) | ~xp.isfinite(scale_s) | ~xp.isfinite(scale_w)), 5)
         flag(inactive & ((es_arr != 0.0) | (eso_arr != 0.0) | (unmet_s != 0.0) | (unmet_w != 0.0)), 6)
@@ -1432,9 +1471,20 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
                                   bit=None, n_flagged=n_flagged)
     residual = ((((h1_m3 - h0_m3) + (soil1_m3 - soil0_m3)) + export) + drain_m3 + es_m3) + eso_m3
     operands = (abs(h0_m3), abs(h1_m3), abs(soil0_m3), abs(soil1_m3), abs(export), abs(drain_m3), abs(es_m3), abs(eso_m3))
+    recharge_m3 = 0.0
+    if recharge_depth_m is not None:
+        # the pulse is an EXTERNAL source of the composed closure (rain): taken from the column step's own addition budget and checked
+        # independently against depth x active cells x area; its two operations join the owner's term count below
+        recharge_m3 = float(c.budget.added_m3)
+        expected_m3 = float(recharge_depth_m) * float(column.n_active) * area
+        if not math.isfinite(recharge_m3) or abs(recharge_m3 - expected_m3) > volume_roundoff_bound_m3(N + 2, max(expected_m3, recharge_m3)):
+            raise InterEventStepError(f"the column's applied recharge {recharge_m3!r} m3 differs from depth x active cells x area {expected_m3!r} m3",
+                                      bit=None, n_flagged=n_flagged)
+        residual = residual - recharge_m3
+        operands = (*operands, abs(recharge_m3))
     if not all(math.isfinite(v) for v in (*operands, storage, router_residual, max_res_s, max_res_w, residual)):
         raise InterEventStepError("non-finite composed water budget", bit=None, n_flagged=n_flagged)
-    owner_terms = OWNER_GLOBAL_TERMS_PER_CELL * N + OWNER_GLOBAL_TERMS
+    owner_terms = OWNER_GLOBAL_TERMS_PER_CELL * N + OWNER_GLOBAL_TERMS + (0 if recharge_depth_m is None else 1)
     owner_bound = volume_roundoff_bound_m3(owner_terms, max(operands))
     bound = (abs(router_residual) + 2.0 * p.budget.bound_m3 + 2.0 * m.budget.bound_m3 + 2.0 * e.ledger.bound_m3
              + c.budget.bound_m3) + owner_bound
@@ -1444,7 +1494,7 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
             f"(router residual {router_residual!r}, stage bounds {p.budget.bound_m3!r}/{m.budget.bound_m3!r}/"
             f"{e.ledger.bound_m3!r}/{c.budget.bound_m3!r}, owner {owner_bound!r} for {owner_terms} terms)",
             bit=None, n_flagged=n_flagged)
-    receipt = InterEventStepReceipt(
+    kwargs = dict(
         dt_s=dt, t0_s=t0, t1_s=t1, preferential=p.budget, matrix=m.budget, evaporation=e.ledger, column=c.budget,
         surface_evaporation_m3=es_m3, soil_evaporation_m3=eso_m3, surface_before_m3=h0_m3, surface_after_m3=h1_m3,
         soil_before_m3=soil0_m3, soil_after_m3=soil1_m3, export_m3=export, storage_change_m3=storage,
@@ -1452,9 +1502,13 @@ def _physical_trial(prep: InterEventWaterOperator, t0: float, dt: float, t1: flo
         max_cell_balance_residual_m=max_cell_balance, outlet_discharge_m3_s=outlet_q, gross_face_volume_m3=gross_total,
         global_residual_m3=residual, global_bound_m3=bound, owner_bound_m3=owner_bound, owner_global_terms=owner_terms,
         max_surface_cell_residual_m3=max_res_s, max_soil_cell_residual_m3=max_res_w,
-        surface_cell_coefficient=prep.surface_cell_coefficient, soil_cell_coefficient=prep.soil_cell_coefficient,
-        surface_cell_terms=surface_cell_terms(L), soil_cell_terms=soil_cell_terms(L), handoff_exact=handoff_exact,
+        surface_cell_coefficient=prep.surface_cell_coefficient, soil_cell_coefficient=soil_coefficient,
+        surface_cell_terms=surface_cell_terms(L), soil_cell_terms=soil_terms, handoff_exact=handoff_exact,
         n_flagged=n_flagged)
+    if recharge_depth_m is None:
+        receipt = InterEventStepReceipt(**kwargs)
+    else:
+        receipt = RechargeStepReceipt(**kwargs, recharge_depth_m=float(recharge_depth_m), recharge_m3=recharge_m3, recharge_terms=1)
     return _PhysicalTrial(receipt, p, m, e, c, s, bed1)
 
 

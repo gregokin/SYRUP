@@ -1,22 +1,42 @@
 {
-  "utc": "2026-11-12T09:55:51.621622+00:00",
+  "utc": "2026-11-12T14:33:32.098866+00:00",
   "release_status": "final",
   "documents": [
     {
       "file": "SYRUP_CLI_User_Guide.docx",
-      "sha256": "be40d8a2bc8076d550c98b0aad8682379aeff8fbbc85271e322b008da4ecf993",
-      "bytes": 238171,
+      "sha256": "ffc89c8d901c23656008e320acb06aa181f9074e6888ab4a2383de26091c8c29",
+      "bytes": 242906,
       "xml_and_relationship_parts_parse": true,
       "media_count": 1,
-      "unresolved_source_tokens": false
+      "unresolved_source_tokens": false,
+      "identities_present": {
+        "n15_receipt": true,
+        "n15_package": true,
+        "c1_syrup": true,
+        "c1_leaf": true,
+        "c1_masy": true,
+        "maple_9f": true
+      },
+      "phase15_text_present": true
     },
     {
       "file": "SYRUP_Model_Structure_and_Physics.docx",
-      "sha256": "419f268358ef8f5439dbaadfe83a0ec3277a38212ce0b7ba20ccc796493d1b01",
-      "bytes": 179041,
+      "sha256": "c0cf0463a0d22a8ac8b09ecfa82ce1e9b4d43dc4372f3dc7a365eb2fb256c0d5",
+      "bytes": 181889,
       "xml_and_relationship_parts_parse": true,
       "media_count": 1,
-      "unresolved_source_tokens": false
+      "unresolved_source_tokens": false,
+      "identities_present": {
+        "n15_receipt": true,
+        "n15_package": true,
+        "n15_manifest": true,
+        "c1_syrup": true,
+        "c1_water_package": true,
+        "c1_leaf": true,
+        "c1_masy": true,
+        "maple_9f": true
+      },
+      "phase15_text_present": true
     }
   ],
   "shell_python_fenced_blocks_syntax_checked": [
@@ -186,8 +206,27 @@
   "limitations": [
     "No LibreOffice/paginated office rendering available; no such claim made",
     "Source setup commands syntax-checked but not executed as newly created environments",
-    "Actual C1 runtimes tested separately with existing MAPLE environments"
+    "Actual C1 runtimes tested separately with existing MAPLE environments",
+    "Phase 1.5 (N15) examples were run on CPU only (NumPy and compiled Numba) with the existing MAPLE environment; the CUDA branch of the example is written but not run by the author; Root hardware controls are in phase15_qualification.md",
+    "Static DOCX XML/relationship/token/source-identity checks only"
   ],
-  "exact_metadata_fixture": "Independently matches all4 native_case_profile.DISTRIBUTION_SHA256 pins",
-  "scientific_render_review": "Source formulas and citations retained; layered figure previously visually reviewed"
+  "exact_metadata_fixture": "4 genuine native9f distribution metadata files byte-identical to the previous archive (and to native_case_profile.DISTRIBUTION_SHA256 pins checked in the earlier release); unchanged by this build",
+  "exact_metadata_files_identical_to_previous_archive": {
+    "examples/native9f_metadata/README.md": true,
+    "examples/native9f_metadata/distribution/METADATA": true,
+    "examples/native9f_metadata/distribution/WHEEL": true,
+    "examples/native9f_metadata/distribution/entry_points.txt": true,
+    "examples/native9f_metadata/distribution/top_level.txt": true,
+    "examples/native9f_metadata/provenance_manifest.json": true
+  },
+  "native_phase15_identity": {
+    "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "package_file_count": 114,
+    "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "whole_phase_receipt_status": "recorded",
+    "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
+    "source_commit": null,
+    "published": false
+  },
+  "scientific_render_review": "Source formulas and citations retained; layered figure previously visually reviewed; Phase 1.5 prose adds no new figure"
 }

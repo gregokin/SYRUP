@@ -1,6 +1,6 @@
 # Shared scheduler and subsurface development program
 
-Current milestone: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Publish it before starting Phase 1.5. The scientific requirements and numbering below remain governing.
+Current milestone: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Phase 1.5 (daily recharge) is implemented as a separate native source and bounded-qualified through Root S4; its public record is [phase15_qualification.md](phase15_qualification.md) (bounded whole-phase acceptance recorded; publication pending). The scientific requirements and numbering below remain governing.
 
 User authorized implementation on 2026-11-09 after the planning discussion.
 Work uses automatic Codex–Claude implementation, independent review, correction
@@ -212,8 +212,10 @@ Added by the user on 2026-11-12 UTC. Complete, independently validate, commit
 and push Phase 1 first. Then implement, qualify, commit and push Phase 1.5
 before starting Phase 2; numbering and requirements of Phases 2, 2.5 and 3
 remain unchanged. Read the full binding
-[Phase 1.5 specification](phase15_daily_recharge.md) before work. This is queued,
-not an implemented API or acceptance of the current Phase 1 candidates.
+[Phase 1.5 specification](phase15_daily_recharge.md) before work. Status: the
+native API is implemented and bounded-qualified (see
+[phase15_qualification.md](phase15_qualification.md)); the bounded whole-phase acceptance is recorded in
+[phase15_acceptance.json](phase15_acceptance.json); commit and push are pending, and Phase 2 has not started.
 
 Provide a narrow native SYRUP rainfall-selection/recharge interface, not a
 complete daily MASY scheduler, CSV format or LEAF redesign. Caller supplies P

@@ -91,6 +91,7 @@ __all__ = [
     "describe",
     "enable_requested_transpiration",
     "estimate_general_memory",
+    "general_interevent_recharge_step",
     "general_interevent_water_step",
     "general_metadata",
     "prepare_general_interevent",
@@ -1446,6 +1447,27 @@ def general_interevent_water_step(gop: GeneralIntereventOperator, accepted: Gene
     transaction's request/actual/unmet/scale arrays the caller STILL holds (0 = released; see `memory.feedback_bytes`); it is
     admitted with the whole owner. `HydraulicStepRejected` is the only recoverable failure (retry the SAME state at a
     smaller dt)."""
+    return _general_step_engine(gop, accepted, pet_terrain_m_s, dt_s, phase, retained_feedback_bytes, None)
+
+
+def general_interevent_recharge_step(gop: GeneralIntereventOperator, accepted: GeneralIntereventState, pet_terrain_m_s: Any,
+                                     dt_s: Any, *, recharge_depth_m: Any, phase: str,
+                                     retained_feedback_bytes: Any = 0) -> GeneralIntereventCandidate:
+    """The Phase 1.5 daily step: the SAME single trial as `general_interevent_water_step` (one admission, one `_physical_trial`, one
+    router stage, one E/diffusion) whose one column movement carries the uniform `recharge_depth_m` (m, finite, >= 0) through
+    `subsurface.step_with_recharge` (no second pass, no fake dt). The candidate's receipt is a `RechargeStepReceipt`; the window ledger
+    credits the applied pulse once as rain. A column that cannot hold the pulse raises `subsurface.SubsurfaceFitFailure` (nothing is
+    adopted); `HydraulicStepRejected` keeps its existing meaning. The accepted record is never written. `recharge_depth_m` must be ONE real host
+    scalar (not None, bool, string, array, non-finite or negative): None is the engine's private no-recharge dispatch sentinel and is never a
+    valid depth here; the argument is validated before any admission, entry or trial."""
+    if (isinstance(recharge_depth_m, (bool, np.bool_)) or not isinstance(recharge_depth_m, (int, float, np.integer, np.floating))
+            or not math.isfinite(float(recharge_depth_m)) or float(recharge_depth_m) < 0.0):
+        raise GeneralIntereventError(f"recharge_depth_m must be one finite real host number >= 0 (metres of water), got {recharge_depth_m!r}")
+    return _general_step_engine(gop, accepted, pet_terrain_m_s, dt_s, phase, retained_feedback_bytes, float(recharge_depth_m))
+
+
+def _general_step_engine(gop: GeneralIntereventOperator, accepted: GeneralIntereventState, pet_terrain_m_s: Any, dt_s: Any,
+                         phase: str, retained_feedback_bytes: Any, recharge_depth_m: Any) -> GeneralIntereventCandidate:
     _check_gop_meta(gop)
     if type(phase) is not str or phase != INTEREVENT:
         raise GeneralIntereventError(f"phase must be exactly {INTEREVENT!r}; wind/rain/recession spend no E/T demand "
@@ -1466,8 +1488,12 @@ def general_interevent_water_step(gop: GeneralIntereventOperator, accepted: Gene
         ss._check_dynamic(gop.base.op.column, "pet_terrain_m_s", pet_terrain_m_s, (gop.n_cells,))
     except ss.SubsurfaceError as exc:
         raise GeneralIntereventError(str(exc)) from None
-    trial = iw._physical_trial(gop.base, t0, dt, t1, accepted.surface_m, accepted.qx_m2_s, accepted.qy_m2_s, accepted.soil,
-                               accepted.history, accepted.bed, pet_terrain_m_s)
+    if recharge_depth_m is None:
+        trial = iw._physical_trial(gop.base, t0, dt, t1, accepted.surface_m, accepted.qx_m2_s, accepted.qy_m2_s, accepted.soil,
+                                   accepted.history, accepted.bed, pet_terrain_m_s)
+    else:
+        trial = iw._physical_trial(gop.base, t0, dt, t1, accepted.surface_m, accepted.qx_m2_s, accepted.qy_m2_s, accepted.soil,
+                                   accepted.history, accepted.bed, pet_terrain_m_s, recharge_depth_m=recharge_depth_m)
     receipt, p, m, e, c, s, bed1 = trial
     new = _mint(gop, _fields_of(accepted), t_s=float(t1), surface_m=s.state.depth_m, qx_m2_s=s.state.qx_m2_s,
                 qy_m2_s=s.state.qy_m2_s, soil=c.state, history=m.history, bed=bed1,

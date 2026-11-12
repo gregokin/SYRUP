@@ -198,7 +198,7 @@ Several spatial inputs accept a scalar or `{file: name.npy}` (with an optional h
 equal to the native grid, little-endian float64 (`<f8`) and finite for numeric maps, Boolean for `domain.active_mask`; no resampling is applied.
 Retention thresholds vary by layer rather than by cell. The parser's default limits (`LayeredCaseLimits`) are 65 536 bytes of YAML, 5000 nodes,
 depth 8, 64 layers, 16 species, 4096 outlets, and 32 map files with 256 MiB per file and in total; the Python interface lets a caller pass other positive
-integers, which are honoured exactly. See `docs/subsurface_hydrology/layered_case.md` of the SYRUP commit for further detail.
+integers, which are honoured exactly. See [implementation.md](implementation.md) (layered case loader and file-initialized lifecycle) and `src/maple_syrup/layered_case.py` for further detail. For the daily Phase 1.5 inputs (P, I, T and the run identity, which are API arguments, not file keys) see [phase15_qualification.md](phase15_qualification.md).
 YAML scientific-notation numbers need a decimal point: write `1.0e-5`.
 
 ## Weather and numerical controls

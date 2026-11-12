@@ -61,6 +61,7 @@ from maple_syrup.subsurface import (
     StepArrays,
     SubsurfaceBackendUnavailableError,
     SubsurfaceError,
+    cell_closure_coefficient,
     kernel_parameters,
 )
 
@@ -103,6 +104,7 @@ extern "C" __global__ void maple_syrup_subsurface_step(
     const double dt, const double res_theta0, const double stress, const double fct, const int gravity,
     const double cell_tol, const double no_flag,
     const double* factor_up, const int bottom, const double* share, const int has_share,
+    const double pulse, const int pulse_on,
     double* w_out, double* perc, double* diff, double* ret, double* drain, double* evap, double* unmet, double* rows)
 {
     const long long i = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
@@ -115,16 +117,18 @@ extern "C" __global__ void maple_syrup_subsurface_step(
     for (int l = 0; l < nl; ++l) {
         const long long p = (long long)l * n + i;
         const double wl = w_in[p];
-        const double al = add[p];
         if (!isfinite(wl)) f |= 1u << 0;
         if (wl < 0.0) f |= 1u << 1;
         if (wl > sat_m[l] + cap_tol[l]) f |= 1u << 2;
-        if (!isfinite(al)) f |= 1u << 3;
-        if (al < 0.0) f |= 1u << 4;
-        if ((!a) && al != 0.0) f |= 1u << 5;
-        if (dt == 0.0 && al != 0.0) f |= 1u << 9;
+        if (pulse_on == 0) {  // the pulse-aware step has no added-water tensor (the pointer is never read then)
+            const double al = add[p];
+            if (!isfinite(al)) f |= 1u << 3;
+            if (al < 0.0) f |= 1u << 4;
+            if ((!a) && al != 0.0) f |= 1u << 5;
+            if (dt == 0.0 && al != 0.0) f |= 1u << 9;
+            added = added + al;
+        }
         before = before + wl;
-        added = added + al;
         w_out[p] = wl;
     }
     const double e_pot = pet[i];
@@ -147,13 +151,17 @@ extern "C" __global__ void maple_syrup_subsurface_step(
         // addition with saturation return
         for (int l = 0; l < nl; ++l) {
             const long long p = (long long)l * n + i;
-            double w = w_out[p] + add[p];
+            double w = (pulse_on == 0) ? (w_out[p] + add[p]) : (w_out[p] + 0.0);  // zero added water: the return statements still run
             const double ex = w - sat_m[l];
             if (ex > 0.0) {
                 w = w - ex;
                 ret_v = ret_v + ex;
             }
             w_out[p] = w;
+        }
+        if (pulse_on != 0) {  // Phase 1.5: the uniform pulse enters the top layer with NO saturation return
+            w_out[i] = w_out[i] + pulse;
+            added = added + pulse;
         }
         // gravity cascade, top to bottom within the step
         if (gravity != 0) {
@@ -193,6 +201,13 @@ extern "C" __global__ void maple_syrup_subsurface_step(
                 if (l < n_if) perc[p] = carry;
             }
             drain_v = carry;  // exactly 0 with a closed bottom
+        }
+        bool fit_ok = true;
+        if (pulse_on != 0) {  // fit test right after the ONE movement, BEFORE evaporation/diffusion (also gravity off)
+            for (int l = 0; l < nl; ++l) {
+                if (w_out[(long long)l * n + i] > sat_m[l] + cap_tol[l]) fit_ok = false;
+            }
+            if (!fit_ok) f |= 1u << 17;
         }
         // evaporation from layer 0
         {
@@ -283,7 +298,7 @@ extern "C" __global__ void maple_syrup_subsurface_step(
             if ((!isfinite(perc[p])) || (!isfinite(diff[p]))) nonfinite = true;
         }
         if (nonfinite) fo |= 1u << 14;
-        if (share_ok) f |= fo;
+        if (share_ok && fit_ok) f |= fo;  // a fit-failed cell keeps bit 17 as the named cause
     }
     ret[i] = ret_v;
     drain[i] = drain_v;
@@ -376,6 +391,10 @@ def kernel_provenance() -> dict[str, Any]:
                              "after the moisture cap, unmet = demand x share - actual; has_share=0 runs the historical "
                              "statements and passes the already resident thickness_m parameter buffer as the never-read "
                              "share pointer (no extra allocation, parameter ledger unchanged)",
+        "recharge_pulse": "Phase 1.5 pulse-aware mode (pulse_on=1): no added-water pointer is read (thickness_m is passed), the uniform "
+                          "pulse enters layer 0 of active cells after the historical addition stage with no saturation return, the "
+                          "existing cascade runs once, every layer is fit-tested (bit 17) before evaporation/diffusion; pulse_on=0 "
+                          "runs the historical statements",
         "reductions": "CuPy reductions of kernel rows stacked into one packet; one counted host read per step",
         "fastmath": False,
         "libm": "device expm1 (may differ from NumPy by an ulp); declared bound rtol 2e-12 / atol 1e-14",
@@ -415,8 +434,13 @@ def default_device_available_bytes_fn(cp, device_id: int):
 
 
 def _launch(cp, factor_fn, step_fn, dev: dict, params: KernelParameters, water_in, added, pet, active_u8,
-            dt: float, share=None) -> StepArrays:
+            dt: float, share=None, recharge: float | None = None) -> StepArrays:
     n_layers, n_cells = int(water_in.shape[0]), int(water_in.shape[1])
+    # Phase 1.5 pulse-aware step: no added-water tensor (the ALREADY resident thickness_m device buffer is the never-read
+    # pointer), the uniform pulse is a scalar and the closure coefficient counts the one extra accumulation
+    pulse_on = 0 if recharge is None else 1
+    added_arr = added if recharge is None else dev["thickness_m"]
+    cell_tol = params.cell_closure_coefficient if recharge is None else cell_closure_coefficient(n_layers, True)
     n_if = n_layers - 1
     directional = int(params.directional)
     # has_share == 0: the kernel never reads the share pointer, so the ALREADY resident thickness_m device buffer
@@ -438,13 +462,14 @@ def _launch(cp, factor_fn, step_fn, dev: dict, params: KernelParameters, water_i
     rows = cp.empty((ROW_COUNT, n_cells), dtype=np.float64)
     grid = ((n_cells + THREADS - 1) // THREADS,)
     step_fn(grid, (THREADS,), (
-        np.int64(n_cells), np.int32(n_layers), water_in, added, pet, active_u8,
+        np.int64(n_cells), np.int32(n_layers), water_in, added_arr, pet, active_u8,
         dev["thickness_m"], dev["residual_m"], dev["field_capacity_m"], dev["saturation_m"], dev["capacity_tolerance_m"],
         factor, dev["pair_inverse_thickness"],
         np.float64(dt), np.float64(params.residual_theta0), np.float64(params.theta_evaporation_stress),
         np.float64(params.evaporation_factor), np.int32(params.gravity_code),
-        np.float64(params.cell_closure_coefficient), np.float64(NO_FLAG),
+        np.float64(cell_tol), np.float64(NO_FLAG),
         factor_up, np.int32(params.bottom_code), share_arr, np.int32(has_share),
+        np.float64(0.0 if recharge is None else recharge), np.int32(pulse_on),
         water_out, percolation, diffusion, ret, drain, evap, unmet, rows))
     return StepArrays(water_out, percolation, diffusion, ret, drain, evap, unmet, rows, scratch=(factor, factor_up))
 
@@ -474,8 +499,8 @@ def prepare_runner(layers: SoilLayers, cp, device_id: int):
         if current != device_id:
             raise SubsurfaceError(f"the column is bound to device {device_id} but the current device is {current}")
 
-    def run(column, water_in, added, pet, dt, share=None):
-        return _launch(cp, factor_fn, step_fn, dev, params, water_in, added, pet, column.active_u8, dt, share)
+    def run(column, water_in, added, pet, dt, share=None, recharge=None):
+        return _launch(cp, factor_fn, step_fn, dev, params, water_in, added, pet, column.active_u8, dt, share, recharge)
 
     factor_arrays = 2 if params.directional else 1
     info = {"implementation": "cupy RawKernel: per-interface factor kernel then one thread per column",

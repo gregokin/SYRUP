@@ -473,8 +473,8 @@ accepted withdrawals that plants request. MAPLE owns the sediment bed and its ac
 The temporal coordinator (provisionally named MASY) only decides which interval is wind, rain or interevent. Wind, rain (with its recession) and interevent
 intervals never overlap. Evaporation, transpiration and growth act only in interevent intervals; they are never applied retroactively to the duration of a wind
 or rain event, although the calendar advances throughout. In the current dated Phase 1 calendar the clock advances through wind, rain and recession exactly as it
-does through interevent time; interevent processes are simply inactive in the former. (A later, separately versioned daily-recharge phase, Section 13.9, may
-distinguish a nominal calendar from physical time; that convention does not exist in the current formulation and nothing here should be read as describing it.)
+does through interevent time; interevent processes are simply inactive in the former. (The separately versioned native daily-recharge source of Section 13.11 distinguishes a nominal ordinal from physical time; that convention does not exist in this dated calendar
+and nothing here should be read as describing it.)
 No process silently resets soil water or the wetting history at an event boundary.
 
 The formulation is for a fixed bed, fixed layer geometry, fixed hydraulic properties and fixed prescribed cover. It is not coupled to evolving sediment
@@ -772,14 +772,8 @@ parameter file in the downloaded source (K_s 6.9 mm/h, ψ 166 mm, d 0.05) and th
 
 ### 13.9 Planned extensions (not part of the present formulation)
 
-These items are scope records, not features. **Phase 1.5 (daily small-rain recharge)** is queued, to begin only after Phase 1 is completed, independently validated, committed
-and pushed, and before Phase 2. Its intended rule, chosen by the user: zero rain is a no-operation; for 0 < P ≤ T (equality included, by the user's explicit choice, where P is the day's rain
-and T a declared threshold) a simplified recharge is attempted; for P > T the full native storm is used. Field capacity is to control gravity movement and saturation the maximum storage. Any
-closed-column capacity failure in an occurrence falls back, for the whole occurrence, to the full native storm from the unchanged original state with the full rainfall. It is to share the one daily water
-update with E/T, with no duplicated water, drainage or interval, and no reset of the wetting history; how the history should evolve under such recharge is to be audited before any rule is chosen. A nominal calendar separate from physical
-time (wind and storm durations falling between nominal days) would be a new, explicitly versioned contract; it is not retrofitted into the existing dated calendar or old locks. The caller would supply the day's rain P (mm), its intensity I (mm/h) and the threshold T (mm), with no default threshold; a full-storm fallback would last 3600 P/I seconds. No recharge interface or option exists yet.
 **Phase 2** (evolving soil geometry, conservative remapping after erosion and deposition and a texture-to-property method), **Phase 2.5** (an adapter from LEAF vegetation to the splash physics and LEAF-driven cover feedback)
-and **Phase 3** (observational validation design) are unchanged and not started here. Until Phase 2, the hydraulic properties and the layer geometry are the fixed, explicit inputs described in Sections 3 and 4.
+and **Phase 3** (observational validation design) are unchanged, queued and not started here. Until Phase 2, the hydraulic properties and the layer geometry are the fixed, explicit inputs described in Sections 3 and 4. Phase 1.5 (daily small-rain recharge) is now a native capability of a separate source package and is described in Section 13.11; it is not part of the C1 release formulation above.
 
 ### 13.10 Component status and evidence
 
@@ -795,10 +789,32 @@ and **Phase 3** (observational validation design) are unchanged and not started 
 | Scheduled LEAF-and-water command (v2), NumPy, Numba and CUDA, pause and resume, shared active mask, SURFACE anchors | Bounded qualification on the committed sources with the real committed runtime (see the next row for the evidence). |
 | Committed production runtime (v2, `production_committed`) on the committed SYRUP, LEAF, MASY and native 9f sources | Bounded qualification accepted: the real runtime preparation and verification and the model worker ran with the existing CPU and CUDA environments. The full public two-layer 4×6 dense example completed all three occurrences (1 day of interevent evaporation, transpiration and growth; a 0.25 s rain at 3600 mm/h with its native recession to genuine completion; 1 day of interevent) on NumPy, Numba and CUDA. Same-device pause after the first interevent, resume and pause after the completed storm, and resume to the end reproduced the uninterrupted run exactly on the CPU and on CUDA (the 44 state arrays identical; four biology files byte-identical). NumPy, Numba and CUDA agree on the physical state arrays with maximum relative difference 0 and on the biological arrays exactly. Of the 45 stored entries of a physical checkpoint, 29 are floating-point state arrays, 15 are other state arrays and one is a provenance record; the 44 state arrays are identical and the provenance record correctly differs by backend and source paths and is checked separately (13-C.5). The single plant (an initial 100 kg dry aboveground biomass) ended at 100.12256745482205 kg; its requested and accepted transpiration were equal (8.461372331859172e-5 m³, nothing unmet). Six refusal controls (unknown key, zero memory cap, wrong recipe pin, unreviewed receipt, wrong interpreter, wrong restart seal) refused before any step and left the accepted checkpoint unchanged. The run flags are `production_qualified: false` and `production_runtime_verified: true`; the first is not relabelled. The v1 water-only configuration still refuses `production_committed`. |
 | Wind in the dated scheduled run, evolving soil geometry, texture-to-property method | Not provided. |
-| Daily small-rain recharge (Phase 1.5) | Queued; no interface (Section 13.9). |
+| Daily small-rain recharge (Phase 1.5) | Not in the C1 release. A separate native source (N15, Section 13.11 and Appendix 13-D) provides it as a Python API; bounded status and limits are in Section 13.11. |
 | Field validation, large-domain, repeated-storm recovery, LEAF-driven cover feedback, performance or scaling results | Not provided. |
 
 The recorded recipe and receipt identities of the release run, and why they are not reusable elsewhere, are in Appendix 13-C and the practical guide (Section 14.10).
+
+### 13.11 Daily small-rain recharge and native storm fallback (Phase 1.5, source N15)
+
+*This section describes a separate native capability (Appendix 13-D). It is a user-chosen simplification, not an exact reproduction of Tietjen et al. (2009, 2010), EcoHyD or MAHLERAN, and it does not alter the formulation of Sections 13.3 to 13.8.*
+
+**Selection by amount.** Let P (mm) be the day's rain, I (mm/h) its intensity and T (mm) the caller's amount threshold (no default). P = 0 is a no-operation for rain; 0 < P ≤ T (equality included by the user's choice) attempts a simplified recharge; P > T runs the full native storm. A full storm lasts D = 3600 P/I s. Positive P requires finite I > 0, and D and the depth P/1000 must be finite and positive; everything is validated before any state changes.
+
+**The recharge pulse.** The pulse is the uniform depth P/1000 m on every active cell, added to the top soil layer *as an external source*, and it passes through the same daily column body as a day with no rain, once. Following the Tietjen-type bucket convention that *field capacity controls drainage and saturation limits storage*, a layer above field capacity θ_fc may pass water down by the existing gravity-drainage rule (once per day; the day is a single operator step), the water entering a lower layer is limited by that layer's remaining room up to θ_s, and a layer at field capacity still has room, so a field-capacity profile is not treated as full. With an open bottom the drained water leaves the column under the existing rule and is reported as drainage; with a closed bottom nothing leaves, and the cascade is *capacity limited*: water that cannot move on stays above field capacity in the layer that holds it, never above θ_s. The fit test is applied to the final staged result (it must not reject the top-layer addition before the downward redistribution has used lower layers' room), and an overflow of *any* active column is a capacity failure.
+
+**Whole-occurrence fallback.** A capacity failure discards the trial. The accepted original state is untouched and the full native storm with the **full** P is run from it: never the partial recharge followed by a storm, never a spatial mixture of recharge columns and storm columns. The retained surface water and unresolved flow that the state carries are never erased to make the recharge eligible.
+
+**One daily update.** After a recharge, a zero-rain day or a completed storm, **one** 86 400 s soil update runs: diffusion, soil and surface evaporation with the potential-demand cap of Section 13.5 (each applied once). Transpiration requests from LEAF are separate zero-time requests accepted against the available water exactly once. Evaporation, transpiration and growth do not run during wind, rain or recession, and are not applied retroactively to those durations.
+
+**Forcing times.** The storm's rainfall is built with the existing SYRUP forcing objects with *local* times [0, D] and a recorded physical origin (the clock when the storm starts); the absolute edges are origin and origin + D, and the native event carries `event_origin_s`. Local times and the absolute clock are kept apart so that a later storm at a nonzero clock is neither shifted twice nor rounded.
+
+**Accounting.** The recharge is credited as external rain in the window and lifetime ledgers; internal transfers are not sources or sinks; drainage and evaporation are debited once. The modeled matrix and preferential intake of the *storm* branch, which come from the Green–Ampt law and the retained pond, are reported separately from the recharge amount, and the wetting history J and the cumulative matrix intake are **not** altered by recharge (no implicit recovery, no reset). Closure is checked against MAPLE's floating-point bound as in Section 13.8.
+
+**Two clocks.** The nominal ordinal (the count of daily occurrences) is separate from the native physical seconds. A recharge or zero-rain occurrence advances the physical clock by exactly 86 400 s; a storm occurrence advances it by D plus the recession to genuine completion plus one 86 400 s day. A nominal year can therefore contain more than 365 physical days. This is an explicit new contract (`maple_syrup.daily_clock/1`); the dated calendar of Section 13.6 and old checkpoints are not reinterpreted.
+
+**Backends, restart and status.** NumPy, compiled Numba and CUDA share the one column body. Version 3 physical checkpoints (CPU and CUDA) carry the closed daily cursor and can be written inside a storm; earlier V1/V2 helpers refuse N15 states and no migration exists. The bounded evidence (small 4×6 dense fixtures, one to three layers) and the exact independent controls are listed in `phase15_qualification.md` of the qualification directory; the runnable examples in `examples/native_daily_recharge/` reproduce the branches on the CPU. Known limits: the retained-wet one-day router CFL refusal, general repeated-storm recovery of J, and everything listed as not provided in Section 13.10; no field, wind, moving-soil, large-domain or performance claim.
+
+**References.** The bucket layering and field-capacity/saturation convention follow the Tietjen water model (Tietjen et al. 2009; 2010) and its EcoHyD descendants cited in the layered-water references; the PET demand follows the Hargreaves–Samani form already described in Section 13.5. The small-rain method itself is the user's choice and has no external citation.
 
 ### Appendix 13-A. Implementation-relevant order, bounds and parameters
 
@@ -883,9 +899,23 @@ Qualified limits: closure uses the MAPLE floating-point bound only; GPU tests de
 
 **13-C.3 LEAF package and layout.** In the LEAF source used here, per-species quantities A and T are host arrays while D and U follow the compute backend; a generic all-CuPy utility is not that layout. The release is the committed LEAF named above, which is an explicit qualified delta on the earlier LEAF base and not an unchanged earlier commit.
 
-**13-C.4 Dated clock.** In the LEAF scheduled run, native event and interevent instants must be exactly representable in the microsecond LEAF clock: a 0.05 s interval is refused with `leaf_instant_not_exact`, while a dyadic 0.0625 s interval is accepted. Old clocks are never rounded or rebound. The nominal-calendar convention of the queued Phase 1.5 is a separate future contract (Section 13.9).
+**13-C.4 Dated clock.** In the LEAF scheduled run, native event and interevent instants must be exactly representable in the microsecond LEAF clock: a 0.05 s interval is refused with `leaf_instant_not_exact`, while a dyadic 0.0625 s interval is accepted. Old clocks are never rounded or rebound. The nominal-calendar convention of Phase 1.5 is a separate, new, versioned contract of the N15 source (Section 13.11) and is not applied to this dated clock.
 
 **13-C.5 Comparison of CPU and CUDA records.** Of the 45 stored entries of the physical checkpoint, 29 are floating-point state arrays, 15 are other state arrays and one is a provenance JSON record. The 44 state arrays and the plant arrays are exactly equal (maximum relative difference 0); the provenance record differs by backend and source paths and is checked separately, as follows. The comparison of the CPU and CUDA artifacts of the release run allows, in addition to the expected backend, runtime and cursor differences, one further difference in the recorded scenario hash. The two complete scenario, weather and event file sets are byte-identical. The recorded weather digest covers the imported weather library file, whose path differs because the CPU and CUDA runs used independently sealed stores at different roots; the file hash, all equations and parameters, and the normalized weather agree. The metadata comparison permits this one additional path-derived hash difference, with the witness stored. Numerical tolerances and the run's source, model and restart guards were unchanged.
+
+### Appendix 13-D. Native Phase 1.5 (N15) source identity
+
+*Separate from the C1 identities of 13-C; no C1 value is rebound. Filled from the `native_phase15` block of the release metadata.*
+
+| Item | Identity |
+|---|---|
+| N15 SYRUP source package | SHA-256 `{{n15_syrup_package_sha256}}`, {{n15_package_file_count}} files; file-by-file manifest SHA-256 `{{n15_source_manifest_sha256}}` |
+| Native MAPLE (historical 9f, explicitly pinned) | commit `{{n15_maple_native_commit}}`; CPU package SHA-256 `{{n15_maple_native_cpu_package_sha256}}` |
+| Root acceptance record of the last implementation stage | `{{n15_root_s4_acceptance_status}}`, file SHA-256 `{{n15_root_s4_acceptance_sha256}}` |
+| Whole-phase receipt | status **{{n15_whole_phase_receipt_status}}**, `ACCEPTED_BOUNDED_NATIVE_DAILY_RECHARGE`, file SHA-256 `{{n15_whole_phase_receipt_sha256}}` (`phase15_acceptance.json`; binds the source and example programs, not these manuals). The S4 receipt above is the earlier, narrower capability acceptance |
+| Publication | published: {{n15_published}}; first phase commit: {{n15_source_commit}} (filled by a later documentation-only refresh, since a commit cannot contain its own hash) |
+
+The codec identities are CPU `lifecycle_checkpoint_v3` (policy `_V3_9F`, schema `/3`, profile `native9f_dense_lifecycle_cpu_v3`) and CUDA `lifecycle_checkpoint_cuda_v3` (own helper pins; the V1/V2 pins are untouched and refuse N15). The shipped `phase15_source_manifest.json` (114 files) and `verify_phase15_source.py` let a clone verify the package without private paths. The 114-file package identity must be supplied explicitly (`expected_syrup_digest`) to the source profile, so that C1 recipes cannot silently run N15 code or the reverse.
 
 ## References and source availability
 

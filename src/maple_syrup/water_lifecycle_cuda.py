@@ -35,6 +35,7 @@ __all__ = [
     "CudaLifecycleError",
     "CudaLifecycleMemory",
     "cold_cover_ownership",
+    "DAILY_ENTRIES",
     "compose_entry_plan",
     "general_canonical_host_bytes",
     "wrapper_retained_host_bytes",
@@ -201,8 +202,11 @@ def general_canonical_host_bytes(n_layers: int) -> int:
 # Entries whose WHOLE raw figure receives the wrapper 16 L packet. `enter_interevent` is NOT here: its packet is counted per stage inside its own stage table
 # (only the transition and audit stages have a genuine prepared general owner), so it is never added a second time.
 _GENERAL = frozenset({"evolve_interevent", "request", "close", "audit_interevent"})
+#: Phase 1.5 daily transactions (`daily_water`): whole-call plans of the lineage start, the no-rain/recharge day, the full-storm start and the day after a
+#: completed storm. They are registered entries like every other (never a CPU integer figure interpreted as device or host bytes).
+DAILY_ENTRIES = frozenset({"daily_start", "daily", "daily_begin_storm", "daily_finish"})
 _ENTRIES = frozenset({"prepare", "start", "begin_storm", "evolve_storm", "enter_interevent", "evolve_interevent", "request", "close", "audit_boundary",
-                      "audit_storm", "audit_interevent", "cover_inspection", "enter_from_boundary", "reset"})
+                      "audit_storm", "audit_interevent", "cover_inspection", "enter_from_boundary", "reset"}) | DAILY_ENTRIES
 
 
 def compose_entry_plan(n_layers: int, n_cells: int, entry: str, *, device_raw_bytes: int, host_reserve_bytes: int = 0, source_cold: bool = True,
@@ -226,23 +230,25 @@ def compose_entry_plan(n_layers: int, n_cells: int, entry: str, *, device_raw_by
         device_terms["detached_cover_copy"] = _F8 * N + OBJECT_BYTES
     retained = wrapper_retained_host_bytes(L, source_record_bytes=rec)
     host_terms: dict[str, int] = {"caller_host_reserve": reserve, "wrapper_retained_host": retained, "object": OBJECT_BYTES}
-    if entry in ("evolve_interevent", "request", "close", "audit_interevent"):
+    if entry in ("evolve_interevent", "request", "close", "audit_interevent", "daily", "daily_finish"):
         host_terms["general_owner_canonical_host"] = general_canonical_host_bytes(L)  # live beside every interevent-role entry
     if entry == "prepare":
         # sequential cold stages whose buffers die before the next (source tree walk, streamed cover hash chunk) and the retained leaves, which only
         # come to exist at the end of preparation: the peak is their maximum, so the retained leaves are NOT also added beside the stages
         host_terms["wrapper_retained_host"] = 0
         host_terms["cold_stages_max"] = max(it._source_stage_bytes() if source_cold else 0, min(ls.HASH_CHUNK_BYTES, _F8 * N), retained)
-    elif entry == "start":
+    elif entry in ("start", "daily_start"):
         host_terms["packets"] = PACKET_HOST_BYTES
-    elif entry == "begin_storm":
+    elif entry in ("begin_storm", "daily_begin_storm"):  # (the uniform rain field of the daily start is built on the DEVICE: a device term, no host array)
         edges, intensity, rate = (tuple(schedule_bytes) + (0, 0, 0))[:3]
         host_terms["event_forcing_stage"] = 2 * edges + intensity + rate + min(ls.HASH_CHUNK_BYTES, _F8 * N) + 2 * N * _F8 + 2 * int(n_faces) + N + 4096
         host_terms["storm_operator_host_stage"] = int(storm_host_stage_bytes)
-    elif entry == "enter_interevent":
+    elif entry in ("enter_interevent", "daily_finish"):
         host_terms["interevent_build_host_stage"] = int(interevent_build_host_bytes)
         host_terms["general_cuda_cold_stage"] = owner.cold_required_bytes  # contains the owner's own cold vectors (no second canonical count here)
-    elif entry == "enter_from_boundary":
+        if entry == "daily_finish":  # then ONE 86400 s day step on the entered owner: its hot packets (the day's source/owner audits)
+            host_terms["day_step_hot_packets"] = owner.hot_required_bytes + PACKET_HOST_BYTES
+    elif entry in ("enter_from_boundary", "daily"):
         # fresh storm operator (native diagnostic stage) + IW build stage + the actual general CUDA cold stage (no supplied primitive) + bounded packets
         # (inventory, quiet evidence); the escape/bed maps are existing topology metadata uploaded to the device (counted in the device stage) but the two outlet-type masks are
         # built on the HOST first, so they are a named host term below
@@ -251,6 +257,8 @@ def compose_entry_plan(n_layers: int, n_cells: int, entry: str, *, device_raw_by
         host_terms["general_cuda_cold_stage"] = owner.cold_required_bytes
         host_terms["quiet_mask_host_construction"] = int(n_faces)  # `fx_type == 2` / `fy_type == 2` are built on the HOST (1 B per face) before upload
         host_terms["packets"] = PACKET_HOST_BYTES
+        if entry == "daily":  # then ONE 86400 s day step on the entered owner: its hot packets
+            host_terms["day_step_hot_packets"] = owner.hot_required_bytes + PACKET_HOST_BYTES
     elif entry == "reset":
         host_terms["hash_chunk"] = min(ls.HASH_CHUNK_BYTES, _F8 * N)  # old J, new J and the aliased intake are hashed one after another, streamed
         host_terms["quiet_mask_host_construction"] = int(n_faces)  # both outlet-type masks built on the HOST by the shared quiet evidence (F_x + F_y bytes, simultaneously)

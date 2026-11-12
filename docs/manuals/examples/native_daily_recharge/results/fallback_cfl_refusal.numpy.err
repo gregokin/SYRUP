@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/okin/SYRUP/agent_handoffs/tasks/phase15_native_recharge_20261112/syrup_candidate/docs/manuals/examples/native_daily_recharge/daily_recharge_example.py", line 296, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/okin/SYRUP/agent_handoffs/tasks/phase15_native_recharge_20261112/syrup_candidate/docs/manuals/examples/native_daily_recharge/daily_recharge_example.py", line 292, in main
+    run(args)
+  File "/home/okin/SYRUP/agent_handoffs/tasks/phase15_native_recharge_20261112/syrup_candidate/docs/manuals/examples/native_daily_recharge/daily_recharge_example.py", line 209, in run
+    r2 = dw.finish_daily_storm(lop, done, expected_parent=wl.expect_parent(done), plan=storm_plan, pet_terrain_m_s=pet)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/okin/SYRUP/agent_handoffs/tasks/phase15_native_recharge_20261112/syrup_candidate/src/maple_syrup/daily_water.py", line 531, in finish_daily_storm
+    raise _wrap("router_step_rejected", exc) from None
+maple_syrup.daily_water.DailyRefusal: [router_step_rejected] HydraulicStepRejected: gravity-wave CFL dt sqrt(2 g h_face) / dx = 28720.67000622338 exceeds cfl_max 0.5; step rejected (retry with a smaller dt)

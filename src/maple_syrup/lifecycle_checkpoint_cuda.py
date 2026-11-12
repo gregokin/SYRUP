@@ -42,6 +42,7 @@ from maple_syrup import lifecycle_checkpoint_cuda_policy as pol_mod
 from maple_syrup import lifecycle_checkpoint_cuda_v2_plan as v2plan
 from maple_syrup import pond_checkpoint as pc
 from maple_syrup import provenance as pv
+from maple_syrup import recharge as rc
 from maple_syrup import subsurface as ss
 from maple_syrup import water_lifecycle as wl
 from maple_syrup.sediment_bed import BedState, is_windowed_bed
@@ -66,7 +67,8 @@ HELPER_MODULE_PINS = {
     "checkpoint_capability.py": "36dc5d6a07245fca4badbadd0d754f2a250e688c2cc8b0b30d3a8c37c55ccbd6",
     "layered_storm.py": "bd125b743e58c588619a86ee952934deccea360ef3af215ae2b230af60d73c78",
 }
-_HELPER_MODULES = {"layered_checkpoint.py": lc, "pond_checkpoint.py": pc, "lifecycle_checkpoint.py": lk, "checkpoint_capability.py": cc, "layered_storm.py": ls}
+_HELPER_MODULES = {"layered_checkpoint.py": lc, "pond_checkpoint.py": pc, "lifecycle_checkpoint.py": lk, "checkpoint_capability.py": cc, "layered_storm.py": ls, "recharge.py": rc,
+                   "water_lifecycle.py": wl}
 MANIFEST_KEYS = pol_mod.V1.manifest_keys
 SOURCE_KIND_PAIRS = pol_mod.V1.pairs
 _RUNTIME_KEYS = frozenset({"python_implementation", "python_version", "byteorder", "machine", "numpy", "float64_eps", "cupy", "cuda_runtime", "cuda_driver",
@@ -211,7 +213,7 @@ def _fence_bed(lop: Any, state: Any, owner: Any) -> Any:
 
 
 # --- source / runtime -------------------------------------------------------------------------------------------------------------------
-def _fresh_source_pair() -> dict:
+def _fresh_source_pair(_policy: Any = None) -> dict:
     """The ACTUAL imported packages freshly hashed (no cache). MAPLE must equal the literal 9f pin; the reused CPU helper modules must be the files that were hashed and equal
     their pins (taken from the streamed inventory). The Syrup tree digest is recorded dynamically (this module is part of it)."""
     import maple
@@ -226,7 +228,10 @@ def _fresh_source_pair() -> dict:
     if mtree.digest_sha256 != NATIVE9F_PACKAGE_SHA256:
         _refuse(f"the imported maple package {mtree.digest_sha256} is not the accepted native9f source {NATIVE9F_PACKAGE_SHA256}; refused before any native writer")
     files = dict(tree.files)
-    for name, pin in HELPER_MODULE_PINS.items():
+    pol = pol_mod.policy_of(_policy)
+    # V1/V2: the C1 module constant (unchanged, never overwritten). V3: the policy's OWN reviewed helper-identity set (explicit closed seam; never a global bypass or a user digest).
+    pins = HELPER_MODULE_PINS if pol.helper_pins is None else pol.helper_pins
+    for name, pin in pins.items():
         mod = _HELPER_MODULES[name]
         if Path(mod.__file__).resolve() != root / name:
             _refuse(f"the imported helper module {name} is not the file of the hashed package")
@@ -420,6 +425,11 @@ def _save_engine(path: Any, lop: Any, state: Any, identity: dict, *, limits: Any
         limits.validated()
     except lc.LayeredCheckpointError as exc:
         raise _convert(exc) from None
+    if pol.daily:  # V3 records DAILY lineages only (cursor, pending occurrence, versioned clock contract); a cursor-free state is refused before any I/O
+        if getattr(state, "daily", None) is None:
+            _refuse("the V3 daily CUDA checkpoint codec records only states of a daily lineage (this state carries no cursor); use the V1/V2 codec")
+    elif getattr(state, "daily", None) is not None:  # V1/V2 have no cursor/pending/clock-contract fields; refuse before any I/O, never drop them
+        _refuse("the state belongs to a daily lineage (it carries a daily cursor) that this checkpoint codec cannot record; use the V3 daily codec")
     role, kind = _fence_types(lop, state) if pol is pol_mod.V1 else _fence_types(lop, state, pol)  # V1 call shape unchanged
     try:
         ident = lc._canonical_identity(identity)
@@ -437,7 +447,8 @@ def _save_engine(path: Any, lop: Any, state: Any, identity: dict, *, limits: Any
     try:
         owner = wl._cuda_checkpoint_owner(lop)
         wl._check_state(lop, state)
-        record = wl._checkpoint_state_record_cuda(lop, state) if pol is pol_mod.V1 else wl._checkpoint_state_record_cuda_v2(lop, state)
+        record = (wl._checkpoint_state_record_cuda(lop, state) if pol is pol_mod.V1
+                  else wl._checkpoint_state_record_cuda_v3(lop, state) if pol.daily else wl._checkpoint_state_record_cuda_v2(lop, state))
     except (wl.LifecycleError, ss.SubsurfaceError) as exc:
         raise _convert(exc) from None
     if isinstance(owner.device_id, bool) or not isinstance(owner.device_id, int):
@@ -454,7 +465,12 @@ def _save_engine(path: Any, lop: Any, state: Any, identity: dict, *, limits: Any
         meta = v2plan.extract_save_metadata_v2(
             bed=bed, context_fraction=lop.context.initial_available_fraction, role=role, source_kind=kind, n_cells=owner.n_cells, n_layers=owner.n_layers, n_classes=owner.n_classes,
             shape=owner.shape, wrapper_retained_host_bytes=owner.wrapper_retained_host_bytes, owner_audit_device_bytes=int(lop.memory.audit_scratch_bytes))
-        budget = v2.estimate_save_budget_cuda_v2(meta, caller_host_reserve_bytes=hr, caller_device_reserve_bytes=dr, extra_reserve_bytes=ex)
+        if pol.daily:
+            from maple_syrup import lifecycle_checkpoint_cuda_v3 as v3
+
+            budget = v3.estimate_save_budget_cuda_v3(meta, caller_host_reserve_bytes=hr, caller_device_reserve_bytes=dr, extra_reserve_bytes=ex)
+        else:
+            budget = v2.estimate_save_budget_cuda_v2(meta, caller_host_reserve_bytes=hr, caller_device_reserve_bytes=dr, extra_reserve_bytes=ex)
     _admit_limits(budget, limits)
     host_reader = ss.default_host_available_bytes if host_fn is None else host_fn
     device_reader = lop.column.available_bytes_fn if device_fn_user is None else device_fn_user
@@ -463,7 +479,7 @@ def _save_engine(path: Any, lop: Any, state: Any, identity: dict, *, limits: Any
     if budget.disk_bytes > disk_avail:
         raise LifecycleCheckpointCudaQuotaError(f"checkpoint disk needs {budget.disk_bytes} B but only {disk_avail} B are reported free")
     _admit_stage(budget, "source_and_validation", host_reader, device_reader)  # whole-call first stage, fresh readings, BEFORE the source hash
-    source = _fresh_source_pair()
+    source = _fresh_source_pair(pol)
     runtime = _runtime_record(lop, owner.device_id)
     # ---- the same physical validation the loader will run, BEFORE anything is written (read-only)
     try:
@@ -498,10 +514,13 @@ def _save_engine(path: Any, lop: Any, state: Any, identity: dict, *, limits: Any
     if role == "interevent":
         records["t_state"] = it.checkpoint_state_record(state.payload)
         records["source"] = iw.checkpoint_source_record_v2(state.payload.source)
-    if role == "storm":  # V2 only: the storm scalar record (backend-neutral CPU helper) whose DECODED `completed` must be exactly True (the helper that rebuilds the state does not refuse a flipped flag)
+    if role == "storm":  # V2/V3: the storm scalar record (backend-neutral CPU helper); V2 requires the DECODED `completed` to be exactly True, V3 stores the genuine progress (partial or completed)
         records["storm"] = lk._storm_record(lop, state)
-        if cc.decode_tree(records["storm"]).get("completed") is not True:
-            _refuse("the storm scalar record is not that of a COMPLETED storm; refused")
+        done = cc.decode_tree(records["storm"]).get("completed")
+        if (not pol.partial_storm and done is not True) or type(done) is not bool:
+            _refuse("the storm scalar record is not that of a COMPLETED storm (this codec version stores completed storms only); refused")
+    if pol.daily:
+        records["daily"] = cc.encode_tree(rc.cursor_record(state.daily))
     manifest["payload"]["scalars"] = records
     provenance = _provenance_record(pol, role, ident, manifest["binding_sha256"], runtime, kind)
     shim = SimpleNamespace(shape=lop.shape, n_layers=lop.n_layers, n_cells=lop.n_cells, n_classes=lop.n_classes, bed=bed)

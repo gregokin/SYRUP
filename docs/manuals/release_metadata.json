@@ -1,5 +1,5 @@
 {
-  "schema": "syrup.manual_release_metadata.v1",
+  "schema": "syrup.manual_release_metadata.v2",
   "official_name": "Sediment Yield, Runoff, and Underground Plumbing",
   "release_status": "final",
   "prepared_date": "2026-11-12",
@@ -26,5 +26,18 @@
     "production_cuda_receipt_sha256": "f9345fe8b3a52f7a513492eda2b6021df5c92a4bab28b04d02912e0f406e3537",
     "sources_published": true
   },
-  "pending_tokens": {}
+  "pending_tokens": {},
+  "native_phase15": {
+    "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "package_file_count": 114,
+    "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_cpu_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "root_s4_acceptance_sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
+    "root_s4_acceptance_status": "ACCEPTED_BOUNDED_NATIVE_DAILY_PHYSICAL_RESTART",
+    "whole_phase_receipt_status": "recorded",
+    "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
+    "source_commit": null,
+    "published": false
+  }
 }

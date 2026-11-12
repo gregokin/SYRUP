@@ -24,6 +24,21 @@ MAPLE `.venv`/`.venv-cupy` only; GPU0 only after fresh availability check.
 No wind-with-persistent-soil, moving-soil, field or large-domain readiness is
 claimed by the small fixed-geometry qualification.
 
+## Phase 1.5 native daily recharge status — 2026-11-12
+
+Implemented as a SEPARATE native source (N15: package SHA-256
+`82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107`, 114 files,
+with native MAPLE 9f) and bounded-qualified through Root S4; S5 supplies public
+docs/examples/manuals. Whole-phase acceptance is RECORDED (bounded, receipt
+`docs/subsurface_hydrology/phase15_acceptance.json`, SHA-256 `4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3`,
+status ACCEPTED_BOUNDED_NATIVE_DAILY_RECHARGE); commit and push are PENDING.
+Spec `docs/subsurface_hydrology/phase15_daily_recharge.md`; record
+`docs/subsurface_hydrology/phase15_qualification.md`. Python API only: no CLI
+flag, weather CSV, MASY daily scheduler or LEAF redesign. C1 sources, clocks,
+recipes, locks and checkpoints above are preserved, never repointed to N15.
+Retained-wet CFL refusal and repeated-storm history limits are visible. Phase 2
+(evolving soil, texture-to-property), 2.5 and 3 are unchanged and not started.
+
 ## Queued Phase 1.5: daily recharge — 2026-11-12 UTC
 
 After Phase 1 is completed, independently validated, committed and pushed,
