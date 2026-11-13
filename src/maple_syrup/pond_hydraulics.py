@@ -267,6 +267,12 @@ def rebind_pond(pond: PondHydraulics, new_topology: PondTopology, state: Hydraul
         raise PondHydraulicsError("pond must be a PondHydraulics")
     if new_topology.identity_sha256 != pond.topology.identity_sha256:
         raise PondHydraulicsError("a refresh may not change the source mask, friction, dx or outlet faces (identity differs)")
+    if pond.params is None:  # the opt-in floating vertical (E4b): a fresh surface router on the refreshed faces, the same stage
+        from maple_syrup.floating_pond import rebuild_floating_pond
+
+        new = rebuild_floating_pond(pond, new_topology)
+        new.solver.validate_state(state)
+        return new, state
     new = build_pond_hydraulics(new_topology, pond.params, backend=pond.backend, control=pond.control,
                                 graph=pond.graph if pond.graph_kind == "caller" else None)
     new.solver.validate_state(state)

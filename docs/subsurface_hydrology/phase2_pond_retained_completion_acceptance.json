@@ -1,0 +1,37 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T08:05:16.974195+00:00",
+  "component": "E4a explicit native Pond terminal settlement retaining actual water",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_e4a_c1_snapshot",
+  "source_manifest": "root_e4a_c1_source_manifest.json",
+  "pond_event_sha256": "9c9ecf24a7ba6e02b5bb43f770a82c23d490b3bbedc77134fb4e7af5e7253c58",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "verification": "root_c_provider_c1_native_verification.json"
+  },
+  "verification": {
+    "cpu_passed": 15,
+    "cpu_gpu_gated_skips": 2,
+    "actual_gpu_passed": 2,
+    "evidence": [
+      "root_e4a_c1_cpu_runs/result.json",
+      "root_e4a_c1_gpu_runs/result.json",
+      "root_e4a_real_wake_root_e4a_c1_snapshot.json"
+    ],
+    "independent_review": "All pre-existing PondEvent methods AST-identical except finalize, whose terminal prefix is shared with the new retained path; genuine before/after legacy numerical control passed."
+  },
+  "behavior": [
+    "Actual native terminal sediment deposition and final commit shared with legacy; old dry-reset defaults preserved.",
+    "Terminal routing refresh invalidates quiet certificate, returns requires_recession without erasing h/soil/q/time/history; subsequent real rain-zero steps required.",
+    "Publication last after audits; truthful storage receipt and counters."
+  ],
+  "limits": [
+    "Windowed STEP publication only; native9f boundary/overlay source qualification separate.",
+    "Pre-existing pond/windowed suites have identical 14 failures and 7 errors before/after, from unqualified native9f journal sources; not claimed passing.",
+    "Actual real-recession completion demonstrated only under explicitly specified fixture policy; default 1e-10 policy did not recertify within 3600 s. No default or conservation tolerance changed.",
+    "No floating layered Pond step, physical restart, full storm or LEAF integration accepted here."
+  ],
+  "publication": "Uncommitted; whole Phase 2 acceptance still required."
+}

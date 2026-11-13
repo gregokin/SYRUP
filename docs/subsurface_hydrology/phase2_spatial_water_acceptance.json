@@ -1,0 +1,70 @@
+{
+  "schema": "syrup.phase2.spatial_numpy_water_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_NUMPY_WATER_COMPONENT",
+  "utc": "2026-11-12T16:23:29.413731+00:00",
+  "source": {
+    "base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "uncommitted_package_sha256": "2e0fef80ec081f0e8fe72b020cdea920009640297320caa49ab52c2b54801532",
+    "file_count": 118,
+    "subsurface_sha256": "bd50377ed2eea80e29bbb96fe290f33af8a78427b1c0de38134f049a2cb80dfa",
+    "spatial_soil_layers_sha256": "8a7a567490e15133248c6a2e24f8cb6e52d44624f61ec048bbcefe4e0c33c67f",
+    "native_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "native_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_verification": {
+    "final_CPU": "311 passed21.14s, explicit NumPy spatial water evolution; compiled/GPU evolution unsupported in this source.",
+    "fixed_common_reference": "24scenarios168independentcolumns; water and6fluxfields exactly match previously computed frozen accepted common solver; clocks exact, original state/forcing/retained maps unchanged, balances within original MAPLE bounds.",
+    "common_regression": "64 NumPy/Numba common scenarios512arrays after factoring are bit-exact vs prior source. Physical body unchanged in the final helper correction.",
+    "analytical": "Six independently hand-derived FC/open/closed/recharge/deeper-room/dry-residual controls verified against accepted reference; author analytic suite also passed.",
+    "helper_corrections": "Zero-quota uniform initializer now refuses before any allocating theta conversion; valid finite state with unrepresentable global volume now typed-refuses. Exact Root correction probes passed.",
+    "raw_final_run": {
+      "utc": "2026-11-12T16:21:09.269165+00:00",
+      "native": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3",
+      "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a2_c1_snapshot",
+      "results": [
+        {
+          "name": "pytest",
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "-m",
+            "pytest",
+            "-c",
+            "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a2_c1_snapshot/tests/phase2_spatial_water/pytest.ini",
+            "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a2_c1_snapshot/tests/phase2_spatial_water",
+            "-q"
+          ],
+          "guard": null,
+          "returncode": 0,
+          "seconds": 22.237768326886
+        },
+        {
+          "name": "reference_controls",
+          "command": [
+            "/home/okin/MAPLE/.venv/bin/python",
+            "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a2_control_runner.py"
+          ],
+          "guard": null,
+          "returncode": 0,
+          "seconds": 0.8295981348492205
+        }
+      ]
+    },
+    "helper_probes": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a2_c1_snapshot/src/maple_syrup/spatial_soil_layers.py",
+      "storage": {
+        "typed_refused": true,
+        "message": "the global soil-water volume is not representable in FP64 (active-cell depth sum 2.0 m x cell area 1e+308 m2 = inf) or the state holds non-finite water; the query is refused"
+      },
+      "uniform_zero_quota_no_conversion": true
+    }
+  },
+  "implementation": "ONE NumPy physical body shared by existing common reference wrappers and explicit spatial wrappers. Minimal maps read by private honest parameter readers; lazy per-layer thresholds, no retained duplicate LN capacity maps. State bound to parameter/mask/area identity; staged failures do not mutate originals. Original stages, constants, flags, field-capacity/saturation distinction, gravity/evaporation/pair diffusion and recharge fit failure preserved.",
+  "limits": [
+    "Fixed explicit geometry/properties, standalone column component only. No moving-bed remap adoption, PTF, sediment, LEAF, lifecycle/restart or native storm acceptance.",
+    "NumPy evolution only; Numba/CUDA prepared parameter owners explicitly refuse evolution here. They are future A3/A4 work.",
+    "Original parameter-only owner flag remains false for legacy/native hydrology binding; explicit module-level NumPy trial API is documented separately.",
+    "No new wetting-history reset, calendar convention or user physics choice. Three questions remain pending.",
+    "No performance/scaling/field claim. Whole Phase2 remains incomplete and uncommitted; historical policies/capsules/checkpoints remain unchanged."
+  ],
+  "known_open_confirmed_component_defects": []
+}

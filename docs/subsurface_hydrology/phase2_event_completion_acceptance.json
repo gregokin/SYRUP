@@ -1,0 +1,46 @@
+{
+  "status": "independently_accepted_bounded_producer_completion",
+  "utc": "2026-11-13T15:50:29.964608+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_eb1_c1_snapshot156",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_eb1_c1_snapshot156_manifest.json",
+  "source_manifest_sha256": "400afa0bc4206c9c85d89415bbc642c148e7589fc51e71821cdb6f4731020726",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "cpu_tests": {
+    "completion": 11,
+    "native_pond": 63,
+    "native_windowed": 31,
+    "retained": 15,
+    "guards": 26,
+    "passed": 146,
+    "skipped": 17
+  },
+  "actual_gpu_tests": {
+    "passed": 2,
+    "genuine_dense_windowed": true,
+    "gpu_uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "idle_guard": "same launcher GPU0 0MiB 0%"
+  },
+  "independent_probe": {
+    "original_real_step0_fake_public_mint": "accepted_defect",
+    "fixed_same_reproducer": "typed_refused",
+    "actual_registry_before_after": [
+      0,
+      0
+    ],
+    "file": "root_eb1_c1_cpu_runs/probe.out"
+  },
+  "production_scope": [
+    "new floating_completion.py",
+    "pond_event.py additive private weak completion registration + issuing API",
+    "floating_pond.py additive read-only current event bundle"
+  ],
+  "review": "Exact native producer/state/handoff/facts and own private registry before issue and every use; consume keyed on handoff; functional trial does not invalidate accepted completion; weak registry release tested. Original physics and numerical stepping bodies unchanged.",
+  "limits": [
+    "Producer completeness ONLY, no adopted landscape lineage/property refresh/retirement/daily/restart/wind guarantee.",
+    "Private-module registry malicious mutation excluded; public caller-built objects refused.",
+    "Single authorized GPU UUID; no multi-device or whole catchment qualification."
+  ],
+  "root_setup_failure": "First CPU launcher used nonexistent tests/pond_retained_completion; preserved failure; correct tests/phase2_pond_retained_completion and both guards rerun in separate processes on SAME frozen source.",
+  "committed": false
+}

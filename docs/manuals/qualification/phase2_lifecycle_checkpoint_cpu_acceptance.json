@@ -1,0 +1,76 @@
+{
+  "utc": "2026-11-13T21:32:46.428317+00:00",
+  "status": "independently_accepted_bounded_CPU_closed_parent_physical_lifecycle_file_foundation_not_yet_adopted_pending_GPU_shared_hook_reconciliation",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_closed_boundary_checkpoint_c2_snapshot166",
+  "manifest_sha256": "8781f1c1dc33a3e560416ca63035811e690c7a074b606d09b0d9daf976472877",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "production": {
+    "floating_lifecycle_checkpoint.py": "398d82cf8caeb45de8881db3fb7e4691a438070d6bcf01fa3f6e9ba595356256",
+    "floating_daily.py": "7db8246667a3f38f30f533ab469844a4d127a0417e612090e08bf50bf782f607",
+    "floating_event_lifecycle.py": "bcdaec0d2f6a3048b5acc09afbc315bd2e26d9dbd9827cf46d2c2fe8fe0e9113",
+    "floating_event_daily_bridge.py": "612a2d10f646568f71f8ba9abdb194ad3f03e135227a02dade4d224148d0bc96"
+  },
+  "Root_tests": {
+    "original_S1": 258,
+    "original_breakdown": {
+      "new_file": 28,
+      "CPU_daily_bridge": 34,
+      "daily": 94,
+      "daily_output": 18,
+      "lifecycle": 19,
+      "continued_child": 39,
+      "source_guards": 26
+    },
+    "C2_new": 10,
+    "C2_breakdown": {
+      "actual_geometry_and_module_state": 4,
+      "weakref_retention_and_real_continuation": 2,
+      "fresh_static_recipe_NumPy_Numba_Dense_Windowed": 4
+    },
+    "basis": "Original166 full258 source; C2 only production change is new checkpoint module result fields/docs/return. All original other165 production bytes exact; currentC2 actual10 independently rerun. No claim all268 on same revisedmodule."
+  },
+  "author_C2_full_new_suite": {
+    "passed": 36,
+    "seconds": 386.46,
+    "note": "author calls it rest but actual nodeid deselect prefixes did not exclude full source-path files; this is full36, not36plus10 disjointtests."
+  },
+  "profile": "maple-syrup-floating-lifecycle-checkpoint/1",
+  "native_api": {
+    "save": "save_floating_lifecycle_checkpoint",
+    "load": "load_floating_lifecycle_checkpoint",
+    "required_expected_manifest_sha256": true,
+    "default_return": [
+      "lineage",
+      "head",
+      "closed",
+      "kind",
+      "manifest_sha256"
+    ],
+    "removed_before_publication_fields": [
+      "event",
+      "state"
+    ]
+  },
+  "independent_findings_fixed": [
+    "Real unused phase retention128xwater in previousdefaultRestoredresult. Minimalresult noevent/state; actualweakrefs of event,state,phase,ledgers,token,vertical diewhileholdingresult/head/closed; physicalwater/bed/history remain and nextday/eventwork.",
+    "Initial4mmconnected-plane storagefixture spent>20min irrelevantstormwork. Onlyownauthor/test gracefullyinterrupted with exactPIDrecords; genuineH0Rain0 completion tests same realdeep/wide/windowed storage, no fakequiet/caps.",
+    "Windowed helper moduleNV/DZ mutations restoredinfinally toavoidpollution."
+  ],
+  "verification": [
+    "Exact closed FD execution/state/parent digests,revision,requestsequence,cursor,ledger,frameidentity recomputed/preserved; one-timeverified restore headLAST onfreshlineage.",
+    "GenuineBoundary/CLOSEDday saveonly; savingmovesnohead/clock/routing/quiet/publication, oldparentmaydie; whole7dayN3/chained/replaycontrols inoriginalRoot28.",
+    "External expectedseal andstrict source/backend/layout/nativeprefix/NPYheader/hash/partition/clock/ledger checks; no automaticoldprofilemigration.",
+    "ActualdeepDenseV5461K6, wide32x32V60NB32, nativeWindowedV5000 realcachebound: zero/needminus refuseBEFORElargehash/array, reserveonce, exactmodel load and tracedPython/NumPyallocationpeak<=declaredmodel. NotRSS/wholeeventfit.",
+    "Genuinelyresealedn_classes1e12 header yieldsimpossibleneed typedmemoryrefusalbeforearrays; no unboundeddecode.",
+    "Fourfreshstaticcase recipes nooriginalbed/owner/probe/providerconstruction onLOAD; nextdailyphysicalarrays bitwise."
+  ],
+  "limits": [
+    "CPU NumPy/Numba only; GPU closedfile separateunaccepted task.",
+    "Pendingstorm,pendingrecession,middaytrial andrunningoccurrence explicitlyrefused; in-flightproducerforcingproof notrestored.",
+    "WriterN/source/immutableframeidentity remainsseparate external outputrecord, notfullscheduler/vegetation/windcheckpoint.",
+    "Onecomponentcoldcarrier needsnativebed+phase forunchangedchildcodec; minimaldefaultresult releasesitafterload. Onlycomponentmodels/measuredtracemalloc, no large-catchment fit/whole-processRSS promise.",
+    "GPUsharedhookcomposition notyetaccepted; CPUfoundation notyetadopted intoexperimental source."
+  ],
+  "committed": false
+}

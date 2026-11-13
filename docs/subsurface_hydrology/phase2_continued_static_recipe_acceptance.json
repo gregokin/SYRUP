@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-13T20:43:30.079621+00:00",
+  "status": "independently_accepted_no_original_bed_fresh_process_static_recipe",
+  "production_acceptance": "root_cuda_continued_checkpoint_c2_acceptance.json",
+  "production_changed": false,
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_continued_checkpoint_cuda_c4_composed_snapshot165",
+  "manifest_sha256": "68617184a1cd8a4dd80cf27eff7c95f1aa5d1c8d56a9618aa6885547989217a4",
+  "Root_host": {
+    "passed": 37,
+    "GPU_not_selected": 11,
+    "fresh_CPU_variants": "NumPy/Numba x Dense/Windowed; 4 independent fresh interpreters; native continuation bitwise."
+  },
+  "Root_GPU": {
+    "passed": 2,
+    "deselected": 9,
+    "wall_seconds": 69.28,
+    "variants": [
+      "Dense",
+      "native published Windowed"
+    ]
+  },
+  "behavior": [
+    "LOAD installs originalbed/owner/refresh/provider/probe constructor tripwires BEFORE static recipe import/read; no originalcasebuilder imported.",
+    "STATIC recipe uses actual public MAPLE geometry/grains/context constructors and original terrain input O(N), verified parameter/context/config/forcing/topology digests.",
+    "Actualcurrentlawroot rebuiltfromverifiedH0, currentphysicalstate fromstrictcontinuedchild; 4nativeGPUstepsbitwise vsuninterrupted.",
+    "SAVEnecessarilyconstructsoriginalcasetogeneratecontrol; no-originalbedclaimisLOADscopeonly."
+  ],
+  "test_setup_correction": "First C3freshGPU attempt failed1.03s atworker importstatic_case becauseonlyconftestpathadded; C4addsEXACThelperdirectorytoworker, nofallback. NegativeCLIpathcontrolreproducesmissingimport; standalonewholeimportclosureprovesnoCuPyimport onhost.",
+  "limits": [
+    "Controlledclosed3x5deep300Vlake, splashoff, fixedrecipe/source; notgenericcasefileloader orwhole-catchmentmemoryqualification.",
+    "No outer/dailycursorcodec inthiscomponent; no secondlocalgen2fixture.",
+    "HistoricalC2receiptremainsimmutableandaccuratelyrecordsoldfixturelimit; thissupplementqualifiesimprovedTESTrecipe."
+  ],
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "committed": false
+}

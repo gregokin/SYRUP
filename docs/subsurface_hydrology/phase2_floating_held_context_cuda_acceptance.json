@@ -1,0 +1,49 @@
+{
+  "schema": "syrup.root.component_acceptance/1",
+  "status": "accepted_bounded",
+  "component": "H0CUDA pure water-free held-law record /2, prescribed input maps",
+  "utc": "2026-11-13T14:22:00.899812+00:00",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_cuda_c2_snapshot154",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_cuda_c1_source_manifest.json",
+  "production_hashes": {
+    "floating_held_context.py": "721090647b1cd09c0df211642686e4da0f34bc242a06fb1a42d67f8cc203ea4f",
+    "floating_held_context_cuda.py": "e233dee0243908769980875f909a67088ad8693adfdcdefc93fcd54c41f01c5e"
+  },
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "common_cuda_abi_sha256": "0d454f1ad0fc4c6d23252687c311802788e3ee2a411f714969a2a08e9c9f72e2",
+  "verification": {
+    "root_cpu": 328,
+    "root_source_guards": 26,
+    "gated_skip": 29,
+    "cpu_result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_cuda_c1_cpu_runs/result.json",
+    "root_actual_gpu": 29,
+    "gpu_result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_cuda_c2_gpu_runs/result.json",
+    "test_only_c2_preservation": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_cuda_c2_production_preservation.json",
+    "root_independent_small_host_model": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_cuda_host_model_root_h0_cuda_c2_snapshot154.json",
+    "warm_host_export_peak_B": 64915,
+    "warm_host_export_need_B": 67011
+  },
+  "review": {
+    "confirmed_fixed": "NumPy2.ndarray.device=cpu misclassified byhasattr; nowactualMAPLEis_device_array/exactNPclass",
+    "test_corrections": "One-call hooks; exact countedH2D isrecordmaps+diffusivity+nominaledges+sep_nominal+residual, notallrawCuPytransfers",
+    "incident": "AuthorbroadRuff83filesrestored; Rootindependentmanifestall152otherbaselinesourcesbyteidentical",
+    "models": "ActualN50003trueallocatorpeakvsdeclaredmodel+measuredrounding and released-contextplateau passed"
+  },
+  "scope": [
+    "GenuineNativeCUDA Dense+Windowed export/parse/reconstruct originalCUDAconfig/column/matrix/prefIDs bitexact",
+    "L1/3/65 explicit/textureKs, overridesNonevs{}, disabledspecies/bgseparate, actualfreshprocessGPU",
+    "RootGPU0same-launcher0MiB0percentguard, coldcountedchunks<=cap, noW/J/I/bed/provider/ownerrestore",
+    "ActualpublicqualifiedCUDApreparations only; no newkernel/numericalbody",
+    "CPUrecord/1 unchanged; new/2hostpartswithstablekernelSourceABI descriptor; nooldmigration"
+  ],
+  "limits": [
+    "NoGPUfromHeldPondfactory/filephysicalcheckpoint orwaterlineage/dailycodec bythiscomponent",
+    "Purelawcontextnotbed/fileprovenance/physicalauthority",
+    "PrescribedHOSTrawPreferentialSpec initially; liveLEAF-GPUrawmapsPhase2.5 followup",
+    "OnlyGPU0 actual; crossdevice/architecture identity independence codefact nothardwarequalification",
+    "SharedFC/SATalternateCUDA layouts notexercised; nativepipelinecellFC/SATqualified",
+    "Modelsownedworking-setnotwholeprocess; transfercountersinstrumentedMAPLEhelpersnotallrawCuPyoperations",
+    "ModerateN50003notwholecatchment/Chastrescaling",
+    "WholePhase2incomplete/uncommitted"
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T06:01:13.308164+00:00",
+  "component": "E2 compact selected-column native texture batches and cold canonical native depth",
+  "status": "accepted_isolated_component_pending_main_candidate_patch",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_e2_c2_snapshot",
+  "source_manifest": "root_e2_c2_source_manifest.json",
+  "module_count": 134,
+  "new_module": "src/maple_syrup/compact_soil_profile.py",
+  "new_module_sha256": "cbc6d91424a62127e39e930fdb6d3767a85775ff5b3114495fab61cf0c548712",
+  "all_previous133_modules_unchanged": true,
+  "package_sha256": "080538d01e810e78ff8453e62ed2c21ecaa3974fb2defb5a7bd63f2a49e59f07",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "verification": {
+    "root_cpu": {
+      "passed": 60,
+      "skipped": 4,
+      "evidence": "root_e2_c2_cpu_runs/result.json"
+    },
+    "root_actual_gpu": {
+      "passed": 2,
+      "skipped": 1,
+      "reason": "two visible devices needed; only authorizedGPU0 visible",
+      "evidence": "root_e2_c2_gpu_runs/result.json"
+    },
+    "independent_fraction_profiles": {
+      "profiles_each": 3,
+      "modes": [
+        "numpy",
+        "numba",
+        "windowed",
+        "windowed_numba",
+        "cuda_dense",
+        "cuda_windowed_numba"
+      ],
+      "all_physical_hashes_identical": true,
+      "canonical_native_depth_byte_exact": true,
+      "evidence": [
+        "root_e2_fraction_numpy_root_e2_c2_snapshot.json",
+        "root_e2_fraction_numba_root_e2_c2_snapshot.json",
+        "root_e2_fraction_windowed_root_e2_c2_snapshot.json",
+        "root_e2_fraction_windowed_numba_root_e2_c2_snapshot.json",
+        "root_e2_fraction_cuda_dense_root_e2_c2_snapshot.json",
+        "root_e2_fraction_cuda_windowed_numba_root_e2_c2_snapshot.json"
+      ]
+    },
+    "independent_selection_budget_repro": "root_e2_selection_probe_root_e2_c2_snapshot.json",
+    "ruff": "clean under actual isolated project configuration",
+    "initial_gpu_failure": "C1 DenseCUDA physical arrays matched, test used dict subscription on TransferCounters dataclass; corrected only test API, preserved original logs"
+  },
+  "behavior": {
+    "scope": "explicit sorted unique active flat indices; compactB outputs; existing S1 numeric engines/native validators/gather reused",
+    "selection": "owned read-only Ccopy after admission; chunked bounds/order/activity and digest; caller mutation cannot alter selection",
+    "device": "same current source device required; device mask forbidden forCPU source; no automatic device switch",
+    "canonical_depth": "actual hostNumPy native expression, algorithm/source/NumPy metadata; not hand-coded fixed-tree GPU qualification",
+    "memory": "B-sized outputs/gather/witness, owned8C selection+chunk scratch; hostNmask and mandatory nativevalidation/cache remain; no fullLNK output/history",
+    "windowed": "full native trusted-boundary validation always; host archive gather/compute with optional GPU output"
+  },
+  "limits": [
+    "Not the hot critical-cell bedrock depth path; DenseCUDA canonical witness intentionally downloads selected full-column batches at cold boundary.",
+    "No source-content tamperproofing or concurrent bed mutation support; input physical source remains caller-controlled under stated read-only transaction contract.",
+    "Source identity record is descriptive, not a runtime lock or accepted parent proof.",
+    "Value-dependent failure can follow earlier yielded batches; native adoption must stage them atomically.",
+    "Caller retaining prior batches owns additional memory, excluded from one-batch component peak.",
+    "O(L) metadata parsing precedes final admission; noB/C/N-sized selection/value scratch before admission.",
+    "No hydraulic property refresh, water accounting, native Pond/LEAF/restart/field/large-domain acceptance."
+  ],
+  "publication": "Uncommitted; pending main D2 stable boundary, combined-source checks and wholePhase2 publication."
+}

@@ -1,0 +1,39 @@
+{
+  "status": "independently_accepted_bounded_general_CUDA_held_context_physical_checkpoint",
+  "utc": "2026-11-13T17:54:23.008572+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_context_outer_c3_snapshot160",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_context_outer_c3_snapshot160_manifest.json",
+  "source_manifest_sha256": "5a5ac059aa0a361132c9c3717c7f17f4834bc071da5ef42df31a33d69faf998b",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "root_tests_exact_C3": {
+    "host": 69,
+    "guards": 26,
+    "cpu_total": 95,
+    "actual_gpu_targeted": 4,
+    "independent_actual_gpu_input_pending": "two public pref-input API errors now typed ContextCheckpointCudaError; actual native pendingWindowed60steps refused before any reader/export/staging"
+  },
+  "inherited_exact_parts_test_evidence": {
+    "C2_tests": "159CPU+22actualGPU; C3 only typed conversion and published guard, all159otherproductionfiles exactC2. C3targeted4GPU rechecks DenseWindowed SAVE budgets+roundtrip.",
+    "C2_root_independent": "0bothpoolbudgets refuse beforeactualexport0calls. FouractualnativeDeepDense5461K6,Wide32x32V60bins32, Windowed300/5000W3 exactpublishedSAVE+LOADtwo-pools PASS; samefileunlimitedstaticfactorycontrolPASS. C3numericadmission/loadmodels identicalC2."
+  },
+  "profiles": {
+    "outer": "maple-syrup-floating-context-checkpoint/2-cuda",
+    "Dense_child": 7,
+    "Windowed_child": 8
+  },
+  "independent_controls": {
+    "save_quota_defect": "C1 actualexportcompleted beforebudget0childrefusal; C2/C3 preflight nowhonorsbudgets beforebulk, nestedreaders capped reservesonce.",
+    "typed_input_defect": "RootC2V2 actualgenuinePrefSpeconnoPrefoperator rawHeldContextError; C3 bothpublicsave/save_need correcttyped ContextCheckpointCudaError, no mutation.",
+    "pending_publication": "C3 actual native pending journal (>0; exact rawprobe count), early PondCheckpointError, readers[] export[], no publication.",
+    "source_guards": "All actualchild/source/kernel/H0/nativeprefix/deepstore guards preserved; no originalbed/owner/probe atfreshprocessrestore."
+  },
+  "limits": [
+    "Genuine held law context +current physicalevent W/J/I/D only; no lifecycle/dailycursor/fullPhase2/windcoupledacceptance.",
+    "Windowed phase/hydraulic/sediment/soilarrays dense; externaldeepstoremustremain immutable andpresent.",
+    "Source pair includes exact importeddirty source; old profiles/locks notmigrated/rebound.",
+    "Two-pool declaredoperationmodels exclude allocator/JIT/driver/wholeprocess; staticfactory setup admitted by its own APIs. No wholeChastre readiness claim.",
+    "Stored native archives only; compressionnotallowed/no compressionbug."
+  ],
+  "committed": false
+}

@@ -1,0 +1,13 @@
+# Floating-soil event lifecycle on CUDA
+
+The CUDA implementation uses the same accepted FloatingEventLineage, Occurrence and Boundary interfaces as the CPU implementation. Select a genuine native CUDA floating owner and matching CUDA Pond event factory; pass the device and host resource readers/reserves to open_floating_event, close_occurrence and begin_occurrence. Wind physics remains in MAPLE.
+
+An event begins with the accepted landscape and current layer water, matrix wetting history, cumulative intake and soil depth. Rain and native surface/sediment calculations run through the actual Pond event. Genuine event completion—not a time or step limit—allows the changed-column property refresh. The refresh uses the same bounded NumPy property provider as CUDA initialization; only selected property tiles cross to the host. Current water and infiltration history stay on the device. A later fully resident property provider would require a separately selected and qualified initialization/refresh mode.
+
+The boundary keeps the actual current MAPLE bed, water and routing source. New pore capacity is reconciled conservatively: bottom loss is counted once; returned soil water enters the surface once. A return that wakes flow produces a pending-recession boundary. That boundary refuses positive rainfall and daily interevent operations until genuine recession completion; a native zero-rain continuation is allowed. Ordinary property publication does not itself rebuild routing.
+
+## Independent qualification
+
+The exact sources, tests and limits are in [the acceptance record](phase2_event_lifecycle_cuda_acceptance.json). Root qualified 60 CPU checks and 13 actual GPU controls across three test revisions with identical production sources. Tests covered Dense and native published Windowed reopen/second-close cycles, current water/history, device gates, both memory pools, failure without changing the accepted head, old-parent release, native bottom drainage and actual capacity return with a rain-free continuation step. The corrected construction quota uses the boundary constructor's own model: it references the accepted depth rather than owning the initial-depth copy used by the original-owner constructor.
+
+These are bounded native lifecycle controls. They do not establish a complete GPU daily bridge, daily-cursor restart, native wind adapter or large-catchment memory fit. The returned-water control qualified the gate and one actual recession step, not the entire later quiet recession. Genuine continued events with a nonzero carried routing generation are qualified separately by their explicit checkpoint profiles.

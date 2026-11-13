@@ -460,9 +460,30 @@ def stage_evaporation(operator: EvaporationOperator, *, pet_terrain_m_s: Any, co
     if column.preflight is not None:
         column.preflight()
     ss._admit(_as_estimate(memory), column.available_bytes_fn, "evaporation staging")
+    after, evap, unmet, soil, share, ledger = _stage_laws(xp, part, pet_terrain_m_s, cover, surface_water_m, dt, column.active, float(column.cell_area_m2), int(column.n_active))
+    return StagedEvaporation(after, evap, unmet, soil, share, dt, ledger, memory, part)
+
+
+def _stage_laws(xp: Any, part: EvaporationPartition, pet_terrain_m_s: Any, cover: Any, surface_water_m: Any, dt: float, active: Any, area: float, n_active: int | None) -> tuple:
+    """The ONE E-only law body shared by the fixed-column `stage_evaporation` and the floating adapter (`floating_evaporation`): arithmetic, reduction order, packet and ledger are EXACTLY what
+    `stage_evaporation` always computed (extracted verbatim; the fixed wrapper's results are bit for bit unchanged). It is NOT a validation bypass: each caller validates its own provenance (column class,
+    evaporation factor 1, namespace/device, mask, memory) BEFORE any allocation, and this body re-checks what it needs to be safe on its explicit arguments (namespace type of every array, float64, C-contiguity,
+    exact `(N,)` shape, boolean mask, finite `dt >= 0`, positive finite `area`, `0 <= n_active <= N`). `n_active=None` (a device mask whose count is not known on the host) adds the count as a twelfth entry of
+    the SAME single host read; a known count keeps the historical 11-entry packet. Returns `(surface_after, surface_e, surface_unmet, combined_rate, share, ledger)`."""
     from maple.core.backend import errstate, to_host
 
-    active = column.active
+    if not isinstance(part, EvaporationPartition):
+        raise SubsurfaceError("part must be an EvaporationPartition")
+    if type(active) is not xp.ndarray or active.dtype != np.bool_ or active.ndim != 1 or not active.flags.c_contiguous:
+        raise SubsurfaceError("active must be a C-contiguous boolean (N,) array of the namespace")
+    n = int(active.shape[0])
+    for name, array in (("pet_terrain_m_s", pet_terrain_m_s), ("cover", cover), ("surface_water_m", surface_water_m)):
+        if type(array) is not xp.ndarray or array.dtype != np.float64 or tuple(array.shape) != (n,) or not array.flags.c_contiguous:
+            raise SubsurfaceError(f"{name} must be exactly a C-contiguous float64 (N,) array of the namespace")
+    if not (isinstance(dt, float) and math.isfinite(dt) and dt >= 0.0) or not (isinstance(area, float) and math.isfinite(area) and area > 0.0):
+        raise SubsurfaceError("dt must be a finite float >= 0 and area a finite float > 0")
+    if n_active is not None and (isinstance(n_active, (bool, np.bool_)) or not isinstance(n_active, int) or not 0 <= n_active <= n):
+        raise SubsurfaceError("n_active must be None or an integer in [0, N]")
     inactive = ~active
     with errstate(xp=xp, all="ignore"):
         # validity (every cell)
@@ -503,18 +524,21 @@ def stage_evaporation(operator: EvaporationOperator, *, pet_terrain_m_s: Any, co
         values = [xp.count_nonzero(bad_pet), xp.count_nonzero(bad_cover), xp.count_nonzero(bad_h),
                   xp.count_nonzero(active & nonfinite), xp.sum(before_active), xp.sum(after_active), xp.sum(evap),
                   xp.sum(unmet), xp.sum(soil_depth), xp.sum(e_only_depth), xp.max(soil)]
+        if n_active is None:
+            values.append(xp.count_nonzero(active))
         stacked = xp.stack([xp.asarray(v, dtype=np.float64) for v in values])
         del bad_pet, bad_cover, bad_h, nonfinite, before_active, after_active, soil_depth, e_only_depth
     packet = np.asarray(to_host(stacked), dtype=np.float64)  # the ONE host read
-    if packet.shape != (PACKET_LENGTH,):
+    expected_len = PACKET_LENGTH + (1 if n_active is None else 0)
+    if packet.shape != (expected_len,):
         raise SubsurfaceError(f"internal: packet shape {packet.shape}")
     for bit in range(4):
         if packet[bit] != 0.0:
             raise SubsurfaceError(f"evaporation staging refused: {_FLAG_TEXT[bit]} ({int(packet[bit])} cell(s)); "
                                   "nothing was published, inputs untouched")
-    area = float(column.cell_area_m2)
     before, after_v, evap_v, unmet_v, soil_v, e_only_v = (float(v) * area for v in packet[4:10])
-    n_active = int(column.n_active)
+    if n_active is None:
+        n_active = int(packet[PACKET_LENGTH])
     n_terms = 3 * n_active + PACKET_LENGTH
     scale = max(abs(before), abs(after_v), abs(evap_v))
     if not all(math.isfinite(v) for v in (before, after_v, evap_v, unmet_v, soil_v, e_only_v)):
@@ -525,9 +549,8 @@ def stage_evaporation(operator: EvaporationOperator, *, pet_terrain_m_s: Any, co
     if abs(residual) > bound:
         raise SubsurfaceError(f"surface evaporation closure violated: residual {residual!r} m3 exceeds the FP64 bound "
                               f"{bound!r} m3 ({n_terms} terms); nothing was published")
-    ledger = SurfaceEvaporationLedger(before, after_v, evap_v, unmet_v, residual, bound, n_terms, soil_v, e_only_v, dt,
-                                      n_active)
-    return StagedEvaporation(after, evap, unmet, soil, share, dt, ledger, memory, part)
+    ledger = SurfaceEvaporationLedger(before, after_v, evap_v, unmet_v, residual, bound, n_terms, soil_v, e_only_v, dt, n_active)
+    return after, evap, unmet, soil, share, ledger
 
 
 # --- bridge from the shared PET library -----------------------------------------------------------------------------------

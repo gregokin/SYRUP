@@ -1,0 +1,27 @@
+{
+  "status": "accepted_bounded_E5_CUDA_Pond_with_R1a_CPU_record_reconciliation",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_r1a_e5_reconciled_snapshot",
+  "source_manifest_sha256": "592247db330002c95de798181e647c4d90ed89f017bb481a8cef55da44d6fe8f",
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "native_maple_412_package_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "root_e5_C1_CPU": 214,
+  "root_final_actual_GPU": 17,
+  "root_reconciled_CPU_record_tests": 62,
+  "independent_record_defect_controls": "all four refuse; cold hash peak/budget and pre-admission nonC no-copy control pass",
+  "root_independent_N100003_constructor_need_B": 1069726,
+  "root_independent_constructor_measured_owned_peak_B": 107125,
+  "evidence": [
+    "root_e5_c1_cpu_runs/result.json",
+    "root_r1a_e5_reconciled_cpu_runs/result.json",
+    "root_r1a_e5_reconciled_gpu_runs/result.json",
+    "root_e5_independent_gpu_v4_runs/result.json",
+    "root_e5_reduction_order_probe.json"
+  ],
+  "test_fixture_correction_review": "completion_program_20261113/report_r2_file_restart_design.md section1; production146 hashes unchanged at repair",
+  "limits": [
+    "Small native Dense/Windowed CUDA coupled water/sediment tests; no full-catchment scaling or completed field-storm qualification",
+    "R1a records CPU in-memory only, no file/daily/fresh-process/CUDA record restoration",
+    "Held texture within storm; true between-event property refresh and physical checkpoint remain later",
+    "One visible authorized GPU only; instrumented transfers exclude implicit CuPy selection count reads"
+  ]
+}

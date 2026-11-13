@@ -1,9 +1,9 @@
 {
-  "schema": "syrup.manual_release_metadata.v2",
+  "schema": "syrup.manual_release_metadata.v3",
   "official_name": "Sediment Yield, Runoff, and Underground Plumbing",
   "release_status": "final",
-  "prepared_date": "2026-11-12",
-  "qualification_statement": "Bounded qualification on a small fixed-geometry fixture (4x6 dense cells, two fixed layers): the committed runtime ran the full public example to completion on NumPy, Numba and CUDA and resumed exactly. No wind, field, moving-soil, large-domain, repeated-storm-recovery or vegetation-cover-feedback qualification is claimed.",
+  "prepared_date": "2026-11-13",
+  "qualification_statement": "Historical CLI/scheduled releases (C1) keep their bounded qualification: a small fixed-geometry fixture (4x6 dense cells, two fixed layers) ran the full public example to completion on NumPy, Numba and CUDA and resumed exactly. Separately, the Native Phase 2 Python API (evolving floating soil profile on the actual MAPLE bed, persistent W/J/I across native events and daily updates, optional every-N-day moisture output, closed-parent physical files; NumPy/Numba/CUDA, Dense and native Windowed) is independently qualified at a bounded scope on its clean source package (111 CPU/host and 39 actual-GPU controls, 18 portable source guards, a seven-day N=3 example saving days 3 and 6). It is a native API, not a command or YAML key of the historical CLI, and not a full scheduled MAPLE-SYRUP-LEAF simulation. No field validation, large-domain memory fit, general repeated-storm recovery, integrated wind clock or vegetation-cover feedback is claimed.",
   "surface_reference": {
     "syrup_commit": "d05d8c6c66d9fd2969c007681916254e8d1c2c7c",
     "maple_commit": "39bcf79e1e67b6ed960f78a923ddfedf1d173e68"
@@ -38,6 +38,17 @@
     "whole_phase_receipt_status": "recorded",
     "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
     "source_commit": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
+    "published": true
+  },
+  "native_phase2": {
+    "source_commit": "71bb8fe0bb0ed2d17ee302e4502ba0511032d416",
+    "source_branch": "feature/subsurface-evolving-soil",
+    "syrup_package_sha256": "3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82",
+    "package_file_count": 169,
+    "source_manifest_sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "whole_phase_acceptance_sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
     "published": true
   }
 }

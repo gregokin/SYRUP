@@ -40,6 +40,12 @@ Approved law (user decisions 2026-11-10; `docs/subsurface_hydrology/development_
   * Lifetime actual intake ("cumulative_intake_m") is a separate ledger: a future history recovery policy may
     change J but can never remove physical water. NO recovery/reset policy is implemented here (not selected).
 
+Combined actual intake (S2-B2.c review02, a numerical correction, not a new law): the two separately bounded parts `pre` (unponded) and `post` (ponded, bounded by `pool - pre` and `room - pre`) can recombine, in
+FP64, one ulp ABOVE the pool or the room (`fl(pre + fl(pool - pre)) != pool`). The recombined `intake = pre + post` is therefore bounded, in this order, by the pool and by the top-layer room BEFORE anything is
+published; `pre` is unchanged; ONLY when that bound is active the ponded actual is re-derived as `post = intake - pre` (>= 0 exactly) so the history advance `post / g`, the soil credit, the pool debit, the ledger
+and the diagnostic rows share the SAME actuals. When the bound is inactive every result is byte-identical to the previous arithmetic. No epsilon, no clipping of a negative result, no tolerance change; the returned
+candidate is unchanged and rejected potential never enters the soil. The Numba and CUDA bodies use the same ordering.
+
 Supply convention B (explicit finite-pool split; see the task design): the stage receives the ACTUAL remaining
 surface pool of the interval, already supplied ONCE by the owning timestep (rain/run-on added once, preferential
 stage applied), and never adds r dt again. `standing_before_m` is the genuine preexisting standing depth at the
@@ -927,19 +933,44 @@ def _check_history(op: MatrixOperator, history: Any) -> None:
 
 
 # --- the reference step -------------------------------------------------------------------------------------------------
+class _StepContext(NamedTuple):
+    """PRIVATE honest context of the shared NumPy body: exactly what the body needs besides the arrays. It is NOT a
+    column, layers object or operator (Phase 2 S2-B2.a: the explicit spatial operator supplies the same fields from its
+    own sealed owner, so no fake legacy column facade exists)."""
+
+    n_layers: int
+    n_cells: int
+    active: Any  # (N,) bool
+    cell_tol: float  # cell_closure_coefficient(L)
+    newton_tol: float  # newton_tolerance()
+
+
 def reference_step(op: MatrixOperator, maps: KernelMaps, pool_in: np.ndarray, standing_in: np.ndarray, rate_in: np.ndarray,
                    water_in: np.ndarray, wetting_in: np.ndarray, cumulative_in: np.ndarray, dt: float) -> StepArrays:
     """NumPy reference of one step: vectorised over cells with the SAME IEEE operations in the SAME order as the
     compiled kernels (only `log1p`/`log` may differ by an ulp between libraries). Validation is recorded in flag
-    rows, not raised here."""
+    rows, not raised here. The body is `_reference_step_body`, shared with the explicit spatial operator; this wrapper
+    passes the operator's cached `(L,)` vectors exactly as before."""
+    k_map, psi_map, g_map, dz, fc_m, sat_m, cap_tol = maps
+    ctx = _StepContext(op.n_layers, op.n_cells, op.column.active, op.cell_closure_coefficient, op.newton_tolerance)
+    return _reference_step_body(ctx, k_map, psi_map, g_map, dz, fc_m, sat_m, cap_tol, pool_in, standing_in, rate_in,
+                                water_in, wetting_in, cumulative_in, dt)
+
+
+def _reference_step_body(ctx: _StepContext, k_map: Any, psi_map: Any, g_map: Any, dz: Any, fc_m: Any, sat_m: Any,
+                         cap_tol: Any, pool_in: np.ndarray, standing_in: np.ndarray, rate_in: np.ndarray,
+                         water_in: np.ndarray, wetting_in: np.ndarray, cumulative_in: np.ndarray, dt: float) -> StepArrays:
+    """The ONE NumPy physical body. `k_map`/`psi_map`/`g_map` are `(N,)` arrays (read-only broadcast views allowed);
+    `dz`, `fc_m`, `sat_m`, `cap_tol` are INDEXABLE per-layer readers (`x[layer]` -> a scalar or an `(N,)` row): the
+    cached `(L,)` arrays of the common operator, or lazy readers of an explicit spatial owner. Only `dz[0]`,
+    `fc_m[0]`, `sat_m[0]` and `sat_m[l] + cap_tol[l]` are read."""
     from maple.core.backend import errstate
 
     xp = np
-    L, N = op.n_layers, op.n_cells
-    active = op.column.active
+    L, N = ctx.n_layers, ctx.n_cells
+    active = ctx.active
     inactive = ~active
-    k_map, psi_map, g_map, dz, fc_m, sat_m, cap_tol = maps
-    cell_tol = op.cell_closure_coefficient
+    cell_tol = ctx.cell_tol
 
     pool_out = xp.array(pool_in, dtype=np.float64, copy=True)
     water_out = xp.array(water_in, dtype=np.float64, copy=True)
@@ -1015,7 +1046,7 @@ def reference_step(op: MatrixOperator, maps: KernelMaps, pool_in: np.ndarray, st
             # ponded phase
             r_dt = xp.where(run_post, k_map * tau, 0.0)
             del tau
-            x, iters, conv = _ga_increment_vec(xp, j1, b, r_dt, op.newton_tolerance, NEWTON_MAX_ITERATIONS)
+            x, iters, conv = _ga_increment_vec(xp, j1, b, r_dt, ctx.newton_tol, NEWTON_MAX_ITERATIONS)
             del r_dt
             flag(active & run_post & ~conv, 15)
             c2 = g_map * x
@@ -1026,12 +1057,24 @@ def reference_step(op: MatrixOperator, maps: KernelMaps, pool_in: np.ndarray, st
             post = xp.where(run_post, c2, 0.0)
             xp.copyto(post, pool_left, where=run_post & (pool_left < post))
             xp.copyto(post, room_left, where=run_post & (room_left < post))
-            del c2, pool_left, room_left, room
+            del c2, pool_left, room_left
+            # ONE combined actual intake (S2-B2.c review02): bound the recombination `pre + post` by the offered pool and the top-layer room BEFORE anything is published. When the bound is inactive every
+            # value below is byte-identical to the previous arithmetic; only when it is ACTIVE (the recombination of two separately bounded parts exceeded a bound by roundoff) is the ponded actual
+            # re-derived from the bounded total, `post = intake - pre` (>= 0 exactly: pre <= pool and pre <= room), so pool, soil, history and ledger share the SAME actuals. No epsilon, no clipping afterwards.
+            xp.add(pre, post, out=intake)
+            over = intake > pool_in
+            xp.copyto(intake, pool_in, where=over)
+            over_room = intake > room
+            xp.copyto(intake, room, where=over_room)
+            over |= over_room
+            del over_room, room
+            over &= run_post
+            xp.subtract(intake, pre, out=post, where=over)
+            del over
             adv = xp.where(run_post & (g_map > 0.0), post / g_map, 0.0)
             j_out = xp.where(run_post, j1 + adv, j1)
             xp.copyto(wet_out, j_out, where=active)
             del j_out
-            xp.add(pre, post, out=intake)
             bounded = xp.array(candidate)
             xp.copyto(bounded, pool_in, where=pool_in < bounded)
             rejected = bounded - intake
@@ -1162,6 +1205,12 @@ def _read_packet(xp: ModuleType, arrays: StepArrays) -> np.ndarray:
 
 
 def _resolve(op: MatrixOperator, packet: np.ndarray) -> MatrixBudget:
+    return _resolve_core(op.column.cell_area_m2, op.n_layers, op.n_cells, packet)
+
+
+def _resolve_core(area: float, n_layers: int, n_cells: int, packet: np.ndarray) -> MatrixBudget:
+    """Backend- and owner-independent budget of ONE packet (private; shared with the explicit spatial operator):
+    `area` is applied ONCE, finiteness is checked BEFORE the strict MAPLE bound helper."""
     if packet.shape != (PACKET_LENGTH,):
         raise MatrixError(f"internal: packet shape {packet.shape}")
     low, n_flagged = float(packet[15]), int(packet[16])
@@ -1169,13 +1218,12 @@ def _resolve(op: MatrixOperator, packet: np.ndarray) -> MatrixBudget:
         bit = int(low).bit_length() - 1 if math.isfinite(low) and low >= 1.0 else None
         message = FLAG_MESSAGES[bit] if bit is not None and 0 <= bit < N_FLAGS else "validation packet is corrupt"
         raise MatrixStepError(f"{message} ({n_flagged} cell(s) flagged)", bit=bit, n_flagged=n_flagged)
-    area = op.column.cell_area_m2
     (before, after, pool_in, pool_out, candidate, intake, pre, post, rejected, unused, wet_in, wet_out) = (
         float(v) * area for v in packet[:12])
     n_onsets, n_ponded, max_iter = int(packet[12]), int(packet[13]), int(packet[14])
     soil_residual = (after - before) - intake
     pool_residual = (pool_in - pool_out) - intake
-    n_terms = (CELL_OPERATION_TERMS_PER_LAYER * op.n_layers + CELL_OPERATION_TERMS) * op.n_cells + ROW_COUNT
+    n_terms = (CELL_OPERATION_TERMS_PER_LAYER * n_layers + CELL_OPERATION_TERMS) * n_cells + ROW_COUNT
     operands = (abs(before), abs(after), abs(pool_in), abs(pool_out), abs(intake))
     if not all(math.isfinite(v) for v in (*operands, candidate, pre, post, rejected, unused, wet_in, wet_out, soil_residual,
                                            pool_residual)):

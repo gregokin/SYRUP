@@ -186,6 +186,7 @@ __all__ = [
     "PondEventState",
     "PondEvolveResult",
     "PondQuiet",
+    "PondRetainedHandoff",
     "PondStepRecord",
 ]
 
@@ -440,6 +441,12 @@ class SedimentLedger:
     n_phase_canonicalized: Any
     n_phase_remnants: Any
     n_native_calls: int
+    # PRODUCER-maintained (only `_settle_terminal`): the number of terminal native deposition calls (one per settlement whose mobile pool was non-empty; a wet state may recess and settle again, so it is cumulative). Additive, default 0; never a
+    # PondCounters field (the historical checkpoint derives its counter keys from that dataclass) and never saved by the historical codec (which refuses any state with n_native_calls != 2*steps + 2*splash).
+    n_terminal_native_calls: int = 0
+    # PRODUCER-maintained (only the `settle_retaining_water` wake branch where the quiet monitor is actually reset): the accepted-step count at that reset, or None. An ordinary later step keeps the old value, so a fresh
+    # monitor at a LATER step is not justified by it. Additive metadata (O(1)); never saved by the historical codec.
+    retained_quiet_reset_step: int | None = None
 
 
 @dataclass(frozen=True, eq=False)
@@ -530,6 +537,55 @@ class PondDryHandoff:
     status: str = "complete"
 
 
+RETAINED_HANDOFF_SCHEMA = "maple_syrup.pond_retained_handoff/1"
+
+
+@dataclass(frozen=True, eq=False)
+class PondRetainedHandoff:
+    """Result of `PondEvent.settle_retaining_water` (explicit NEW record; `PondDryHandoff` and `PondEventState` are unchanged).
+
+    `state` is a genuine WET `PondEventState`: the actual surface depth, soil water, face fluxes, wetting history and native
+    `bed.water` are exactly those of the input (nothing was removed, zeroed or restored); only the native sediment was settled and the
+    final commit made. `status`:
+    * `"complete"`  -- real quiet gates hold again after the terminal settlement, the native MAPLE ledger is empty, nothing is mobile, the
+      deep store carries no pending journal and the water/sediment audits close. NOT a dry state: the retained water is real storage.
+    * `"requires_recession"` -- the previous quiet certificate no longer holds: either the terminal settlement made a genuine net-elevation
+      routing GEOMETRY REFRESH (`reason == "routing_geometry_refreshed"`: the instantaneous face fluxes of a closed pond are 0 under the OLD
+      routing, so the instantaneous gates cannot see the new pressure gradient; only real rain-0 steps can establish a fresh hold) or the
+      instantaneous gates fail (`reason == "quiet_gates_not_held"`). `state` is a valid STAGED wet state (quiet monitor reset only; water,
+      faces, mobile pool and clock untouched) that the caller must evolve with rain 0 until a fresh continuous quiet hold is established, then
+      call `settle_retaining_water` again. Never a completion; storage follows the event's own publication policy."""
+
+    state: PondEventState
+    status: str
+    terminal_deposition_kg: Any
+    accounting: dict
+    config_sha256: str
+    forcing_sha256: str
+    t_s: float
+    topology_generation: int
+    schema: str = RETAINED_HANDOFF_SCHEMA
+    reason: str | None = None  # None for complete; else why the previous quiet certificate no longer holds (see `settle_retaining_water`)
+
+    @property
+    def complete(self) -> bool:
+        return self.status == "complete"
+
+
+@dataclass(frozen=True, eq=False)
+class _Terminal:
+    """Auxiliary values of one shared terminal settlement (private)."""
+
+    rt2: Any
+    commit: Any
+    refreshed: bool
+    deposited: Any
+    terminal_class: Any
+    n_flush: int
+    n_publish: int
+    vertical: Any = None  # receipt of the terminal floating capacity reconciliation (None for the bucket column / no change)
+
+
 @dataclass(frozen=True, eq=False)
 class _Runtime:
     """Derived, rebuildable objects of one held topology (never part of a state)."""
@@ -582,16 +638,29 @@ class PondEvent:
     def __init__(self, context: BedContext, column: ColumnParameters, sediment: SedimentPhysicsParameters,
                  schedule: RainfallSchedule, topology: PondTopology, *, control: PondEventControl | None = None,
                  policy: PondCompletionPolicy | None = None, splash: SplashParameters | None = None,
-                 vegetation_cover_fraction: np.ndarray | None = None, rain_scale: np.ndarray | None = None):
+                 vegetation_cover_fraction: np.ndarray | None = None, rain_scale: np.ndarray | None = None,
+                 floating_vertical: Any = None):
+        self.vertical = floating_vertical  # opt-in E4b floating vertical (`floating_pond.FloatingPondVertical`); None = the historical bucket column, byte-identical
+        if floating_vertical is not None:
+            if column is not None:
+                raise PondEventError("a floating vertical replaces the bucket column: pass column=None (no fake ColumnParameters)")
+            from maple_syrup.floating_pond import FloatingPondVertical
+
+            if not isinstance(floating_vertical, FloatingPondVertical):
+                raise PondEventError("floating_vertical must be a floating_pond.FloatingPondVertical")
         if not isinstance(topology, PondTopology):
             raise PondEventError("topology must be a PondTopology")
         if not isinstance(schedule, RainfallSchedule):
             raise PondEventError("schedule must be a RainfallSchedule")
-        if not isinstance(column, ColumnParameters) or not isinstance(sediment, SedimentPhysicsParameters):
+        if floating_vertical is None and not isinstance(column, ColumnParameters):
+            raise PondEventError("column and sediment must be ColumnParameters / SedimentPhysicsParameters")
+        if not isinstance(sediment, SedimentPhysicsParameters):
             raise PondEventError("column and sediment must be ColumnParameters / SedimentPhysicsParameters")
         self.control = (PondEventControl() if control is None else control).validated()
         self.policy = (PondCompletionPolicy() if policy is None else policy).validated()
-        xp = column.xp
+        if floating_vertical is not None and self.control.backend != floating_vertical.backend:
+            raise PondEventError("the floating vertical supports its own CPU backend only (CUDA is refused, never downgraded); the Dense and the native Windowed bed are both served")
+        xp = floating_vertical.xp if floating_vertical is not None else column.xp
         if sediment.xp is not xp or (self.control.backend == "cuda") != (xp.__name__ == "cupy"):
             raise PondEventError("column, sediment parameters and backend must share one namespace "
                                  "(backend 'cuda' <=> CuPy; no fallback)")
@@ -602,6 +671,8 @@ class PondEvent:
             if not isinstance(splash, SplashParameters) or splash.n_classes != nc or splash.xp is not xp:
                 raise PondEventError("splash must be SplashParameters of the same classes and namespace")
         shape = topology.shape
+        if floating_vertical is not None:
+            floating_vertical.bind_shape(shape)
         if (context.geometry.ny, context.geometry.nx) != shape or context.geometry.dx_m != topology.dx_m:
             raise PondEventError("bed context geometry does not match the topology (shape, dx)")
         require_supported_bed_context(context, self.control)
@@ -628,7 +699,8 @@ class PondEvent:
         self.veg, self.rain_scale = xp.asarray(veg), xp.asarray(scale)
         self.forcing_sha256 = _digest(schedule.edges_s, schedule.intensity_mm_per_h, scale)
         col = [self.column.model] + [_host(getattr(column, n)) for n in (
-            "ksat_m_per_s", "suction_m", "drainage_parameter", "theta_sat", "soil_thickness_m")]
+            "ksat_m_per_s", "suction_m", "drainage_parameter", "theta_sat", "soil_thickness_m")] if floating_vertical is None else [
+            floating_vertical.identity]
         self.config_sha256 = _digest(
             topology.identity_sha256, *col, repr(sediment.summary()), None if splash is None else repr(splash.summary()),
             veg, self.forcing_sha256, repr(self.control), repr(self.policy), context.mass_resolution_kg,
@@ -641,6 +713,12 @@ class PondEvent:
             context.depth_update_rule, _host(context.initial_available_fraction))
         self._cache: _Runtime | None = None
         self._blessed: weakref.WeakSet = weakref.WeakSet()  # states this event built or fully validated
+        # PRODUCER receipt (bounded: one bool per live state, weakly keyed): True iff EVERY accepted step that produced the state integrated exactly the native schedule's rate on a piece-confined interval (from an
+        # initial/continued state of this event); False once any step did not; ABSENT = unproven (a state restored from a file, or built elsewhere). Never a caller flag.
+        self._forcing_ok: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
+        # EB1 producer registries (private; O(1) host metadata, weak: no strong key -> value -> key cycle): the genuine COMPLETE retained handoff instances -> the producer's own facts, and the consumed handoffs
+        self._completions: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
+        self._completions_consumed: weakref.WeakSet = weakref.WeakSet()
 
     # -- runtime --------------------------------------------------------------------------------------
     def _runtime(self, topology: PondTopology, hydraulic: HydraulicState | None) -> _Runtime:
@@ -654,7 +732,10 @@ class PondEvent:
             pond, _ = rebind_pond(cached.pond, topology, hydraulic)
             network = cached.network
         else:
-            pond = build_pond_hydraulics(topology, self.column, backend=ctl.backend, control=ctl.hydraulic)
+            if self.vertical is not None:
+                pond = self.vertical.build_hydraulics(topology, control=ctl.hydraulic)
+            else:
+                pond = build_pond_hydraulics(topology, self.column, backend=ctl.backend, control=ctl.hydraulic)
             if hydraulic is not None:
                 pond.solver.validate_state(hydraulic)
             network = face_network_from_pond_topology(topology, xp=xp)
@@ -822,7 +903,16 @@ class PondEvent:
 
         held = freeze(xp.array(committed, copy=True))
         runtime = self._runtime(topology, None)  # reuses the cached prepared solver of this topology when clean
+        if self.vertical is not None:  # opt-in: clock and ACTUAL native source witness of the owner, before any state exists
+            self.vertical.check_initial(bed, context, _real(t_s, "t_s"))
         hydraulic = runtime.pond.initial_state(bed.water.depth_m, soil_water_m, t_s=_real(t_s, "t_s"))
+        state = self._assemble_initial(bed, hydraulic, topology, held, PondDatum(np.array(topology.source_z_full, copy=True), c0))
+        self._check_state(state)
+        return state
+
+    def _assemble_initial(self, bed: BedState, hydraulic: HydraulicState, topology: PondTopology, held: Any, datum: PondDatum) -> PondEventState:
+        """The ONE initial-state body (event-local ledgers from the actual bed and hydraulic state), factored unchanged from `initial_state` and shared with `continued_state`; unchecked (callers run `_check_state`)."""
+        xp = self.xp
         mobile = bed.water.mobile_mass_by_cell_class_kg
         phase = empty_phase_state(self.shape, self.nc, self.control.phase_bins, topology.dx_m, xp=xp)
         inv0 = _host(bed_inventory(bed))
@@ -846,9 +936,33 @@ class PondEvent:
         state = PondEventState(
             hydraulic=hydraulic, bed=bed, sediment_velocity_m_s=z(ny, nx, nc), phase_fraction=phase.fraction,
             phase_position_m=phase.position_m, topology=topology, held_source_m=held,
-            datum=PondDatum(np.array(topology.source_z_full, copy=True), c0), water=water, sediment=sediment,
+            datum=datum, water=water, sediment=sediment,
             counters=PondCounters(), quiet=PondQuiet(), config_sha256=self.config_sha256,
             forcing_sha256=self.forcing_sha256)
+        self._forcing_ok[state] = True  # nothing has been integrated yet
+        return state
+
+    def continued_state(self, bed: BedState, soil_water_m: Any, *, routing: Any, depth_m: Any, qx_m2_s: Any, qy_m2_s: Any, t_s: float) -> PondEventState:
+        """NEW native occurrence from an accepted lifecycle boundary: the same validated body as `initial_state` (event-local ledgers start truthfully at the actual current inventory) but the hydraulic ROUTING REFERENCE is carried:
+        `routing` = the last actual `(topology, held_source_m, datum)` of the previous occurrence, so the net-displacement gate keeps measuring from the last genuine routing build (nothing is rebuilt from the current terrain here;
+        time, publication and event construction never reroute). The surface depth, face fluxes and soil water carry without loss; the bed's own `water.depth_m` must equal `depth_m`. Refuses a routing reference whose topology is not this event's."""
+        from maple.core.backend import array_namespace
+
+        context, xp = self.context, self.xp
+        self._check_bed(bed)
+        if array_namespace(bed.water.depth_m) is not xp:
+            raise PondEventError("the bed is not in the event namespace (no host/device fallback)")
+        topology, held, datum = routing
+        if self._initial_topology.topology_sha256 != topology.topology_sha256 or self._initial_topology.generation != topology.generation:
+            raise PondEventError("the carried routing topology is not the topology this event was constructed on")
+        if self.vertical is not None:
+            self.vertical.check_initial(bed, context, _real(t_s, "t_s"))
+        runtime = self._runtime(topology, None)
+        hydraulic = runtime.pond.initial_state(bed.water.depth_m, soil_water_m, t_s=_real(t_s, "t_s"))
+        if not (np.array_equal(_host(hydraulic.depth_m), _host(depth_m))):
+            raise PondEventError("the bed's surface depth differs from the carried boundary depth")
+        hydraulic = replace(hydraulic, qx_m2_s=xp.array(qx_m2_s, copy=True), qy_m2_s=xp.array(qy_m2_s, copy=True))
+        state = self._assemble_initial(bed, hydraulic, topology, held, datum)
         self._check_state(state)
         return state
 
@@ -1101,6 +1215,16 @@ class PondEvent:
                                            "bookkeeping": float(bal[6])},
                    "n_operations": int(audit_arrays["n_bookkeeping_operations"])}
 
+        # 4c. (opt-in floating vertical) the actual canonical depth of the GROSS-touched columns, staged after the real MAPLE
+        # exchange and BEFORE the commit gate / quiet monitor / publication; returned water and bottom export enter the ledger once
+        vertical_receipt = None
+        if self.vertical is not None:
+            gross = (pickup.actual_removal_by_cell_class_kg + sp_pick_cell + deposit.deposition_by_cell_class_kg + sp_dep_cell).sum(axis=-1) > 0.0  # in the event namespace (a device map stays on the device)
+            hyd1, vertical_receipt = self.vertical.after_exchange(bed, ctx, hyd1, gross, rt.active)
+            accepted = replace(accepted, state=hyd1)
+            if vertical_receipt["surface_return_m"] is not None:  # the returned water is ONE surface depth: the native bed water carries it too
+                bed = with_water(bed, ctx, hyd1.depth_m)
+
         # 5. geometry gate, native commit, refresh only on a net crossing
         hyd_next = replace(hyd1, next_dt_cap_s=state.hydraulic.next_dt_cap_s)
         bed, held, rt2, topology, commit, refreshed, gate = self._commit_and_gate(
@@ -1111,6 +1235,9 @@ class PondEvent:
                                 accepted.step.export_m3)
         quiet = self._quiet_advance(state.quiet, t0, t1, dt, metrics)
         water = _water_add(xp, state.water, accepted)
+        if vertical_receipt is not None and vertical_receipt["surface_return_m"] is not None:
+            water = replace(water, sat_return=water.sat_return + vertical_receipt["surface_return_m"],
+                            drain=water.drain + vertical_receipt["bottom_export_m"])
         sl = state.sediment
         dep_unmet = pts.transport.deposition_request_by_class_kg - deposit.deposited_mass_by_class_kg
         sediment = replace(
@@ -1182,6 +1309,11 @@ class PondEvent:
         if published:  # the last operation of the candidate
             new_state = replace(new_state, bed=publish_bed_storage(bed, ctx))
         self._blessed.add(new_state)  # built here from validated pieces
+        parent_ok = self._forcing_ok.get(state)
+        if parent_ok is not None:  # the step conforms iff its rate IS the native schedule's rate at t0 and the interval stays inside ONE schedule piece (round-off tolerance as `t_end_s`)
+            edge = self.schedule.next_edge_s(t0)
+            conforms = rate == self.schedule.rate_after_m_per_s(t0) and (edge == math.inf or t1 <= edge * (1.0 + 1e-12) + 1e-300)
+            self._forcing_ok[new_state] = bool(parent_ok and conforms)
         return PondCoupledStep(state=new_state, record=record)
 
     # -- bounded evolve ------------------------------------------------------------------------------------
@@ -1274,6 +1406,7 @@ class PondEvent:
             hydraulic = replace(result.state.hydraulic, next_dt_cap_s=cap)
             state = replace(result.state, hydraulic=hydraulic)
             self._blessed.add(state)  # only the numerical cap of a blessed state changed
+            self._inherit_forcing(state, result.state)
             n_acc += 1
             dt_min, dt_max = min(dt_min, dt), max(dt_max, dt)
             last = result.record
@@ -1284,8 +1417,10 @@ class PondEvent:
                     state = self._publish(state, "high_water")
                     n_high_water += 1
         counters = replace(state.counters, n_rejected_attempts=state.counters.n_rejected_attempts + n_rej)
+        prev_state = state
         state = replace(state, counters=counters)
         self._blessed.add(state)  # only a host counter changed
+        self._inherit_forcing(state, prev_state)
         storage: dict = {}
         if self.windowed:
             n_return = 0
@@ -1301,6 +1436,17 @@ class PondEvent:
             last_record=last, storage=storage)
 
     # -- resident-window storage publication (no physics) -----------------------------------------------------
+    def _inherit_forcing(self, new: PondEventState, parent: PondEventState) -> None:
+        """A state derived from `parent` WITHOUT integrating rain (cap, counter, storage publication, terminal settlement) carries the parent's producer receipt unchanged."""
+        ok = self._forcing_ok.get(parent)
+        if ok is not None:
+            self._forcing_ok[new] = ok
+
+    def forcing_conformity(self, state: PondEventState) -> bool | None:
+        """The producer's forcing-history receipt of `state` (see `_forcing_ok`): True = every accepted step conformed to this event's native schedule; False = a step did not (permanent); None = unproven (restored from a
+        file or not produced by this event's step chain: no proof is granted from a total alone)."""
+        return self._forcing_ok.get(state)
+
     def _publish(self, state: PondEventState, reason: str) -> PondEventState:
         """Publish the CARRIED journal of a VALIDATED accepted `state` as a new deep-store version (MAPLE's
         `publish_pending_column` through `publish_bed_storage`: the context's encoding and cap options, old versions
@@ -1313,6 +1459,7 @@ class PondEvent:
                            n_journal_flushes=c.n_journal_flushes + int(reason == "flush"))
         published = replace(state, bed=publish_bed_storage(state.bed, self.context), counters=counters)
         self._blessed.add(published)  # only the storage binding of a blessed state changed
+        self._inherit_forcing(published, state)
         return published
 
     def publish_storage(self, state: PondEventState) -> PondEventState:
@@ -1477,10 +1624,8 @@ class PondEvent:
     def finalize(self, state: PondEventState) -> PondDryHandoff:
         """Explicit safe terminal settlement and dry reset (module docstring). Pure: every failure raises
         `PondEventIncomplete` / `PondEventError` with the wet input unchanged."""
-        from maple.core.backend import to_bool
-        from maple.surface.topographic_commit.commit import ledger_is_empty
-        from maple.water import WaterProcessDemand
-
+        if self.vertical is not None:
+            raise PondEventError("finalize is the dry reset of the bucket column; a floating vertical keeps its continuous water (use the retained settlement)")
         rt = self._check_state(state)
         xp, ctx = self.xp, self.context
         if state.status != "wet":
@@ -1494,52 +1639,9 @@ class PondEvent:
         pre = self.audit(state)
         if not (pre["water"]["closes"] and pre["sediment"]["closes"]):
             raise PondEventError(f"pre-terminal budgets do not close: {pre['water']['closes']}, {pre['sediment']['closes']}")
-        bed = state.bed
-        pool = bed.water.mobile_mass_by_cell_class_kg
-        deposited = xp.zeros_like(pool)
-        terminal_class = xp.zeros((self.nc,), dtype=np.float64)
-        n_calls = 0
-        n_flush = n_publish = 0
-        if to_bool(xp.any(pool)):
-            flush_now = False
-            try:
-                bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
-            except ValueError as exc:
-                # the same bounded rule as `evolve`: ONLY a recognised append-cap refusal against a CARRIED journal, once
-                if not self.windowed or not is_carried_append_cap_refusal(exc, ctx, pending_journal_records(bed)):
-                    raise
-                flush_now = True
-            if flush_now:  # outside the handler: publish the prior state's journal, redo the same terminal deposition
-                bed = publish_bed_storage(bed, ctx)
-                n_flush = n_publish = 1
-                bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
-            if to_bool(xp.any(bed.water.mobile_mass_by_cell_class_kg != 0)):
-                raise PondEventError("MAPLE refused terminal mobile deposition; no inventory is erased")
-            deposited, terminal_class, n_calls = transfer.deposition_by_cell_class_kg, transfer.deposited_mass_by_class_kg, 1
-        held, topology, rt2, refreshed, commit = state.held_source_m, state.topology, rt, False, None
-        if not bed_committed_at(bed, ctx, state.t_s):
-            bed, held, rt2, topology, commit, refreshed, _ = self._commit_and_gate(
-                bed, held, rt, topology, state.datum, state.hydraulic, state.t_s, final=True)
-        if not ledger_is_empty(bed.ledger):
-            raise PondEventError("terminal MAPLE ledger is not fully empty")
-        sl = state.sediment
-        sediment = replace(sl, deposited_terminal=sl.deposited_terminal + terminal_class,
-                           deposition_cell=sl.deposition_cell + deposited, n_native_calls=sl.n_native_calls + n_calls)
-        c = state.counters
-        counters = replace(c, n_commits=c.n_commits + int(commit is not None and commit["committed"]),
-                           n_final_commits=c.n_final_commits + int(commit is not None and commit.get("reason") == "final_forced"),
-                           n_net_elevation_commits=c.n_net_elevation_commits + int(commit is not None and commit.get("reason") == "net_elevation"),
-                           n_refreshes=c.n_refreshes + int(refreshed),
-                           n_storage_publications=c.n_storage_publications + n_publish,
-                           n_journal_flushes=c.n_journal_flushes + n_flush,
-                           max_carried_records=max(c.max_carried_records, pending_journal_records(state.bed),
-                                                   pending_journal_records(bed)),
-                           commit_log=c.commit_log + ((commit,) if commit and commit["committed"]
-                                                      and len(c.commit_log) < self.control.max_commit_log else ()))
-        phase_fraction, phase_position, _ = _canonical_where_empty(xp, state.phase_fraction, state.phase_position_m,
-                                                                   bed.water.mobile_mass_by_cell_class_kg)
-        settled = replace(state, bed=bed, held_source_m=held, topology=topology, sediment=sediment, counters=counters,
-                          phase_fraction=phase_fraction, phase_position_m=phase_position)
+        settled, term = self._settle_terminal(state, rt)
+        bed, rt2, commit, refreshed = settled.bed, term.rt2, term.commit, term.refreshed
+        terminal_class, deposited = term.terminal_class, term.deposited
         after_ok, after = self.quiet_metrics(settled)
         if not after_ok:
             raise PondEventIncomplete(f"terminal terrain change invalidated completion; input remains wet ({after})")
@@ -1586,6 +1688,169 @@ class PondEvent:
             final_audit["storage"]["deep_store_version_id"] = int(dry.bed.voxel_column.deep_store.version_id)
         return PondDryHandoff(dry_state=dry, pre_reset_surface_m=h, pre_reset_soil_m=soil,
                               terminal_deposition_kg=deposited, accounting=accounting)
+
+    def _settle_terminal(self, state: PondEventState, rt: _Runtime, *, retained: bool = False) -> tuple[PondEventState, _Terminal]:
+        """SHARED terminal native settlement (extracted VERBATIM from the legacy `finalize`, no behaviour change): deposit the actual
+        mobile pool through MAPLE (one recognised append-cap flush allowed), final commit / net-only reroute, empty-ledger check, sediment
+        ledger, counters and canonical phase. Pure; returns the settled wet state (water/soil/faces/history untouched, storage possibly
+        carrying an unpublished journal) and the auxiliary values the callers need."""
+        from maple.core.backend import to_bool
+        from maple.surface.topographic_commit.commit import ledger_is_empty
+        from maple.water import WaterProcessDemand
+
+        xp, ctx = self.xp, self.context
+        bed = state.bed
+        pool = bed.water.mobile_mass_by_cell_class_kg
+        deposited = xp.zeros_like(pool)
+        terminal_class = xp.zeros((self.nc,), dtype=np.float64)
+        n_calls = 0
+        n_flush = n_publish = 0
+        if to_bool(xp.any(pool)):
+            flush_now = False
+            try:
+                bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
+            except ValueError as exc:
+                # the same bounded rule as `evolve`: ONLY a recognised append-cap refusal against a CARRIED journal, once
+                if not self.windowed or not is_carried_append_cap_refusal(exc, ctx, pending_journal_records(bed)):
+                    raise
+                flush_now = True
+            if flush_now:  # outside the handler: publish the prior state's journal, redo the same terminal deposition
+                bed = publish_bed_storage(bed, ctx)
+                n_flush = n_publish = 1
+                bed, transfer = apply_bed_demand(bed, ctx, WaterProcessDemand(xp.zeros_like(pool), pool))
+            if to_bool(xp.any(bed.water.mobile_mass_by_cell_class_kg != 0)):
+                raise PondEventError("MAPLE refused terminal mobile deposition; no inventory is erased")
+            deposited, terminal_class, n_calls = transfer.deposition_by_cell_class_kg, transfer.deposited_mass_by_class_kg, 1
+        hyd_t, water_t, vrec = state.hydraulic, state.water, None
+        if self.vertical is not None and n_calls:
+            # (opt-in floating vertical) the ACTUAL terminal pool deposition changed the bed: the GROSS per-cell deposition proof (net zero included) stages the actual canonical depth / rock capacity
+            # BEFORE the final commit, quiet monitor and publication, at the same clock; returned water joins the surface depth and the native bed water once, bottom export leaves once
+            gross = deposited.sum(axis=-1) > 0.0
+            hyd_t, vrec = self.vertical.after_exchange(bed, ctx, hyd_t, gross, rt.active)
+            if vrec["surface_return_m"] is not None:
+                bed = with_water(bed, ctx, hyd_t.depth_m)
+                water_t = replace(water_t, sat_return=water_t.sat_return + vrec["surface_return_m"], drain=water_t.drain + vrec["bottom_export_m"])
+        held, topology, rt2, refreshed, commit = state.held_source_m, state.topology, rt, False, None
+        if not bed_committed_at(bed, ctx, state.t_s):
+            bed, held, rt2, topology, commit, refreshed, _ = self._commit_and_gate(
+                bed, held, rt, topology, state.datum, hyd_t, state.t_s, final=True)
+        if not ledger_is_empty(bed.ledger):
+            raise PondEventError("terminal MAPLE ledger is not fully empty")
+        sl = state.sediment
+        sediment = replace(sl, deposited_terminal=sl.deposited_terminal + terminal_class,
+                           deposition_cell=sl.deposition_cell + deposited, n_native_calls=sl.n_native_calls + n_calls,
+                           # only the RETAINED settlement (a wet state that may continue and settle again) maintains the count; `finalize` (the dry handoff, written by the historical codec which cannot carry the field) keeps it 0
+                           n_terminal_native_calls=sl.n_terminal_native_calls + (n_calls if retained else 0))
+        c = state.counters
+        counters = replace(c, n_commits=c.n_commits + int(commit is not None and commit["committed"]),
+                           n_final_commits=c.n_final_commits + int(commit is not None and commit.get("reason") == "final_forced"),
+                           n_net_elevation_commits=c.n_net_elevation_commits + int(commit is not None and commit.get("reason") == "net_elevation"),
+                           n_refreshes=c.n_refreshes + int(refreshed),
+                           n_storage_publications=c.n_storage_publications + n_publish,
+                           n_journal_flushes=c.n_journal_flushes + n_flush,
+                           max_carried_records=max(c.max_carried_records, pending_journal_records(state.bed),
+                                                   pending_journal_records(bed)),
+                           commit_log=c.commit_log + ((commit,) if commit and commit["committed"]
+                                                      and len(c.commit_log) < self.control.max_commit_log else ()))
+        phase_fraction, phase_position, _ = _canonical_where_empty(xp, state.phase_fraction, state.phase_position_m,
+                                                                   bed.water.mobile_mass_by_cell_class_kg)
+        settled = replace(state, hydraulic=hyd_t, water=water_t, bed=bed, held_source_m=held, topology=topology, sediment=sediment, counters=counters,
+                          phase_fraction=phase_fraction, phase_position_m=phase_position)
+        return settled, _Terminal(rt2, commit, refreshed, deposited, terminal_class, n_flush, n_publish, vrec)
+
+    def settle_retaining_water(self, state: PondEventState) -> PondRetainedHandoff:
+        """Terminal native sediment settlement that RETAINS the water (continuous-soil completion). Same required initial gates as `finalize`
+        (rain off, no genuine flow / overcrest, a completed continuous quiet hold -- a resource cap is never a completion), same shared
+        settlement worker (`_settle_terminal`), but NO dry reset: surface depth, soil water, face fluxes, history, native `bed.water` and the
+        clock are untouched, and no E/T/drainage/growth is added. Returns a `PondRetainedHandoff` (see its docstring); if the settlement
+        wakes the flow the staged wet state is returned as `requires_recession`. Pure: every refusal raises with `state` unchanged; storage
+        publication is the LAST operation after every refusable check."""
+        from maple.core.backend import to_bool
+
+        rt = self._check_state(state)
+        xp, ctx = self.xp, self.context
+        if state.status != "wet":
+            raise PondEventIncomplete("only a wet state can be settled")
+        qualifies, before = self.quiet_metrics(state)
+        q = state.quiet
+        if not (q.ready and q.last_t_s == state.t_s and q.since_s is not None
+                and state.t_s - q.since_s >= self.policy.hold_s and qualifies):
+            raise PondEventIncomplete("terminal settlement requires rain off, no genuine flow / overcrest and a completed "
+                                      f"continuous quiet interval (metrics: {before})")
+        pre = self.audit(state)
+        if not (pre["water"]["closes"] and pre["sediment"]["closes"]):
+            raise PondEventError(f"pre-terminal budgets do not close: {pre['water']['closes']}, {pre['sediment']['closes']}")
+        settled, term = self._settle_terminal(state, rt, retained=True)
+        bed = settled.bed
+        if to_bool(xp.any(bed.water.mobile_mass_by_cell_class_kg != 0)):
+            raise PondEventError("mobile sediment remains after the terminal settlement; refused")
+        after_ok, after = self.quiet_metrics(settled)
+        area = term.rt2.topology.dx_m ** 2
+        retained = host_packet(xp, [settled.hydraulic.depth_m.sum() * area, settled.hydraulic.soil_water_m.sum() * area])
+        accounting = {
+            "policy": "terminal sediment settlement; surface, soil, faces, history and bed water RETAINED (no dry reset, no E/T, no extra time)",
+            "retained_surface_m3": float(retained[0]), "retained_soil_m3": float(retained[1]),
+            "completion_before_terminal": before, "completion_after_terminal": after,
+            "terminal_deposition_by_class_kg": _host(term.terminal_class).tolist(), "pre_terminal_audit": pre,
+            "final_commit": term.commit, "geometry_refreshed_at_final": term.refreshed}
+        # A genuine net-elevation routing refresh at the terminal commit (`refreshed`) INVALIDATES the previous quiet certificate: the gates are
+        # evaluated on the OLD face fluxes (exactly 0 in a closed pond) and cannot see the new gradient. Only real rain-0 steps can re-certify.
+        # (opt-in floating vertical, versioned reason) a terminal capacity reconciliation that CHANGED hydrology (porous slab / bottom flag changed columns: returned surface water or bottom export, however small, or a new
+        # actual depth) invalidates the quiet certificate even below the routing threshold and with old q = 0; it reroutes NOTHING (routing stays net-elevation only) and only real rain-0 steps re-certify
+        vwake = term.vertical is not None and (term.vertical["n_reconciled"] > 0 or term.vertical["surface_return_m"] is not None)
+        if term.refreshed or not after_ok or vwake:
+            reason = "routing_geometry_refreshed" if term.refreshed else ("floating_terminal_capacity_reconciled/v1" if vwake else "quiet_gates_not_held")
+            accounting["wake_reason"] = reason
+            staged = replace(settled, quiet=PondQuiet(),  # the monitor only; water, faces, mobile pool, clock and history are untouched
+                             sediment=replace(settled.sediment, retained_quiet_reset_step=int(settled.counters.n_accepted_steps)))  # the producer's receipt of THIS reset
+            carried = pending_journal_records(bed) if self.windowed else 0
+            publishing = bool(carried and self.control.deep_publication == "step")  # the event's own per-step policy
+            if publishing:  # counters of the candidate BEFORE the audit: every refusable host/audit check runs on the UNPUBLISHED candidate
+                staged = replace(staged, counters=replace(staged.counters, n_storage_publications=staged.counters.n_storage_publications + 1))
+            post = self.audit(staged)
+            if not (post["water"]["closes"] and post["sediment"]["closes"]):
+                raise PondEventError("budgets fail after the terminal settlement")
+            accounting["final_audit"] = post
+            if publishing:  # publication is the LAST operation; only the two proven storage facts of the audit change
+                staged = replace(staged, bed=publish_bed_storage(staged.bed, ctx))
+                post["storage"]["pending_journal_records"] = pending_journal_records(staged.bed)
+                post["storage"]["deep_store_version_id"] = int(staged.bed.voxel_column.deep_store.version_id)
+            self._blessed.add(staged)
+            self._inherit_forcing(staged, state)
+            return PondRetainedHandoff(staged, "requires_recession", term.deposited, accounting, self.config_sha256, self.forcing_sha256,
+                                       float(staged.t_s), int(staged.topology.generation), reason=reason)
+        post = self.audit(settled)
+        if not (post["water"]["closes"] and post["sediment"]["closes"]):
+            raise PondEventError("budgets fail after the terminal settlement")
+        publishing = bool(pending_journal_records(bed))
+        done = replace(settled, counters=replace(settled.counters, n_storage_publications=settled.counters.n_storage_publications + int(publishing)))
+        final_audit = self.audit(done)
+        if not (final_audit["water"]["closes"] and final_audit["sediment"]["closes"]):
+            raise PondEventError("combined storm and retained-water budgets fail")
+        accounting["final_audit"] = final_audit
+        if publishing:  # a COMPLETE handoff never carries an unpersisted deep journal; the last operation
+            done = replace(done, bed=publish_bed_storage(done.bed, ctx))
+            if pending_journal_records(done.bed):
+                raise PondEventError("the completed retained handoff still carries an unpublished deep journal")
+            final_audit["storage"]["pending_journal_records"] = pending_journal_records(done.bed)
+            final_audit["storage"]["deep_store_version_id"] = int(done.bed.voxel_column.deep_store.version_id)
+        self._blessed.add(done)
+        self._inherit_forcing(done, state)
+        handoff = PondRetainedHandoff(done, "complete", term.deposited, accounting, self.config_sha256, self.forcing_sha256, float(done.t_s),
+                                      int(done.topology.generation))
+        from maple_syrup.floating_completion import CompletionFacts
+
+        # the producer's private record of THIS genuine completion (last statement: every refusable check has passed); facts hold the state only weakly
+        self._completions[handoff] = CompletionFacts(weakref.ref(done), self.config_sha256, self.forcing_sha256, int(done.topology.generation), int(done.counters.n_accepted_steps), float(done.t_s),
+                                                     weakref.ref(done.sediment))
+        return handoff
+
+    def completion_capability(self, handoff: PondRetainedHandoff, state: PondEventState) -> Any:
+        """The genuine completion capability of an actual COMPLETE retained handoff of THIS event (`floating_completion`). Refuses (nothing changes) a hand-built / copied / `replace()`d handoff, a `requires_recession` handoff, an ordinary state, another
+        event/config/forcing, a state that is not the handoff's, and a consumed handoff. No free arguments or flags: the only inputs are the handoff instance and its state."""
+        from maple_syrup import floating_completion as fcm
+
+        return fcm.issue(self, handoff, state)
 
     def complete(self, state: PondEventState, max_end_s: float) -> PondDryHandoff:
         """Evolve until the quiet monitor is ready and finalise, else `PondEventIncomplete` (nothing reset)."""

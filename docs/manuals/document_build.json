@@ -1,24 +1,24 @@
 {
   "release_status": "final",
-  "prepared_date": "2026-11-12",
+  "prepared_date": "2026-11-13",
   "metadata_file": "release_metadata.json",
-  "metadata_sha256": "6c1846d55da92afa768c1da500114b363075198f22cc1271e7df5a9fb0f97f18",
+  "metadata_sha256": "dc58525d94ab6c976356f373a1f58562ead0c3d90c3c58ae6736c71c33cdf30d",
   "documents": [
     {
       "file": "SYRUP_CLI_User_Guide.docx",
-      "bytes": 242938,
-      "sha256": "672a831d9e9954d71f06da7669ca4a013534df854c2f51358af58ce76ed9c01c",
-      "paragraphs": 503,
-      "tables": 47,
-      "headings": 76
+      "bytes": 246674,
+      "sha256": "21c3efb7be8dec87ce955cc8c1b0e51f60070dbafbe80e24941dcce3617cb061",
+      "paragraphs": 521,
+      "tables": 48,
+      "headings": 83
     },
     {
       "file": "SYRUP_Model_Structure_and_Physics.docx",
-      "bytes": 181918,
-      "sha256": "3c49947ec43af644cf46f5061b5f1c2b95828fefa8ca97e85022f54f2f40bca8",
-      "paragraphs": 391,
-      "tables": 12,
-      "headings": 64
+      "bytes": 184981,
+      "sha256": "3c78f3b9733bcb8e147d62348032b1bea6651b4014fa74a6ec3b35caf9f0a954",
+      "paragraphs": 406,
+      "tables": 13,
+      "headings": 65
     }
   ]
 }

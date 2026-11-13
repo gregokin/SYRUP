@@ -1,0 +1,157 @@
+{
+  "utc": "2026-11-13T02:32:37.856433+00:00",
+  "status": "ACCEPTED_BOUNDED_FIXED_SPATIAL_PREFERENTIAL_CUDA_COMPONENT",
+  "snapshot": "root_s2_b2_d_final_snapshot",
+  "source_manifest": "root_s2_b2_d_final_source_manifest.json",
+  "package_sha256": "81bc7c6a7e682fc4fb49c84fd5aa6d195d07efba54e21fda299f8744bfa7b9a7",
+  "file_count": 125,
+  "production_changes_from_B2c": [
+    "preferential_infiltration.py private optional cold-reduction hook/default same expressions",
+    "preferential_infiltration_cuda.py pure shared renderer, common CUDA text/ABI/provenance byte-identical",
+    "spatial_preferential_infiltration.py explicit CUDA opt-in, quotas/ownership/dispatch",
+    "spatial_preferential_infiltration_cuda.py new fused step/finalize and bounded cold reducer"
+  ],
+  "root_tests": {
+    "host_source_and_execution": 271,
+    "actual_gpu_definitions": 454,
+    "original_reference_controls": {
+      "numpy": {
+        "scenarios": 84,
+        "columns": 588,
+        "all4_arrays_bitexact_on_controls": true
+      },
+      "numba": {
+        "scenarios": 84,
+        "columns": 588,
+        "all4_arrays_bitexact_on_controls": true
+      },
+      "cuda": {
+        "scenarios": 84,
+        "columns": 588,
+        "all4_arrays_bitexact_on_controls": true
+      }
+    },
+    "old_common_gpu_unchanged_arrays": 704
+  },
+  "gpu_hardware": "GPU0 UUID GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871, GTX1080Ti; fresh idle guard before each child",
+  "residency_probe": {
+    "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_b2_d_final_snapshot/src/maple_syrup/spatial_preferential_infiltration.py",
+    "source_sha256": "448eb8d5e69d66684e9eac656563e409da35391da5d1875b34b782487a69b7c3",
+    "allocation": {
+      "requests": [
+        400024,
+        400024,
+        1600096,
+        1600096,
+        21896,
+        72
+      ],
+      "model_device": 4022208,
+      "output_payload": 4000240,
+      "charged_outputs": 4001792,
+      "host_packet_payload": 144,
+      "host_to_device": 0,
+      "device_to_host": 1,
+      "device_to_host_bytes": 72
+    },
+    "pool_iterations": [
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ],
+      [
+        10455552,
+        14479872
+      ]
+    ],
+    "kernel_resources": {
+      "step": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 8704,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 56,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 40448,
+        "preferred_shared_memory_carveout": -1
+      },
+      "finalize": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 14336,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 32,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 34816,
+        "preferred_shared_memory_carveout": -1
+      },
+      "reduce": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 4096,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 24,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 45056,
+        "preferred_shared_memory_carveout": -1
+      },
+      "validate": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 0,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 8,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 49152,
+        "preferred_shared_memory_carveout": -1
+      }
+    },
+    "owner_and_owned_map_and_law_released": true,
+    "status": "PASS",
+    "scope": "Bounded fixed-spatial preferential CUDA component; dt0 identity iterations test memory only, not completion/storm. Pool/compiler/context/caller inputs excluded."
+  },
+  "native_maple": {
+    "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "notes": [
+    "Common numerical law and CPU canonical identity unchanged; shared CUDA source digest0d454f1a... unchanged.",
+    "ColdReducer min/max decoding creates a small temporary; fixed Python allowance remains in upper bound. Packet64B is seed/result array payload, not every Python allocation.",
+    "Internal validate_range assumes metadata-checked nonempty device input as passed by public owner API; no promise of a standalone arbitrary-input validator."
+  ],
+  "scope": "Pure fixed-parameter component only. No native evolving-soil lifecycle/restart/LEAF/field/large-domain qualification; new provider/native work still pending.",
+  "committed": false,
+  "published": false
+}

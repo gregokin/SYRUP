@@ -122,6 +122,7 @@ import numpy as np
 
 __all__ = [
     "BACKENDS",
+    "COVERAGE_POLICIES",
     "DEFAULT_BATCH_CELLS",
     "FLAG_INSUFFICIENT_DEPTH",
     "FLAG_TOP_LAYER_THINNER_THAN_CAP",
@@ -140,6 +141,7 @@ __all__ = [
     "estimate_texture_memory",
     "identity_modules",
     "layer_geometry",
+    "partial_stage_bytes",
     "reference_texture_batch",
     "soil_profile_texture_from_bed",
 ]
@@ -149,6 +151,13 @@ BACKENDS = ("numpy", "numba", "cuda")
 DEFAULT_BATCH_CELLS = 4096  # equals MAPLE's DEFAULT_MAX_GATHER_COLUMNS; never raised silently
 FLAG_INSUFFICIENT_DEPTH = 1
 FLAG_TOP_LAYER_THINNER_THAN_CAP = 2
+COVERAGE_POLICIES = ("full", "partial_over_base")
+COVERAGE_POLICY_FULL, COVERAGE_POLICY_PARTIAL = COVERAGE_POLICIES
+# Working stage of the opt-in coverage validation (per chunk of B cells, in the outputs' namespace): at most 6 live float64
+# (B,) vectors (tolerance, expected-coverage chain, difference chain) and 8 live bool (B,) vectors (finite/sign/compare/OR
+# chain), plus the B-byte host flag copy. Counted by `partial_stage_bytes`, admitted by `_admit_partial_stage`.
+PARTIAL_STAGE_F64_VECTORS = 6
+PARTIAL_STAGE_BOOL_VECTORS = 8
 COVERAGE_BOUND_FUNCTION = "maple.surface.voxels._numerics.summation_error_bound_kg"
 IDENTITY_HASH_CHUNK_BYTES = 8192  # streamed native-module hashing: one read buffer alive per read
 IDENTITY_STREAM_BUFFERS = 2  # the current read and the one it replaces (released after `digest.update`)
@@ -475,6 +484,7 @@ class SoilProfileTexture:
     representation: str
     memory: TextureMemoryEstimate
     source: dict[str, Any]
+    coverage_policy: str = COVERAGE_POLICY_FULL  # "full" (historical strict) | "partial_over_base" (explicit opt-in)
 
     @property
     def n_layers(self) -> int:
@@ -757,6 +767,7 @@ def build_soil_profile_texture(
     backend: str = "numpy",
     reserve_bytes: int = 0,
     batch_cells: int | None = None,
+    coverage: str = COVERAGE_POLICY_FULL,
 ) -> SoilProfileTexture:
     """Read the actual native bed once and return its Phase 1 layer texture (see the module docstring).
 
@@ -765,9 +776,17 @@ def build_soil_profile_texture(
     device bytes this call may allocate, `reserve_bytes` included, checked from metadata alone before any copy.
     `batch_cells`: cells per batch (None: `DEFAULT_BATCH_CELLS`, reduced to fit the budget and recorded; an explicit
     value is never changed). Windowed states always receive MAPLE's full trusted-boundary validation.
+    `coverage`: `"full"` (default, historical) refuses an active cell whose actual material does not cover every layer.
+    `"partial_over_base"` (explicit opt-in, Phase 2 E1) instead returns the available material: layers (or the lower
+    part of one layer) below the bottom of the native voxel column (the flat full-grid base) carry exactly zero mass
+    (`layer_total_kg == 0`; zero fractions mean "no material", not an estimate) and `coverage_m` shorter than the layer
+    thickness; nothing is invented. Every other refusal is unchanged.
     """
     if backend not in BACKENDS:
         raise SoilProfileTextureError(f"backend must be one of {BACKENDS}, got {backend!r}")
+    if type(coverage) is not str or coverage not in COVERAGE_POLICIES:
+        raise SoilProfileTextureError(f"coverage must be one of {COVERAGE_POLICIES}, got {coverage!r}")
+    partial = coverage == COVERAGE_POLICY_PARTIAL
     layers = canonical_layers(layers)
     budget = _checked_int(memory_budget_bytes, "memory_budget_bytes", minimum=1)
     reserve = _checked_int(reserve_bytes, "reserve_bytes")
@@ -809,6 +828,16 @@ def build_soil_profile_texture(
 
     # Refusals: evaluated on the host flags of ACTIVE cells, before any output is published.
     n_short, short_cells = _report_cells(flags, FLAG_INSUFFICIENT_DEPTH, mask, nx)
+    if partial:  # the opt-in interprets the shortfall as physical base; it must still agree with the actual material
+        _admit_partial_stage(estimate)
+        n_inconsistent = _partial_coverage_inconsistent(outputs, mask, layers, factor, estimate.batch_cells)
+        if n_inconsistent:
+            raise SoilProfileGeometryError(
+                f"{n_inconsistent} active cell(s) have non-finite/negative depth or coverage, or layer coverage that "
+                "disagrees with the actual represented material depth beyond the declared FP64 bound (partial_over_base "
+                "requires coverage_l == clip(depth - top_l, 0, thickness_l)); nothing was published.")
+        n_short_partial = n_short
+        n_short = 0
     n_cap, cap_cells = _report_cells(flags, FLAG_TOP_LAYER_THINNER_THAN_CAP, mask, nx)
     if n_cap:
         raise SoilProfileGeometryError(
@@ -857,6 +886,19 @@ def build_soil_profile_texture(
         "mass_resolution_kg": mres,
     }
     source.update(source_extra)
+    if partial:
+        source["coverage_policy"] = {
+            "policy": COVERAGE_POLICY_PARTIAL, "version": "maple_syrup.soil_profile_texture.partial_coverage/1",
+            "interpretation": "layer parts below the bottom of the native voxel column (flat full-grid base, elevation 0) "
+                              "hold exactly zero mass; texture there is undefined (zero fractions), not estimated",
+            "validation_stage": {"chunk_cells": estimate.batch_cells,
+                                 "model_bytes_namespace_host": list(partial_stage_bytes(estimate.batch_cells)),
+                                 "host_transfer": "one bool flag copy of chunk_cells per chunk (counted to_host)"},
+            "n_active_cells_short": int(n_short_partial),
+            "represented_depth_m_meaning": "existing sequential segment-height diagnostic; NOT the canonical hydraulic "
+                                           "bedrock-depth witness",
+            "not_claimed": ["hydraulic depth classification", "property refresh", "water conservation",
+                            "pond/restart integration"]}
     return SoilProfileTexture(
         layer_mass_kg=outputs["layer_mass_kg"], layer_fraction=outputs["layer_fraction"],
         layer_total_kg=outputs["layer_total_kg"], coverage_m=outputs["coverage_m"],
@@ -864,8 +906,60 @@ def build_soil_profile_texture(
         active_mask=mask, layers=layers, ny=ny, nx=nx, class_ids=class_ids, class_diameter_m=class_diam,
         class_is_aggregate=class_agg, class_particle_density_kg_m3=class_rho, cell_area_m2=dx * dy,
         bulk_density_kg_m3=rho, coverage_bound_terms=n_terms, coverage_bound_factor=factor, namespace=namespace,
-        backend=backend, representation=representation, memory=estimate, source=source,
+        backend=backend, representation=representation, memory=estimate, source=source, coverage_policy=coverage,
     )
+
+
+def partial_stage_bytes(batch: int) -> tuple[int, int]:
+    """`(namespace_bytes, host_bytes)` of the opt-in coverage validation stage for chunks of `batch` cells: the live
+    float64/bool expression temporaries in the outputs' namespace, and the host copy of the `batch` bool flags. No
+    full-domain, no `L x N`, no mask upload, no library reduction workspace."""
+    B = _checked_int(batch, "batch", minimum=1)
+    return PARTIAL_STAGE_F64_VECTORS * _F8 * B + PARTIAL_STAGE_BOOL_VECTORS * B, B
+
+
+def _admit_partial_stage(estimate: TextureMemoryEstimate) -> None:
+    """The stage runs AFTER every batch kernel/validator buffer is released, so it may reuse the working set the
+    estimate already admitted for the batch phase: its namespace temporaries must fit inside the counted `validation_bytes`
+    (the native partition validator of one batch, >= 184 B per cell) and its host flags inside the counted host scratch.
+    This is checked, not assumed; the default `full` estimate is unchanged. Refused (nothing published) otherwise."""
+    ns_bytes, host_bytes = partial_stage_bytes(estimate.batch_cells)
+    host_reusable = estimate.validation_bytes if (estimate.output_namespace == "numpy" or estimate.representation == "windowed") \
+        else estimate.fixed_overhead_bytes  # dense CUDA keeps the validator on the device; its host side holds the flags in the declared allowance
+    if ns_bytes > estimate.validation_bytes or host_bytes > host_reusable:
+        raise SoilProfileMemoryError(
+            f"partial-coverage validation stage needs {ns_bytes} B (namespace) + {host_bytes} B (host flags) at "
+            f"batch_cells={estimate.batch_cells}, above the batch working set already admitted "
+            f"({estimate.validation_bytes} B validation, {host_reusable} B host); nothing was published.")
+
+
+def _partial_coverage_inconsistent(outputs: dict, mask: np.ndarray, layers: Any, factor: float, batch: int) -> int:
+    """Count ACTIVE cells with invalid or inconsistent coverage: non-finite or negative `represented_depth_m`, a
+    non-finite or negative `coverage_m`, or `coverage_m[l]` differing from `clip(depth - top_l, 0, thickness_l)` by more than
+    the declared operation-derived bound `factor * max(depth, bottom edge)` (the strict check's bound). Bad flags are formed
+    per chunk of `batch` cells in the outputs' namespace, only those `batch` bool flags are copied to the host with MAPLE's
+    counted `to_host`, and the HOST mask slice selects/counts the active cells: no second full-domain mask upload, no
+    library reduction workspace, no `L x N` tensor. Fails closed: NaN/inf are flagged before any comparison."""
+    from maple.core.backend import array_namespace, to_host
+
+    xp = array_namespace(outputs["coverage_m"])
+    edges = layers.depth_edges_m
+    L, N = layers.n_layers, int(mask.shape[0])
+    step = max(1, int(batch))
+    bad = 0
+    for b0 in range(0, N, step):
+        sl = slice(b0, min(N, b0 + step))
+        depth = outputs["represented_depth_m"][sl]
+        wrong = ~xp.isfinite(depth) | (depth < 0.0)
+        tol = factor * xp.maximum(depth, float(edges[L]))
+        for l in range(L):
+            cov = outputs["coverage_m"][l, sl]
+            expected = xp.minimum(xp.maximum(depth - float(edges[l]), 0.0), float(edges[l + 1] - edges[l]))
+            wrong = wrong | ~xp.isfinite(cov) | (cov < 0.0) | (xp.abs(cov - expected) > tol)
+        host_flags = np.asarray(to_host(wrong))  # the ONE host flag buffer (fresh: a device download or the CPU `wrong` itself)
+        np.logical_and(host_flags, mask[sl], out=host_flags)  # mask combined IN PLACE: no second host chunk, `mask` untouched
+        bad += int(np.count_nonzero(host_flags))
+    return bad
 
 
 # --- batch runner selection ---------------------------------------------------------------------------------------------

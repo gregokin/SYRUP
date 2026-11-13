@@ -16,6 +16,9 @@ per call on the operator's device; inputs are never written.
 CuPy, a visible device and a loadable kernel are required (`require_cuda`); any failure is a
 `PreferentialBackendUnavailableError`, never a NumPy fallback. Dynamic arrays must already live on the column's
 device and be ordered with respect to the current stream. Nothing here was run by its author; Codex records results.
+
+Phase 2 S2-B2.d: the kernel text is rendered from shared pieces by the pure, fail-closed `render_source`; the common rendering is byte-identical to the previous text (`COMMON_SOURCE_SHA256`), and the explicit
+spatial preferential operator renders the SAME body with its own readers in `maple_syrup.spatial_preferential_infiltration_cuda`.
 """
 
 from __future__ import annotations
@@ -37,14 +40,19 @@ from maple_syrup.preferential_infiltration import (
 )
 from maple_syrup.routing_cuda import COMPILE_OPTIONS
 
-__all__ = ["COMPILE_OPTIONS", "KERNEL_NAME", "LAUNCHES_PER_STEP", "THREADS", "current_device_id", "kernel_provenance",
-           "kernel_source", "load_kernel", "prepare_runner", "require_cuda"]
+__all__ = ["BODY_TOKENS", "COMMON_SOURCE_SHA256", "COMMON_SUBSTITUTIONS", "COMPILE_OPTIONS", "KERNEL_NAME", "LAUNCHES_PER_STEP", "THREADS", "current_device_id", "kernel_provenance",
+           "kernel_source", "load_kernel", "prepare_runner", "render_source", "require_cuda"]
 
 KERNEL_NAME = "maple_syrup_preferential_step"
 LAUNCHES_PER_STEP = 1
 
 # Flag bits and stage order mirror preferential_infiltration.reference_step / _numba exactly.
-_SOURCE = r"""
+#
+# Phase 2 S2-B2.d (ONE physical body, two renderings): the kernel text is written ONCE as the pieces below. The COMMON rendering (`_SOURCE`) reproduces the previous kernel text byte for byte (its sha256 is
+# `COMMON_SOURCE_SHA256`, checked at import and by the tests): name, launch ABI, options, arithmetic and `kernel_provenance()` are unchanged. The explicit SPATIAL rendering
+# (`maple_syrup.spatial_preferential_infiltration_cuda`) supplies its own readers, `__device__` head and reduction tail and substitutes the designated `@@TOKEN@@` sites of the shared body.
+# `render_source` is PURE and fails closed (exact token set, declared occurrence counts, no token marker inside a substitution, none left).
+_COMMON_HEAD = r"""
 extern "C" __global__ void maple_syrup_preferential_step(
     const long long n, const int nl,
     const double* surface_in, const double* w_in, const unsigned char* active,
@@ -52,9 +60,9 @@ extern "C" __global__ void maple_syrup_preferential_step(
     const double* sat_m, const double* cap_tol, const double cell_tol, const double no_flag,
     double* surface_out, double* w_out, double* intake, double* total, double* rows)
 {
-    const long long i = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
-    if (i >= n) return;
-    const bool a = active[i] != 0;
+"""
+
+_BODY = r"""@@LANE@@    const bool a = active[i] != 0;
     unsigned int f = 0u;
     double before = 0.0;
     for (int l = 0; l < nl; ++l) {
@@ -62,7 +70,7 @@ extern "C" __global__ void maple_syrup_preferential_step(
         const double wl = w_in[p];
         if (!isfinite(wl)) f |= 1u << 0;
         if (wl < 0.0) f |= 1u << 1;
-        if (wl > sat_m[l] + cap_tol[l]) f |= 1u << 2;
+        if (wl > @@SATB_L@@) f |= 1u << 2;
         before = before + wl;
         w_out[p] = wl;
         intake[p] = 0.0;
@@ -75,19 +83,19 @@ extern "C" __global__ void maple_syrup_preferential_step(
     double after = before;
     if (a && dt > 0.0) {
         // isolated attempt: H x (-expm1(-(k dt)))
-        const double x = rate[i] * dt;
+        const double x = @@RATE@@ * dt;
         const double fr = -expm1(-x);
         double attempted = h_in * fr;
         isolated_v = attempted;
         // ONE aggregate rate cap
-        const double cap = max_rate[i] * dt;
+        const double cap = @@MAXRATE@@ * dt;
         if (cap < attempted) attempted = cap;
         attempted_v = attempted;
         // receiver allocation, top layer first; bounded by the room and the remaining surface water
         for (int l = 0; l < nl; ++l) {
             const long long p = (long long)l * n + i;
             double alloc = attempted * recv[p];
-            double room = sat_m[l] - w_out[p];
+            double room = @@SAT_L@@ - w_out[p];
             if (room < 0.0) room = 0.0;
             if (room < alloc) alloc = room;
             if (left < alloc) alloc = left;
@@ -102,7 +110,7 @@ extern "C" __global__ void maple_syrup_preferential_step(
             const double w = w_out[(long long)l * n + i];
             if (!isfinite(w)) f |= 1u << 5;
             if (w < 0.0) f |= 1u << 6;
-            if (w > sat_m[l] + cap_tol[l]) f |= 1u << 7;
+            if (w > @@SATB_L@@) f |= 1u << 7;
             after = after + w;
         }
         if (!isfinite(left)) f |= 1u << 5;
@@ -118,7 +126,12 @@ extern "C" __global__ void maple_syrup_preferential_step(
         }
         if (nonfinite) f |= 1u << 10;
     }
-    surface_out[i] = left;
+@@STORE@@
+"""
+
+BODY_TOKENS = {"@@LANE@@": 1, "@@SATB_L@@": 2, "@@SAT_L@@": 1, "@@RATE@@": 1, "@@MAXRATE@@": 1, "@@STORE@@": 1}
+
+_COMMON_STORE = r"""    surface_out[i] = left;
     total[i] = total_v;
     rows[0 * n + i] = a ? before : 0.0;
     rows[1 * n + i] = a ? after : 0.0;
@@ -127,9 +140,44 @@ extern "C" __global__ void maple_syrup_preferential_step(
     rows[4 * n + i] = isolated_v;
     rows[5 * n + i] = attempted_v;
     rows[6 * n + i] = total_v;
-    rows[7 * n + i] = (f == 0u) ? no_flag : (double)(f & (0u - f));
+    rows[7 * n + i] = (f == 0u) ? no_flag : (double)(f & (0u - f));"""
+
+#: The common rendering of every token: exactly the text the previous kernel contained at that site.
+COMMON_SUBSTITUTIONS = {
+    "@@LANE@@": r"""    const long long i = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
+    if (i >= n) return;
+""",
+    "@@SATB_L@@": "sat_m[l] + cap_tol[l]", "@@SAT_L@@": "sat_m[l]", "@@RATE@@": "rate[i]", "@@MAXRATE@@": "max_rate[i]",
+    "@@STORE@@": _COMMON_STORE,
 }
-"""
+
+
+def render_source(*, readers: str = "", head: str | None = None, substitutions: dict[str, str] | None = None, tail: str = "") -> str:
+    """PURE rendering (no registry, no cache, no state) of a preferential CUDA source: the caller's reader macros, the caller's kernel/device head (default: the common kernel head), the ONE shared body with every
+    `@@TOKEN@@` replaced by the caller's text (default: the common text) and the closing brace, then an optional tail. Fails closed (`PreferentialError`) on any contract drift."""
+    if not all(isinstance(x, str) for x in (readers, tail)) or not (head is None or isinstance(head, str)):
+        raise PreferentialError("readers, head and tail must be strings")
+    subs = dict(COMMON_SUBSTITUTIONS if substitutions is None else substitutions)
+    if set(subs) != set(BODY_TOKENS) or not all(isinstance(v, str) for v in subs.values()):
+        raise PreferentialError(f"the substitutions must define exactly {sorted(BODY_TOKENS)}")
+    if any("@@" in v for v in subs.values()):
+        raise PreferentialError("render contract drift: a substitution may not contain a token marker")
+    body = _BODY
+    for token, count in BODY_TOKENS.items():
+        if body.count(token) != count:
+            raise PreferentialError(f"render contract drift: token {token} occurs {body.count(token)} times in the shared body, expected {count}")
+    for token in BODY_TOKENS:
+        body = body.replace(token, subs[token])
+    if "@@" in body:
+        raise PreferentialError("render contract drift: an unreplaced token remains in the shared body")
+    return readers + (_COMMON_HEAD if head is None else head) + body + "}\n" + tail
+
+
+_SOURCE = render_source()
+#: sha256 of the common kernel text (3 457 characters) before the S2-B2.d factoring; the common rendering must reproduce it exactly (this step changes NO arithmetic).
+COMMON_SOURCE_SHA256 = "0d454f1ad0fc4c6d23252687c311802788e3ee2a411f714969a2a08e9c9f72e2"
+if hashlib.sha256(_SOURCE.encode()).hexdigest() != COMMON_SOURCE_SHA256 or len(_SOURCE) != 3457:  # fail closed at import: the common text/ABI must not drift
+    raise PreferentialError("the common preferential CUDA source no longer renders byte-identically to its pre-factoring text")
 
 _MODULES: dict[int, Any] = {}
 _FUNCTIONS: dict[int, Any] = {}

@@ -1,0 +1,55 @@
+{
+  "schema": "syrup.phase2.spatial_cuda_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_NUMPY_NUMBA_CUDA_COLUMN_COMPONENT",
+  "utc": "2026-11-12T18:20:11.159996+00:00",
+  "source": {
+    "package_sha256": "c4c0e3122a150db87d5e5f36c1288862ef7bdc40f67f07a5146ffb445acf9f6a",
+    "file_count": 119,
+    "base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "spatial_soil_layers_sha256": "8ba0243a1112cf27fea35281608707f66790f769d340683ba7c9fd447741d5e0",
+    "subsurface_cuda_spatial_sha256": "2662eb3f8e05faca2c7815b2ef669ff9969ac8c3e6ae9d92fb2cf6b8ffc33ec3",
+    "subsurface_cuda_sha256": "8c80986468e046984aacd9a768391034e5aae65b654fe543d99f90ccf2712b76",
+    "native_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "native_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_verification": {
+    "CPU": "1088 passed121skipped: spatialGPUhost137/106skip,shared30,referencewater311,compiledCPU141,parameters469/15skip. Existing MAPLE .venv and genuine9fCPU materialization.",
+    "GPU": "106 spatial checks passed3.24s; commonCUDA23passed1skip and32cases256arrays bit-exact vs frozenA3actualGPU baseline. EachRootGPUchild had fresh0MiB/0%physicalGPU0UUID guard; existing .venv-cupy,genuine9fCUDA materialization.",
+    "independent_columns": "EACH NumPy,Numba,actualCUDA:24scenarios168columns +mixed96scenarios1056columns allseven water/fluxfields BITEXACT vs previously computed accepted common-column reference. Inputs/clocks/nativevolume bounds pass; CUDAresidentstepzeroH2D/one72BD2H.",
+    "analytical": "Seven actualGPU independent dyadic hand-controls pass: zero moisture, field-capacity gravity drainage/open bottom, closed-bottom retention, top saturated with lower storage, saturated closed fit refusal/unchanged original, inactiveuniform saturation validation, global finite-input volume overflow typed refusal. Not a native storm fallback simulation.",
+    "memory": "Knownhost raw72B plus rebuilt72B packets explicitly counted144B, wire72B. Independent realCuPy probe requests5621968B EXACTLY model at4layers50000cells; uniqueoutputpayload5600000B, useddelta5601792B equalsroundedcharges; deliberate splitpoolfree reuse explains reservedgrowth4801024B, not lostoutputs. Eightiterationused/reservedplateau. CorrectedactualGPUfixture passes sharedfactor scratch too.",
+    "implementation": "ONE shared CUDA physical stage body; purestateless rendering/readers; no per-cell4Nrows array, no CUB/CuPy reduction workspace, explicit staticshared/blockpartials/finalpacket; bounded function caches, no owner history. Rawreaderproducts,flags,tolerances/conservation unchanged. Final correctionAST numericalfunctions and CUDAconstantstrings unchanged.",
+    "performance": {
+      "device": "NVIDIA GeForce GTX 1080 Ti",
+      "environment": "NumPy2.5.3 NumBa0.67.0 llvmlite0.49.0 CuPy14.2.0; single-thread CPU; matched fixed-profile full-wrapper timings in .venv-cupy",
+      "numba_over_cuda_ratio_200000_cells_range": [
+        18.3420193074225,
+        46.017744868925206
+      ],
+      "step_kernel_registers": 96,
+      "step_kernel_static_shared_bytes": 7168,
+      "step_kernel_local_size_bytes": 0,
+      "scope": "48 workload/backend records:3/5layers,10000/200000cells,constant/donor,shared/cell,NP/Numba/CUDA. Numericalresults checked,setup/first separated,warm5repeats fromsameparent. NOT whole storm,Fortran,evolvingbed,large-domain or scaling proof."
+    },
+    "evidence": [
+      "root_s2_a4_2_c1_source_manifest.json",
+      "root_s2_a4_2_c1_static_review.json",
+      "root_s2_a4_2_c1_cpu_runs/result.json",
+      "root_s2_a4_2_c1_gpu_runs/result.json",
+      "root_s2_a4_2_pool_root_s2_a4_2_c1_snapshot.json",
+      "root_s2_a4_2_timing_root_s2_a4_2_c1_snapshot.json"
+    ]
+  },
+  "interface_changes": [
+    "Six explicit spatialtrial APIs accept actualcurrentdeviceCuPy arrays with strict namespace/type/shape/device checks. No implicit transfers or backendfallback.",
+    "GPU main quota/device reading and separate host quota/reserve/reading. CPU behavior/estimates and componenttag preserved; additive state namespace/device fields, separateCUDA tag.",
+    "Logical CuPy state immutability only; no tamper detection. No native legacy class spoofing or operator/lifecycle/codec admission widened."
+  ],
+  "limits": [
+    "Fixed explicit geometry/properties standalonecolumn component only. No native moving-bed/remap adoption, texture provider, LEAF, storm/lifecycle/restart acceptance.",
+    "One assigned GTX1080Ti only; payload estimate excludes declared allocator rounding/pool/compiler/context/interpreter policy, not whole-process reservation or memoryfit proof.",
+    "Three physics choices remain unanswered. No automaticwetting-history reset/source-lock/restartmigration.",
+    "WholePhase2 remains incomplete/uncommitted; per-phasepublication after full acceptance, then2.5/3."
+  ],
+  "known_open_confirmed_component_defects": []
+}

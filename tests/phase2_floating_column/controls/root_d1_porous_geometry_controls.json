@@ -1,0 +1,349 @@
+{
+  "scope": "Root independent exact Fraction geometry/gravity and Decimal80 partial-pair relaxation controls. No model execution; future D1 qualification inputs; FC triggers movement and rock prevents bottom export.",
+  "gravity_controls": [
+    {
+      "soil_depth_m": "0",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.0",
+        "0.0",
+        "0.0"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.0",
+        "0.0",
+        "0.0"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.0",
+        "0.0",
+        "0.0"
+      ],
+      "percolation_m": [
+        "0.0",
+        "0.0"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": true,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".05",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.05",
+        "0.0",
+        "0.0"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.015",
+        "0.0",
+        "0.0"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.015",
+        "0.0",
+        "0.0"
+      ],
+      "percolation_m": [
+        "0.0",
+        "0.0"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".1",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.1",
+        "0.0",
+        "0.0"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.03",
+        "0.0",
+        "0.0"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.03",
+        "0.0",
+        "0.0"
+      ],
+      "percolation_m": [
+        "0.0",
+        "0.0"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".2",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.1",
+        "0.1",
+        "0.0"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.03",
+        "0.03",
+        "0.0"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.02",
+        "0.04",
+        "0.0"
+      ],
+      "percolation_m": [
+        "0.01",
+        "0.0"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".3",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.1",
+        "0.2",
+        "0.0"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.03",
+        "0.06",
+        "0.0"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.02",
+        "0.07",
+        "0.0"
+      ],
+      "percolation_m": [
+        "0.01",
+        "0.0"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".45",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.1",
+        "0.2",
+        "0.15"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.03",
+        "0.06",
+        "0.045"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.02",
+        "0.055",
+        "0.06"
+      ],
+      "percolation_m": [
+        "0.01",
+        "0.015"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".6",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.1",
+        "0.2",
+        "0.3"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.03",
+        "0.06",
+        "0.09"
+      ],
+      "effective_open_bottom": false,
+      "expected_water_after_gravity_m": [
+        "0.02",
+        "0.04",
+        "0.12"
+      ],
+      "percolation_m": [
+        "0.01",
+        "0.03"
+      ],
+      "bottom_drainage_m": "0.0",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    },
+    {
+      "soil_depth_m": ".7",
+      "nominal_edges_m": [
+        "0.0",
+        "0.1",
+        "0.3",
+        "0.6"
+      ],
+      "porous_thickness_m": [
+        "0.1",
+        "0.2",
+        "0.3"
+      ],
+      "initial_theta": ".3",
+      "initial_water_m": [
+        "0.03",
+        "0.06",
+        "0.09"
+      ],
+      "effective_open_bottom": true,
+      "expected_water_after_gravity_m": [
+        "0.02",
+        "0.04",
+        "0.06"
+      ],
+      "percolation_m": [
+        "0.01",
+        "0.03"
+      ],
+      "bottom_drainage_m": "0.06",
+      "all_rock": false,
+      "exact_fraction_conservation": true
+    }
+  ],
+  "diffusion_controls": [
+    {
+      "label": "partial_constant",
+      "thickness_m": [
+        ".1",
+        ".1"
+      ],
+      "mode": "constant",
+      "interface_diffusivity_m2_s": "1e-7",
+      "interface_conductivity_m_s": null,
+      "diffusion_coefficient": null,
+      "theta": [
+        ".1",
+        "0"
+      ],
+      "dt_s": "3600",
+      "residual_theta": "0",
+      "fc_theta": ".2",
+      "sat_theta": ".4",
+      "expected_signed_transfer_m": "0.00034734552094397134126721067339208122715018044563563679937446163960581835001124625",
+      "expected_water_m": [
+        "0.0096526544790560286587327893266079187728498195543643632006255383603941816499887538",
+        "0.00034734552094397134126721067339208122715018044563563679937446163960581835001124625"
+      ],
+      "precision": 80,
+      "gravity_no_op": true
+    },
+    {
+      "label": "partial_donor_down",
+      "thickness_m": [
+        ".1",
+        ".15"
+      ],
+      "mode": "tietjen_donor_depth",
+      "interface_diffusivity_m2_s": null,
+      "interface_conductivity_m_s": "1e-6",
+      "diffusion_coefficient": "1",
+      "theta": [
+        ".1",
+        ".02"
+      ],
+      "dt_s": "3600",
+      "residual_theta": "0",
+      "fc_theta": ".2",
+      "sat_theta": ".4",
+      "expected_signed_transfer_m": "0.00022495782202797722607678432419679436002031393122884543026658325264514822942234948",
+      "expected_water_m": [
+        "0.0097750421779720227739232156758032056399796860687711545697334167473548517705776505",
+        "0.0032249578220279772260767843241967943600203139312288454302665832526451482294223495"
+      ],
+      "precision": 80,
+      "gravity_no_op": true
+    },
+    {
+      "label": "partial_donor_up",
+      "thickness_m": [
+        ".1",
+        ".15"
+      ],
+      "mode": "tietjen_donor_depth",
+      "interface_diffusivity_m2_s": null,
+      "interface_conductivity_m_s": "1e-6",
+      "diffusion_coefficient": "1",
+      "theta": [
+        ".02",
+        ".1"
+      ],
+      "dt_s": "3600",
+      "residual_theta": "0",
+      "fc_theta": ".2",
+      "sat_theta": ".4",
+      "expected_signed_transfer_m": "-0.00033345170010621248761652224645639797806417322781021132739948317402158561601079639",
+      "expected_water_m": [
+        "0.0023334517001062124876165222464563979780641732278102113273994831740215856160107964",
+        "0.014666548299893787512383477753543602021935826772189788672600516825978414383989204"
+      ],
+      "precision": 80,
+      "gravity_no_op": true
+    }
+  ]
+}

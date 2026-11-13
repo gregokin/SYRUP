@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-13T19:00:08.901803+00:00",
+  "status": "independently_accepted_bounded_GPU_selected_event_property_refresh",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_event_refresh_cuda_c5_snapshot160",
+  "manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_event_refresh_cuda_c5_snapshot160_manifest.json",
+  "manifest_sha256": "b0e0b43bd4eb73cbac2e6e1bed19a2ab3969275d3d2ae6e276a824158c312af8",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "independent_source_review": "Original 3 declared deltas only: owner-free numerical reconcile/closure factoring, selected CUDA refresh and canonical preferential rebind. Existing CPU bodies/kernels/physics/source guards unchanged. Exact host NumPy selected-tile provider matches initialization; current W/J/I remain device resident.",
+  "tests": {
+    "CPU_C4": "32passed19skip",
+    "GPU_C4": "18 scientific controls passed; moderate failed TEST aggregate-total assumption",
+    "GPU_C5": "1 moderate control passed on identical160production; 18deselected",
+    "original_CPU": "64 controls passed on same production (earlier TEST definitions)",
+    "independent_TEST_review": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/completion_program_20261113/report_continued_checkpoint.md"
+  },
+  "moderate": {
+    "cells": 50003,
+    "layers": 3,
+    "selected": 101,
+    "true_peak_bytes": 8509440,
+    "model_bytes": 11180681,
+    "three_released_plateau_bytes": [
+      193320960,
+      193320960,
+      193320960
+    ],
+    "D2H_total": 3281527,
+    "D2H_static_hash": 2962615,
+    "D2H_selected_and_reductions": 318912,
+    "H2D_total": 459275
+  },
+  "limits": [
+    "Stage only, no event/daily lifecycle acceptance.",
+    "Hybrid selected host property provider, bounded host/device transfers and static canonical hashing explicitly counted.",
+    "No whole-Chastre or full storm scaling inference.",
+    "19 controls comprise18C4+1C5, same production bytes; not19allrerunC5.",
+    "Optional static-hash name whitelist hardening queued separately, not a confirmed implementation defect."
+  ],
+  "production": {
+    "floating_event_refresh_cuda.py": "03138ee8b4ac170adf2f37aab4b24269aaa1190f70e66c50f47702a4285e2352",
+    "native_floating_soil_cuda.py": "d647ba32895da4bd459b6f24d549eac144e8cec2917d1a11bc4275148052678e",
+    "floating_preferential_infiltration.py": "21d2bedaf15ff69d5a84a3b1968292a8f2b5d50653cf920616a38e5823ec7448"
+  },
+  "committed": false
+}

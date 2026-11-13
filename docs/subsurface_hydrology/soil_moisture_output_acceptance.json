@@ -1,0 +1,126 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T03:42:19.147527+00:00",
+  "component": "G0 native every-N-completed-days soil-moisture diagnostic writer",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g0_c3_snapshot",
+  "module_count": 129,
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g0_c3_source_manifest.json",
+  "writer_sha256": "48919d4346ad9c248d7569059e22e10cbe5a6db3a2c8c3c5eb7e6ee9d9273610",
+  "source_package_sha256": "e7a5ff3b1f922daac20a4c203f54915797427d01471e7e5f3bb81650d8127c14",
+  "package_algorithm": "sha256 JSON sorted compact {src-relative-path:file_sha256}",
+  "all_previous128_production_modules_unchanged": true,
+  "maple": [
+    {
+      "lane": "cpu",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source",
+      "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "files": 412,
+      "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "all_417_bundle_files_match": true
+    },
+    {
+      "lane": "cuda",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source",
+      "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "files": 412,
+      "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "all_417_bundle_files_match": true
+    }
+  ],
+  "verification": {
+    "cpu_suite": {
+      "passed": 348,
+      "runs": "root_g0_c3_cpu_runs/result.json"
+    },
+    "actual_gpu_suite": {
+      "passed": 2,
+      "skipped": 1,
+      "skip_reason": "two visible devices needed; only authorized GPU0 visible",
+      "runs": "root_g0_c3_gpu_runs/result.json"
+    },
+    "fresh_process_physical_restart": {
+      "numpy": {
+        "status": "PASS",
+        "physical_checkpoint_day": 1,
+        "fresh_process_continued_days": [
+          2,
+          3,
+          4
+        ],
+        "same_physical_digest_state_digest_and_water_bytes_every_day": true,
+        "ahead_snapshots_verified_existing": [
+          2,
+          4
+        ]
+      },
+      "numba": {
+        "status": "PASS",
+        "physical_checkpoint_day": 1,
+        "fresh_process_continued_days": [
+          2,
+          3,
+          4
+        ],
+        "same_physical_digest_state_digest_and_water_bytes_every_day": true,
+        "ahead_snapshots_verified_existing": [
+          2,
+          4
+        ]
+      }
+    },
+    "root_unsealed_unknown_files": {
+      "status": "refused: day_000000000001 is an unsealed directory with unrecognised or non-regular member 'foreign_note.txt'; it is not this writer's reservation, nothing was removed",
+      "before": {
+        "water_m.npy": "756e72656c6174656420706c616365686f6c646572",
+        "foreign_note.txt": "7072657365727665207468697320756e6b6e6f776e20636f6e74656e74"
+      },
+      "after": {
+        "water_m.npy": "756e72656c6174656420706c616365686f6c646572",
+        "foreign_note.txt": "7072657365727665207468697320756e6b6e6f776e20636f6e74656e74"
+      },
+      "changed_unknown_directory": false,
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g0_c3_snapshot/src/maple_syrup/soil_moisture_output.py"
+    },
+    "root_static_publication_recovery": {
+      "status": "accepted",
+      "before_names": [
+        "active.npy",
+        "output.json",
+        "output.json.tmp"
+      ],
+      "after_names": [
+        "active.npy",
+        "output.json"
+      ],
+      "same_inode_tmp_and_seal": null,
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g0_c3_snapshot/src/maple_syrup/soil_moisture_output.py"
+    },
+    "root_quota_memory_preceding_equivalent_C2": {
+      "file": "root_g0_actual_byte_accounting_root_g0_c2_snapshot.json",
+      "same_relevant_functions_C3_only_changes_cold_scan_and_static_temp_tidy": true,
+      "warm_memory": "root_g0_warm_metadata_peak_root_g0_c2_snapshot.json",
+      "C3_full_regression_suite_includes_quota_and_memory_controls": true
+    }
+  },
+  "behavior": {
+    "cadence": "positive integer N supplied, off unless constructed; N,2N,... completed native daily interevent closes",
+    "post_transpiration": true,
+    "not_due_device_downloads": 0,
+    "due_device_downloads": "bounded chunks, water inventory only; static mask separate cold stream",
+    "schema": "maple_syrup.soil_moisture_output/2; maple_syrup.soil_moisture_snapshot/2",
+    "output": "sealed day directories water_m.npy + checksummed manifest; static active.npy + output.json",
+    "no_physics_or_state_mutation": true,
+    "full_physical_restart_checkpoint": false
+  },
+  "remaining_requirements": [
+    "Native G0 only: no CLI/configuration hook yet. Actual C1 driver lacks DailyCursor; see root_final_output_integration_seam.md; qualify real caller rather than fabricate cursor.",
+    "Floating soil geometry/depth/property generations need explicit output schema/owner extension with Phase2 native integration.",
+    "Actual runtime/source-pair metadata must be supplied as explicit caller_identity by qualified adapter; G0 only binds its own module and genuine operator/phase metadata.",
+    "Restart from a non-due physical checkpoint trusts its accepted caller state; no snapshot exists for unsaved day.",
+    "Single writer; no multiwriter/concurrent cross-stream mutation support; availability readings are not reservations.",
+    "Metadata/read scratch model excludes imports/compiler/context/allocator policy; read_snapshot max_bytes bounds returned arrays, additional metadata scratch separately documented.",
+    "Component tests are not a coupled evolving-bed/large-domain/observational acceptance."
+  ],
+  "publication": "Uncommitted. Publish only with independently accepted whole Phase2 as user authorized."
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T09:13:00.559949+00:00",
+  "component": "E4c CPU native Dense/Windowed continuous floating Pond vertical + ordinary/terminal capacity",
+  "status": "accepted_bounded_CPU_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_e4c_cpu_snapshot",
+  "source_manifest": "root_e4c_cpu_source_manifest.json",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "verification": {
+    "focused_cpu_passed": 54,
+    "gpu_gated_skipped": 2,
+    "native_owner_regression_passed": 48,
+    "source_guards_passed": 26,
+    "evidence": "root_e4c_cpu_runs/result.json",
+    "root_independent_controls": [
+      "root_e4b_independent_root_e4c_cpu_snapshot.json",
+      "root_e4b_default_view_admission_root_e4c_cpu_snapshot.json",
+      "root_e4b_thin_erosion_root_e4c_cpu_snapshot.json",
+      "root_e4c_windowed_thin_probe_runs/result.json"
+    ]
+  },
+  "review": [
+    "Same actual native sediment/exchange/quiet/publication body; real floating preferential/matrix/gravity composed with genuine surface-only CPU/Numba router, no fake legacy bucket.",
+    "Genuine initial owner source/active pattern/clock binding; composed memory pre-admission and real default geometry-view reader before allocation.",
+    "Post-exchange and real terminal deposition depth/capacity reconciled before quiet and publication. Surface-return/native bed-water synchronization and bottom loss counted once.",
+    "Root synthetic near-rock Dense/Windowed twins 200 actual wet-detachment steps: six physical arrays byteidentical; actual return2.678045194505311e-08m3; both native budgets close.",
+    "Actual Windowed full-base prefix diagnostic trusted only on full-validated initial bed and actual native producer lineage; no all-deep hot scan.",
+    "Terminal geometry reconciliation independently invalidates quiet without unrequested rerouting; later real recession required. Default dry-reset path numerical hashes preserved."
+  ],
+  "limits": [
+    "CPU NumPy/Numba Dense+genuineWindowed only; CUDA physical path NOT implemented/accepted by this receipt.",
+    "Small fixtures only, no field/fullChastre/scaling/performance claim.",
+    "No floating physical checkpoint/daily final close/everyN/CLI/wind scheduler acceptance by this component.",
+    "Current component diagnostics do not replace source-bound accepted simulation lifecycle.",
+    "Later D3 CUDA helper source changes require their own independent qualification; this receipt binds only the immutable snapshot."
+  ],
+  "publication": "Uncommitted; whole Phase2 qualification required before authorized branch/main publication."
+}

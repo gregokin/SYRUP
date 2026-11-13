@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-13T19:52:18.968330+00:00",
+  "status": "independently_accepted_bounded_CPU_event_daily_bridge_not_yet_adopted_pending_GPU_shared_hook_reconciliation",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_event_daily_bridge_c3_snapshot161",
+  "manifest_sha256": "a747d0974f1b93f19e6f54e528b1b892ad0c3c56d3bf1044e3b8bb57c7f3fc5e",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "tests": {
+    "Root_C3_CPU": 227,
+    "composition": {
+      "bridge": 34,
+      "old_daily": 94,
+      "old_lifecycle": 19,
+      "old_floating_pond": 54,
+      "preservation_guards": 26
+    },
+    "independent_backend_histories": "Four genuine controls: canonical accepted/altered-same-total refused on NumPyDense and NumbaWindowed; producer True/False respectively; actualmobile.1kg parent.",
+    "C2_independent_V2": "Actualwet maxH.001486951 day no bed_inventory calls; evolvingN1output across genuineR0refresh acceptedday2; C3wet/output code preserved except doc/forcingproof."
+  },
+  "production": {
+    "floating_event_daily_bridge.py": "93a09849755bb8f3d83efea0ba4868355724778d18d708279daed2a91a432d47",
+    "floating_daily.py": "931f6bcf120be2ce42fbf20c31885d37988155d94c37c903b2a2e6b6fb2e1940",
+    "floating_daily_output.py": "2150218ff4980054771be0f7994da7679fd5ab245b117dc04a84abc48ea2ee25",
+    "floating_event_lifecycle.py": "0ff75894a1f83d5b4ab66557b1077fb6112c6db9df2f5847690676aaa2936190",
+    "floating_pond.py": "b1fe5bb60c4ef108f3430610504d97b34e8571fdc5a82f90fc24d0f50f0c4a78",
+    "pond_event.py": "c2b65c1fab6824219db8ba5a299a6271db350aad02b8ca807c7e068a024cded9"
+  },
+  "behavior": [
+    "Same authoritative water and MAPLE bed across actualnativecomplete event and daily/subsurfacewithdrawal close.",
+    "Wetday hydraulic-only runtime, no repeatedNVKbedinventory orunusedsedimentphase arrays; actualpref\u2192matrix\u2192E\u2192onegravity/redistribution\u2192surfaceReturn\u2192router fragments total86400.",
+    "Dryone daily step; T onceatend, no E/T/G duringfullrain/recession.",
+    "EveryN diagnostic stable-run binding, actualN3sevenDayswithrealnativeevents/propertyrefresh saves3and6postT; no extra days fromstormduration.",
+    "Genuineforcing schedule/clock/unitrainScale/amount plus actualperacceptedstep rate/piececonformance boolperliveproducerstate; wrongsameintegral/reforged/foreign/unprovenNone refusedbeforehead/consume; metadata/publication/settlement inherit.",
+    "Foreignhold cannotinstall to anotherlineage; failure leavescurrentparent retryable; actualsource/rawconfiguration/oldwriterrecords strict."
+  ],
+  "limits": [
+    "CPU NumPy/Numba Dense/Windowed nativebridge; GPUimplementation separate underreview.",
+    "No physicaldailycursor/Boundaryfile yet. Process-localforcing proof absentafteroldphysicalchildload; pendingin-flightstormclose explicitly refused, no silentmigration.",
+    "Outlet/CFL controls component-level openedplane; genuinelycompletedwetoutlet fixture unavailable. Boundaryqcarry control iszeroatrest; fragmentqcarry tested.",
+    "Closedcapacityfallback matchesnative-direct atsamephysicalinstant only; that saturatedplane notdeclaredfullstormcomplete. Othercanonicalfullstormfixture doesgenuinelycompletebeforeday.",
+    "Memory scope includesprefragmentcomposedadmission; tracedCPUdaypeak boundedby4xlargeststage requirement, notwholeprocessorlarge-catchment guarantee.",
+    "Framebed_generation denotescarriedroutinggeneration; depth/propertygeneration andcurrentarrayhash recorded; operatorSHA/epoch notseparateframefields."
+  ],
+  "adoption": "Do not overwrite accepted GPU LC/FP. Reconcile all qualified CPU/GPU hooks in event_daily_bridge_cuda_candidate then independently qualify the accumulated source before adoption.",
+  "committed": false
+}

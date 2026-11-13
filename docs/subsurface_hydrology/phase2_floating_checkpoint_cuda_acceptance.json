@@ -1,0 +1,79 @@
+{
+  "status": "independently_accepted_bounded_dense_cuda_floating_file",
+  "utc": "2026-11-13T16:06:37.744116+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_dense_file_c6_snapshot157",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_dense_file_c6_snapshot157_manifest.json",
+  "source_manifest_sha256": "ddea56bfe51da68b61d0c4dd41e25c4cf780d3ab26290ddbec5ed529791c83ed",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "profile": "floating-vertical/2-cuda",
+  "schema": "maple-syrup-floating-pond-checkpoint/7",
+  "cpu_tests": {
+    "new_host": 34,
+    "old_floating_resume": 62,
+    "old_child": 39,
+    "held_cuda_factory_host": 7,
+    "guards": 26,
+    "total_passed": 168
+  },
+  "actual_cuda_tests": {
+    "total_passed": 17,
+    "elapsed_s": 120.71,
+    "uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "free_guard": "same launcher GPU0 0MiB 0%",
+    "controls": [
+      "k0/k12 current W/J/I/D exact roundtrip and uninterrupted bitwise GPU continuation plus matched NumPy/Numba storm controls",
+      "genuine current geometry native200-step event; separate public-factory W>heldD0 control honestly not native generated checkpoint",
+      "genuine terminal-call and quiet-reset producer metadata",
+      "invalid history/water/static source/kernel/held/canonical-depth refusals and retry",
+      "provisional late audit failure unchanged target, one-shot prepared and foreign target refusal",
+      "two-pool 0/need-1/exact/reserve once; device first including positive instrument control",
+      "bounded counted floating transfers; honest whole-array native conversions",
+      "same-GPU fresh PROCESS from H0/static primitive recipe with original owner/probe disabled",
+      "actual N50003 nativeV60 allocator true peak vs model + measured rounding, repeated released plateau"
+    ]
+  },
+  "independent_valid_dimension_controls": [
+    {
+      "ny": 3,
+      "nx": 4,
+      "native_V": 5461,
+      "native_K": 6,
+      "phase_bins": 8,
+      "reported_device_need_B": 22075665,
+      "reported_host_payload_need_B": 10736990,
+      "declared_host_python_allowance_B": 65536,
+      "reported_total_host_need_B": 10802526,
+      "exact_need_load_passed": true,
+      "error": null,
+      "unlimited_control_passed": true,
+      "scope": "Root independent valid genuine native dimension variation, no original owner at restore"
+    },
+    {
+      "ny": 32,
+      "nx": 32,
+      "native_V": 60,
+      "native_K": 6,
+      "phase_bins": 32,
+      "reported_device_need_B": 16324422,
+      "reported_host_payload_need_B": 31113828,
+      "declared_host_python_allowance_B": 65536,
+      "reported_total_host_need_B": 31179364,
+      "exact_need_load_passed": true,
+      "error": null,
+      "unlimited_control_passed": true,
+      "scope": "Root independent valid genuine native dimension variation, no original owner at restore"
+    }
+  ],
+  "review": "New file codecs/private genuine verified host inputs, source/kernel/static/held exact guards, public CURRENT geometry/history preparation, provisional full native/canonical/Pond/audit then registration LAST. No fake owner, no source fallback, no physics changes. CPU shared scalar validator changes only one counted to_host on per-class terminal ledger.",
+  "test_corrections": "All157production identical C1 through C6; actual hardware exposed several test-only fixture/import/error/history-claim bugs. Preserved original logs, fixed tests to actual contracts, no new laws or arbitrary tolerance/slack.",
+  "root_setup_failure": "First independent exact-host script omitted existing fcu.PY_ALLOWANCE_BYTES65536; original failure preserved. v2 includes actual declared constant, both deep5461x6 and WIDE32x32 bins32 exact budgets pass without production changes.",
+  "limits": [
+    "Dense CUDA child ONLY; nativeWindowed child/8 still typed refused.",
+    "Not the general GPU H0 container nor daily physical restart/lifecycle/wind handoff.",
+    "N50003,V60 moderate fixture and single UUID do not establish full-catchment memory/scaling.",
+    "Positive history edited with recomputed hashes is another valid explicit history; integrity/static/source binding is not authenticated physical provenance.",
+    "Standalone exact source accepted; reconciliation onto newer H2C4+EB1 main needs integration verification."
+  ],
+  "committed": false
+}

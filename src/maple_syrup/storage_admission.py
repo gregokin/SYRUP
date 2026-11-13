@@ -4,8 +4,9 @@ This module is NOT automatic protection: no SYRUP event, adapter or default call
 `admit_public` or `admit_paired` immediately BEFORE the corresponding `sediment_bed.apply_bed_demand` /
 `apply_bed_pickup_transport_deposit` call, with the same bed, context and options. It reuses MAPLE's own planner
 (`maple.surface.voxels.windowed_admission.windowed_transaction_bytes` / `admit_windowed_transaction`) on the ACTUAL bed
-and context, and is bound to the exact merged MAPLE `39bcf79e` package digest (`sediment_bed.MERGED_39BCF79_MAPLE_DIGEST`);
-any other source is refused by name (older trees do not provide this helper's planner contract).
+and context, and is bound to exactly two MAPLE package digests: the merged `39bcf79e` package (`sediment_bed.MERGED_39BCF79_MAPLE_DIGEST`)
+and the native `9f466d2c` package (`sediment_bed.NATIVE9F_MAPLE_DIGEST`, qualified in docs/subsurface_hydrology/phase2_native9f_admission.md:
+its planner/admission/deep-store modules are file-identical to 39bcf79e); any other source is refused by name.
 
 What a decision is and is not
 -----------------------------
@@ -46,6 +47,7 @@ import numpy as np
 
 from maple_syrup.sediment_bed import (
     MERGED_39BCF79_MAPLE_DIGEST,
+    NATIVE9F_MAPLE_DIGEST,
     BedContext,
     BedIntegrationError,
     BedState,
@@ -99,12 +101,16 @@ class AdmissionRecord:
     reserve_device_bytes: int
 
 
+# Exactly the qualified packages; an explicit pair, never a prefix, range or fallback.
+ADMISSION_QUALIFIED_MAPLE_DIGESTS = frozenset({MERGED_39BCF79_MAPLE_DIGEST, NATIVE9F_MAPLE_DIGEST})
+
+
 def _require_source() -> None:
     digest = bound_maple_package_digest()
-    if digest != MERGED_39BCF79_MAPLE_DIGEST:
+    if digest not in ADMISSION_QUALIFIED_MAPLE_DIGESTS:
         raise StorageAdmissionError(
-            f"storage admission is bound to the merged MAPLE package {MERGED_39BCF79_MAPLE_DIGEST[:16]}...; the bound "
-            f"package is {digest[:16]}... (refused)")
+            f"storage admission is bound to the merged MAPLE package {MERGED_39BCF79_MAPLE_DIGEST[:16]}... (39bcf79e) or the "
+            f"native MAPLE package {NATIVE9F_MAPLE_DIGEST[:16]}... (9f466d2c); the bound package is {digest[:16]}... (refused)")
 
 
 def _namespace_name(state: BedState) -> str:

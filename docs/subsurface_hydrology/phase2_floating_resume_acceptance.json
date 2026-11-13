@@ -1,0 +1,19 @@
+{
+  "status": "accepted_bounded_CPU_in_memory_only",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_r1a_c2_snapshot",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_r1a_c2_source_manifest.json",
+  "verification": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_r1a_c2_cpu_runs/result.json",
+  "tests": "62 CPU passed, 1 GPU skipped; four independent original defect controls refuse; real cold hashing peak1477311 <= declared3212608B; malformed nonC refuses before copy/reader",
+  "limits": [
+    "Not file checkpoint, no fresh-process restoration, no CUDA qualification",
+    "Parent native state is referenced by immutable-value convention, not deeplysealed",
+    "Restore record model excludes existing native event validation/audit arrays; future composed checkpoint admission must explicitly include them",
+    "Cold hash metadata allowance bounded to qualified source package; not arbitrary source-tree scaling"
+  ],
+  "public_adoption": "pending reconciliation into current E5 main; no changes applied",
+  "source_manifest_sha256": "85214a439595ddfec94322bf78a89011daf64011d87e509a833d1785cb60b963",
+  "sources": {
+    "src/maple_syrup/floating_pond.py": "18e391d854799ba12b72586f8794edaf85a2678ac2efa286f8b89d836d42c48a",
+    "src/maple_syrup/floating_resume.py": "3ef2196a5dd7f15f2516555ea0e0bfd73a05421cb5526184693270bc44ce20fc"
+  }
+}

@@ -1,0 +1,133 @@
+{
+ "fixture": {
+  "name": "minimal_trigger_controls",
+  "purpose": "Self-contained generated numerical inputs of the two minimal single-column cases whose pool-limited split recombination (pre + post) exceeded the pool by one ulp in the pre-review02 matrix bodies (bit 17, negative pool). Required regression data of tests/phase2_matrix_bounded_intake; a missing or malformed fixture is a hard failure.",
+  "attribution": "Extracted by Root (independent review of S2-B2.c) from the review01 sequences L3_N128_all_shared and L5_N257_scalar_thetas of the SYRUP phase2_evolving_soil task; generated numerical input only, no third-party model code is distributed.",
+  "source_file": "agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_b2_c_minimal_refusal_controls.json (immutable original, not edited)",
+  "source_file_sha256": "5516faae5475f5d8e8c79abff3ef92cb480a174a896940b1e1cb10f1f838e584",
+  "source_file_bytes": 3180,
+  "controls_canonical_sha256": "6ecf0b0b110340aa5be410a6e5d5499b0eb7f4195b2921ed97c161550e67b58a",
+  "required_labels": [
+   "L3_N128_all_shared",
+   "L5_N257_scalar_thetas"
+  ],
+  "copy_note": "`source_snapshot` and `controls` below are the exact payload of the original; only this `fixture` block was added."
+ },
+ "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_b2_c_snapshot",
+ "controls": [
+  {
+   "label": "L3_N128_all_shared",
+   "cell": 103,
+   "depth_edges_m": [
+    0.0,
+    0.20658886344484645,
+    0.6039589279515842,
+    1.011380906259634
+   ],
+   "theta_residual": [
+    0.039252413431465676,
+    0.027545319421340378,
+    0.013425847084560773
+   ],
+   "theta_field_capacity": [
+    0.11938648183279923,
+    0.14372450892601088,
+    0.1692525701482187
+   ],
+   "theta_saturation": [
+    0.3606188121854743,
+    0.4046235404408025,
+    0.36314988018249134
+   ],
+   "conductivity_m_s": 1.9974196704914688e-05,
+   "suction_m": 0.19286930220826454,
+   "vegetation_factor": 0.6759823100273442,
+   "water_m": [
+    0.016296297073017784,
+    0.02682437495394265,
+    0.011584718799568721
+   ],
+   "wetting_m": 0.001471764573977049,
+   "cumulative_intake_m": 0.011471764573977049,
+   "pool_m": 0.04838095732241791,
+   "standing_m": 0.0,
+   "incoming_rate_m_s": 3.3933499185582324e-05,
+   "dt_s": 3600.0,
+   "t_s": 55.5,
+   "area_m2": 4.0,
+   "expected_old_error": {
+    "bit": 17,
+    "n_flagged": 1
+   },
+   "old_raw": {
+    "pool_out_m": -6.938893903907228e-18,
+    "pre_m": 0.0060843600909219996,
+    "post_m": 0.04229659723149591,
+    "intake_m": 0.048380957322417914,
+    "candidate_m": 0.06206454151894142
+   }
+  },
+  {
+   "label": "L5_N257_scalar_thetas",
+   "cell": 248,
+   "depth_edges_m": [
+    0.0,
+    0.3101644664270115,
+    0.6290594896581164,
+    0.7035233694302082,
+    1.0672174994146761,
+    1.5099235454814321
+   ],
+   "theta_residual": [
+    0.046642650551527116,
+    0.046642650551527116,
+    0.046642650551527116,
+    0.046642650551527116,
+    0.046642650551527116
+   ],
+   "theta_field_capacity": [
+    0.1034988001556972,
+    0.1034988001556972,
+    0.1034988001556972,
+    0.1034988001556972,
+    0.1034988001556972
+   ],
+   "theta_saturation": [
+    0.4360172784394975,
+    0.4360172784394975,
+    0.4360172784394975,
+    0.4360172784394975,
+    0.4360172784394975
+   ],
+   "conductivity_m_s": 1.1700325553069403e-05,
+   "suction_m": 0.29283427568871806,
+   "vegetation_factor": 0.29355946931496385,
+   "water_m": [
+    3.4720541657841206e-05,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "wetting_m": 3.4720541657841206e-05,
+   "cumulative_intake_m": 0.01003472054165784,
+   "pool_m": 0.029264621197886812,
+   "standing_m": 0.0,
+   "incoming_rate_m_s": 2.0821726457207675e-05,
+   "dt_s": 3600.0,
+   "t_s": 55.5,
+   "area_m2": 4.0,
+   "expected_old_error": {
+    "bit": 17,
+    "n_flagged": 1
+   },
+   "old_raw": {
+    "pool_out_m": -3.469446951953614e-18,
+    "pre_m": 0.011365670293866334,
+    "post_m": 0.01789895090402048,
+    "intake_m": 0.029264621197886816,
+    "candidate_m": 0.03011409045226638
+   }
+  }
+ ]
+}

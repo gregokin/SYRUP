@@ -1,0 +1,179 @@
+{
+  "schema": "syrup.phase2.spatial_parameter_component_acceptance.v1",
+  "status": "ACCEPTED_EXPLICIT_SPATIAL_PARAMETERS_ONLY",
+  "utc": "2026-11-12T15:45:41.499560+00:00",
+  "source": {
+    "base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "uncommitted_package_sha256": "3edd4f66c160f05dbd1ceafd918848a24b648529a30477a58fb018df530b5eaf",
+    "file_count": 118,
+    "spatial_soil_layers_sha256": "96fa140e802be2ddc834d1828e4c15e1cb24105dcf4fdaf12de2c433836a6480",
+    "existing_S1_changes": "Only subsurface.py (+2 entry checks) and subsurface_transpiration.py (+1 entry check); other115 source files exact. All old source-policy pins/recipes/receipts unchanged.",
+    "maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_results": {
+    "CPU": "469 passed,15 CUDA skipped,5.97s. NumPy derivation/preparation; Numba backend preparation checks importability only, no new compiled hydrology.",
+    "CUDA": "15 passed1.33s on actual freshly idle allocated GPU0, UUID GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871. Corrected allocation-hook scope counts callee allocations, caller mask created first.",
+    "reference_columns": "56 independently prepared accepted-common columns (1/2/3/5layers,2diffusion modes): CPU and actualCUDA controls passed; chunk/hash-size invariant identities, masks and variable geometry, derived maps matched existing numerical contracts.",
+    "guard_delta": "64 valid common NumPy/Numba scenarios,512 state/flux/flag-row arrays before/after typed-entry guards are bit-exact; combined-memory function valid calls succeed.",
+    "safety": "Root reproduced stale metadata/dtype acceptance, rawIndexError, invalidone-layerD, mutablelayout and unnecessaryCPUCuPyprobe; corrected safe probes allpass. Source inputs released by weakref check; owners retain no spec/caller arrays. Immutable public metadata; invalids typed.",
+    "raw_runs": [
+      {
+        "utc": "2026-11-12T15:43:15.435522+00:00",
+        "native": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3",
+        "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot",
+        "results": [
+          {
+            "name": "pytest",
+            "command": [
+              "/home/okin/MAPLE/.venv/bin/python",
+              "-m",
+              "pytest",
+              "-c",
+              "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot/tests/phase2_spatial_parameters/pytest.ini",
+              "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot/tests/phase2_spatial_parameters",
+              "-q"
+            ],
+            "guard": null,
+            "returncode": 0,
+            "seconds": 6.86744120111689
+          },
+          {
+            "name": "parameter_controls",
+            "command": [
+              "/home/okin/MAPLE/.venv/bin/python",
+              "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_control_runner.py",
+              "numpy"
+            ],
+            "guard": null,
+            "returncode": 0,
+            "seconds": 0.8444937341846526
+          }
+        ]
+      },
+      {
+        "utc": "2026-11-12T15:43:15.232957+00:00",
+        "native": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366",
+        "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot",
+        "results": [
+          {
+            "name": "pytest",
+            "command": [
+              "/home/okin/MAPLE/.venv-cupy/bin/python",
+              "-m",
+              "pytest",
+              "-c",
+              "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot/tests/phase2_spatial_parameters/pytest.ini",
+              "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot/tests/phase2_spatial_parameters/test_cuda_definitions.py",
+              "-q"
+            ],
+            "guard": {
+              "utc": "2026-11-12T15:43:11.186029+00:00",
+              "values": [
+                "0",
+                "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+                "0",
+                "0"
+              ]
+            },
+            "returncode": 0,
+            "seconds": 2.4898534470703453
+          },
+          {
+            "name": "parameter_controls",
+            "command": [
+              "/home/okin/MAPLE/.venv-cupy/bin/python",
+              "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_control_runner.py",
+              "cuda"
+            ],
+            "guard": {
+              "utc": "2026-11-12T15:43:13.835137+00:00",
+              "values": [
+                "0",
+                "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+                "0",
+                "0"
+              ]
+            },
+            "returncode": 0,
+            "seconds": 1.397711558965966
+          }
+        ]
+      }
+    ],
+    "safety_record": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_a1_c1_snapshot/src/maple_syrup/spatial_soil_layers.py",
+      "status": "PASS",
+      "results": [
+        {
+          "probe": "changed_input_dtype",
+          "typed_refused": true,
+          "message": "theta_residual must be float64, got float32"
+        },
+        {
+          "probe": "changed_edge_shape",
+          "typed_refused": true,
+          "message": "depth_edges_m must have shape (L+1,) or (L+1, N) with L >= 1, got (1, 3)"
+        },
+        {
+          "probe": "one_layer_invalid_interface",
+          "value": "-1.0",
+          "typed_refused": true
+        },
+        {
+          "probe": "one_layer_invalid_interface",
+          "value": "nan",
+          "typed_refused": true
+        },
+        {
+          "probe": "one_layer_invalid_interface",
+          "value": "inf",
+          "typed_refused": true
+        },
+        {
+          "probe": "immutable_layouts",
+          "mutation_refused": true
+        },
+        {
+          "probe": "immutable_estimate_layouts",
+          "mutation_refused": true
+        },
+        {
+          "probe": "CPU_CuPy_probe",
+          "attempted": false
+        },
+        {
+          "probe": "foreign_column_reference_step",
+          "typed_refused": true
+        },
+        {
+          "probe": "foreign_column_reference_runner",
+          "typed_refused": true
+        },
+        {
+          "probe": "foreign_column_estimate_combined_memory",
+          "typed_refused": true
+        },
+        {
+          "probe": "no_caller_arrays_retained",
+          "arrays_released": [
+            "depth_edges_m",
+            "theta_field_capacity",
+            "theta_residual",
+            "theta_saturation"
+          ]
+        }
+      ]
+    },
+    "common_comparison_file": "root_common_guard_comparison.json"
+  },
+  "memory": "Minimal retained theta/dz/conductance/pair-inverse maps with scalar/shared/cell layouts; no retained full edges/centres/depth thresholds/host mirror. Backend-native derivation; known workspace and separate host/device admission. Explicit inspection copies admitted. Bound is algorithm arrays with declared caller/runtime/JIT/context/pool exclusions, not whole-process reservation.",
+  "limits": [
+    "Parameter component only; hydrology_step_supported=False. No new spatial water-state kernel, evolving-bed event, policy, material-water transport or physical restart qualification.",
+    "No texture-to-hydraulic estimator adopted; user-supplied explicit properties and geometry.",
+    "No change to soil-motion frame, erosion/deposition water fate or wetting history; user questions remain pending.",
+    "No LEAF geometry handoff, source-lock migration, full daily scheduler, field/scaling/end-to-end performance claim.",
+    "Whole Phase2 remains incomplete and uncommitted."
+  ],
+  "known_open_confirmed_component_defects": []
+}

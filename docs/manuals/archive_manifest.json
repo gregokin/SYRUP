@@ -1,17 +1,17 @@
 {
-  "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results); no model source/third-party environment/deep bed",
+  "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results; the Native Phase 2 qualification record, status pages, source manifest, publication record and exact example script); no model source/third-party environment/deep bed",
   "files": {
     "README.md": {
-      "sha256": "7f7a21677bae46254d34816f3e150aeb376d7a8ddb209fe46b6145f763c25291",
-      "bytes": 4745
+      "sha256": "c675789ec7951421f400b50f0b7a32e5e75df0d96a50a39bdde169c149fb71c4",
+      "bytes": 7035
     },
     "SYRUP_CLI_User_Guide.docx": {
-      "sha256": "672a831d9e9954d71f06da7669ca4a013534df854c2f51358af58ce76ed9c01c",
-      "bytes": 242938
+      "sha256": "21c3efb7be8dec87ce955cc8c1b0e51f60070dbafbe80e24941dcce3617cb061",
+      "bytes": 246674
     },
     "SYRUP_Model_Structure_and_Physics.docx": {
-      "sha256": "3c49947ec43af644cf46f5061b5f1c2b95828fefa8ca97e85022f54f2f40bca8",
-      "bytes": 181918
+      "sha256": "3c78f3b9733bcb8e147d62348032b1bea6651b4014fa74a6ec3b35caf9f0a954",
+      "bytes": 184981
     },
     "assets/layered_water_ownership.png": {
       "sha256": "b713a57b0da81547825a19c7d710b8f12e0023ba440237a2fc162297bc3b5c4b",
@@ -26,8 +26,8 @@
       "bytes": 92552
     },
     "build_manuals.py": {
-      "sha256": "add97fe460dd64c418bd918443c676e7eaf894fc33f4db7c62a5810095a92734",
-      "bytes": 25817
+      "sha256": "2116fceeefe22e10312f5fe5f7e1a91d1d5207e0c2f993cf77a18192a6a4e458",
+      "bytes": 29713
     },
     "cli_reference.json": {
       "sha256": "25cdcddcda31a68f85e216e30a719da620bac25a22105d35bbdb10a7a9e9443e",
@@ -38,12 +38,12 @@
       "bytes": 43763
     },
     "document_build.json": {
-      "sha256": "34022a0f21a6f5ae628b34ac3a39cbbfd3f943464f7fffff400dd361b5f33ef4",
+      "sha256": "138328f5a730d85cd4007d6b0191f1cdad88558dee106800ddc1bcd77fb5e1ac",
       "bytes": 690
     },
     "documentation_verification.json": {
-      "sha256": "7d8660f46b907c8a72c43fd40a3ea4bddbbcdcb0f1be9d2d5451e054d9c9987e",
-      "bytes": 6455
+      "sha256": "7f276aeb96840db5255eb39cc131e60abe1dbe7c547eabdc2cea56c37d8a3aaf",
+      "bytes": 8264
     },
     "examples/native9f_metadata/README.md": {
       "sha256": "7e426a992a560d9cb171e8707b805bbbd6ef2e2197594bce6bec088f202dcc02",
@@ -69,6 +69,14 @@
       "sha256": "0ca1b0e11e4454cde9539b03597a793ce90ad9a1305247363a2db68028ba9550",
       "bytes": 925
     },
+    "examples/native_daily_moisture_output/README.md": {
+      "sha256": "a4515b26e9b06fb57ba20ccd9d4c09563ccf1fb3acb5c0b5081fb5fd73c74e76",
+      "bytes": 719
+    },
+    "examples/native_daily_moisture_output/run_example.py": {
+      "sha256": "06575f4a54cf8e20b130058af5b5508a3cea78f4434fcee865e773985d598262",
+      "bytes": 2702
+    },
     "examples/native_daily_recharge/README.md": {
       "sha256": "ca24b57fd464bfddac99661028e7c7f3d321fd6d70c8257ca7985fe518883e25",
       "bytes": 5771
@@ -85,17 +93,33 @@
       "sha256": "09fa6369431c67535d7304d1ce2e7d14dc8444c3733f7828eb3a66aba77bd60e",
       "bytes": 22608
     },
+    "examples/native_daily_recharge/results/closed_retention.numba.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
     "examples/native_daily_recharge/results/closed_retention.numba.json": {
       "sha256": "26ec172316fed57f40eb84b5aca883afe2542410560f918c8b90ed7f7ed022ce",
       "bytes": 3837
+    },
+    "examples/native_daily_recharge/results/closed_retention.numpy.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
     },
     "examples/native_daily_recharge/results/closed_retention.numpy.json": {
       "sha256": "67d2ad1c9754cb817345868bb26c5cf2bda9fdc73bc5b772b7902719b08f8a65",
       "bytes": 3837
     },
+    "examples/native_daily_recharge/results/fallback.numba.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
     "examples/native_daily_recharge/results/fallback.numba.json": {
       "sha256": "4369ae50ef50bf4aee84c7e28e0aea7b6ba583144ec34f3d9b70b1d68239f0cd",
       "bytes": 4519
+    },
+    "examples/native_daily_recharge/results/fallback.numpy.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
     },
     "examples/native_daily_recharge/results/fallback.numpy.json": {
       "sha256": "fda988289424aadb007622bac8e3ac47f0fc2158af9f87ed9fafd30139ab5347",
@@ -105,9 +129,17 @@
       "sha256": "cfcbb7a786c6a55e03caf932c6e55de0e8da954306b3e1183b790f11d44c0129",
       "bytes": 1310
     },
+    "examples/native_daily_recharge/results/open_drainage.numpy.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
     "examples/native_daily_recharge/results/open_drainage.numpy.json": {
       "sha256": "c13019c983a79caddcdf7721f6d66702018f650e7cb28ce321f738d5d4ef2ec2",
       "bytes": 3882
+    },
+    "examples/native_daily_recharge/results/recharge.numpy.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
     },
     "examples/native_daily_recharge/results/recharge.numpy.json": {
       "sha256": "72e8b08d78c768f4a70424db3bf41eb6ed8e480223c7300a161a3088fa0a880d",
@@ -177,6 +209,14 @@
       "sha256": "07872afd0d78378c3e67324e51112095014ba4e4cfa51426303db23060454bce",
       "bytes": 1478
     },
+    "examples/native_phase2_daily_example/README.md": {
+      "sha256": "36190de68a213bbe1bfee0a4fc9fff38223b97765d0e59ac83f0935f5a01632b",
+      "bytes": 2101
+    },
+    "examples/native_phase2_daily_example/phase2_floating_daily_example.py": {
+      "sha256": "301e9b2d62950e046676a8c1a50dea6c25f947ed008ed05c26d7061896e8bc1b",
+      "bytes": 3173
+    },
     "examples/native_production/README.md": {
       "sha256": "f915e46934ffe3cf59d02fdad02554747bbe7edc89e617256b92872bac7731c0",
       "bytes": 779
@@ -186,16 +226,16 @@
       "bytes": 2383
     },
     "model_structure_and_physics.md": {
-      "sha256": "cf001f428a334035fcf6a108166dc0127ef61563687795ee5d0274832b22fab4",
-      "bytes": 136977
+      "sha256": "8efbb05416035b48879fae4742cefb816d2ec956e6986900769f68aabf075045",
+      "bytes": 143128
     },
     "qualification/design.md": {
       "sha256": "d9e67c78026c87e168fd3bde46b65a0253ee9a77adc2fa950f46e73dd502cf67",
       "bytes": 25225
     },
     "qualification/development_phases_20261109.md": {
-      "sha256": "cccd34af2d4208430950f0143a7b1b9345f6b179aec3551a000e227aaea71901",
-      "bytes": 21387
+      "sha256": "824513486f4fca430fa639dd8dc9c746ad2180c9a44949e2e94c4c0117661c39",
+      "bytes": 26878
     },
     "qualification/ecohyd_reference_sources.md": {
       "sha256": "15d97d48d1e54e732606c92f0c36f118d081d212b873fbea490990ffd3e359df",
@@ -210,8 +250,8 @@
       "bytes": 4701
     },
     "qualification/parameter_reference.md": {
-      "sha256": "f7c07e827f9847d73baaa7a62a4870303863b30b7959268df6ffa84f1ad6dea8",
-      "bytes": 22595
+      "sha256": "8bcf729d9aaa928dce5658cdce2f697311bdc885006294367bec7ce373a542bc",
+      "bytes": 34363
     },
     "qualification/phase15_acceptance.json": {
       "sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
@@ -224,6 +264,10 @@
     "qualification/phase15_native_acceptance.json": {
       "sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
       "bytes": 2589
+    },
+    "qualification/phase15_publication.json": {
+      "sha256": "f731988ffdd67ae0aa4b1ffb8d165c91a4e4241837f23a64ab675e88687702a4",
+      "bytes": 981
     },
     "qualification/phase15_qualification.json": {
       "sha256": "64e244420c8001f4c74d5f7e4291825b03c7fdcc4c9aaa2a6c659ed77c88d0e4",
@@ -273,6 +317,78 @@
       "sha256": "bbcee5337633f378fdade96711890a6c3eb80d467b747d90fae6f305e2d7caf3",
       "bytes": 6801
     },
+    "qualification/phase2_continued_checkpoint.md": {
+      "sha256": "27ff024957d9c399e6630a6b08725ddadf51c8c3a31035517cd0b51672eec995",
+      "bytes": 2795
+    },
+    "qualification/phase2_daily_moisture_output.md": {
+      "sha256": "61f76af3bc4e8702d8f3966ada1348e31af53b473ede7b077c61d2340de41d1d",
+      "bytes": 4276
+    },
+    "qualification/phase2_daily_moisture_output_acceptance.json": {
+      "sha256": "ae398e7544b64083992bb43add4e2d5f1919b7930609b318d2b4b501a66a57ad",
+      "bytes": 2585
+    },
+    "qualification/phase2_event_daily_bridge_cuda.md": {
+      "sha256": "53ede8ed2b7499f8d3363ab04a318bd166cb6b01c082298d47cfcb92b9bebc59",
+      "bytes": 2548
+    },
+    "qualification/phase2_event_daily_bridge_cuda_acceptance.json": {
+      "sha256": "6dfaf85c275d43223a267e53121484db703072a38d5a2e02109580dc6c7f0d14",
+      "bytes": 4602
+    },
+    "qualification/phase2_floating_checkpoint.md": {
+      "sha256": "7ad98f99ff8112443e26ba199ffa788bea0b2d5356c943bf79fea60adbb333d4",
+      "bytes": 5545
+    },
+    "qualification/phase2_floating_moisture_frame.md": {
+      "sha256": "981236ccf2a856dc69f93287d9b8f5024e6d8688e32e003d3147319ac33761e2",
+      "bytes": 4099
+    },
+    "qualification/phase2_floating_moisture_frame_acceptance.json": {
+      "sha256": "269931c139774d3a924dcae6ddd158ded9c426a95b2626f70aeb71bd1e26ea6d",
+      "bytes": 3445
+    },
+    "qualification/phase2_floating_profile_design.md": {
+      "sha256": "9dd2e8a9007fd7852eced4687ae150e15c117d6cfafdc30f0200763ad549854b",
+      "bytes": 8554
+    },
+    "qualification/phase2_lifecycle_checkpoint.md": {
+      "sha256": "ee3e0197335371b2cadff596ed143d7d6a73e63b6089c842560f2a64bb66d7c7",
+      "bytes": 3205
+    },
+    "qualification/phase2_lifecycle_checkpoint_cpu_acceptance.json": {
+      "sha256": "4b1a75e535781f5caca626bd03be7b2df52ea83fd1a2b750a749b6488d33470c",
+      "bytes": 4655
+    },
+    "qualification/phase2_lifecycle_checkpoint_cuda_acceptance.json": {
+      "sha256": "7d8d1d761853e96a0e9ee01c03aca3118484fc04d793861953c815043c5ab217",
+      "bytes": 5485
+    },
+    "qualification/phase2_native_status.md": {
+      "sha256": "45db9d148f6f43404de14408b79c2092338bb6c1adb076b37f6c089d3aca8e73",
+      "bytes": 1968
+    },
+    "qualification/phase2_native_wind_check.md": {
+      "sha256": "267dc4a5d2f7517bc2bff30b696c9810c376ccfcefbf6b3217f39bb6d39c351d",
+      "bytes": 3037
+    },
+    "qualification/phase2_publication.json": {
+      "sha256": "7852eef0952d1d6ecf2c8017046ac640e2965a654698852238d69e0b63efedda",
+      "bytes": 1838
+    },
+    "qualification/phase2_qualification.json": {
+      "sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
+      "bytes": 11934
+    },
+    "qualification/phase2_qualification.md": {
+      "sha256": "b91607b92c05c0a14fb8562b63f678185c4c0258fefb4deea1c04c6d9fd96187",
+      "bytes": 5966
+    },
+    "qualification/phase2_source_manifest.json": {
+      "sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
+      "bytes": 20628
+    },
     "qualification/verify_phase15_source.py": {
       "sha256": "42d4402f4cc6042404876ee76a2672f8a9941be99016f51b4ffd77887e3b3e82",
       "bytes": 2477
@@ -282,37 +398,54 @@
       "bytes": 22449
     },
     "release_metadata.json": {
-      "sha256": "6c1846d55da92afa768c1da500114b363075198f22cc1271e7df5a9fb0f97f18",
-      "bytes": 2853
+      "sha256": "dc58525d94ab6c976356f373a1f58562ead0c3d90c3c58ae6736c71c33cdf30d",
+      "bytes": 4153
     },
     "render_outputs.py": {
       "sha256": "b47baba3875a4132e9afe62df9e6f6248a5fddd1c3ac7137d4216da978d4ec87",
       "bytes": 8433
     },
     "user_guide.md": {
-      "sha256": "6b38216c93be4db007339b583a1128f00989a49595a1bb3ed0885c121b20c2c0",
-      "bytes": 120041
-    },
-    "qualification/phase15_publication.json": {
-      "sha256": "f731988ffdd67ae0aa4b1ffb8d165c91a4e4241837f23a64ab675e88687702a4",
-      "bytes": 981
+      "sha256": "83b888e7fbbeb1ebfa091d4b8171cc3a29f6c4a131b0cf01467ae4fb9193f494",
+      "bytes": 126873
     }
   },
   "native_phase15": {
     "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
     "package_file_count": 114,
     "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_cpu_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "root_s4_acceptance_sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
+    "root_s4_acceptance_status": "ACCEPTED_BOUNDED_NATIVE_DAILY_PHYSICAL_RESTART",
     "whole_phase_receipt_status": "recorded",
-    "published": false,
+    "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
+    "source_commit": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
+    "published": true,
     "note": "a separate source identity; the C1 identities in release_metadata.json are unchanged",
-    "source_commit": null,
     "shipped_portable_evidence": [
       "qualification/phase15_acceptance.json",
       "qualification/phase15_native_acceptance.json",
       "qualification/phase15_source_manifest.json",
       "qualification/verify_phase15_source.py"
     ],
-    "root_receipt_scope": "S4 capability receipt (phase15_native_acceptance.json) and the bounded whole-phase acceptance (phase15_acceptance.json); publication pending",
-    "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3"
+    "root_receipt_scope": "S4 capability receipt (phase15_native_acceptance.json) and the bounded whole-phase acceptance (phase15_acceptance.json); published at source_commit (the immutable receipts keep their as-of-qualification wording)"
+  },
+  "native_phase2": {
+    "source_commit": "71bb8fe0bb0ed2d17ee302e4502ba0511032d416",
+    "source_branch": "feature/subsurface-evolving-soil",
+    "syrup_package_sha256": "3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82",
+    "package_file_count": 169,
+    "source_manifest_sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
+    "whole_phase_acceptance_sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
+    "published": true,
+    "note": "a separate source identity; the C1 and N15 identities are unchanged",
+    "shipped_portable_evidence": [
+      "qualification/phase2_qualification.json",
+      "qualification/phase2_publication.json",
+      "qualification/phase2_source_manifest.json",
+      "qualification/phase2_native_status.md"
+    ],
+    "main_integration": null
   }
 }

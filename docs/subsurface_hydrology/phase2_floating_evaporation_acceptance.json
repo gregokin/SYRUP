@@ -1,0 +1,37 @@
+{
+  "status": "accepted_bounded_shared_evaporation_adapter",
+  "utc": "2026-11-13T10:50:53.267001+00:00",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s0_c1_snapshot",
+  "source_manifest_sha256": "0661eb732e89d3aea7a13468c84317beb92e79c209aa1eea47cc9d5236f42d7f",
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "native_maple_412_package_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "sources": {
+    "src/maple_syrup/soil_evaporation.py": "c1450a07c61c093d65da7e0f483f1861f53b7e02b2ee28449af09322d3bc4fdd",
+    "src/maple_syrup/floating_evaporation.py": "c879415f2b1913cc5da16b414fc2ffc8b661720e19e97d923c5823f5aeca2bd6"
+  },
+  "root_tests": {
+    "new_CPU": 26,
+    "old_postcap_evaporation_CPU": 27,
+    "historical_guard_CPU": 26,
+    "actual_GPU": 3,
+    "independent_original_law_scenarios_NumPy_NumBa": 24,
+    "independent_GPU_cells": 50003,
+    "independent_GPU_warm_pool_payload_peak_B": 3907584,
+    "declared_GPU_compute_B": 6000712,
+    "counted_D2H_B_per_stage": 96,
+    "counted_H2D_B_per_stage": 0
+  },
+  "evidence": [
+    "root_g3_s0_cpu_runs/result.json",
+    "root_g3_s0_c1_cpu_runs/result.json",
+    "root_g3_s0_c1_gpu_runs/result.json",
+    "root_g3_s0_independent_cpu_root_g3_s0_snapshot.json",
+    "root_g3_s0_independent_gpu_root_g3_s0_snapshot.json"
+  ],
+  "limits": [
+    "Pure forcing adapter, not daily lifecycle or every-N floating hook",
+    "GPU0 only; wrong-device branch under a second visible device not exercised",
+    "Warm pool payload bounds exclude compiler/context/unpooled/whole-process memory",
+    "Original GPU fixture failure and wrong Root regression path preserved as setup failures; production source unchanged by correction"
+  ]
+}
