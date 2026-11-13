@@ -917,6 +917,38 @@ Qualified limits: closure uses the MAPLE floating-point bound only; GPU tests de
 
 The codec identities are CPU `lifecycle_checkpoint_v3` (policy `_V3_9F`, schema `/3`, profile `native9f_dense_lifecycle_cpu_v3`) and CUDA `lifecycle_checkpoint_cuda_v3` (own helper pins; the V1/V2 pins are untouched and refuse N15). The shipped `phase15_source_manifest.json` (114 files) and `verify_phase15_source.py` let a clone verify the package without private paths. The 114-file package identity must be supplied explicitly (`expected_syrup_digest`) to the source profile, so that C1 recipes cannot silently run N15 code or the reverse.
 
+## 14. Phase 2: the evolving soil profile (formulation and limits)
+
+*This section records the formulation implemented by the Phase 2 native API. It is independently qualified at a bounded native-API scope (whole-phase receipt `phase2_qualification.json`; source published per `phase2_publication.json`) but has no field validation, and it does not alter Sections 13.3–13.8, which describe the published Phase 1 formulation.*
+
+| Native Phase 2 source identity | Value |
+|---|---|
+| Source commit (independently accepted model code; this document's own publication may follow it) | {{p2_source_commit}} (published: {{p2_published}}) |
+| Source branch | {{p2_source_branch}} |
+| SYRUP source package | SHA-256 `{{p2_syrup_package_sha256}}`, {{p2_package_file_count}} files; file-by-file manifest SHA-256 `{{p2_source_manifest_sha256}}` |
+| Native MAPLE (historical 9f, explicitly pinned) | commit `{{p2_maple_native_commit}}`; CPU package SHA-256 `{{p2_maple_native_package_sha256}}` |
+| Whole-phase acceptance record | SHA-256 `{{p2_whole_phase_acceptance_sha256}}` |
+
+The Native Phase 2 source is a **different identity** from the historical CLI release C1 (`{{syrup_short}}`) named on the cover and elsewhere: the Phase 2 Python API described here is **not** available in the historical CLI release. The document that names this commit is published after it and does not name itself.
+
+**14.1 Profile.** The soil is a stack of layers of fixed thickness referenced to the evolving surface. When erosion or deposition moves the surface, each layer's water mass (volume) is preserved through the change of geometry, by translation, so a geometry change alone neither creates nor destroys water; roots translate with the soil (roots are not given plasticity here). The full MAPLE voxel-grid bottom is a fixed, flat, impermeable datum: there are no bedrock parameters and no bedrock pore water. A column with no soil above that datum has zero porous thickness and stores no water; a partially supported layer stores in proportion to its actual porous thickness; an open lower boundary applies only to a profile whose lowest layer ends strictly above the rock, and rock is impermeable.
+
+**14.2 Hydraulic properties.** Field capacity, saturation and saturated conductivity may come from the Saxton and Rawls (2006) regression applied to the mass-weighted texture, organic matter and bulk density of the actual MAPLE material. This is a published regression for fine earth, not a calibration, and unsupported inputs are refused rather than clamped. The retention thresholds and conductivities are then used by the same bucket-type layer physics as Phase 1: field capacity triggers gravity movement, saturation limits storage, and adjacent layers exchange water by the exact pair relaxation of the Phase 1 formulation. Because the floating profile treats the moving soil with this simple field-capacity cascade, it is a declared approximation and not a full Richards-equation solution.
+
+**14.3 Infiltration.** Matrix infiltration is the persistent Green–Ampt law (Green and Ampt 1911) in the Tietjen-type arrangement (Tietjen et al. 2009, 2010), with vegetation entering before and after ponding as separately specified. Background and species-specific preferential infiltration share one supply/rate/capacity-limited water budget. The wetting history J and cumulative intake I belong to the water authority and persist through events and days; there is no automatic recovery or reset.
+
+**14.4 Events and property refresh.** Properties are held constant during a transport event. At a genuinely completed event the properties of the columns touched by the exchange are refreshed (a gross-touched set), the water is reconciled once with the existing cascade on the new capacity, an open bottom exports excess once as explicit drainage and a closed bottom returns only the unavoidable excess to the surface (an internal transfer, leaving a pending recession). **Hydraulic rerouting is a separate decision**: it is triggered only by NET elevation change measured against the surface of the last actual routing build (MAPLE's trigger, currently 0.00075 m, comparison `>=`), so gross turnover alone never reroutes.
+
+**14.5 Days.** A dry interevent day is a single 86400 s update; a wet interevent day uses short hydrology and evaporation fragments totalling exactly 86400 s, transpiration once at the end of the day, with the surface router carrying the standing water on the carried routing. Evaporation, transpiration and growth are off during wind, rain and recession and are never caught up. The nominal calendar day is kept distinct from the additional physical time of events. LEAF computes plant withdrawals; SYRUP checks supply, debits accepted amounts once and reports the result.
+
+**14.6 Closure.** Water is accounted in cubic metres (depth times cell area over the actual porous geometry). Each day and event closes against MAPLE's floating-point roundoff bound: rain, internal transfers (soil to surface, preferential and matrix intake), drainage, outlet export, evaporation and transpiration are each debited once.
+
+**14.7 Outputs and restart.** Every-N-day frames are diagnostic, are written after the audited daily close and are not restart files. Physical checkpoints (child, continued-event and the closed-boundary/closed-day file with an expected seal) are separate and are documented in the parameter reference.
+
+**14.8 Limits.** No field validation; no calibration claim; texture regression is for fine earth; coarse or unmapped classes are not covered by the regression; large-catchment memory fit is untested; the whole-phase acceptance covers the bounded native APIs only (no full scheduled three-model simulation); Phase 2.5 (LEAF canopy splash and hydrology cover feedback) and Phase 3 (observations) are later.
+
+Saxton, K.E. and Rawls, W.J. (2006). Soil water characteristic estimates by texture and organic matter for hydrologic solutions. Soil Science Society of America Journal 70(5), 1569–1578. https://doi.org/10.2136/sssaj2005.0117 (Green and Ampt 1911 and Tietjen et al. 2009, 2010 are in the layered-water references below.)
+
 ## References and source availability
 
 Author–year citations identify scientific origins and numerical-method precedents. Source records identify the exact implemented variants, fitted constants and project-specific choices. A reference to an empirical relationship does not establish its calibration for a new terrain, grain-size range or hydraulic regime. Some older papers are subscription-access; where a source attribution could be checked only through reference-code comments and bibliographic records, that limit is retained below rather than asserting that every original coefficient was independently recovered from the paper.

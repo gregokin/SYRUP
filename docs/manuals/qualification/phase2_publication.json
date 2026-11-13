@@ -1,0 +1,30 @@
+{
+  "schema": "syrup.phase2.publication.v1",
+  "status": "source_published_bounded_native_CPU_CUDA_APIs_main_integration_pending",
+  "note": "Separate publication record. The immutable qualification receipt phase2_qualification.json is unchanged; its publication.published=false means as of that qualification. This file names no commit of the document tree that contains it.",
+  "source": {
+    "commit": "71bb8fe0bb0ed2d17ee302e4502ba0511032d416",
+    "branch": "feature/subsurface-evolving-soil",
+    "origin_observed_same_by_root": true,
+    "package_sha256": "3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82",
+    "file_count": 169,
+    "source_manifest_sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
+    "experimental_base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "manuals_included_in_source_package": false
+  },
+  "qualification": {
+    "receipt": "docs/subsurface_hydrology/phase2_qualification.json",
+    "receipt_sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
+    "cpu_and_host_passed": 111,
+    "actual_gpu_passed": 39,
+    "portable_guard_tests_passed": 18,
+    "example": "seven nominal days, N=3, frames saved on days 3 and 6 (docs/subsurface_hydrology/phase2_floating_daily_example.py)"
+  },
+  "maple": {
+    "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "scope": "Native Python APIs only; independently accepted for the bounded scope in phase2_qualification.md. Not a production CLI or coordinator schema, not a full scheduled MAPLE-SYRUP-LEAF simulation, not field validation, not a large-domain memory fit.",
+  "main_integration": null,
+  "historical_cli_release_C1_unchanged": "e40a1b8fc56a96920db4ffbd182d4068fa5de3e8"
+}

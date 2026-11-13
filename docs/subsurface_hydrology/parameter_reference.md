@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Phase 1 (layered water, scheduled command) | **Committed and published**; its sources and recipes are the ones in the table below and never change. | "Current status and sources" and every section down to "Historical examples" |
 | Phase 1.5 (daily small-rain recharge, source N15) | **Committed and published** (`06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`, package `82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107`, 114 files). A native Python API; no CLI flag, weather CSV or MASY daily scheduler. | [phase15_qualification.md](phase15_qualification.md), `phase15_acceptance.json` |
-| Phase 2 (evolving soil profile, native floating API) | **Documentation draft; whole-phase acceptance, publication and field validation are NOT claimed.** Explicit opt-in Python API, not the scheduled `masy.native_water_run` command and not a published CLI. | Last section, "Phase 2 native floating-profile API (draft)"; [phase2_native_status.md](phase2_native_status.md) |
+| Phase 2 (evolving soil profile, native floating API) | **Independently qualified at a bounded native-API scope and source-published (`phase2_qualification.json`, `phase2_publication.json`); field validation is NOT claimed; integration into `main` is pending.** Explicit opt-in Python API, not the scheduled `masy.native_water_run` command and not a published CLI. | Last section, "Phase 2 native floating-profile API"; [phase2_native_status.md](phase2_native_status.md) |
 
 The Phase 1 and 1.5 file and command descriptions below keep their historical schemas
 (`masy.native_water_run.v1`/`v2`, `maple-syrup-layered-case/1`): the old command and
@@ -233,12 +233,10 @@ surface-water boundaries; actual soil water and physical ledgers are preserved. 
 
 An incomplete native call (per-call step budget exhausted) is logged and the same occurrence continues on the next call; the run stops only at a final limit, and a run that ends with an occurrence incomplete is reported incomplete (exit 3) with no checkpoint.
 
-## Phase 2 native floating-profile API (draft; explicit opt-in Python, pending whole-phase acceptance)
+## Phase 2 native floating-profile API (explicit opt-in Python)
 
 **Status.** The Phase 2 components below are independently qualified one by one, each with its
-own receipt (`phase2_*_acceptance.json`), which qualifies exactly the stated scope. The combined whole-phase
-acceptance, source publication and any field validation are **not claimed here**; Root records them at final
-acceptance. The old Phase 1/1.5 recipes, locks, source identities and checkpoints are unchanged and are never
+own receipt (`phase2_*_acceptance.json`), and as a whole by the immutable `phase2_qualification.json` (clean source package 169 files, SHA-256 `3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82`; 111 CPU/host and 39 actual-GPU controls; 18 portable source guards). The separate `phase2_publication.json` records the source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416` on `feature/subsurface-evolving-soil` (integration into `main` pending); the qualification receipt's own `publication` fields mean as of qualification. Field validation is **not claimed**. The old Phase 1/1.5 recipes, locks, source identities and checkpoints are unchanged and are never
 repointed to the Phase 2 source. The Phase 2 objects are Python arguments and returned objects, **not** YAML keys: the
 parser of `layered_water.yaml` and `run.yaml` does not recognise them, and no Phase 2 command-line flag has been
 published or qualified.
@@ -257,7 +255,7 @@ published or qualified.
 | Soil-moisture output every N days | `floating_daily_output.FloatingMoistureOutput` | Diagnostic only, below. | [output](phase2_daily_moisture_output.md), [frame](phase2_floating_moisture_frame.md) |
 | Physical checkpoint (child) | `floating_checkpoint` (CPU `/1`–`/6`), `floating_checkpoint_cuda` (`/7` Dense, `/8` Windowed), outer `floating_context_checkpoint` (+ CUDA) | Same source pair, backend and storage; wrong source/kernel/storage is refused. | [CPU](phase2_floating_checkpoint.md), [CUDA](phase2_floating_checkpoint_cuda.md), [outer](phase2_floating_context_checkpoint.md) |
 | Continued-event checkpoint (child) | `floating_continued_checkpoint` (CPU), `floating_continued_checkpoint_cuda`; `read_continued_origin`, `origin_topology` | Separates the ORIGINAL terrain datum from the carried ROUTING origin and generation; local event counters stay truthful (never seeded to the global generation). Restore uses a static case recipe plus the verified held-property record; it constructs no original bed, owner or probe. | [CPU](phase2_continued_checkpoint.md), [CUDA](phase2_continued_checkpoint_cuda.md) |
-| Closed-day/boundary file (author candidate) | written by the author candidate; **pending Root qualification** | See "Closed-boundary physical file" below. Not in this table's accepted set. | [status](phase2_native_status.md) |
+| Closed-day/boundary file | `floating_lifecycle_checkpoint` (CPU NumPy/Numba), `floating_lifecycle_checkpoint_cuda` (CUDA); Dense and published Windowed | Qualified; load requires the caller's expected sealed digest. See "Closed-boundary physical file" below. | [lifecycle checkpoint](phase2_lifecycle_checkpoint.md), `phase2_lifecycle_checkpoint_{cpu,cuda}_acceptance.json` |
 
 All entry points take explicit caller memory readers and reserves (CUDA: separate device and host pools, reserves counted
 once). The existing wind adapters of Phase 0 remain separate; Root's wind proof is not an integrated-clock or full-handoff
@@ -291,12 +289,9 @@ per-cell layer water `W` in metres of water, the actual porous geometry/mask and
 over the actual porous geometry; inactive cells are preserved as inactive. A device (GPU) bed is downloaded only when a save is due, in bounded
 chunks; unsaved times are never reconstructed. Frames are **not** physical checkpoints and cannot restart a run.
 
-### Closed-boundary physical file (pending)
+### Closed-boundary physical file
 
-The author candidate writes a closed-day/boundary file that preserves the accepted Boundary/closed daily identity, cursor, ledger and the
-every-N cadence through an external writer. It excludes an in-flight pending storm or pending recession and invents no quiet state; the default
-return is minimal (no event state retained); it is CPU only until Root qualifies a CUDA thin outer. It is **not** accepted by this document
-and the existing child checkpoints do not read it.
+An outer container over the continued-origin child that preserves the accepted Boundary or closed daily state (identity, cursor, ledger, execution digest and the every-N cadence, which stays an external writer). It is qualified for CPU (NumPy/Numba) and CUDA, Dense and published Windowed. Loading requires the caller's expected sealed digest. It excludes a running event, a pending storm, a pending recession and a mid-day trial and invents no quiet state; the load result keeps only the lineage, head, closed state, kind and seal (the transient carrier is released). The existing child checkpoints do not read it. See [phase2_lifecycle_checkpoint.md](phase2_lifecycle_checkpoint.md).
 
 ### Memory scope
 
@@ -309,13 +304,9 @@ objects are excluded. Large-catchment fit is untested.
 Saxton, K.E. and Rawls, W.J. (2006). Soil water characteristic estimates by texture and organic matter for hydrologic solutions. Soil Science Society of America Journal 70(5), 1569–1578. https://doi.org/10.2136/sssaj2005.0117
 Green and Ampt (1911) and Tietjen et al. (2009, 2010): see the layered-water references of the Model Structure and Physics manual.
 
-### Ready-for-finalization checklist (for Root)
+### Former finalization checklist (historical)
 
-- [ ] Whole-phase acceptance receipt, production package SHA-256 and file count, publication commit (Root fills; not invented here).
-- [ ] GPU daily C3 narrow corrections accepted (E/T bound operand, read-only zero row, connected-flow/CFL component definitions).
-- [ ] Closed-boundary physical file qualified (retention, minimal default return, fresh deep Dense/geometry) and, if wanted, a CUDA thin outer.
-- [ ] Rebuild both DOCX and the manuals ZIP with the reviewed `build_manuals.py` once the final source is known.
-- [ ] Re-read every "pending" statement above and remove only those a receipt closes.
+The checklist that stood here before publication (whole-phase receipt, GPU daily corrections, closed-file qualification, DOCX/ZIP rebuild) is closed by `phase2_qualification.json` and `phase2_publication.json`. Still later: integration into `main`, Phase 2.5 (LEAF vegetation projection) and Phase 3.
 
 ## Historical examples (task snapshots; not release recipes)
 

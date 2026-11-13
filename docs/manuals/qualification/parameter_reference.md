@@ -1,13 +1,19 @@
 # Subsurface parameter files — reference
 
-Queued follow-up, 2026-11-12 UTC: the user added
-[Phase 1.5 daily recharge](phase15_daily_recharge.md) after Phase 1 is completed,
-validated, committed and pushed, and before Phase 2. It is not implemented by
-this document's current interfaces. Positive P <= T attempts simplified recharge;
-zero rain is a no-op; P > T uses the native full storm, with unchanged-parent
-whole-occurrence fallback. Its new nominal-calendar convention must be explicit
-and must not retrofit historical clocks. No Phase 1.5 parameter filenames, options
-or production API are established, and nothing below accepts them.
+## Which releases this reference covers (read first)
+
+| Part | Status | Where |
+| --- | --- | --- |
+| Phase 1 (layered water, scheduled command) | **Committed and published**; its sources and recipes are the ones in the table below and never change. | "Current status and sources" and every section down to "Historical examples" |
+| Phase 1.5 (daily small-rain recharge, source N15) | **Committed and published** (`06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`, package `82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107`, 114 files). A native Python API; no CLI flag, weather CSV or MASY daily scheduler. | [phase15_qualification.md](phase15_qualification.md), `phase15_acceptance.json` |
+| Phase 2 (evolving soil profile, native floating API) | **Independently qualified at a bounded native-API scope and source-published (`phase2_qualification.json`, `phase2_publication.json`); field validation is NOT claimed; integration into `main` is pending.** Explicit opt-in Python API, not the scheduled `masy.native_water_run` command and not a published CLI. | Last section, "Phase 2 native floating-profile API"; [phase2_native_status.md](phase2_native_status.md) |
+
+The Phase 1 and 1.5 file and command descriptions below keep their historical schemas
+(`masy.native_water_run.v1`/`v2`, `maple-syrup-layered-case/1`): the old command and
+loaders do not read, accept or silently upgrade any Phase 2 object, and no
+Phase 2 option exists as a `run.yaml` or `layered_water.yaml` key. Phase 2.5
+(LEAF canopy to rainfall splash and hydrology cover feedback) is next, before Phase 3
+observation validation; neither is described here as implemented.
 
 ## Current status and sources
 
@@ -189,9 +195,9 @@ keys; example values are numerical test settings, not field calibration.
 | `domain.outlets` | Edge faces with `row`, `col`, `d_row`, `d_col`, `drop_m`; `(d_row, d_col)` is one of (1,0), (−1,0), (0,1), (0,−1); the drop is positive and in m; duplicate faces are refused. An empty list is a closed basin. MAPLE's periodic wind boundaries do not implicitly define water outlets. |
 
 There are L−1 interfaces for L layers. Layer hydraulic properties are explicit
-inputs in Phase 1. The actual MAPLE active-layer/voxel texture is calculated, but
-it does not yet automatically determine conductivity, suction or retention
-thresholds; that texture-to-property method belongs to Phase 2.
+inputs in Phase 1 (this schema). The Phase 2 native API adds an optional,
+separately documented texture-to-property provider (last section); it is not read by
+this file schema.
 
 Several spatial inputs accept a scalar or `{file: name.npy}` (with an optional hexadecimal `sha256`). A map is one plain file name
 (no directory part, no symbolic link) in the water file's directory: an `.npy` file, format 1.0 or 2.0, C-ordered two-dimensional `(ny, nx)`
@@ -226,6 +232,81 @@ explicit operation restricted to controlled, closed, quiescent, exactly dry
 surface-water boundaries; actual soil water and physical ledgers are preserved. Here "closed" means the lifecycle is at a closed boundary between episodes (no storm, recession or interevent state open); it is unrelated to `soil.bottom: closed` and to a closed basin, and a basin with outlets is not excluded if its surface is exactly dry and its outlet discharge is within the quiet policy. No key in these parameter files requests the reset.
 
 An incomplete native call (per-call step budget exhausted) is logged and the same occurrence continues on the next call; the run stops only at a final limit, and a run that ends with an occurrence incomplete is reported incomplete (exit 3) with no checkpoint.
+
+## Phase 2 native floating-profile API (explicit opt-in Python)
+
+**Status.** The Phase 2 components below are independently qualified one by one, each with its
+own receipt (`phase2_*_acceptance.json`), and as a whole by the immutable `phase2_qualification.json` (clean source package 169 files, SHA-256 `3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82`; 111 CPU/host and 39 actual-GPU controls; 18 portable source guards). The separate `phase2_publication.json` records the source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416` on `feature/subsurface-evolving-soil` (integration into `main` pending); the qualification receipt's own `publication` fields mean as of qualification. Field validation is **not claimed**. The old Phase 1/1.5 recipes, locks, source identities and checkpoints are unchanged and are never
+repointed to the Phase 2 source. The Phase 2 objects are Python arguments and returned objects, **not** YAML keys: the
+parser of `layered_water.yaml` and `run.yaml` does not recognise them, and no Phase 2 command-line flag has been
+published or qualified.
+
+### API table (module, entry point, what it needs, limits)
+
+| Purpose | Module and entry points | Needs / notes | Document |
+| --- | --- | --- | --- |
+| Texture to properties (Saxton and Rawls 2006 regression) | `soil_texture_properties.estimate_soil_texture_properties`; profile form `soil_profile_texture.build_soil_profile_texture` / `soil_profile_texture_from_bed` (`coverage`: partial support allowed explicitly) | Sand/silt/clay, organic matter %, bulk density per layer and cell; fine earth only; unsupported predictions are refused, never clamped. Not a field calibration. | [texture](phase2_texture_properties.md), [partial profile](phase2_partial_profile_texture.md) |
+| Floating column and owner | `floating_soil_layers.prepare_floating_column`, `floating_step`, `floating_storage_m3`; `native_floating_soil.initialize_native_floating_soil`, `native_floating_config` | Fixed layer thicknesses on the evolving surface; `bottom` open (default) or closed; actual MAPLE material only. | [column](phase2_floating_column.md), [native owner](phase2_native_floating_soil.md) |
+| Matrix / preferential infiltration | `floating_matrix_infiltration.prepare_floating_matrix`; `floating_preferential_infiltration.prepare_floating_preferential` | Persistent Green–Ampt J and I; preferential receiver weights per layer (species weights nonnegative, normalised only if positive, all-zero disables). | [matrix](phase2_matrix_bounded_intake.md), [spatial water](phase2_spatial_water.md) |
+| Evaporation / plant intake | `floating_evaporation.prepare_floating_evaporation`; `floating_daily.request_floating_withdrawal` | LEAF requests T; SYRUP checks supply, debits accepted amounts once and reports back. | [evaporation](phase2_floating_evaporation.md), [intake/withdrawal](phase2_floating_intake_withdrawal.md) |
+| Storm vertical (Pond) | `floating_pond.FloatingPondVertical` with `pond_event.PondEvent` (CPU NumPy/Numba, CUDA; Dense and published Windowed beds) | Genuine native event; completion is never a time or step limit. | [pond](phase2_floating_pond.md), [retained completion](phase2_pond_retained_completion.md) |
+| Event lifecycle and property refresh | `floating_event_lifecycle.open_floating_event`, `close_occurrence`, `begin_occurrence`, `export_boundary_held_context` (CUDA branch `floating_event_lifecycle_cuda`) | Properties are held during an event and refreshed for the **gross-touched** columns at the completed-event boundary; hydraulic **rerouting** is separately triggered only by NET elevation change (MAPLE trigger, currently 0.00075 m, `>=`). | [lifecycle](phase2_event_lifecycle.md), [CUDA](phase2_event_lifecycle_cuda.md), [refresh](phase2_event_refresh.md) |
+| Daily update | `floating_daily.start_floating_daily_lineage`, `floating_daily_action`, `close_floating_day`; event/daily bridge `open_day`, `day_action`, `begin_storm_from_day`, `day_after_storm`, `hand_back` | One dry day = one 86400 s update; a wet interevent day = short hydrology/evaporation fragments totalling exactly 86400 s. CPU bridge accepted as a component; GPU bridge hardware-qualified at its stated scope with narrow corrections pending. | [daily](phase2_floating_daily.md), [bridge CPU acceptance](phase2_event_daily_bridge_cpu_acceptance.json) |
+| Soil-moisture output every N days | `floating_daily_output.FloatingMoistureOutput` | Diagnostic only, below. | [output](phase2_daily_moisture_output.md), [frame](phase2_floating_moisture_frame.md) |
+| Physical checkpoint (child) | `floating_checkpoint` (CPU `/1`–`/6`), `floating_checkpoint_cuda` (`/7` Dense, `/8` Windowed), outer `floating_context_checkpoint` (+ CUDA) | Same source pair, backend and storage; wrong source/kernel/storage is refused. | [CPU](phase2_floating_checkpoint.md), [CUDA](phase2_floating_checkpoint_cuda.md), [outer](phase2_floating_context_checkpoint.md) |
+| Continued-event checkpoint (child) | `floating_continued_checkpoint` (CPU), `floating_continued_checkpoint_cuda`; `read_continued_origin`, `origin_topology` | Separates the ORIGINAL terrain datum from the carried ROUTING origin and generation; local event counters stay truthful (never seeded to the global generation). Restore uses a static case recipe plus the verified held-property record; it constructs no original bed, owner or probe. | [CPU](phase2_continued_checkpoint.md), [CUDA](phase2_continued_checkpoint_cuda.md) |
+| Closed-day/boundary file | `floating_lifecycle_checkpoint` (CPU NumPy/Numba), `floating_lifecycle_checkpoint_cuda` (CUDA); Dense and published Windowed | Qualified; load requires the caller's expected sealed digest. See "Closed-boundary physical file" below. | [lifecycle checkpoint](phase2_lifecycle_checkpoint.md), `phase2_lifecycle_checkpoint_{cpu,cuda}_acceptance.json` |
+
+All entry points take explicit caller memory readers and reserves (CUDA: separate device and host pools, reserves counted
+once). The existing wind adapters of Phase 0 remain separate; Root's wind proof is not an integrated-clock or full-handoff
+claim.
+
+### Physical choices that are fixed in the Phase 2 code (all user-resolved)
+
+- **Profile geometry.** Layer thicknesses are fixed and referenced to the evolving surface. Per-layer water **mass/volume is
+  preserved** through a geometry change (a geometric translation, no geometry-only water loss). Roots translate with the soil;
+  roots are not given plasticity. Hydraulic properties come from texture (Saxton and Rawls 2006 regression) or explicit inputs.
+- **Support and bedrock.** The full MAPLE voxel-grid bottom is a fixed, flat, impermeable base; there are no bedrock
+  parameters and no bedrock pore water. Columns with no soil have **zero** porous thickness (stores no water); a partially
+  supported layer stores in proportion to its actual porous thickness; an open lower boundary is accepted only for a profile
+  that ends strictly above the rock (open boundary requires depth D > support height H); rock is impermeable.
+- **Capacity.** Field capacity triggers gravity movement and saturation limits storage (Tietjen-type bucket convention with the
+  simple field-capacity cascade, a declared approximation of the floating profile). New properties are staged and the existing
+  gravity cascade is reused once on the new capacity: with an open bottom the excess leaves **once** as explicit drainage; with a closed
+  bottom only unavoidable excess returns to the surface (an internal transfer) and a recession is then pending
+  (a pending recession must be followed by a native Rain-0 recession before another interevent day).
+- **Green–Ampt history.** J (wetting) and I (cumulative intake) persist across events and days; there is no automatic
+  drying or recovery and no reset except the separately approved explicit controlled reset.
+- **E, T and growth.** Never during wind, rain or recession; nothing is caught up. Dry interevent day: one 86400 s soil update.
+  Wet interevent day (standing surface water): short hydrology/evaporation steps totalling **exactly** 86400 s, transpiration once at day end.
+  Nominal calendar days and extra physical time of wind/rain/recession are kept distinct.
+
+### Every-N-day soil-moisture output (diagnostic)
+
+`every_n_days` is an optional positive integer; **absence means off**. A frame is saved after a completed nominal day (N, 2N, ...) after the
+actual transpiration withdrawal and the audited daily close (post-T). Extra wind or storm durations add no output days. The frame holds actual
+per-cell layer water `W` in metres of water, the actual porous geometry/mask and source/generation identities, so volume = W x cell area
+over the actual porous geometry; inactive cells are preserved as inactive. A device (GPU) bed is downloaded only when a save is due, in bounded
+chunks; unsaved times are never reconstructed. Frames are **not** physical checkpoints and cannot restart a run.
+
+### Closed-boundary physical file
+
+An outer container over the continued-origin child that preserves the accepted Boundary or closed daily state (identity, cursor, ledger, execution digest and the every-N cadence, which stays an external writer). It is qualified for CPU (NumPy/Numba) and CUDA, Dense and published Windowed. Loading requires the caller's expected sealed digest. It excludes a running event, a pending storm, a pending recession and a mid-day trial and invents no quiet state; the load result keeps only the lineage, head, closed state, kind and seal (the transient carrier is released). The existing child checkpoints do not read it. See [phase2_lifecycle_checkpoint.md](phase2_lifecycle_checkpoint.md).
+
+### Memory scope
+
+Memory models are declared payload arithmetic from actual headers and dimensions (Windowed: the deep-store mapping-cache bound, never the
+archive size); measured allocator peaks exist only for the controls named in each receipt. Whole-process memory, JIT/driver and the caller's own
+objects are excluded. Large-catchment fit is untested.
+
+### Scientific references for Phase 2
+
+Saxton, K.E. and Rawls, W.J. (2006). Soil water characteristic estimates by texture and organic matter for hydrologic solutions. Soil Science Society of America Journal 70(5), 1569–1578. https://doi.org/10.2136/sssaj2005.0117
+Green and Ampt (1911) and Tietjen et al. (2009, 2010): see the layered-water references of the Model Structure and Physics manual.
+
+### Former finalization checklist (historical)
+
+The checklist that stood here before publication (whole-phase receipt, GPU daily corrections, closed-file qualification, DOCX/ZIP rebuild) is closed by `phase2_qualification.json` and `phase2_publication.json`. Still later: integration into `main`, Phase 2.5 (LEAF vegetation projection) and Phase 3.
 
 ## Historical examples (task snapshots; not release recipes)
 

@@ -1,6 +1,9 @@
-# Phase 2 current design: surface-following (floating) soil profile — 2026-11-13
+# Phase 2 current design: surface-following (floating) soil profile — 2026-11-13 (original design record)
 
-Status: user-agreed DESIGN, not implemented, not qualified. Source of the choices: `floating_profile_decisions_20261113/user_decisions.json` (task directory). This page supersedes, for the new floating treatment only, earlier proposals that eroded soil water disappears; historical statements, receipts and tested components are preserved unchanged. Phase numbering (1, 1.5, 2, 2.5, 3) is unchanged. Phase 2 remains UNCOMMITTED and is NOT whole-phase accepted. Main verified to contain Phases 1 + 1.5 (merge `5c7c7238caac0e759a57444a498ab8f7147ab725`). Manuals are regenerated at the end of the whole phase, not now.
+> **CURRENT status (publication refresh, 2026-11-13).** What follows is the ORIGINAL design record and its decision history, preserved; its "not implemented / pending" statements describe the state when it was written. The floating-profile design was implemented and independently qualified at a bounded native-API scope: see [phase2_qualification.json](phase2_qualification.json) (immutable whole-phase receipt), [phase2_qualification.md](phase2_qualification.md), [phase2_native_status.md](phase2_native_status.md) and the separate publication record [phase2_publication.json](phase2_publication.json) (source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416`; integration into `main` pending; no field validation).
+
+
+Status when written (HISTORICAL; see the current pointer above): user-agreed DESIGN, not implemented, not qualified. Source of the choices: `floating_profile_decisions_20261113/user_decisions.json` (task directory). This page supersedes, for the new floating treatment only, earlier proposals that eroded soil water disappears; historical statements, receipts and tested components are preserved unchanged. Phase numbering (1, 1.5, 2, 2.5, 3) is unchanged. Phase 2 remains UNCOMMITTED and is NOT whole-phase accepted. Main verified to contain Phases 1 + 1.5 (merge `5c7c7238caac0e759a57444a498ab8f7147ab725`). Manuals are regenerated at the end of the whole phase, not now.
 
 ## 1. User-agreed choices
 

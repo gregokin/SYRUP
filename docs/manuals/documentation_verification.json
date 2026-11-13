@@ -1,44 +1,54 @@
 {
-  "utc": "2026-11-12T14:36:22.084694+00:00",
+  "utc": "2026-11-13T23:09:28.763596+00:00",
   "release_status": "final",
   "documents": [
     {
       "file": "SYRUP_CLI_User_Guide.docx",
-      "sha256": "672a831d9e9954d71f06da7669ca4a013534df854c2f51358af58ce76ed9c01c",
-      "bytes": 242938,
+      "sha256": "21c3efb7be8dec87ce955cc8c1b0e51f60070dbafbe80e24941dcce3617cb061",
+      "bytes": 246674,
+      "zip_crc_ok": true,
       "xml_and_relationship_parts_parse": true,
+      "relationship_parts": 3,
       "media_count": 1,
       "unresolved_source_tokens": false,
       "identities_present": {
-        "n15_receipt": true,
-        "n15_package": true,
         "c1_syrup": true,
         "c1_leaf": true,
         "c1_masy": true,
-        "maple_9f": true
+        "maple_9f": true,
+        "n15_package": true,
+        "n15_receipt": true,
+        "p2_source_commit": true,
+        "p2_package": true,
+        "p2_manifest": true,
+        "p2_acceptance": true
       },
-      "phase15_text_present": true,
-      "phase15_published_source_commit_present": true
+      "phase2_section_present": true,
+      "footer": "Final \u2022 Native Phase 2 source 71bb8fe \u2022 historical CLI C1 e40a1b8 \u2022 prepared 2026-11-13       PAGE  /  NUMPAGES"
     },
     {
       "file": "SYRUP_Model_Structure_and_Physics.docx",
-      "sha256": "3c49947ec43af644cf46f5061b5f1c2b95828fefa8ca97e85022f54f2f40bca8",
-      "bytes": 181918,
+      "sha256": "3c78f3b9733bcb8e147d62348032b1bea6651b4014fa74a6ec3b35caf9f0a954",
+      "bytes": 184981,
+      "zip_crc_ok": true,
       "xml_and_relationship_parts_parse": true,
+      "relationship_parts": 3,
       "media_count": 1,
       "unresolved_source_tokens": false,
       "identities_present": {
-        "n15_receipt": true,
-        "n15_package": true,
-        "n15_manifest": true,
         "c1_syrup": true,
-        "c1_water_package": true,
         "c1_leaf": true,
         "c1_masy": true,
-        "maple_9f": true
+        "maple_9f": true,
+        "n15_package": true,
+        "n15_receipt": true,
+        "p2_source_commit": true,
+        "p2_package": true,
+        "p2_manifest": true,
+        "p2_acceptance": true
       },
-      "phase15_text_present": true,
-      "phase15_published_source_commit_present": true
+      "phase2_section_present": true,
+      "footer": "Final \u2022 Native Phase 2 source 71bb8fe \u2022 historical CLI C1 e40a1b8 \u2022 prepared 2026-11-13       PAGE  /  NUMPAGES"
     }
   ],
   "shell_python_fenced_blocks_syntax_checked": [
@@ -98,6 +108,18 @@
     },
     {
       "source": "user_guide.md",
+      "block": 9,
+      "language": "bash",
+      "syntax": "pass"
+    },
+    {
+      "source": "user_guide.md",
+      "block": 10,
+      "language": "bash",
+      "syntax": "pass"
+    },
+    {
+      "source": "user_guide.md",
       "block": 11,
       "language": "bash",
       "syntax": "pass"
@@ -141,25 +163,25 @@
     {
       "source": "user_guide.md",
       "block": 18,
-      "language": "bash",
+      "language": "python",
       "syntax": "pass"
     },
     {
       "source": "user_guide.md",
       "block": 19,
-      "language": "bash",
+      "language": "python",
       "syntax": "pass"
     },
     {
       "source": "user_guide.md",
       "block": 20,
-      "language": "python",
+      "language": "bash",
       "syntax": "pass"
     },
     {
       "source": "user_guide.md",
       "block": 21,
-      "language": "python",
+      "language": "bash",
       "syntax": "pass"
     },
     {
@@ -191,29 +213,27 @@
       "block": 26,
       "language": "bash",
       "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 27,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 28,
-      "language": "bash",
-      "syntax": "pass"
     }
   ],
+  "shell_python_fenced_blocks_failed": 0,
+  "example_python_scripts_syntax_checked": [
+    "examples/native_daily_moisture_output/run_example.py",
+    "examples/native_daily_recharge/check_preservation.py",
+    "examples/native_daily_recharge/check_results.py",
+    "examples/native_daily_recharge/daily_recharge_example.py",
+    "examples/native_leaf_calendar_cli/fill_config.py",
+    "examples/native_phase2_daily_example/phase2_floating_daily_example.py"
+  ],
   "limitations": [
-    "No LibreOffice/paginated office rendering available; no such claim made",
+    "No LibreOffice/paginated Office rendering available; no such claim made",
     "Source setup commands syntax-checked but not executed as newly created environments",
     "Actual C1 runtimes tested separately with existing MAPLE environments",
-    "Phase 1.5 (N15) examples were run on CPU only (NumPy and compiled Numba) with the existing MAPLE environment; the CUDA branch of the example is written but not run by the author; Root hardware controls are in phase15_qualification.md",
-    "Static DOCX XML/relationship/token/source-identity checks only"
+    "Phase 1.5 (N15) examples were run on CPU only in their own release; the CUDA branch of that example is not run by the author; Root hardware controls are in phase15_qualification.md",
+    "Native Phase 2 example script and Phase 1.5 daily_moisture_output example are shipped as script text; they were NOT executed for this documentation build (the qualification record ran the seven-day N=3 example separately); the Phase 2 example uses a PRESCRIBED withdrawal (no LEAF model)",
+    "Static DOCX XML/relationship/CRC/identity checks only; Phase 2 Native API claims are those of qualification/phase2_qualification.json (bounded; no field validation)"
   ],
-  "exact_metadata_fixture": "4 genuine native9f distribution metadata files byte-identical to the previous archive (and to native_case_profile.DISTRIBUTION_SHA256 pins checked in the earlier release); unchanged by this build",
-  "exact_metadata_files_identical_to_previous_archive": {
+  "exact_metadata_fixture": "genuine native9f distribution metadata files byte-identical to the committed git HEAD bytes; unchanged by this build",
+  "exact_metadata_files_identical_to_committed_HEAD": {
     "examples/native9f_metadata/README.md": true,
     "examples/native9f_metadata/distribution/METADATA": true,
     "examples/native9f_metadata/distribution/WHEEL": true,
@@ -230,6 +250,16 @@
     "source_commit": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
     "published": true
   },
-  "scientific_render_review": "Source formulas and citations retained; layered figure previously visually reviewed; Phase 1.5 prose adds no new figure",
-  "publication_refresh": "Root XML/CRC/identity verification after verified actual source push. No model source or command changes."
+  "native_phase2_identity": {
+    "source_commit": "71bb8fe0bb0ed2d17ee302e4502ba0511032d416",
+    "source_branch": "feature/subsurface-evolving-soil",
+    "syrup_package_sha256": "3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82",
+    "package_file_count": 169,
+    "source_manifest_sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "whole_phase_acceptance_sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
+    "published": true
+  },
+  "publication_refresh": "Documentation refresh after the verified source publication of the Native Phase 2 source; no model source or command changes; the documents name the source commit, not themselves."
 }

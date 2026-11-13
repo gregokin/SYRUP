@@ -1,6 +1,6 @@
 # Shared scheduler and subsurface development program
 
-Current milestone: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Phase 1.5 (daily recharge) is implemented as a separate native source and bounded-qualified through Root S4; its public record is [phase15_qualification.md](phase15_qualification.md) (bounded whole-phase acceptance recorded; source committed and pushed at `06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`). The scientific requirements and numbering below remain governing.
+Current milestone (Phase 2): the bounded native Phase 2 water APIs are independently qualified ([phase2_qualification.md](phase2_qualification.md)) and the source is published at `71bb8fe0bb0ed2d17ee302e4502ba0511032d416` on `feature/subsurface-evolving-soil` ([phase2_publication.json](phase2_publication.json)); main integration, Phase 2.5 (LEAF vegetation projection) and Phase 3 remain queued. The next paragraph is the earlier historical milestone. Earlier: bounded Phase 1 water/LEAF qualification on actual C1 commits is recorded in [phase1_release_qualification.md](phase1_release_qualification.md). Phase 1.5 (daily recharge) is implemented as a separate native source and bounded-qualified through Root S4; its public record is [phase15_qualification.md](phase15_qualification.md) (bounded whole-phase acceptance recorded; source committed and pushed at `06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`). The scientific requirements and numbering below remain governing.
 
 User authorized implementation on 2026-11-09 after the planning discussion.
 Work uses automatic Codex–Claude implementation, independent review, correction
@@ -215,7 +215,10 @@ remain unchanged. Read the full binding
 [Phase 1.5 specification](phase15_daily_recharge.md) before work. Status: the
 native API is implemented and bounded-qualified (see
 [phase15_qualification.md](phase15_qualification.md)); the bounded whole-phase acceptance is recorded in
-[phase15_acceptance.json](phase15_acceptance.json); commit and push are pending, and Phase 2 has not started.
+[phase15_acceptance.json](phase15_acceptance.json). Phases 1 and 1.5 were
+published and merged into `main` at
+`5c7c7238caac0e759a57444a498ab8f7147ab725`; Phase 2 is now in isolated
+development. That merge does not accept later Phase 2 components.
 
 Provide a narrow native SYRUP rainfall-selection/recharge interface, not a
 complete daily MASY scheduler, CSV format or LEAF redesign. Caller supplies P
@@ -247,6 +250,10 @@ rules, device residency, memory limits and scientific defaults.
 
 ## Phase 2: evolving soil geometry and properties
 
+Implementation status: [native Phase 2 status](phase2_native_status.md) distinguishes independently accepted components from the still-unpublished combined phase. The design-only wording below records the decision history and does not erase the newer component acceptance records.
+
+**Current design (2026-11-13):** see [phase2_floating_profile_design.md](phase2_floating_profile_design.md). Fixed user-defined layer thicknesses follow the evolving surface; per-layer water mass is preserved through geometry reassignment with no geometry-only water loss (this supersedes, for the floating treatment, the earlier eroded-water-disappearance proposal; history preserved); roots translate with the soil with fixed fractions and no plasticity; properties come from mass-weighted MAPLE texture plus the agreed Saxton–Rawls method; gravity is always on in new production entry points (open default, closed explicit); bottom drainage is an exactly-once explicit loss. User-approved capacity treatment (now implemented and independently qualified at the scope in phase2_qualification.md): stage new properties and reuse the gravity cascade on the NEW field capacity before final validation; open bottom exports exactly once; closed bottom returns only unavoidable excess to surface water. User-resolved (2026-11-13): affected columns refresh at the transport-event handoff with properties held during an event; the full MAPLE voxel-grid bottom is fixed, flat and impermeable, only actual soil stores water, and the open lower boundary applies only to a profile ending above rock. Remaining slices (provider C, zero/partial-soil profile D, native handoff/reconciliation/restart E, sequences/docs F) are planned in [phase2_completion_architecture.md](phase2_completion_architecture.md); Phase 2.5 stays between Phases 2 and 3 unless cancelled. Green–Ampt history is retained and its behavior with refreshed parameters is a qualification item. The S1 exact interval remap remains a tested alternate, not the default. The bounded native Phase 2 source is independently qualified; publication is being finalized (see phase2_qualification.md). The text below is retained as the original requirement.
+
 Conservatively remap layers, water, texture and hydraulic properties following
 erosion/deposition; connect remaining changes in MAPLE sediment to the water
 profile and LEAF root access. Account for material/water added, removed or
@@ -257,6 +264,25 @@ Implement and qualify the texture-to-hydraulic-property method explicitly
 deferred here by the user on 2026-11-10. Declare its scientific source, required
 inputs, calibration/domain and treatment of coarse or unmapped grain classes;
 do not treat mass-weighted texture as a unique hydraulic parameterization.
+
+### Soil-moisture output every N completed days
+
+User addition, 2026-11-13 UTC: implement an opt-in, user-selected positive
+integer N-day soil-moisture save cadence. Save the accepted water inventory
+after the completed daily interevent calculation, plant withdrawals and day
+closure. Count completed nominal days; additional wind and storm physical
+durations do not create extra daily saves. This diagnostic output is separate
+from full physical restart checkpoints and does not reconstruct unsaved times.
+
+Record per-layer/per-cell water, units, actual porous geometry, mask, nominal
+date/day, physical time and source/generation identities. Stream due outputs
+with bounded memory and explicit disk limits; GPU downloads occur only when a
+save is due. Preserve accepted physical state, no-clobber publication and
+restart-safe cadence/duplicate handling. Qualify the native writer and actual
+daily driver/configuration hook before describing this as a working CLI
+option.
+
+Status update (documentation draft, 2026-11-13): the bounded native fixed and floating output components, including the CUDA writer, are accepted at their receipts (`soil_moisture_output_acceptance.json`, `phase2_daily_moisture_output_acceptance.json`, `phase2_floating_moisture_frame_acceptance.json`, and Root's every-3 example over seven nominal days). N is a positive integer; absence means off; saves follow completed nominal days after the actual transpiration withdrawal and audited close; wind and storm physical time adds no extra days; due frames stream actual `W` (m), geometry/mask and identities with bounded downloads. This is a native Python API, **not** a published evolving-soil CLI option, and the output is not a physical restart. Historical status as of the 2026-11-13 documentation draft; superseded by the whole-Phase-2 qualification [phase2_qualification.md](phase2_qualification.md) and the separate publication record [phase2_publication.json](phase2_publication.json) (source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416`; main integration pending).
 
 ## Phase 2.5: LEAF vegetation inputs for rainfall splash
 
@@ -318,3 +344,8 @@ The user chose to retain prescribed hydrology vegetation-cover and species-infil
 ## Confirmed plant PET and disabled-growth accounting — 2026-11-11
 
 Use terrain-adjusted PET averaged by canopy area for each plant’s potential demand, followed by unchanged root-weight allocation. Extend LEAF’s PET interface with bounded per-plant arrays and sparse canopy geometry; do not change root allocation or create dense plant-by-cell tensors. During interevent periods with transpiration enabled and growth explicitly disabled, withdraw and account for actual transpiration but give those hours no later biomass-growth credit. Evaporation, transpiration and growth remain excluded from wind, rain and their recession periods.
+
+
+## Wet interevent timestep exception approved 2026-11-13
+
+The user authorized short hydrology and evaporation steps on wet interevent days, with transpiration and growth once at day end. Dry days keep one daily soil update. Wind, rainfall and their recession still exclude evaporation, transpiration and growth. A wet interevent day counts as one nominal day (86400 physical seconds), and optional every-N output follows final daily withdrawals and audited closure. This authorizes the numerical treatment; the coupled wet-day driver still needs implementation and CPU/GPU qualification. Earlier pending/refusal-only design notes are superseded by this decision.

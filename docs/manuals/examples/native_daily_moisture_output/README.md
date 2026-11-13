@@ -1,0 +1,3 @@
+# Phase 1.5 fixed-profile daily moisture-output example (historical scope)
+
+`run_example.py` is an older example for the **Phase 1.5 fixed-profile** daily lifecycle writer (`daily_moisture_output`). It is not the Native Phase 2 floating-profile example (see `../native_phase2_daily_example/`). It needs the source tree's `tests/phase15_recharge/ncpcases.py` helpers, a configured materialized MAPLE 9f bundle (`SYRUP_NCP_TARGET`) and the matching `PYTHONPATH`, and refuses to run without them. Its docstring says the floating porous-depth hook is not wired here; the Phase 2 floating writer is documented in `qualification/phase2_daily_moisture_output.md`. Script bytes are unchanged; it was not re-run for this build.

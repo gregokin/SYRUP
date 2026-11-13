@@ -1,0 +1,77 @@
+{
+  "utc": "2026-11-13T21:31:38.157977+00:00",
+  "status": "independently_accepted_bounded_CPU_CUDA_event_daily_bridge_composed_with_qualified_continued_checkpoint",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_daily_integrated_snapshot167",
+  "manifest_sha256": "05a0373bf5c4bbb66c660258d3388bd60425ab8e7e49936c7fc75c8fe1da334c",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "production": {
+    "floating_daily.py": "931f6bcf120be2ce42fbf20c31885d37988155d94c37c903b2a2e6b6fb2e1940",
+    "floating_daily_output.py": "2150218ff4980054771be0f7994da7679fd5ab245b117dc04a84abc48ea2ee25",
+    "floating_event_daily_bridge.py": "4cbf82139b988b70bcf3240298cfe16a4a3f4226b3023950ba4d99965b491748",
+    "floating_event_daily_bridge_cuda.py": "67a44006aeb2e122bc3eaa2477bd00e09592c0d053b8c55aacea1bf37d28b8f8",
+    "floating_event_lifecycle.py": "16256f7dd6b34f769b0f287757c2a3696f2b51ba5aeaeea3e277096ccb305e01",
+    "floating_event_lifecycle_cuda.py": "ed73b4e736c41d8964775e3aa9f6b3fb5987cd9604be20d54d0ccb0f470ad251",
+    "floating_pond.py": "bdb4576c14a908e5fea88f7112a85a88cfdd6b78c1d445bf920a020cd8248036",
+    "pond_event.py": "c2b65c1fab6824219db8ba5a299a6271db350aad02b8ca807c7e068a024cded9"
+  },
+  "Root_tests": {
+    "exact167_CPU": 149,
+    "CPU_breakdown": {
+      "bridge_host": 32,
+      "continued_cuda_host": 37,
+      "context_cuda_host": 54,
+      "preservation_guards": 26
+    },
+    "exact167_GPU": 21,
+    "GPU_breakdown": {
+      "daily": 16,
+      "continued_compatibility_dense_windowed_and_fresh": 5
+    },
+    "same_daily_physics_C4_six_wet_CPU": 6,
+    "inherited_exact_component_evidence": "Root_CPU_C3_227+four forcing histories; Root_C1_shared_GPU_daily_CPU241; CPU/CUDA lifecycle and continued child receipts retain exact original scope; no aggregate claim of all rerun on167"
+  },
+  "independent_review": [
+    "report_gpu_daily_c2_independent_review.md",
+    "report_gpu_daily_integrated167.md",
+    "Root per-pool model/readonlyzero/currentWIJ/producer/two-pool branch and eight-part adoption review"
+  ],
+  "coverage": [
+    "Actual complete native event \u2192 dry/wet daily86400 \u2192 daily bounded T once \u2192 audited close/handback \u2192 next event",
+    "Prescribed background preferential, actual native Windowed wet day, two consecutive wet days, matched deep CPU comparisons",
+    "P0/P=T recharge/whole-occurrence capacity fallback/actual canonical storm forcing proof unchangedparent/genuine completion",
+    "Actual seven-day N3 frame output with real intervening native storm/grossdirty/property change, saves3/6 afterT and no storm-created days",
+    "Currentdevice/quota/reserve/gate and composed host/device admission; genuineconnected outlet/CFL rejection purity and six nonzero-q carried fragments using MAPLE water bound",
+    "Dense and Windowed gen1/local0 physicalcontinued load+steps, oldfamilies strict; twofreshGPUprocesscontrols from static recipe nooriginalbed construction"
+  ],
+  "performance": {
+    "opening_fixture": {
+      "N": 4096,
+      "L": 3,
+      "true_device_peak_B": 230400,
+      "device_model_B": 491872,
+      "measured_rounding_B": 1770,
+      "three_released_plateaus_B": [
+        141809664,
+        141809664,
+        141809664
+      ],
+      "D2H_B_per_open": 24,
+      "H2D_B_per_open": 0
+    },
+    "limits": "Opening-specific model/allocator and counted transfer proof, no whole-wet-day peak/RSS/largefit claim. Cold static NK hash transfer exists; no per-fragment W/J/I host mirror or whole-bed NVK work."
+  },
+  "corrections": [
+    "Real dropped wet host quota propagation fixed C1",
+    "Wrong-pool evaporation/composed opening estimate fixed with explicit per-pool terms and unchangedCPU arithmetic",
+    "CUDA cumulative E/T max-bound aligns CPU; readonly zero row reused instead of per-fragment allocation",
+    "Explicitly preserve accepted main165 continuedCUDA three parts when author fork predates them; final167 actualhardware requalified"
+  ],
+  "limits": [
+    "No closed-parent/daily lifecycle physicalFILE in this acceptance (separate CPU/GPU task)",
+    "No whole86400 connected draining-outlet GPU day or whole-wet-day larger-domain allocator proof",
+    "No new scheduler/wind/vegetation adapter or fieldvalidation; persistent GA general repeatedstorm drying recovery remains bounded/unqualified",
+    "No automatic old checkpoint/source lock migration; pending storm canonical forcing proof process-local"
+  ],
+  "committed": false
+}

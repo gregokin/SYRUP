@@ -1,0 +1,150 @@
+{
+  "schema": "syrup.phase2.qualification.v1",
+  "utc": "2026-11-13T22:42:57.375100+00:00",
+  "status": "independently_qualified_bounded_native_CPU_CUDA_APIs_publication_pending",
+  "source": {
+    "package_sha256": "3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82",
+    "file_count": 169,
+    "source_manifest_sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
+    "experimental_base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "experimental_branch": "feature/subsurface-evolving-soil"
+  },
+  "maple": {
+    "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "file_count": 412
+  },
+  "clean_assembled_source_checks": {
+    "CPU_and_host_passed": 111,
+    "CPU_breakdown": {
+      "GPU_file_host_contracts": 17,
+      "CPU_checkpoint_including_NumPy_Numba_Dense_Windowed_and_fresh": 36,
+      "daily_CUDA_host": 32,
+      "common_source_guards": 26
+    },
+    "actual_GPU_passed": 39,
+    "GPU_breakdown": {
+      "closed_parent_physical_checkpoint": 19,
+      "genuine_weakref_retention_Dense_Windowed_Boundary_closedday": 4,
+      "daily_bridge": 16
+    },
+    "extra_host_source_identity_check": 1,
+    "GPU_device": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "guard": "PhysicalGPU0 UUID must match; before each outerGPUprocess memory0MiB/util0%. Other devices untouched.",
+    "raw_evidence_local": "agent_handoffs/tasks/phase2_evolving_soil_20261112/root_phase2_clean_release_{cpu,gpu}_runs/",
+    "test_commands": [
+      "python -B -m pytest -q -p no:cacheprovider tests/phase2_floating_lifecycle_checkpoint_cuda/test_cuda_lifecycle_host.py",
+      "python -B -m pytest -q -p no:cacheprovider tests/phase2_floating_lifecycle_checkpoint",
+      "python -B -m pytest -q -p no:cacheprovider tests/phase2_floating_event_daily_bridge_cuda",
+      "python -B -m pytest -q -p no:cacheprovider tests/phase2_spatial_preferential/test_common_preservation.py",
+      "python -B -m pytest -q -p no:cacheprovider tests/phase2_spatial_matrix/test_common_preservation.py",
+      "SYRUP_RELEASE_GPU=1 python -B -m pytest -vv -s -p no:cacheprovider tests/phase2_floating_lifecycle_checkpoint_cuda/test_gpu_definitions.py",
+      "SYRUP_RELEASE_GPU=1 python -B -m pytest -vv -s -p no:cacheprovider tests/phase2_floating_lifecycle_checkpoint_cuda/test_retention_gpu_definitions.py",
+      "SYRUP_RELEASE_GPU=1 python -B -m pytest -vv -s -p no:cacheprovider tests/phase2_floating_event_daily_bridge_cuda/test_gpu_definitions.py"
+    ]
+  },
+  "component_receipts_sha256": {
+    "phase2_floating_checkpoint_cuda_reconciliation_acceptance.json": "b35e34b6bef571018f4984be315ab1c0ebfc21635090c217ad381737d5908379",
+    "phase2_floating_evaporation_acceptance.json": "65c94a1b29dac0db295a94842834dfcbc0a47ac206d7a66cde905e30d93b2484",
+    "phase2_texture_properties_acceptance.json": "67b1151553eb6ba5efe7a887767454e7795bc14e5b7c3024f7a39ff03d375790",
+    "phase2_cuda_geometry_acceptance.json": "477c57dbcb9f7b8f0a0965f8b759cad62b50ebe42009da58bf3d9d924e9c6655",
+    "phase2_floating_terminal_checkpoint_acceptance.json": "a28bbb13c73aac9d31b523a4bd36c8e689ff4341e6fcca740cf7dca2ff82ed22",
+    "phase2_continued_checkpoint_cuda_acceptance.json": "b7fa85bf4d255dee01611a7c0347a4e29c1ae4de96a79f20c6144cdeaa34e839",
+    "phase2_floating_daily_cuda_acceptance.json": "1c42fc3815cb96d041b5b22d9348d81fb0ca4cd4c3f9560af0bfc96251f8d1a4",
+    "phase2_event_daily_bridge_cuda_acceptance.json": "6dfaf85c275d43223a267e53121484db703072a38d5a2e02109580dc6c7f0d14",
+    "phase2_floating_held_cuda_factory_acceptance.json": "0e18264514404a81091aff53d547cbf95baf4e4d4086157a07a5dcb179622ef4",
+    "phase2_windowed_checkpoint_cuda_acceptance.json": "67b82ce5346c43a2155751a8d50a280a8811228b155ac94ce755201eec5c26f1",
+    "phase2_native_floating_soil_acceptance.json": "a47ad4acf68e64bf86164999ef0ffd0d6257aa8050f229a792856f045faef778",
+    "phase2_context_checkpoint_cuda_acceptance.json": "8c55a4a2ee8f3bb7722b30c3e528202c95aa1868e24ed3493ff5f3619d81316c",
+    "phase2_event_completion_acceptance.json": "98fe23999741289c14f3ae46a570183c34360f3f79e82ebc39aadae4eca64ebb",
+    "phase2_floating_moisture_frame_acceptance.json": "269931c139774d3a924dcae6ddd158ded9c426a95b2626f70aeb71bd1e26ea6d",
+    "phase2_floating_held_context_acceptance.json": "3ceb6b054d5d2d1541e20023778ca28571de892b23196e2377d50aa86d38c0fc",
+    "phase2_spatial_preferential_acceptance.json": "fbec171eeec0a823dc5a40bee7417b72ee7097339fddf0b2b5fb58e15a7f879b",
+    "phase2_event_lifecycle_acceptance.json": "51e06fcfdac0e49a8b48b5a61195fb1808661030c413e87a948d5fdc34c24abd",
+    "phase2_floating_held_context_cuda_acceptance.json": "87328fafebdb746be3c39c74558c01798b35249a4dae0178e606a81ebbe2b054",
+    "phase2_withdrawal_shared_body_acceptance.json": "9ceab627603a32971d4c1e92dc9467b477f155136d95dc5df2a44e2d28f0562a",
+    "phase2_remap_component_acceptance.json": "f744c4b3623eb542e9c9c9c2f6a4d5f41057e86635039a783a8b1446a8930308",
+    "phase2_event_refresh_acceptance.json": "5e75389bc1d077db48c31b8fc8652093707b094369c9d1dc9d1120f26321cdef",
+    "phase2_spatial_matrix_acceptance.json": "712bbddeb683fcdb276ada785bdb6cd3069cb7ed71eee6458b4b7464a27f09f2",
+    "phase2_floating_checkpoint_cpu_acceptance.json": "f6ea3019ff473dda3bfe81d2c76db38ccd84840a539858cd2cc5a3cb773ae4b6",
+    "phase2_floating_checkpoint_cuda_acceptance.json": "c0e1734d05e19262e9f463d2534283531bdbb003768585cd947804ac6e29934c",
+    "phase2_continued_checkpoint_acceptance.json": "58010ffa4e68694a1981a27b607b5b12530655be027a2d3a98ca9d03704c8fea",
+    "phase2_partial_profile_texture_acceptance.json": "babc4358d14b0b6092d033a69bebb4e3ceac22beea8d853bfdeff60c179fa571",
+    "phase2_native9f_admission_acceptance.json": "a10a05635b3eacef45e0523a53b697a0c8e39bccf02c4cbb7c4485fc0811ff4f",
+    "phase2_lifecycle_checkpoint_cuda_acceptance.json": "7d8d1d761853e96a0e9ee01c03aca3118484fc04d793861953c815043c5ab217",
+    "phase2_floating_pond_cpu_acceptance.json": "6d8167db617a2239b22b456988f62804b1016fe286a054c6bfe2b7811af9b9f8",
+    "phase2_event_daily_bridge_cpu_acceptance.json": "7724839ee29a400535222b1b697d3177ac7f6bd5c90c186ed4fade3fc82170d4",
+    "phase2_floating_resume_acceptance.json": "54b9f1914c8087f388ff77cf8cfc3a2072f122f5d5bf86069a238cec664a80de",
+    "phase2_spatial_cuda_acceptance.json": "62e1a6ef8d25f39d72a56b93e4e3af0345e0b606d000a44d7bae9ef401477597",
+    "phase2_lifecycle_checkpoint_cpu_acceptance.json": "4b1a75e535781f5caca626bd03be7b2df52ea83fd1a2b750a749b6488d33470c",
+    "phase2_spatial_withdrawal_acceptance.json": "62abcb5cc0d2d035a51a6846d9f56f9195168565629041ade32fbe31b79950cd",
+    "phase2_floating_pond_cuda_acceptance.json": "3b39197d2a75705d41c06f57e4c90fe01e98918f749005d9bd650308cbff11f9",
+    "phase2_spatial_matrix_cuda_acceptance.json": "b9917e2ed7923b2a55ccec4194a273e737eeb7ddd9e783d887182ee52ca9b573",
+    "phase2_floating_held_factory_acceptance.json": "e017cc02f52130a49b88f8ca83d7f19ef0f1042c799983c722125686b8630734",
+    "phase2_spatial_withdrawal_cuda_acceptance.json": "0ab1a7cf7bab1079b4e35efd43260ffc60b012b49001e2522ad1d8b341133baa",
+    "phase2_compact_soil_profile_acceptance.json": "f56e3db5b84c09c50eb6b8eb27cf5ccdcf6682a0c5af21128e436d740ced6321",
+    "phase2_continued_static_recipe_acceptance.json": "b02f2f800cedf4631bfbfd1876e77cc6eede96df64b06732a5e120130714d711",
+    "phase2_event_lifecycle_cuda_acceptance.json": "e253ae54b356fb02e458f961d5dc9d3706f64c08fc3470e1a95cbe9b984a012c",
+    "phase2_floating_column_acceptance.json": "f551488c9a7f2e94c5d6afdbb14f7296efe350a4a9fe99d3d54ea8df836f7feb",
+    "phase2_native9f_storage_acceptance.json": "ff1edba362295ecc1885b8baf7f5ff50601bae2ea1a0796c7774abd10a1405f7",
+    "phase2_spatial_preferential_cuda_acceptance.json": "20cf28092d5f109f24fd7ddfa0a490d84f1faa19c23092a3833f2514c8ed0d51",
+    "phase2_floating_daily_cpu_acceptance.json": "2b7f7f2de03fb7667c590063c19aa6273cd6712e1d21403f2ea37eb989b553c0",
+    "phase2_cuda_shared_body_acceptance.json": "2b19857be9dd685639f63bbe739862015261becf8c0d40a084b61772b766773c",
+    "phase2_floating_intake_withdrawal_acceptance.json": "d1a24f53becf5be8daa0870c18a36afeb9d060831446b9735f9b9be545a8c4ec",
+    "phase2_spatial_water_acceptance.json": "dfdf15e2ea452babac57ddf107178cb61735584f63684a5aefc52f4f319fc13b",
+    "phase2_spatial_parameters_acceptance.json": "09cdcd7f4b53d7369460d36109235030b239d651040349b8c1624e0076779c01",
+    "phase2_event_refresh_cuda_acceptance.json": "b9a438f21df238dac506d8f91b4e63e00ab3ced6d752933211f0eb51b8e63f91",
+    "phase2_floating_context_checkpoint_cpu_acceptance.json": "5760ee24bd08adb6402cf3b7cb21ab33830320ebb3f17fd8d5e7cecf5684dd82",
+    "phase2_pond_retained_completion_acceptance.json": "6d7132fc7455fbd47b694719720d161e0297160852b093f9d3106efcb0c156d1",
+    "phase2_daily_moisture_output_acceptance.json": "ae398e7544b64083992bb43add4e2d5f1919b7930609b318d2b4b501a66a57ad",
+    "phase2_spatial_numba_acceptance.json": "da067aa7798a3598c059de39d0b52925e8ae30ababe8b54844e0b58af7441b99"
+  },
+  "source_hygiene": {
+    "old_artifacts_preserved_outside_release_source": [
+      ".ruff_cache",
+      "floating_pond.py.orig"
+    ],
+    "runtime_provenance_algorithm_unchanged": true,
+    "old_receipts_and_checkpoints_not_rebound": true,
+    "fresh_clean_identity_qualification": true
+  },
+  "scientific_scope": [
+    "User-defined floating nominal layers, real mass-overlap texture, conservative retained W with field-capacity/capacity reconciliation, roots translate with fixed fractions.",
+    "Actual MAPLE one bed and flat full-grid impermeable bottom; partial/zero soil support, no water/roots in rock; open export only D>H.",
+    "Explicit bounded Saxton-Rawls properties, measured overrides, FC at6kPa, explicit suction/residual; event-held properties and gross-touched handoff, net-only routing.",
+    "Persistent W/J/I across actual native events and daily updates; one drydaily/approvedwet shortHydroE totaling86400/T once/dayclosure.",
+    "EveryNnativeAPI output offbyabsence, Npositive, afteractualT+closure; seven-dayN3 realevents/refresh/restart saves3/6, no extra nominaldays.",
+    "NumPy/Numba/CUDA and Dense/nativeWindowed physical closedparentfiles, strictnative/source/kernel/family checks, external expectedseal, genuine completion only, headLAST."
+  ],
+  "limits": [
+    "NativeAPI qualification only; historicalCLI/coordinator schemas do not gain Phase2options. No fullMAPLE-SYRUP-LEAF scheduled simulation acceptance.",
+    "Native wind check is cold engineering control with actual positivebedchanges, not integratedwindclock orselectedproductionadapter.",
+    "General repeatedstorm GreenAmpt drying/recovery remains bounded/unqualified; no automaticreset.",
+    "Closedparentfiles exclude runningevents/pendingstorm/pendingrecession/middaytrial; no forcing-historyreceipt invented onphysicalchildload.",
+    "No fieldvalidation orwhole-catchment/whole-process memoryfit; componentmemorymodels/selectedmeasuredpeaks only.",
+    "Phase2.5vegetationprojection followsbeforePhase3JORN/MOABplanning."
+  ],
+  "publication": {
+    "source_commit": null,
+    "published": false,
+    "main_integration": null
+  },
+  "publication_readiness": {
+    "portable_guard_tests_passed": 18,
+    "test_fixture": "tests/phase2_floating_lifecycle_checkpoint_cuda/physical_lifecycle_cuda_preedit_source_baseline.json",
+    "baseline_hash_values_preserved": true,
+    "source_identity_proof_uses_actual_runtime_algorithm_and_public_manifest": true,
+    "example": {
+      "script": "docs/subsurface_hydrology/phase2_floating_daily_example.py",
+      "N": 3,
+      "days": 7,
+      "exit_code": 0,
+      "saved_days": [
+        3,
+        6
+      ],
+      "script_sha256": "301e9b2d62950e046676a8c1a50dea6c25f947ed008ed05c26d7061896e8bc1b",
+      "scope": "small actualMAPLE fixture with prescribed withdrawal; noLEAF model orfullscenarioCLI"
+    }
+  }
+}

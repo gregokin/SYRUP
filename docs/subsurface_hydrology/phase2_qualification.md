@@ -1,6 +1,6 @@
 # Phase 2: floating soil profiles and evolving properties
 
-The native implementation is independently qualified at the bounded scope described here. Publication is pending; the existing Phase 1 and 1.5 source locks remain historical and unchanged. This is a water-component API qualification, not acceptance of a complete MAPLE–SYRUP–LEAF scheduled simulation or field validation.
+The native implementation is independently qualified at the bounded scope described here. The `publication.published: false` in the immutable receipt [phase2_qualification.json](phase2_qualification.json) means *as of qualification*; the later source publication is recorded separately in [phase2_publication.json](phase2_publication.json) (source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416` on `feature/subsurface-evolving-soil`; main integration still pending). The existing Phase 1 and 1.5 source locks remain historical and unchanged. This is a water-component API qualification, not acceptance of a complete MAPLE–SYRUP–LEAF scheduled simulation or field validation.
 
 ## Model behavior
 
