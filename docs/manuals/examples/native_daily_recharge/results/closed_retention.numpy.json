@@ -1,0 +1,117 @@
+{
+  "example": "native_daily_recharge",
+  "scenario": "closed_retention",
+  "backend": "numpy",
+  "meaning": "closed bottom at field capacity: the pulse is retained by the capacity-limited cascade up to saturation (no drainage)",
+  "units": {
+    "descriptor": "P mm, I mm/h, T mm",
+    "state": "m",
+    "pet": "m/s",
+    "clock": "s",
+    "volumes": "m3 over active cells"
+  },
+  "source": {
+    "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "qualified_syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "descriptor": {
+    "p_mm": 2.0,
+    "i_mm_h": 10.0,
+    "t_mm": 5.0,
+    "note": "illustrative test inputs; T has no recommended scientific default"
+  },
+  "stages": [
+    {
+      "stage": "daily lineage started at the accepted boundary",
+      "role": "boundary",
+      "t_s": 0.0,
+      "next_ordinal": 0,
+      "last_branch": null,
+      "pending": false
+    },
+    {
+      "stage": "recharge occurrence accepted (one 86400 s day)",
+      "role": "interevent",
+      "t_s": 86400.0,
+      "next_ordinal": 1,
+      "last_branch": "recharge",
+      "pending": false,
+      "branch": "recharge",
+      "selection": "recharge",
+      "capacity_failing_columns": null,
+      "recharge_m3": 0.003,
+      "modeled_preferential_intake_m3": 0.0,
+      "modeled_matrix_intake_m3": 0.0,
+      "drainage_m3": 0.0,
+      "soil_evaporation_m3": 0.0004860000000000001,
+      "surface_evaporation_m3": 0.0,
+      "export_m3": 0.0,
+      "occurrence_start_s": 0.0,
+      "day_start_s": 0.0,
+      "day_end_s": 86400.0
+    },
+    {
+      "stage": "zero-time T request accepted (no extra day)",
+      "next_request_sequence": 1,
+      "transpiration_m3": 1.5e-06
+    },
+    {
+      "stage": "interevent closed to an accepted boundary",
+      "role": "boundary",
+      "t_s": 86400.0,
+      "next_ordinal": 1,
+      "last_branch": "recharge",
+      "pending": false
+    }
+  ],
+  "selection": {
+    "selection": "recharge",
+    "reason": "0 < P <= T: simplified recharge attempted (equality attempts recharge by user decision)",
+    "full_storm_duration_s": 720.0
+  },
+  "first_day_audit_before_T": {
+    "scope": "native audit of the FIRST accepted occurrence, taken BEFORE the T withdrawal, the checkpoint and any later storm (cumulative ledgers at that moment)",
+    "residual_m3": 2.6020852139652106e-18,
+    "bound_m3": 8.657676708878653e-14,
+    "rain_m3": 0.003,
+    "drainage_m3": 0.0,
+    "soil_evaporation_m3": 0.0004860000000000001,
+    "transpiration_m3": 0.0
+  },
+  "checkpoint_v3": {
+    "directory": "/tmp/c2r_3079506_closed_retention_numpy/checkpoint_v3",
+    "role": "boundary",
+    "restored_next_ordinal": 1,
+    "restored_t_s": 86400.0,
+    "note": "a V3 directory holds the physical state + the daily cursor; V1/V2 directories are refused and V3 refuses cursor-free states"
+  },
+  "later_storm": {
+    "origin_s": 86400.0,
+    "absolute_edges_s": [
+      86400.0,
+      86410.0
+    ],
+    "completed_at_s": 87970.0,
+    "storm_rain_m3": 0.0014999999999999998,
+    "pending_ordinal": 1
+  },
+  "final_state": {
+    "which": "completed later storm (daily occurrence still pending)",
+    "role": "storm",
+    "t_s": 87970.0,
+    "next_ordinal": 1,
+    "pending_occurrence": true,
+    "storm_genuinely_completed": true
+  },
+  "closure": {
+    "scope": "native audit of the FINAL state above (cumulative lifetime ledgers: first day + T + later storm)",
+    "residual_m3": 3.469446951953614e-18,
+    "bound_m3": 2.0682873629492157e-10,
+    "rain_m3": 0.0045,
+    "drainage_m3": 0.0,
+    "soil_evaporation_m3": 0.0004860000000000001,
+    "transpiration_m3": 1.5e-06
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "schema": "syrup.phase15.whole_phase_acceptance.v1",
+  "status": "ACCEPTED_BOUNDED_NATIVE_DAILY_RECHARGE",
+  "utc": "2026-11-12T14:31:53.053620+00:00",
+  "reviewer": "Codex; independent review of Claude implementation and documentation",
+  "source": {
+    "syrup_base_commit": "587e96e01fbc4e75477b6af63c9219c12b835a99",
+    "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "package_file_count": 114,
+    "manifest": "phase15_source_manifest.json",
+    "manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "maple": {
+      "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "scope": "actual materialized historical9f nativeDense bundle, not latestmain"
+    }
+  },
+  "component_acceptance": {
+    "file": "phase15_native_acceptance.json",
+    "sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
+    "status": "ACCEPTED_BOUNDED_NATIVE_DAILY_PHYSICAL_RESTART",
+    "independent_results": {
+      "cpu_full_restart_controls": "42passed203.90s on correction01snapshot; all physicalCPU/helpercode unchanged at finalsource",
+      "current_source_cpu_metadata": "21passed25.78s on final82e9, fixtureSHA/sourceguards/plans",
+      "current_source_cpu_fresh_process": "NumPy AND compiledNumba uninterrupted-vs-partialresume EXACT acrossfourlaterstages including completedstorm/day/Tclose/latercompletedstorm; root_s4_final_cpu_result.json",
+      "gpu_first": "16passed(all15freshprocesspauses+scenario control) beforewrong-testfixture; root_s4c1_gpu_run.json",
+      "gpu_tail": "5passed17deselected46.70s; realtamper/plan/source/counter/duplicate/lowHOST+DEVICE controls; root_s4tail_gpu_run.json",
+      "current_source_gpu": "3passed61.58s wrong-version genuineC1fixture plusfreshpartial/afterTcloseresumes; root_s4c2_gpu_run.json",
+      "current_source_gpu_old_guard": "1passed4.96s C1oldhelperpinrefusesnewsourcebeforearchivepublish; root_s4last_gpu_run.json"
+    }
+  },
+  "scientific_contract": {
+    "selection": "P=0: no precipitation; 0<P<=T: attempt recharge; P>T: native full storm. T explicit, no default.",
+    "daily_update": "One 86400 s interevent update; field capacity triggers gravity drainage, saturation bounds capacity.",
+    "fallback": "Any active column capacity failure discards trial; unchanged original state and full P go through native completed storm before daily update.",
+    "wetting_history": "Recharge does not reset or debit modeled matrix intake/history; true pond intake remains distinct.",
+    "clocks": "Versioned nominal ordinal distinct from physical seconds; native local storm schedule [0,3600*P/I] uses accepted parent time as origin.",
+    "ownership": "SYRUP sole water authority; MAPLE bed; LEAF requests depth-dependent withdrawals; no evaporation/transpiration/growth during storm or recession."
+  },
+  "final_example_sources": {
+    "docs/manuals/examples/native_daily_recharge/daily_recharge_example.py": "09fa6369431c67535d7304d1ce2e7d14dc8444c3733f7828eb3a66aba77bd60e",
+    "docs/manuals/examples/native_daily_recharge/check_preservation.py": "91ea81b0ad6f0bdedd99088bc96f9412e98440b2c4ad8160b82e0790a3b26960",
+    "docs/manuals/examples/native_daily_recharge/check_results.py": "078690d60b79cdcf3783acdc95b813a3b067aec8f8a9867c1399131b5a34f023"
+  },
+  "independent_example_verification": {
+    "earlier_snapshot": "Root ran four NumPy scenarios and fallback Numba plus four actual CUDA scenarios; checkpoint, later storm and positive transpiration. All passed. Reporting-only correction reviewed subsequently; no production changes. See task root_s5_example_evidence.json.",
+    "final_reporting_snapshot": {
+      "root_s5_final_cpu_examples/result.json": {
+        "utc": "2026-11-12T14:28:47.435983+00:00",
+        "results": [
+          {
+            "scenario": "recharge_numpy",
+            "closure": {
+              "scope": "native audit of the FINAL state above (cumulative lifetime ledgers: first day + T + later storm)",
+              "residual_m3": 1.8214596497756474e-17,
+              "bound_m3": 1.4520105974074918e-10,
+              "rain_m3": 0.0045,
+              "drainage_m3": 0.0,
+              "soil_evaporation_m3": 0.0004185354240000001,
+              "transpiration_m3": 1.5e-06
+            },
+            "later_storm": {
+              "origin_s": 86400.0,
+              "absolute_edges_s": [
+                86400.0,
+                86410.0
+              ],
+              "completed_at_s": 87803.0,
+              "storm_rain_m3": 0.0014999999999999998,
+              "pending_ordinal": 1
+            },
+            "T_stage": [
+              {
+                "stage": "zero-time T request accepted (no extra day)",
+                "next_request_sequence": 1,
+                "transpiration_m3": 1.5e-06
+              }
+            ]
+          },
+          {
+            "scenario": "fallback_numba",
+            "closure": {
+              "scope": "native audit of the FINAL state above (cumulative lifetime ledgers: first day + T + later storm)",
+              "residual_m3": -2.6020852139652106e-18,
+              "bound_m3": 1.2734016408721259e-10,
+              "rain_m3": 0.0029999999999999996,
+              "drainage_m3": 0.0,
+              "soil_evaporation_m3": 0.00486,
+              "transpiration_m3": 1.5e-06
+            },
+            "later_storm": {
+              "origin_s": 86470.0,
+              "absolute_edges_s": [
+                86470.0,
+                86480.0
+              ],
+              "completed_at_s": 87055.0,
+              "storm_rain_m3": 0.0014999999999999998,
+              "pending_ordinal": 1
+            },
+            "T_stage": [
+              {
+                "stage": "zero-time T request accepted (no extra day)",
+                "next_request_sequence": 1,
+                "transpiration_m3": 1.5e-06
+              }
+            ]
+          }
+        ]
+      },
+      "root_s5_final_gpu_examples/result.json": {
+        "utc": "2026-11-12T14:28:52.265474+00:00",
+        "results": [
+          {
+            "scenario": "recharge_cuda",
+            "closure": {
+              "scope": "native audit of the FINAL state above (cumulative lifetime ledgers: first day + T + later storm)",
+              "residual_m3": 1.8214596497756474e-17,
+              "bound_m3": 1.452010597440579e-10,
+              "rain_m3": 0.0045,
+              "drainage_m3": 0.0,
+              "soil_evaporation_m3": 0.0004185354240000001,
+              "transpiration_m3": 1.5e-06
+            },
+            "later_storm": {
+              "origin_s": 86400.0,
+              "absolute_edges_s": [
+                86400.0,
+                86410.0
+              ],
+              "completed_at_s": 87803.0,
+              "storm_rain_m3": 0.0014999999999999998,
+              "pending_ordinal": 1
+            },
+            "T_stage": [
+              {
+                "stage": "zero-time T request accepted (no extra day)",
+                "next_request_sequence": 1,
+                "transpiration_m3": 1.5e-06
+              }
+            ]
+          }
+        ]
+      },
+      "root_s5_final_static_review.json": {
+        "old_C1_release_fields_unchanged": true,
+        "N15_separate_package_binding": true,
+        "docs": {
+          "SYRUP_CLI_User_Guide.docx": {
+            "sha256": "8326ffbb66610828ffc1afd1e3192a43178d7ec8e4aa7c0d1bd848ce00633603",
+            "text_chars": 158510,
+            "xml_crc_ok": true,
+            "whole_pages_rendered": false
+          },
+          "SYRUP_Model_Structure_and_Physics.docx": {
+            "sha256": "4c86f136591aeae3c84ad860ca3779fc6d8bfa001ac3d60b26b8b8bd7ab2624d",
+            "text_chars": 134160,
+            "xml_crc_ok": true,
+            "whole_pages_rendered": false
+          }
+        },
+        "genuine_MAPLE_metadata": {
+          "examples/native9f_metadata/distribution/METADATA": 697,
+          "examples/native9f_metadata/distribution/WHEEL": 92,
+          "examples/native9f_metadata/distribution/entry_points.txt": 82,
+          "examples/native9f_metadata/distribution/top_level.txt": 6
+        },
+        "zip_member_count": 73,
+        "shipped_source_and_acceptance_exact": true
+      }
+    },
+    "path_preservation": "Three pre-existing-path refusals; sentinel content unchanged, no overwrite/deletion.",
+    "artifacts": "Both Word packages XML/CRC/identities verified; authentic native MAPLE metadata exact; final artifacts rebuilt after recording this receipt. No paginated Office rendering."
+  },
+  "restart": "Explicit native Dense V3, source/parent/occurrence bound; true partial storm continuation, post-transpiration and later storm. Old C1 V1/V2 schemas and pins preserved; genuine frozen C1 archive used solely for wrong-version refusal. No migration/rebind.",
+  "limits": [
+    "genuine4x6Dense nativefixtures, fixedlayergeometry; no Windowed/large-domain/field qualification",
+    "actualquietretained1e-9m/SATclosed onedayCFL refusal preserved, not hidden or substepped",
+    "general repeated-storm wetting-front recovery unqualified, no implicit reset",
+    "native API and physical restart only, no complete daily MASYweather scheduler/CSV/LEAF redesign",
+    "Explicit native API, not a new production CLI option or completed daily MASY scheduler.",
+    "Small-rain bypass is an explicit user-selected approximation, not exact Tietjen/MAHLERAN storm infiltration.",
+    "No new performance/scaling acceptance; bounded resident-memory plans tested on fixtures only."
+  ],
+  "known_open_confirmed_defects": [],
+  "publication": "Independent scientific/capability acceptance only. Exact Git commit and push are recorded separately after publication; this receipt does not claim a push.",
+  "artifact_hash_policy": "This immutable receipt binds implementation and example programs; regenerated manuals/metadata/archive hashes are separate to avoid a self-referential hash cycle."
+}

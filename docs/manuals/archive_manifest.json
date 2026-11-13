@@ -1,0 +1,318 @@
+{
+  "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results); no model source/third-party environment/deep bed",
+  "files": {
+    "README.md": {
+      "sha256": "7f7a21677bae46254d34816f3e150aeb376d7a8ddb209fe46b6145f763c25291",
+      "bytes": 4745
+    },
+    "SYRUP_CLI_User_Guide.docx": {
+      "sha256": "672a831d9e9954d71f06da7669ca4a013534df854c2f51358af58ce76ed9c01c",
+      "bytes": 242938
+    },
+    "SYRUP_Model_Structure_and_Physics.docx": {
+      "sha256": "3c49947ec43af644cf46f5061b5f1c2b95828fefa8ca97e85022f54f2f40bca8",
+      "bytes": 181918
+    },
+    "assets/layered_water_ownership.png": {
+      "sha256": "b713a57b0da81547825a19c7d710b8f12e0023ba440237a2fc162297bc3b5c4b",
+      "bytes": 157684
+    },
+    "assets/layered_water_ownership.svg": {
+      "sha256": "d30bdefbc40ca0b11370f52d71e7369a25c62355437243643bc76a2ea8b25b5e",
+      "bytes": 90903
+    },
+    "assets/model_flow.png": {
+      "sha256": "e722d0e9df825581efe2f161c4498f804bf73629e6507ff1e71e70e5bc07098a",
+      "bytes": 92552
+    },
+    "build_manuals.py": {
+      "sha256": "add97fe460dd64c418bd918443c676e7eaf894fc33f4db7c62a5810095a92734",
+      "bytes": 25817
+    },
+    "cli_reference.json": {
+      "sha256": "25cdcddcda31a68f85e216e30a719da620bac25a22105d35bbdb10a7a9e9443e",
+      "bytes": 119883
+    },
+    "cli_reference.md": {
+      "sha256": "960264407aeb69c6d4943f1b11fa68f6f0b51fc696d4db4c82f72e09418b0b9a",
+      "bytes": 43763
+    },
+    "document_build.json": {
+      "sha256": "34022a0f21a6f5ae628b34ac3a39cbbfd3f943464f7fffff400dd361b5f33ef4",
+      "bytes": 690
+    },
+    "documentation_verification.json": {
+      "sha256": "7d8660f46b907c8a72c43fd40a3ea4bddbbcdcb0f1be9d2d5451e054d9c9987e",
+      "bytes": 6455
+    },
+    "examples/native9f_metadata/README.md": {
+      "sha256": "7e426a992a560d9cb171e8707b805bbbd6ef2e2197594bce6bec088f202dcc02",
+      "bytes": 2447
+    },
+    "examples/native9f_metadata/distribution/METADATA": {
+      "sha256": "dc1b5653aab75868578b7d478b3d015b146ba1fe4ea4907cc26d806d68120cca",
+      "bytes": 697
+    },
+    "examples/native9f_metadata/distribution/WHEEL": {
+      "sha256": "b59a1e1a3b56c5645f769944ec4ddde3954f94b3509ef6ca8989f1ee0c00cbc0",
+      "bytes": 92
+    },
+    "examples/native9f_metadata/distribution/entry_points.txt": {
+      "sha256": "9430d41e28e96a53fa455b84c6a4b6122484d21e6ce8151c6c40854db190c870",
+      "bytes": 82
+    },
+    "examples/native9f_metadata/distribution/top_level.txt": {
+      "sha256": "08ab2a56c8503c742c762013475ad2955377d2001a9fc03e4e8bc22e09af0844",
+      "bytes": 6
+    },
+    "examples/native9f_metadata/provenance_manifest.json": {
+      "sha256": "0ca1b0e11e4454cde9539b03597a793ce90ad9a1305247363a2db68028ba9550",
+      "bytes": 925
+    },
+    "examples/native_daily_recharge/README.md": {
+      "sha256": "ca24b57fd464bfddac99661028e7c7f3d321fd6d70c8257ca7985fe518883e25",
+      "bytes": 5771
+    },
+    "examples/native_daily_recharge/check_preservation.py": {
+      "sha256": "91ea81b0ad6f0bdedd99088bc96f9412e98440b2c4ad8160b82e0790a3b26960",
+      "bytes": 2712
+    },
+    "examples/native_daily_recharge/check_results.py": {
+      "sha256": "078690d60b79cdcf3783acdc95b813a3b067aec8f8a9867c1399131b5a34f023",
+      "bytes": 1884
+    },
+    "examples/native_daily_recharge/daily_recharge_example.py": {
+      "sha256": "09fa6369431c67535d7304d1ce2e7d14dc8444c3733f7828eb3a66aba77bd60e",
+      "bytes": 22608
+    },
+    "examples/native_daily_recharge/results/closed_retention.numba.json": {
+      "sha256": "26ec172316fed57f40eb84b5aca883afe2542410560f918c8b90ed7f7ed022ce",
+      "bytes": 3837
+    },
+    "examples/native_daily_recharge/results/closed_retention.numpy.json": {
+      "sha256": "67d2ad1c9754cb817345868bb26c5cf2bda9fdc73bc5b772b7902719b08f8a65",
+      "bytes": 3837
+    },
+    "examples/native_daily_recharge/results/fallback.numba.json": {
+      "sha256": "4369ae50ef50bf4aee84c7e28e0aea7b6ba583144ec34f3d9b70b1d68239f0cd",
+      "bytes": 4519
+    },
+    "examples/native_daily_recharge/results/fallback.numpy.json": {
+      "sha256": "fda988289424aadb007622bac8e3ac47f0fc2158af9f87ed9fafd30139ab5347",
+      "bytes": 4519
+    },
+    "examples/native_daily_recharge/results/fallback_cfl_refusal.numpy.err": {
+      "sha256": "cfcbb7a786c6a55e03caf932c6e55de0e8da954306b3e1183b790f11d44c0129",
+      "bytes": 1310
+    },
+    "examples/native_daily_recharge/results/open_drainage.numpy.json": {
+      "sha256": "c13019c983a79caddcdf7721f6d66702018f650e7cb28ce321f738d5d4ef2ec2",
+      "bytes": 3882
+    },
+    "examples/native_daily_recharge/results/recharge.numpy.json": {
+      "sha256": "72e8b08d78c768f4a70424db3bf41eb6ed8e480223c7300a161a3088fa0a880d",
+      "bytes": 3806
+    },
+    "examples/native_daily_recharge/results/rerun_existing_workdir.refusal.err": {
+      "sha256": "a0c76fde849df34f0ad383fe75c46900811f6876fb62c1242806722e91a8c003",
+      "bytes": 112
+    },
+    "examples/native_leaf_calendar_cli/README.md": {
+      "sha256": "ea5ce3c32e204d52be4cd83c08cb3758bbd8ff23d304029cbba0a66d4cb448e8",
+      "bytes": 1778
+    },
+    "examples/native_leaf_calendar_cli/case/case.yaml": {
+      "sha256": "17c33fe833e1460f13900e1530ba9963bd18671d5d49db1a4634be3df71f5ceb",
+      "bytes": 886
+    },
+    "examples/native_leaf_calendar_cli/case/model.yaml": {
+      "sha256": "fa0081e22979f1975f8a233711f2e5237d7a539b35cebd3c32e18bda036fe5ed",
+      "bytes": 772
+    },
+    "examples/native_leaf_calendar_cli/case/wind.yaml": {
+      "sha256": "d7ba17977278e0792768f18092d838c495bf1af5b2a240620d95385b2ec3f766",
+      "bytes": 168
+    },
+    "examples/native_leaf_calendar_cli/catalog.json": {
+      "sha256": "05dd1ce31375bba64e75e743b6b9bceb609cfe23e6181f7f5340cfb8923ac050",
+      "bytes": 1907
+    },
+    "examples/native_leaf_calendar_cli/fill_config.py": {
+      "sha256": "0c8884964c6fa12a8a8bf785fd8a601c046238464f1ee0abb1c3fa94941377dc",
+      "bytes": 1569
+    },
+    "examples/native_leaf_calendar_cli/layered_water.yaml": {
+      "sha256": "5c7619b42a7a0067d1b804ed56518996f79e8629273f502a821c81ed8c0fb536",
+      "bytes": 1317
+    },
+    "examples/native_leaf_calendar_cli/plants.csv": {
+      "sha256": "364cb94a62b7bf80219653a4a08625a16124108fca8a3e67a9bb6738975b5c08",
+      "bytes": 140
+    },
+    "examples/native_leaf_calendar_cli/plants.metadata.json": {
+      "sha256": "31ed2240153c0d5f55bd8956ee29bbed4a68c27055895ebba7f263ad56860a74",
+      "bytes": 2152
+    },
+    "examples/native_leaf_calendar_cli/run.template.yaml": {
+      "sha256": "04b0766df019d05cbb1f525b116d5cf0566aee600e6438f7799cb71725265b0b",
+      "bytes": 2248
+    },
+    "examples/native_leaf_calendar_cli/scenario/events/ie_a.json": {
+      "sha256": "0af74878a9a0c88eeefedec656ddc28761ea7fd1875b64dd3979b28d3dfcdebf",
+      "bytes": 166
+    },
+    "examples/native_leaf_calendar_cli/scenario/events/ie_b.json": {
+      "sha256": "e5f50364f4d8a29f3b77f19404197ba2c7e1207b2335d0e4bd40958edec1c6dd",
+      "bytes": 166
+    },
+    "examples/native_leaf_calendar_cli/scenario/events/rain_a.json": {
+      "sha256": "74dd75055fdb7f136ca42a4ce52da6f232c0183908b37a37bad6ad55587f59c4",
+      "bytes": 208
+    },
+    "examples/native_leaf_calendar_cli/scenario/scenario.json": {
+      "sha256": "2655aa15930e9854a72be12a0b4a3e4a1f9afbc7d3eb566f52d6e689458bf886",
+      "bytes": 957
+    },
+    "examples/native_leaf_calendar_cli/scenario/weather.json": {
+      "sha256": "07872afd0d78378c3e67324e51112095014ba4e4cfa51426303db23060454bce",
+      "bytes": 1478
+    },
+    "examples/native_production/README.md": {
+      "sha256": "f915e46934ffe3cf59d02fdad02554747bbe7edc89e617256b92872bac7731c0",
+      "bytes": 779
+    },
+    "examples/native_production/run.template.yaml": {
+      "sha256": "aebd09c9300be39b9d96c31dac578e7f149f3543f1f35cb6fcc89098c19bbcb0",
+      "bytes": 2383
+    },
+    "model_structure_and_physics.md": {
+      "sha256": "cf001f428a334035fcf6a108166dc0127ef61563687795ee5d0274832b22fab4",
+      "bytes": 136977
+    },
+    "qualification/design.md": {
+      "sha256": "d9e67c78026c87e168fd3bde46b65a0253ee9a77adc2fa950f46e73dd502cf67",
+      "bytes": 25225
+    },
+    "qualification/development_phases_20261109.md": {
+      "sha256": "cccd34af2d4208430950f0143a7b1b9345f6b179aec3551a000e227aaea71901",
+      "bytes": 21387
+    },
+    "qualification/ecohyd_reference_sources.md": {
+      "sha256": "15d97d48d1e54e732606c92f0c36f118d081d212b873fbea490990ffd3e359df",
+      "bytes": 3247
+    },
+    "qualification/implementation.md": {
+      "sha256": "971b288dc5502e48eb91a489eea4f7fbabfacc3095703fcd61413943d245f9db",
+      "bytes": 19788
+    },
+    "qualification/leaf_water_contract.md": {
+      "sha256": "9359d577b41614790addbc6bc1c2ea692e53313f0c351672b487a30f5b8a9a9c",
+      "bytes": 4701
+    },
+    "qualification/parameter_reference.md": {
+      "sha256": "f7c07e827f9847d73baaa7a62a4870303863b30b7959268df6ffa84f1ad6dea8",
+      "bytes": 22595
+    },
+    "qualification/phase15_acceptance.json": {
+      "sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
+      "bytes": 9993
+    },
+    "qualification/phase15_daily_recharge.md": {
+      "sha256": "fe18b019d83668c56106feacd3827e5a51eac3dce38ac5dc48cb217928093bce",
+      "bytes": 8345
+    },
+    "qualification/phase15_native_acceptance.json": {
+      "sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
+      "bytes": 2589
+    },
+    "qualification/phase15_qualification.json": {
+      "sha256": "64e244420c8001f4c74d5f7e4291825b03c7fdcc4c9aaa2a6c659ed77c88d0e4",
+      "bytes": 1855
+    },
+    "qualification/phase15_qualification.md": {
+      "sha256": "8c7946c695d630e3cc00ab844634cb5a5a7a410273d30d9066383abc9132861d",
+      "bytes": 10786
+    },
+    "qualification/phase15_source_manifest.json": {
+      "sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+      "bytes": 15246
+    },
+    "qualification/phase1_recipes/README.md": {
+      "sha256": "7e07b6dde8601359d04a9cc627eae459dd406a7c4b5e0cd061a3078ed8e293e3",
+      "bytes": 1606
+    },
+    "qualification/phase1_recipes/cpu_component_review_receipt.json": {
+      "sha256": "7f884b59c1b123c183093475ab158f0e00644b598206dd4f2db686ae1aec4252",
+      "bytes": 1183
+    },
+    "qualification/phase1_recipes/cpu_recipe.json": {
+      "sha256": "3c81ac3282c2daacb63c0d5ecd214b836a2e7a4cc470d53aa4c8303f99f118fe",
+      "bytes": 1558
+    },
+    "qualification/phase1_recipes/cuda_component_review_receipt.json": {
+      "sha256": "f9345fe8b3a52f7a513492eda2b6021df5c92a4bab28b04d02912e0f406e3537",
+      "bytes": 1216
+    },
+    "qualification/phase1_recipes/cuda_recipe.json": {
+      "sha256": "7a9eecfad45c7b0ba920746a627f5e495289f76527a40ea0d00bcd213694ab67",
+      "bytes": 1562
+    },
+    "qualification/phase1_recipes/evidence/portable_science_component.json": {
+      "sha256": "62c69595fb150c82bd74c50ba0fc6e115110dd12223ca07915bb620e5598f1bd",
+      "bytes": 1406
+    },
+    "qualification/phase1_recipes/evidence/verified_delivery_component.json": {
+      "sha256": "dade75b7caa77119174c51f83a4e69e7d3b4e73a4ffb287ca9c4cb8f4785ed3c",
+      "bytes": 2072
+    },
+    "qualification/phase1_release_qualification.json": {
+      "sha256": "bb19819e54636d444939c71e5dc65e1ba5274ae80ef1e67eae9a858cab7d83d3",
+      "bytes": 3661
+    },
+    "qualification/phase1_release_qualification.md": {
+      "sha256": "bbcee5337633f378fdade96711890a6c3eb80d467b747d90fae6f305e2d7caf3",
+      "bytes": 6801
+    },
+    "qualification/verify_phase15_source.py": {
+      "sha256": "42d4402f4cc6042404876ee76a2672f8a9941be99016f51b4ffd77887e3b3e82",
+      "bytes": 2477
+    },
+    "qualification/weather_pet.md": {
+      "sha256": "f33493506cd1ac1a5e4dd5d66c5ea55e5a8af7c86ef66a9d9fbc34e4f94afb19",
+      "bytes": 22449
+    },
+    "release_metadata.json": {
+      "sha256": "6c1846d55da92afa768c1da500114b363075198f22cc1271e7df5a9fb0f97f18",
+      "bytes": 2853
+    },
+    "render_outputs.py": {
+      "sha256": "b47baba3875a4132e9afe62df9e6f6248a5fddd1c3ac7137d4216da978d4ec87",
+      "bytes": 8433
+    },
+    "user_guide.md": {
+      "sha256": "6b38216c93be4db007339b583a1128f00989a49595a1bb3ed0885c121b20c2c0",
+      "bytes": 120041
+    },
+    "qualification/phase15_publication.json": {
+      "sha256": "f731988ffdd67ae0aa4b1ffb8d165c91a4e4241837f23a64ab675e88687702a4",
+      "bytes": 981
+    }
+  },
+  "native_phase15": {
+    "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+    "package_file_count": 114,
+    "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "whole_phase_receipt_status": "recorded",
+    "published": false,
+    "note": "a separate source identity; the C1 identities in release_metadata.json are unchanged",
+    "source_commit": null,
+    "shipped_portable_evidence": [
+      "qualification/phase15_acceptance.json",
+      "qualification/phase15_native_acceptance.json",
+      "qualification/phase15_source_manifest.json",
+      "qualification/verify_phase15_source.py"
+    ],
+    "root_receipt_scope": "S4 capability receipt (phase15_native_acceptance.json) and the bounded whole-phase acceptance (phase15_acceptance.json); publication pending",
+    "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3"
+  }
+}

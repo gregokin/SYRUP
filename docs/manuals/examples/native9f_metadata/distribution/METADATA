@@ -1,0 +1,25 @@
+Metadata-Version: 2.1
+Name: maple
+Version: 0.0.1
+Summary: MAPLE — Aeolian Transport Model
+Requires-Python: >=3.11
+Requires-Dist: dask[array]
+Requires-Dist: jax
+Requires-Dist: jaxlib
+Requires-Dist: numpy
+Requires-Dist: pyyaml
+Requires-Dist: tifffile
+Requires-Dist: xarray>=2024.10
+Requires-Dist: zarr>=3.0
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Provides-Extra: gpu
+Requires-Dist: cupy-cuda12x[ctk]<15,>=14.0; extra == "gpu"
+Provides-Extra: viz
+Requires-Dist: hvplot; extra == "viz"
+Requires-Dist: matplotlib; extra == "viz"
+Requires-Dist: panel; extra == "viz"
+Provides-Extra: windowed
+Requires-Dist: numba<0.68,>=0.67; extra == "windowed"
+

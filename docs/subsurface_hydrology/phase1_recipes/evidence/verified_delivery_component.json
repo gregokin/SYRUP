@@ -1,0 +1,48 @@
+{
+  "utc": "2026-11-12T09:19:18.113720+00:00",
+  "status": "ACCEPTED_FUNCTIONAL_VERIFIED_DELIVERY_COMPONENT_NOT_FULL_PHASE_OR_PRODUCTION_SIMULATION",
+  "candidate": "root_correction02_snapshot",
+  "masy_package": {
+    "files": 79,
+    "sha256": "89dc8b392da61f7a8c4f4f5eeef46e88b524af24bfd68de3836476f00718b157"
+  },
+  "root_independent_tests": [
+    {
+      "kind": "metadata",
+      "passed": 92,
+      "seconds": 26.12,
+      "session": 48928,
+      "closed_reaped": true,
+      "junit": "root_final_metadata.xml"
+    },
+    {
+      "kind": "genuine_native_sources_delivery_and_water_restart_plus_reader_controls",
+      "passed": 19,
+      "seconds": 92.91,
+      "session": 65677,
+      "closed_reaped": true,
+      "junit": "root_final_native.xml"
+    }
+  ],
+  "review": [
+    "Old mandatory reference delivery/profile gate preserved; explicit closed-record factory for new delivery",
+    "Original SourceFence constructor and verify_receipt signature preserved; existing no-delivery records/checkpoints unchanged",
+    "Noncircular core -> parent identity digest -> outer delivery attestation, independently recomputed by real callers",
+    "One-chunk streaming cold verification, pre-admission, regular-file/race checks; pure source facts perform no file read",
+    "Actual NCP content/archive/distribution/class/module-origin guards retained; physics/clocks/kernel/tolerances unchanged",
+    "Root proxy failure and early memory/constructor issues corrected; final mutation-sensitive reader tests pass"
+  ],
+  "baseline_limitations": {
+    "historical_group": "4 tests fail identically on accepted pre-correction baseline; raw logs retained",
+    "causes": [
+      "mixed-module import-state assumptions",
+      "older private codec signature pin",
+      "older exact MASY module list"
+    ]
+  },
+  "limits": [
+    "Native water run uses genuine new ca688 bundle but engineering lock/identity digests, not actual C1 production bootstrap",
+    "No final C1 LEAF+water worker or CUDA production proof yet",
+    "No field/scaling/wind/moving-soil acceptance"
+  ]
+}

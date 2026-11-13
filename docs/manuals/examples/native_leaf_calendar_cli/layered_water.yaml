@@ -1,0 +1,80 @@
+schema: maple-syrup-layered-case/1
+compute:
+  backend: numpy
+soil:
+  layers:
+    thickness_m:
+    - 0.0625
+    - 0.0625
+  theta_residual:
+  - 0.0625
+  - 0.0625
+  theta_field_capacity:
+  - 0.25
+  - 0.25
+  theta_saturation:
+  - 0.5
+  - 0.5
+  theta_evaporation_stress: 0.25
+  gravity_drainage: true
+  bottom: open
+  diffusion:
+    mode: constant
+    diffusivity_m2_s: 0.0
+matrix:
+  conductivity_m_s: 3.814697265625e-06
+  suction_m: 0.0625
+  vegetation_factor: 0.5
+preferential:
+  a3: 0.5
+  max_fraction_per_hour: 0.5
+  max_intake_rate_m_s: unlimited
+  background_receiver_weights:
+  - 0.0
+  - 1.0
+  species:
+  - name: prescribed
+    receiver_weights:
+    - 0.0
+    - 1.0
+    contribution: 1.0
+evaporation:
+  canopy_intercept: 1.0
+  canopy_slope: 0.5
+  transpiration_slope: 1.0
+  transpiration_offset: 0.0
+  soil_factor: 1.0
+cover: 0.5
+initial:
+  soil_moisture:
+    units: theta
+    by_layer:
+    - 0.25
+    - 0.3125
+  wetting_history_m: 0.001
+  cumulative_intake_m: 0.002
+domain:
+  active_mask: all
+  friction_factor: 1.0
+  closed_ring_rise_m: 10.0
+  outlets:
+  - row: 0
+    col: 5
+    d_row: 0
+    d_col: 1
+    drop_m: 0.02
+  - row: 1
+    col: 5
+    d_row: 0
+    d_col: 1
+    drop_m: 0.02
+  - row: 2
+    col: 5
+    d_row: 0
+    d_col: 1
+    drop_m: 0.02
+  - row: 3
+    col: 5
+    d_row: 0
+    d_col: 1
+    drop_m: 0.02

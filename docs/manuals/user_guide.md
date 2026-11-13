@@ -1,13 +1,17 @@
-# MAPLE-SYRUP Practical User Guide (SYRUP `d05d8c6`, MAPLE `39bcf79`)
+# MAPLE-SYRUP Practical User Guide
+
+*{{official_name}} — {{release_status}} edition, prepared {{prepared_date}}.*
 
 This guide is for a new scientific collaborator. It shows how to install the exact pinned sources, import the corrected MAHLERAN Plot 1 case, run the conservative water–sediment event on CPU and GPU, pause and resume, and read the outputs. Each section connects commands with their intended workflow and outputs.
 
-Pinned sources used throughout:
+**Two releases are described.** Sections 1 to 13 describe the surface-erosion reference release (SYRUP `{{surface_syrup_short}}`, MAPLE `{{surface_maple_short}}`): installation, imported cases, the conservative event, legacy replay and benchmark commands, outputs and movies. Their commands, options and defaults are unchanged. Section 14 describes the separate subsurface release (SYRUP `{{syrup_short}}`, LEAF, the historical native MAPLE `9f466d2`, and the scheduler MASY, whose committed identity is {{masy_commit}}): layered soil water and LEAF plants run by a dated scheduled command. Use the release table of Section 14.1 for the second; do not mix the two in one environment.
+
+Pinned sources of the surface-erosion reference, used in Sections 1 to 13:
 
 | Component | Repository | Exact commit |
 |---|---|---|
-| MAPLE (wind/bed model, dependency) | `https://github.com/gregokin/MAPLE.git` | `39bcf79e1e67b6ed960f78a923ddfedf1d173e68` |
-| SYRUP (`maple-syrup`, this package) | `https://github.com/gregokin/SYRUP.git` | `d05d8c6c66d9fd2969c007681916254e8d1c2c7c` |
+| MAPLE (wind/bed model, dependency) | `https://github.com/gregokin/MAPLE.git` | `{{surface_maple_commit}}` |
+| SYRUP (`maple-syrup`, the reference release) | `https://github.com/gregokin/SYRUP.git` | `{{surface_syrup_commit}}` |
 | MAPLE package digest the storage guards accept | — | `af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec` |
 
 Both projects need Python ≥ 3.11. The qualified interpreter was CPython 3.12.3 with NumPy 2.5.3, Numba 0.67.0 / llvmlite 0.49.0 and, for GPU, CuPy 14.2.0 with CUDA 12.9 toolkit components.
@@ -476,7 +480,7 @@ Old cases, outputs, checkpoints and source locks from earlier MAPLE or SYRUP ver
   - *Windowed runner:* pit storage is on automatically for `rfid`/`chastre` (flat storage too for Chastre) and unavailable for `plot1`.
   - *No overflow.* Pits have no spill, overtopping or backwater. `--terminal-storage-water` lets an event complete with water ponded **only** in terminal-storage cells, and the reset removes it. Large Chastre terminal depths are therefore not credible pond predictions.
 - **Routing refresh.** Hydraulics reroute only when the largest per-cell |committed surface − held routing surface| reaches 0.00075 m. Time, reports, checkpoints and ordinary accounting commits never reroute by themselves.
-- **Excluded from these runners:** running a wind event (the dry handoff bed is the hand-over point; scheduling is MASY's job), direct dry-cell splash, vegetation growth, full ET, nutrients and pit overflow.
+- **Excluded from these runners (the surface-erosion commands of this guide):** running a wind event (the dry handoff bed is the hand-over point; scheduling is MASY's job), direct dry-cell splash, vegetation growth, full ET, nutrients and pit overflow.
 
 **Pond/splash API (no installed CLI).** `maple_syrup.pond_event` is a separate, opt-in Python API. It couples local-inertial pond hydraulics with actual overflow/export at outlet faces, dry rain splash, multi-face characteristic transport and the native MAPLE bed. It supports `PondEventControl(bed_storage="windowed", ...)` and its own checkpoints (`pond_checkpoint`). It is **not** reachable from any console command; see `docs/splash_and_overflow/pond_event.md` and `docs/pond_windowed/README.md`. Local inertia is an alternative hydraulic model, not MAHLERAN method 5/6.
 
@@ -748,6 +752,7 @@ Snapshot times must lie in (start, end]: `0` is refused, and the run starts at 0
 ## 11. Scope limits
 
 - **Supply and availability.** MAPLE's native water exchange caps requested pickup by the currently available mass, using exactly the same rule as wind erosion. The bound share is not released automatically. It then caps pickup per class at the active-layer holdings before refilling from the voxel bed. The corrected Plot 1 case starts with every class 100% available. Prescribed pavement and vegetation affect the water laws independently of that native availability split.
+- **Subsurface release.** Layered soil water, LEAF plants and the dated scheduled command are in Section 14 and have their own limits; they are not part of the commands above, and nothing in this section applies to them.
 - **Wind.** A complete event hands over a dry native bed; MASY owns the sequential wind/water scheduling and calls each model. No SYRUP CLI runs or schedules a wind event.
 - **Storage-admission checks.** `maple_syrup.storage_admission` (`admit_public`, `admit_paired`) provides opt-in caller checks for memory admission of windowed exchanges. Existing runners do not call it automatically.
 - **Qualification status.** The 39bcf79 pairing is qualified for the storage integration (`docs/maple39_shared_storage_qualification.md`). That does not qualify:
@@ -813,4 +818,407 @@ Record these for every study:
    - `backend.maple_source_changed_since_import`;
    - `outputs`, the SHA-256 of every output file.
 5. **Retention.** Keep every checkpoint directory you might resume from, and every windowed `--store-dir` that is referenced. Treat them as immutable.
-6. **Dependency pins and bundles (advanced).** `dependencies/maple_shared_storage/README.md` (reconstruction recipe, fixed manifest SHA-256 `877826de…`), `qualification.lock.json`, `docs/cw_e2_dependency_delivery.md` (bundle export/verify/materialize/env/check-runtime) and `docs/maple39_shared_storage_qualification.md`. Bundles certify integrity, not authenticity, and do not carry third-party packages or deep-store data.
+6. **Subsurface release runs (Section 14).** Keep the run's `resolved.json`, `RUN_STATUS.json`, the three LEAF input files with their pins, and the manifests or production recipe and receipt that identified the sources; a checkpoint resumes only under exactly those sources.
+7. **Dependency pins and bundles (advanced).** `dependencies/maple_shared_storage/README.md` (reconstruction recipe, fixed manifest SHA-256 `877826de…`), `qualification.lock.json`, `docs/cw_e2_dependency_delivery.md` (bundle export/verify/materialize/env/check-runtime) and `docs/maple39_shared_storage_qualification.md`. Bundles certify integrity, not authenticity, and do not carry third-party packages or deep-store data.
+
+---
+
+## 14. Layered subsurface water: scheduled water and LEAF runs (subsurface release)
+
+*This part is additive. Sections 1 to 13 and the CLI reference describe the installed commands and the surface-erosion workflows of the historical reference release; their commands, options and defaults, including the legacy replay and benchmark defaults, are unchanged. The scheduled water command described here is a separate module, `masy.native_water_run`, which is not one of the installed console scripts and is not in the generated CLI reference. Its science is described in Section 13 of the Model Structure and Physics document.*
+
+### 14.1 What this part covers, and what is and is not available
+
+The subsurface release adds soil-water layers, a persistent infiltration history, evaporation, optional LEAF plant withdrawals and growth, and a dated calendar of rain and interevent periods on top of an existing MAPLE case. It is a different release from the one the earlier sections install:
+
+| | Surface-erosion reference (earlier sections) | Subsurface release (this part) |
+|---|---|---|
+| SYRUP | `{{surface_syrup_commit}}` | `{{syrup_commit}}`, branch `{{syrup_branch}}` |
+| MAPLE | `{{surface_maple_commit}}` | `{{maple_native_commit}}` (historical native 9f bundle, explicitly pinned; not the latest MAPLE and not the earlier pin) |
+| LEAF | not used | `{{leaf_commit}}` (branch `{{leaf_branch}}`) |
+| Scheduler (MASY) | not used | `{{masy_commit}}` (branch `{{masy_branch}}`) |
+
+The four repositories are `https://github.com/gregokin/SYRUP.git`, `MAPLE.git`, `MASY.git` and `LEAF.git`. A default clone of the main branch does not contain the subsurface release: use the exact commits above (Section 14.2). The release commits are on the branch named in the table of each repository; the commits of the four release sources are pushed to these repositories and were verified against the remotes (build metadata: published {{sources_published}}); the later documentation commit is a separate packaging step that does not change these source identities. Use the earlier release for the surface commands and this release only for the commands below, in separate environments.
+
+Two configuration schemas exist, selected by `schema:` in `run.yaml`:
+
+| Schema | Command | Contents | Source modes |
+|---|---|---|---|
+| `masy.native_water_run.v1` | standalone water-only scheduled run | layered water, interevent evaporation; transpiration and growth refused | `development_snapshot` only; `production_committed` refuses with `production_recipe_unavailable` |
+| `masy.native_water_run.v2` | LEAF and water scheduled run | v1 plus one closed `leaf` block: actual LEAF plants, withdrawals, growth | `development_snapshot` and `production_committed` (Section 14.10) |
+
+A v2 file never silently runs water-only, and a v1 file containing `leaf` is refused. Neither schema runs wind: wind is refused. Daily small-rain recharge (Phase 1.5) has no interface or option yet.
+
+**Qualification in one paragraph.** {{qualification_statement}} The committed LEAF-and-water runtime (v2, production mode) was prepared and run from the committed sources of the table above with the existing CPU and CUDA environments. The full public two-layer 4×6 dense example completed all three occurrences (interevent, a 0.25 s rain with its native recession to genuine completion, interevent, with evaporation, transpiration and growth on) on NumPy, Numba and CUDA. A run paused after the first interevent, resumed and paused after the completed storm, and resumed to the end reproduced the uninterrupted run exactly on both the CPU and the CUDA device: 44 of the 45 stored physical array entries (29 floating-point and 15 other state arrays) are identical with maximum relative difference 0, the plant arrays are identical and all four biology files are byte-identical; the 45th entry is a provenance record that differs by backend and source paths by design and is checked separately. NumPy, Numba and CUDA agree on the same 44 state arrays with maximum relative difference 0 and exactly on the plant arrays. The plant grew from 100 kg to 100.12256745482205 kg and its transpiration request and the accepted amount were equal (8.461372331859172e-5 m³, nothing unmet). Six real command-line refusals (unknown configuration key, zero memory cap, wrong recipe pin, unreviewed receipt, wrong existing environment interpreter and wrong restart seal) occurred before any physical step and left the accepted checkpoint unchanged, and 154 portable scientific controls (4 of them on CUDA) passed. Runs report `production_qualified: false` and `production_runtime_verified: true`; the first flag is deliberately not relabelled. This is bounded evidence on one small fixed-geometry fixture, not a field validation or a performance, scaling or wind result (Section 13.10 of the Model Structure and Physics document lists the evidence and limits).
+
+### 14.2 Obtain the sources and set up the environments
+
+The surface-erosion sections of this guide install SYRUP into an environment with the earlier MAPLE. The subsurface release needs a **separate MAPLE environment** built from the historical native MAPLE commit `{{maple_native_commit}}`; the current live MAPLE, a default clone and the earlier MAPLE `{{surface_maple_short}}` do not satisfy the source guards, which check frozen content, and nothing is rebound or fallen back to. The release commands refuse rather than adapt if a source, interpreter or package differs.
+
+```bash
+export WORK=$HOME/syrup-subsurface            # choose once; absolute path
+mkdir -p "$WORK" && cd "$WORK"
+git clone https://github.com/gregokin/MAPLE.git MAPLE-9f466d2
+git clone https://github.com/gregokin/SYRUP.git SYRUP-subsurface
+git clone https://github.com/gregokin/LEAF.git  LEAF-subsurface
+git clone https://github.com/gregokin/MASY.git  MASY-subsurface
+git -C MAPLE-9f466d2     checkout --detach {{maple_native_commit}}
+git -C SYRUP-subsurface  checkout --detach {{syrup_commit}}
+git -C LEAF-subsurface   checkout --detach {{leaf_commit}}
+git -C MASY-subsurface   checkout --detach {{masy_commit}}
+for d in MAPLE-9f466d2 SYRUP-subsurface LEAF-subsurface MASY-subsurface; do git -C $d rev-parse HEAD; git -C $d status --porcelain; done
+```
+
+Each `rev-parse` must print the commit given in Section 14.1 and each `status` must print nothing: the runtime seals only clean committed `src/` and `pyproject.toml` blobs and refuses untracked, ignored-in-scope or modified files. Do not build `*.pyc` caches inside the trees (always run with `-B`).
+
+**CPU environment (MAPLE clone, as in Section 1.3).**
+
+```bash
+cd "$WORK/MAPLE-9f466d2"
+python3.12 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -e ".[windowed]"
+.venv/bin/python -m pip install "packaging>=23"
+```
+
+**CUDA environment (optional).**
+
+```bash
+python3.12 -m venv .venv-cupy
+.venv-cupy/bin/python -m pip install --upgrade pip
+.venv-cupy/bin/python -m pip install -e ".[windowed,gpu]"
+.venv-cupy/bin/python -m pip install "packaging>=23"
+```
+
+Only MAPLE, its dependencies, Numba and `packaging` are installed. SYRUP, LEAF and MASY are **not** pip-installed: the runtime seals their committed bytes into a store and imports those sealed copies. The qualified environments contained Python 3.12.3, NumPy 2.5.3, Numba 0.67.0 with llvmlite 0.49.0 and, for CUDA, CuPy 14.2.0 (`cupy-cuda12x`) with the CUDA 12.9 components; I did not build a new environment from scratch for this guide, so check these against your own `pip list` and expect a refusal rather than a silent adaptation if a check fails. Never `pip install maple` from PyPI (an unrelated project). The extras names `windowed` and `gpu` are those of the MAPLE `pyproject.toml` at this commit.
+
+The MAPLE environment is the one the runtime preparation (Section 14.10) names as `runtime.python`; its own `site-packages` metadata is **not** the `distribution_metadata` input of that preparation (the companion fixture of Section 14.10 is); the CPU and CUDA interpreters each get their own runtime store and lock, which are not interchangeable. Keep the earlier surface-release environments untouched.
+
+### 14.3 Who initializes what
+
+The MAPLE case directory (`case.yaml`, `model.yaml`, `wind.yaml`) initializes the landscape: terrain, grain classes, voxels, active layer, native water and the site latitude, read from `location.latitude_deg` in `case.yaml` and nowhere else. A missing, null or out-of-range latitude refuses before any physical work, even when PET is supplied explicitly. The SYRUP water file (`layered_water.yaml`) adds the water-specific settings. In a v2 run LEAF initializes the vegetation from its own species catalog and plant files (Section 14.8); in a v1 run the cover fraction and the preferential-pathway species of the water file are prescribed numbers, not LEAF plants. LEAF calculates plant withdrawals; SYRUP checks them against available water, debits the accepted amount once and reports accepted and unmet amounts back to LEAF, which keeps no second soil-water store.
+
+Wind, rain and interevent periods never overlap. Evaporation, transpiration and growth occur only in interevent periods. In the current dated calendar, time advances through every period, rain and recession included, and nothing is applied retroactively to the length of a wind or rain period. Soil water and the wetting history carry across events; nothing resets them at the end of a storm, a file, a checkpoint or a schedule boundary. The planned nominal-day clock of Phase 1.5 is a different, future contract (Section 14.13).
+
+![Figure 14.1. Ownership of layered water in the subsurface release. Layer depths, material classes and values are illustrative only: they are not defaults, not a hydraulic-property mapping and not model output.](assets/layered_water_ownership.png)
+
+### 14.4 File layout
+
+The shipped example input sets keep their files in one directory:
+
+| File | Contents |
+|---|---|
+| `case/case.yaml`, `case/model.yaml`, `case/wind.yaml` | The MAPLE case. |
+| `layered_water.yaml` | Soil layers, retention thresholds, infiltration, evaporation partition, initial water and hydraulic boundaries. |
+| `scenario/scenario.json` | Calendar start, the ordered list of event files and the weather file. |
+| `scenario/weather.json` | Dated daily weather and the PET method. |
+| `scenario/events/ie.json`, `scenario/events/rain.json` | One interevent and one rain event. |
+| `run.yaml` | Which files to use, the source statement, step and resource limits, output limits. |
+
+File names are examples. Paths in `run.yaml` other than the `source` block are relative to the `run.yaml` file. `scenario.json` records the SHA-256 digest of the weather and event files it names, so a changed event or weather file must be matched by a changed digest, and the run pins every input by hash when it starts. Map files named from the water file (below) are relative to the directory holding that water file.
+
+### 14.5 YAML conventions
+
+* The water file uses the schema name `maple-syrup-layered-case/1`. Unknown keys, missing keys, duplicate keys, anchors, aliases and tags are refused. The parser's default bounds (`LayeredCaseLimits`) are: file size 65 536 bytes, 5000 YAML nodes, nesting depth 8, 64 layers, 16 species and 4096 outlets. These are defaults of the Python interface, not absolute limits: a caller may pass other positive integers, which are then honoured exactly and never raised silently. A value that is not a positive integer is refused. The run command uses the defaults.
+* **Numbers in scientific notation must contain a decimal point:** write `1.0e-5`; a bare `1e-5` is read by YAML as text and is refused.
+* A key described as "scalar or map" accepts either a number or `{file: name.npy}`, with an optional `sha256` (the hexadecimal digest of the file, checked when the file is read). The file name is one plain name with no directory part, opened relative to the directory of the water file; symbolic links are refused. A map is an ordinary NumPy `.npy` file (format version 1.0 or 2.0) holding a C-ordered two-dimensional array of shape `(ny, nx)` equal to the MAPLE grid: little-endian 64-bit floats (`<f8`) for numeric maps and Booleans for the active mask. Numeric maps must be finite and lie in the range of their key; no halo, rotation or resampling is applied. By default at most 32 map files are read, each at most 256 MiB, and 256 MiB in total; a file named twice is read once.
+* Retention thresholds and layer properties vary by layer, not by cell.
+
+### 14.6 The water file, `layered_water.yaml`
+
+The first block chooses the compute backend, and it is the **only** place the backend is chosen: there is no command-line or `run.yaml` backend override. In a CPU file, `numpy` or `numba` is accepted and a GPU value is refused. A GPU file uses the same keys with `compute.backend: cuda`, which the GPU loader accepts and the CPU loader refuses; the value is never overridden or relabelled, and a CPU file is never run on the GPU nor the reverse. The source profile in `run.yaml` must match (a `..._cpu_v1` profile with a CPU file, `..._cuda_v1` with a CUDA file); a mismatch is a typed refusal before physical work. In the shipped CUDA example the CPU reference file differs from the GPU file in that one line only.
+
+**Soil**
+
+| Key | Meaning and unit |
+|---|---|
+| `soil.layers.thickness_m` or `soil.layers.edges_m` | Layer thicknesses in m from the surface down, or edges beginning at 0. The stack must fit inside the actual MAPLE material of every active cell. |
+| `soil.theta_residual`, `theta_field_capacity`, `theta_saturation` | Volumetric water fractions (m³/m³), a scalar or one per layer, with residual ≤ field capacity ≤ saturation and residual < saturation. |
+| `soil.theta_evaporation_stress` | Moisture (m³/m³) of the top layer below which evaporation is reduced. Must exceed its residual. |
+| `soil.gravity_drainage` | `true` lets water above field capacity move down; `false` disables the whole cascade. |
+| `soil.bottom` | `open`: excess leaves at the bottom as drainage. `closed`: nothing leaves, and water stays within the profile. This is not a groundwater or wicking boundary. |
+| `soil.diffusion.mode` | `tietjen_donor_depth` or `constant`. |
+| donor-depth inputs | `interface_conductivity_m_s` (m/s, a scalar or one per interface) and `coefficient` (dimensionless). |
+| constant-mode input | `diffusivity_m2_s` (m²/s, a scalar or one per interface). |
+
+For L layers there are L − 1 interfaces. Hydraulic properties are explicit user inputs in this release. The actual MAPLE texture is computed, but it does not select conductivity, suction or thresholds; a texture-to-property method is later work.
+
+**Infiltration**
+
+| Key | Meaning and unit |
+|---|---|
+| `matrix.conductivity_m_s`, `matrix.suction_m`, `matrix.vegetation_factor` | Matrix infiltration conductivity (m/s), suction (m) and the vegetation factor g in 0–1. |
+| `preferential.a3` | Background coefficient of the reference. A scalar must be exactly 0.1, 0.5 or 0.8; a map is accepted when every value lies in 0–1. |
+| `preferential.max_fraction_per_hour` | Dimensionless hourly fraction of the standing water. The setup is refused unless, in every cell, this value times the summed receiver map lies in 0–1. |
+| `preferential.max_intake_rate_m_s` | An additional cap on the preferential intake rate: a positive number, a map or the word `unlimited`. |
+| `preferential.background_receiver_weights` | Nonnegative receiving weights, one per layer, for the background pathway. |
+| `preferential.species` | A list of prescribed pathways, each with `name`, `receiver_weights` (one per layer) and `contribution` (a scalar or map, ≥ 0). |
+
+**Receiving weights are not root fractions.** The background weights and the species weights decide which soil layers receive preferential water. Weights are nonnegative and need not sum to one. A vector with a positive sum is normalized; `[0, 1, 1]` sends equal shares to layers 2 and 3. A vector of zeros switches that pathway off. Root-uptake fractions belong to LEAF, are different quantities and appear nowhere in this file. All pathways share one supply of surface water, one maximum intake rate and the receiving capacity of the layers; the background allowance is not spent again for each species.
+
+**Evaporation and transpiration.** The five `evaporation` numbers are dimensionless: `canopy_intercept`, `canopy_slope`, `transpiration_slope`, `transpiration_offset` and `soil_factor`. `soil_factor` is the site factor (the reference's EPfactor) that multiplies the combined soil potential. It is not the evaporation share. The share is 1 − clip(`transpiration_slope` × cover − `transpiration_offset`, 0, 1) and is applied after the soil moisture limit has capped the combined loss. Only the resulting evaporation is debited. SYRUP does not debit plant transpiration through this calculation; LEAF requests transpiration separately from the remaining available water. `cover` is the prescribed canopy fraction, 0–1, scalar or map.
+
+**Initial state**
+
+| Key | Meaning |
+|---|---|
+| `initial.soil_moisture.units` and `by_layer` | `theta` (m³/m³) or `inventory_depth_m` (m of water in the layer), one value per layer. Zero is allowed. The water in a layer must not exceed its saturation depth. |
+| `initial.wetting_history_m` | The persistent infiltration history J (m), scalar or map. It records history and adds no water. |
+| `initial.cumulative_intake_m` | Lifetime actual matrix intake (m), scalar or map. A ledger; it adds no water. |
+
+**Domain**
+
+| Key | Meaning |
+|---|---|
+| `domain.active_mask` | `all` or a Boolean map `(ny, nx)`. |
+| `domain.friction_factor` | Positive Darcy–Weisbach factor, scalar or map. |
+| `domain.closed_ring_rise_m` | Positive elevation offset (m above the bed maximum) that closes every non-outlet boundary cell. |
+| `domain.outlets` | A list of edge faces, each with `row`, `col`, `d_row`, `d_col` (one of (1,0), (−1,0), (0,1), (0,−1)) and a positive `drop_m` in m. An empty list is a closed basin. MAPLE's periodic wind boundaries never define water outlets implicitly. |
+
+The values in the example files are numerical test settings. They are not field calibration or defaults, and the example calendar file differs from the commented example file (including its use of four outlet faces).
+
+### 14.7 Weather, scenario and event files
+
+`weather.json` has closed declarations followed by rows. The declarations are: `units` (exactly `degC`, relative humidity as a `fraction`, `kPa`, `MJ_m2_day` and `mm_day`; no other spelling is converted); `utc_offset` and `sampling` (daily; the offset must equal the scenario's calendar offset); `temperature` with a Boolean `extrema` and a `tmean` mode; `humidity.supplied` (`none`, `rh`, `vpd` or `both`, with `derivation: maple_syrup.weather_pet`); `radiation.supplied` (Boolean); `pet.method`; and `provenance` with `kind`, `description` and `source`. Rows are consecutive calendar days with no gaps or nulls. Simplified forcing is valid, and should be labelled `prescribed` or `estimated` rather than `observed`.
+
+Which row fields are required follows from the declarations:
+
+| Row field | Required when |
+|---|---|
+| `date` | always |
+| `tmean_c` | `temperature.tmean` is `supplied` |
+| `tmin_c`, `tmax_c` | `temperature.extrema` is true (both together) |
+| `relative_humidity_fraction` | humidity is `rh` or `both` (0–1, never a percentage) |
+| `vpd_kpa` | humidity is `vpd` or `both` |
+| `radiation_mj_m2_day` | `radiation.supplied` is true |
+| `pet_mm_day` | `pet.method` is `explicit` |
+
+A mean temperature is always available to SYRUP and LEAF: it is either supplied in each row or, when `tmean` is declared `arithmetic_mean_of_tmin_tmax`, derived as the average of the extrema (a declared convention, recorded as derived, allowed only when extrema are present). The daily extrema are needed only for `ecohyd_hargreaves` and for any humidity field, because the humidity relation uses them. With `explicit` PET, no humidity and no extrema, a row may hold just `date`, `tmean_c` and `pet_mm_day`. If both humidity values are given they must agree within the library's tolerance (an optional `consistency_tolerance_kpa` may be declared only for `both`); if one is given the other is derived once. Hargreaves needs no radiation. The method `penman_monteith` is refused until implemented.
+
+Latitude is not a weather field. The integrated case always takes it from `location.latitude_deg` in the MAPLE `case.yaml`, with no default, whatever the PET method; do not omit it from the case even if PET is supplied explicitly.
+
+`scenario.json` names the calendar start (a date and time with an offset), the weather file and an ordered list of occurrences, each referring to an event file by name and digest. `native_epoch_s` must be 0. A rain event (`rain.json`) lists intervals with `duration_s` and `intensity_mm_h` and a `recession_guard_s` allowance; a rain event completes when its surface is quiet, not when rain ends. An interevent file gives `duration_s` and the switches `processes.evaporation`, `processes.transpiration` and `processes.growth`. In the water-only command (v1), only evaporation can be enabled; enabled transpiration or growth is refused. In the LEAF command (v2) transpiration and growth may be enabled, subject to the gates of Section 13.6 of the Model Structure and Physics document; neither occurs during rain or recession.
+
+### 14.8 LEAF inputs (v2 only)
+
+The `leaf` block names three LEAF files and the limits for reading them. All are pinned by their bytes when the run starts.
+
+| File | Contents |
+|---|---|
+| `catalog.json` | LEAF species catalog (`leaf.species_catalog`, version 1): units, number of root layers (must equal the soil layers), and for each species its allometry, root layer fractions and lateral radius, growth law and traits (for example monthly activity and temperature limits), and water-use law (`biomass_specific_pet_v1`: demand per kg per day at a reference PET). |
+| `plants.csv` | One plain nine-column row per plant: `plant_id, species, x_m, y_m, establishment_ground_m, agb_dry_kg, seasonal_agb_dry_kg, age_days, status`. Coordinates are in the landscape frame, in metres, not relative to the grid origin. |
+| `plants.metadata.json` | Required companion beside the CSV, written by LEAF's own plant-file writer (`leaf.plant_state_metadata`): domain, cell sampling, units, species order, row count and the CSV hash. Never edit the CSV or the metadata by hand without the other. |
+
+`establishment_ground_m` may be a number or `SURFACE`. A `SURFACE` anchor is resolved at the start of a run from the retained initial bed height of the plant's cell (the public LEAF establishment resolver, on both backends); nothing is filled or invented, and an anchor in an inactive or unknown cell is refused. Plants outside the grid, a grid, cell-area or layer-count mismatch with the catalog, and an inconsistent CSV and metadata pair are refused before any physical step. The known active mask of the water setup is used for the canopy geometry, so inactive cells carry no canopy area; changing it on resume is refused. The example catalog values are fixture values, not calibrated parameters.
+
+The `leaf` keys, all required, are:
+
+| Key | Meaning |
+|---|---|
+| `leaf_variant` | `8da` only. |
+| `leaf_root` | Development mode: absolute path of the clean LEAF 8da source (23 modules plus pyproject). Production mode: not allowed; the root is derived from the sealed LEAF capsule. |
+| `catalog`, `plants` | Relative file names; the metadata file must sit beside `plants`. |
+| `cadence_days` | Integer 1 to 7, the growth grid. |
+| `geometry` | `max_edges`, `max_bytes`, `canopy_max_edges`, `canopy_max_bytes` (positive integers) and `builder` (`numpy` or `compiled`). |
+| `budgets` | `leaf_budget_bytes` and `checkpoint` with `max_host_bytes`, `max_device_bytes` (0 on CPU), `max_disk_bytes`, `max_biology_bytes`. |
+| `io` | `max_catalog_bytes`, `max_plants_bytes`, `max_plant_records`; the record count is checked by a streamed count before any plant array exists. |
+
+### 14.9 The run file, `run.yaml`
+
+| Block | Purpose |
+|---|---|
+| top level | `schema` (v1 or v2), `run_id`, `maple_case_dir`, `syrup_parameters`, `scenario`, `profile_id`. Paths other than those in `source` are relative to `run.yaml`. |
+| `source` | `mode` and the fields of that mode (Section 14.10); `profile` (below). |
+| `execution` | `quiet_policy`, which must be `default`: the storm owner's standard flow-end gates (60 s hold; depth change 1e-8 m; unit discharge 1e-10 m²/s; outlet discharge 1e-9 m³/s; excess depth 1e-8 m; excess volume 1e-6 m³). No override is offered. |
+| `limits` | `interevent_max_dt_s`, `interevent_min_dt_s`, `interevent_max_retries`; `storm` with `max_dt_s`, `min_dt_s`, `max_retries`, `max_steps` (the native work budget of one call), `max_recession_s`; and `max_occurrences`, `max_dates_per_interevent`, `max_accepted_steps_per_occurrence`, `call_step_budget`, `max_record_bytes`. |
+| `resources` | Explicit memory reserves `caller_reserve_bytes`, `temporal_reserve_bytes`, `lifecycle_extra_reserve_bytes`, `preparation_reserve_bytes` and optional `host_available_cap_bytes`. There are no default reserves. |
+| `output` | `run_dir` (must not exist; its parent must), `step_cadence`, `max_output_bytes`, `max_file_bytes`, `max_step_lines`, `physical_checkpoint` and `compile_output_reserve_bytes`. `physical_checkpoint` is `none`, `terminal_standalone` (v1 and CPU only; the final physical state without a cursor) or `combined_terminal` (CPU or CUDA, the sealed artifact used for pause and resume; required for a LEAF run to be resumable, and `terminal_standalone` is refused for LEAF runs because it would drop the biology). |
+| `cuda` | Required with a CUDA profile and refused with a CPU profile: `device_id`, `device_reserve_bytes`, `device_cap_bytes`, `native_reserve_bytes`; no defaults and no unlimited cap. |
+| `leaf` | v2 only (Section 14.8). |
+
+**Source profiles.** `source.profile` is one of a closed set; a profile fixes the SYRUP package digest, which is never read from the file.
+
+| `source.profile` | Backend | Notes |
+|---|---|---|
+| `native9f_layered_factory_afca_cpu_v1` | NumPy or Numba | The 109-file SYRUP water source; the profile for v1 and v2 CPU runs. |
+| `native9f_layered_factory_afca_cuda_v1` | CUDA, one device | Same SYRUP digest; needs the `cuda` block and an interpreter with CuPy. |
+| `native9f_layered_factory_95ef_cpu_v1` | NumPy or Numba | Earlier source kept for its historical artifacts; v1 only; never rebound. |
+
+The profile's capability must match the water file's `compute.backend` (Section 14.6): a mismatch is a typed refusal, and there is no `run.yaml` or command-line backend override and no fallback from CUDA to CPU. The v2 command accepts only the two `afca` profiles.
+
+The time-step limits are numerical controls, not soil properties. A step is halved and rerun from the unchanged accepted water only after a late hydraulic rejection; an interevent step has no default and must be declared. The output caps are hard limits that are never raised silently, and the run refuses before writing anything that cannot fit; the shipped examples need a compile reserve of about 8 MiB.
+
+### 14.10 Source modes: development snapshot and production
+
+Both source trees are checked before anything runs, and every refusal happens before the first physical step (exit 2) so that nothing is left partly adopted.
+
+**Development snapshot** (`source.mode: development_snapshot`). Fields: an operator `origin` (`label`, `declared_by`), `profile`, `native_target` (the genuine native 9f bundle directory), `masy_root`, `masy_manifest`, `syrup_root`, `syrup_manifest`. The two roots must be read-only sealed copies (no write bits, no symlinks, no caches or version-control metadata) and each manifest must describe its tree exactly; the command verifies them in place. Record a manifest with `manifest ROOT OUT`. Every output is labelled `production_qualified: false`. The manifest is a declarative expectation, never qualification: the literal package digest and the real source census are the authority.
+
+**Production** (`source.mode: production_committed`, v2 only). Its configuration keys are `recipe`, `recipe_sha256`, `receipt`, `receipt_sha256`, `production_store`, `production_lock`, `release_masy_root` and `leaf_capsule_namespace`; the `leaf` block has no `leaf_root` (the LEAF root comes from the sealed capsule). The parent checks the recipe and the review receipt against the sha256 values you pin, the runtime lock, the sealed MASY, SYRUP and MAPLE objects, the immutable LEAF capsule and the interpreter, runs the existing runtime `verify` in a bounded child, and the worker re-derives the same identity before any physical work. A run reports `production_qualified: false` and `production_runtime_verified: true`; the second flag states that the pinned bytes and interfaces were verified, not that the science is field-qualified.
+
+In the configuration the file hashes appear as `recipe_sha256` and `receipt_sha256`: the **recipe identity is the SHA-256 of the recipe file**, and the receipt's is the SHA-256 of the receipt file. (The recipe's `name` is a label.) The values recorded for the committed release run were:
+
+| Device | `recipe_sha256` | Component review receipt `receipt_sha256` |
+|---|---|---|
+| CPU (`native9f_layered_factory_afca_cpu_v1`) | `{{production_cpu_recipe_sha256}}` | `{{production_cpu_receipt_sha256}}` |
+| CUDA (`native9f_layered_factory_afca_cuda_v1`) | `{{production_cuda_recipe_sha256}}` | `{{production_cuda_receipt_sha256}}` |
+
+**These are evidence of what was run, not files you can reuse.** A recipe names source-object identities, the LEAF capsule and the MAPLE bundle. The run configuration separately selects the runtime lock and store, and the lock binds the interpreter. These operational records are produced for the machine and paths used by your own preparation. Running the steps below on another machine yields a different lock, bundle ids, recipe and recipe sha256, even from the same commits. A receipt is bound to one recipe sha256, so another party's receipt does not apply to your recipe, and no ready, portable receipt is supplied. The hashes in a recipe and receipt prove consistency of bytes, not authenticity or independent review; the receipt is accepted only if its status and independence fields carry the reviewed values, and a draft you generate (`draft-receipt`) is refused with `recipe_unreviewed`. Whether you accept your own review is your decision under the declared trust model (protection against accidental drift, not against a hostile operator); the review recorded for the release attested independent code review and the bounded component checks, not the later full runs.
+
+The derivation, with the real tool names and flags (the tools of the MASY tree must be started by the environment's interpreter with `-I -B`; use the CPU interpreter for the CPU store and the CUDA interpreter for the CUDA store; `MASY` is your checkout of Section 14.2):
+
+1. Write a runtime file for each device (example below), in the TOML form `schema = "masy.runtime.v1"`, with `[sources.maple]` (`root` = the MAPLE clone, `distribution_metadata` = the `distribution` folder of the companion fixture `examples/native9f_metadata` described below, `expected_revision`), `[sources.syrup]` (`root`, `expected_revision`), `[sources.masy]` (`expected_revision`), `[runtime]` (`python` = that environment's interpreter spelled as invoked, `store` = a new absolute path outside every source tree and environment whose parent already exists) and optionally `[limits]` (for example `worker_timeout_s`; defaults include a 4 GiB new-bytes cap and a 1 GiB disk reserve). The storage and layout rules are in the runtime document of the MASY tree.
+**The metadata fixture.** The `distribution_metadata` of a MAPLE source is a folder holding four pinned files (`METADATA`, `WHEEL`, `entry_points.txt`, `top_level.txt`) that the source-bundle export reads. Pointing it at whatever a new `pip install -e` generates is not a qualified recipe and can be refused, because metadata revisions differ between installers. The companion archive therefore carries the four genuine files used in the actual qualification, byte for byte, in `examples/native9f_metadata/distribution/` (with a `README.md` and `provenance_manifest.json` beside, not inside, that folder). They come from the qualified native 9f reference bundle; SYRUP's native-case profile pins their SHA-256 values and the MAPLE 9f `pyproject.toml` identity, and all those guards still run. This is metadata input to the bundle export: it installs nothing, replaces no environment and does not validate an arbitrary MAPLE source or third-party versions. A fresh dependency installation was not re-run for this guide; the existing qualified MAPLE environments are the evidence, and the instructions use the tested metadata rather than guessing installer output.
+
+Unpack the companion archive into a folder of your choice and write each runtime file with the shell expanding the paths, because TOML itself does not expand `$HOME` or other variables:
+
+```bash
+export MANUALS=$HOME/manuals                  # where you unpacked the companion archive
+export META=$MANUALS/examples/native9f_metadata/distribution
+mkdir -p "$WORK/runs"                         # choose an unused store for this first-run example
+cat > "$WORK/runtime_cpu.toml" <<EOF
+schema = "masy.runtime.v1"
+[sources.maple]
+root = "$WORK/MAPLE-9f466d2"
+distribution_metadata = "$META"
+expected_revision = "{{maple_native_commit}}"
+[sources.syrup]
+root = "$WORK/SYRUP-subsurface"
+expected_revision = "{{syrup_commit}}"
+[sources.masy]
+expected_revision = "{{masy_commit}}"
+[runtime]
+python = "$WORK/MAPLE-9f466d2/.venv/bin/python"
+store = "$WORK/runs/runtime-store-cpu"
+[limits]
+worker_timeout_s = 900.0
+EOF
+sed -e 's#/.venv/bin/python#/.venv-cupy/bin/python#' -e 's#runtime-store-cpu#runtime-store-cuda#' "$WORK/runtime_cpu.toml" > "$WORK/runtime_cuda.toml"
+```
+
+The CPU and CUDA files differ only in `runtime.python` and `runtime.store` and use the same fixture; each store gets its own lock. The unquoted `EOF` lets the shell fill `$WORK`, `$META` and the commits; check the result with `cat`. The MASY section names no root because the launcher tree is the MASY checkout that runs the tool.
+
+2. Seal and lock: `python -I -B MASY/tools/masy_runtime.py prepare --config RUNTIME.toml`. For a CPU store hide the GPU (`CUDA_VISIBLE_DEVICES=""`). Check a lock later with `verify --store STORE --lock LOCK_ID`. The output names the lock id.
+3. Seal the clean LEAF checkout into an immutable capsule outside any store: `python -I -B MASY/tools/masy_leaf_capsule.py seal --leaf-root LEAF --expected-revision {{leaf_commit}} --namespace NS --run-id ID --wrapper-root MASY --reserve-bytes N`, then `verify --namespace NS --capsule-id ID --reserve-bytes N`. The namespace must not lie inside a store, a wrapper root or an input; one capsule namespace can serve both devices.
+4. Derive a recipe from the real lock and capsule: `python -I -B MASY/tools/masy_production.py draft-recipe --store STORE --lock LOCK_ID --capsule-namespace NS --capsule-id CAPSULE_ID --name NAME --profile native9f_layered_factory_afca_cpu_v1 --device cpu --reserve-bytes N --out RECIPE.json` (use the `afca_cuda_v1` profile and `--device cuda` for the CUDA store). Nothing is typed in: heads, object ids, package digests and the bundle id come from the lock and capsule. Compute `sha256sum RECIPE.json`.
+5. Review and write the receipt. `draft-receipt --recipe RECIPE.json --out RECEIPT.json` writes only an unreviewed draft. A receipt that the gate accepts has schema `masy.production_release_receipt.v1`, `status` `root_reviewed`, `independent` true, the recipe's sha256, and evidence and limits statements. Writing that receipt is a review act; this guide does not supply one.
+6. Write the run configuration: `python -I -B MASY/tools/masy_production.py render-config OUTDIR --recipe RECIPE.json --receipt RECEIPT.json --store STORE --lock LOCK_ID --release-root MASY --capsule-namespace NS [--profile PROFILE]`. It copies the example inputs outside the source trees and fills `source` (the recipe and receipt sha256 values are computed from the files).
+7. Run it (Section 14.11).
+
+The statement that the full committed-runtime run succeeded refers to the release run of the table above on its own stores. Your own run from the same commits will be bound to your own lock and recipe; this guide does not claim that it reproduces the recorded hashes, only that its identity checks will pass or refuse.
+
+### 14.11 Running, pause and resume
+
+**Command forms.** The module is run with the Python interpreter of the CPU or CUDA environment (the one named as `runtime.python` of the store being used), with the MASY `src` of the release root on `PYTHONPATH`, and with `-B`; there is no installed command. In the release run the environment variable `CUDA_VISIBLE_DEVICES` was empty for CPU runs and `0` for CUDA runs, and Numba and CuPy cache directories were set to run-owned paths.
+
+```
+PYTHONPATH=MASY/src CUDA_VISIBLE_DEVICES="" .venv/bin/python -B -m masy.native_water_run run run.yaml
+```
+
+The general forms are:
+
+```
+python -B -m masy.native_water_run manifest ROOT OUT
+python -B -m masy.native_water_run run CONFIG
+python -B -m masy.native_water_run run CONFIG --pause-after-occurrences N
+python -B -m masy.native_water_run run CONFIG --resume CKPT --expected-seal-sha256 SHA [--pause-after-occurrences N]
+```
+
+| Option | Meaning |
+|---|---|
+| `manifest ROOT OUT` | Development helper: record the expected manifest of a source tree. Not qualification. |
+| `run CONFIG` | Execute the configuration. The parent reads only the configuration and checks the sources; the work runs in a fresh child process. |
+| `--pause-after-occurrences N` | Stop cleanly after the N-th accepted occurrence in total (rain or interevent), then write the checkpoint. Needs `output.physical_checkpoint: combined_terminal`; `0 ≤ N <` the scenario length; exit code 4. |
+| `--resume CKPT` | Resume from a sealed combined checkpoint directory into a fresh `output.run_dir`. There is no "latest" lookup. |
+| `--expected-seal-sha256 SHA` | Required with `--resume`: the 64-hex manifest seal the checkpoint must carry. |
+
+The two options are not configuration keys. A pause or checkpoint is made only between whole accepted occurrences. On resume the native calendar limits are split into behavioural limits and three resource fields (`caller_reserve_bytes`, `temporal_reserve_bytes`, `max_record_bytes`; the last is a size cap, not a reserve); only those three may differ from the writer's, under fresh admission, and the change is disclosed in the run record. Every behavioural limit, the scenario, events, weather, case and latitude, the source identity and the quiet policy must be identical, or the resume is refused (exit 2); how other `resources`, `output` and `cuda` values are treated on resume is not stated here and they should be left unchanged. In a v2 run the catalog, plants and metadata, cadence, geometry and limits are re-pinned and any change is an `inputs_mismatch`; plants are not read again at resume because the biology comes from the joint artifact. A checkpoint resumes only under the exact sources that wrote it: a CUDA checkpoint under the CUDA profile, a CPU one under a CPU profile, a water-only artifact never under v2 and a joint artifact never under v1. A checkpoint that already holds the whole schedule resumes as a verified no-step run. A checkpoint after a rain occurrence holds the completed storm, which stays a completed storm until its true end.
+
+**Worked pause and resume sequence (as run for the release).** With `output.physical_checkpoint: combined_terminal` and a three-occurrence scenario (interevent, rain, interevent): (1) `run run_p1.yaml --pause-after-occurrences 1` stops after the first interevent with exit code 4 and writes `out/p1/combined_checkpoint`; (2) `run run_p2.yaml --resume out/p1/combined_checkpoint --expected-seal-sha256 SEAL1 --pause-after-occurrences 2` (a configuration identical except for a new `output.run_dir`) resumes, runs the rain occurrence to its genuine completion and pauses, again exit 4; (3) `run run_resumed.yaml --resume out/p2/combined_checkpoint --expected-seal-sha256 SEAL2` finishes the last interevent, exit 0. The seal of each checkpoint is printed in the run's `RUN_STATUS.json` and `MASY_RUN_RESULT` record. The CUDA sequence is identical with the CUDA configuration.
+
+**Changing the backend.** The same input set serves all three backends by changing only: the water file's `compute.backend` (`numpy`, `numba` or `cuda`); in `run.yaml` the `source.profile` (`afca_cpu_v1` or `afca_cuda_v1`), the production store, lock, recipe and receipt of that device, the top-level `cuda` block (CUDA only) and `leaf.budgets.checkpoint.max_device_bytes` (0 on CPU, positive on CUDA). A checkpoint written by one backend is not resumed by another.
+
+**CPU setup.** Water file `compute.backend: numpy` or `numba`, an `afca_cpu_v1` profile, no `cuda` block, and an interpreter that does not need CuPy.
+
+**CUDA setup.** Water file `compute.backend: cuda`, the `afca_cuda_v1` profile and a `cuda` block. Start the parent with an interpreter that has CuPy (there is no auto-install and no CPU fallback). `cuda.device_id` is the only device the run may use and must be the actual current device of the process, so expose one device (for example `CUDA_VISIBLE_DEVICES=0`). `device_reserve_bytes` is your reserve outside the model, `device_cap_bytes` the bound the planned requirement plus that reserve must not exceed, and `native_reserve_bytes` the native-compile reserve; the host reserves apply as for the CPU. In a v2 CUDA run set `leaf.budgets.checkpoint.max_device_bytes` above zero.
+
+**Incomplete calls.** The command may call the scheduler several times for one occurrence. If a call stops because `call_step_budget` or `limits.storm.max_steps` is exhausted, the scheduler reports `incomplete`, keeps its bounded working progress and leaves the accepted state unchanged; the command writes an `incomplete` line to `steps.jsonl` and continues the same occurrence on the next call. That per-call limit alone does not stop the run and nothing is replayed or applied twice. A run stops only at a final limit: a terminal failure, `max_accepted_steps_per_occurrence`, the storm and recession limits, the output caps or the bound `output.max_step_lines` on the number of calls. If the run ends while an occurrence is incomplete it is reported `incomplete` (exit 3, code `event_incomplete`), never as complete, with the last accepted state kept, no checkpoint written (a partial occurrence is never checkpointed) and no pause taken. This describes the current command, not a recommendation.
+
+**Outputs and exit codes.** The output directory holds `inputs/`, `resolved.json`, `steps.jsonl` and `RUN_STATUS.json` (written last), and `combined_checkpoint/` or `physical_terminal_checkpoint_standalone/` when requested. The last printed line is `MASY_RUN_RESULT:` followed by a JSON record. Exit codes: 0 complete; 1 internal error; 2 refused before physical work; 3 failed or incomplete; 4 paused. `RUN_STATUS.json` records the invocation (resumed, seal, pause point, cursor) and the checkpoint written. A v2 run adds bounded `leaf_source`, `leaf_inputs` and `leaf` entries (generation, plant counts, calendar cursor, pending growth days); `summary.leaf` is comparable between an uninterrupted run and a paused and resumed one, while run-specific facts such as fresh free-memory readings are in `summary.leaf_create`. Plant rows are never written to status files.
+
+**Wetting-history reset.** It is not a key of these files and not an option of the command. It is an explicit controlled operation, available only between episodes when no storm or interevent state is open, the surface is exactly dry and the flow is quiet. It preserves soil water and every water ledger and sets only the wetting history to zero.
+
+### 14.12 Memory, refusals and what is checked
+
+Memory is handled by declared admission: before each stage the model arrays the code and its caller hold are estimated from stated formulas and compared with a fresh availability reading plus your reserve, and the stage refuses if they do not fit. These figures are modelled, not measured resident memory (RSS): the interpreter, JIT caches, allocator pools, the CUDA context and the child process that verifies the native stack are not counted, and a reading of free memory is not a reservation. The host and device figures are kept separate and each reserve is counted once. The parent refuses with a cold-memory error before starting any helper when the caller reserve plus a small buffer is not available.
+
+Everything is validated before any state changes. Refusals before the first step include: unknown, missing or duplicate keys and wrong types in any file; symbolic links; a changed input after pinning; a source tree, manifest, profile, capsule or interpreter that does not match; a backend and profile mismatch; a missing latitude; and a plant or catalog mismatch. A refused or failed step publishes nothing, and a failed run keeps its last accepted state. Dated events in a v2 run must fall on instants exactly representable in the microsecond LEAF clock (`leaf_instant_not_exact` otherwise; a 0.05 s interval is refused and a 0.0625 s interval is accepted); old clocks are never rounded.
+
+### 14.13 Native Phase 1.5: daily small-rain recharge (separate source N15)
+
+**What this is.** A native Python capability of SYRUP, added as a **separate source package** (the *N15* source: package SHA-256 `{{n15_syrup_package_sha256}}`, {{n15_package_file_count}} files; native MAPLE `{{n15_maple_native_commit}}`). It is *not* a command-line option, a weather or CSV reader, a scheduler or a change to LEAF. The dated scheduled command of Sections 14.9 to 14.12 and its C1 recipes, locks, receipts and checkpoints are **unchanged and are never repointed to N15**: C1 code keeps the C1 identities of Section 14.1, and the old C1 checkpoint helpers refuse an N15 state. Use N15 only from your own Python program, in an environment built from the pinned native MAPLE and the N15 package. Stages are kept distinct: (1) the earlier bounded model-capability acceptance of the code (status `{{n15_root_s4_acceptance_status}}`, receipt SHA-256 `{{n15_root_s4_acceptance_sha256}}`; native daily lifecycle and V3 restart, not the complete phase); (2) the bounded whole-phase acceptance (`ACCEPTED_BOUNDED_NATIVE_DAILY_RECHARGE`), recorded after Root's independent review of the final examples, documents and CPU and CUDA example runs: receipt **{{n15_whole_phase_receipt_status}}**, file SHA-256 `{{n15_whole_phase_receipt_sha256}}` (`phase15_acceptance.json`; it binds the source and example programs, not these manuals); (3) publication, where `published` is **{{n15_published}}** and the first phase commit that holds the accepted code and both manuals is **{{n15_source_commit}}**. That commit cannot name itself, so a later documentation-only refresh fills it in after the real push. A clone can check the 114 source files without trusting a private path: `python docs/subsurface_hydrology/verify_phase15_source.py CHECKOUT` compares them with the shipped `phase15_source_manifest.json` and the package digest above; the shipped `phase15_native_acceptance.json` and `phase15_acceptance.json` are the two Root receipts, byte for byte.
+
+**Rule, chosen by the user.** You give the day's precipitation P (mm), its intensity I (mm/h) and an amount threshold T (mm). **T has no default and no recommended value**: it is your scientific choice; the examples use illustrative numbers.
+
+| Condition | What runs |
+|---|---|
+| P = 0 | No precipitation operation. The day still runs one 86 400 s soil update with evaporation and diffusion. |
+| 0 < P ≤ T (equality included, by the user's choice) | A simplified recharge is *attempted*: P/1000 m is added uniformly over the active cells to the **top layer** and moved down by the ordinary gravity drainage in the same daily update. |
+| P > T | The **full native storm** with the full P, forcing duration 3600 P/I s, then one daily update. |
+| Recharge attempted but any **active** column cannot hold the pulse (closed bottom, capacity exceeded) | The whole trial is discarded, the accepted original state is untouched, and the **full native storm with the full P** is run from that same original state (never a partial recharge plus a storm; no mixed columns). |
+
+**API (Python).** The calls below are the real ones; the runnable script `examples/native_daily_recharge/daily_recharge_example.py` calls them in order (arguments abbreviated).
+
+```
+from maple_syrup import native_case_profile as ncp, native_dense_profile as nd, layered_case as lc
+from maple_syrup import daily_water as dw, water_lifecycle as wl
+
+profile = ncp.verify_source_profile(BUNDLE, expected_syrup_digest="{{n15_syrup_package_sha256}}")
+admission = ncp.admit_package_case(profile, CASE_DIR)                 # the native case; MAPLE initializes the landscape
+prep  = nd.prepare_native_dense_case(admission, caller_reserve_bytes=RESERVE)
+setup = lc.prepare_layered_case(prep, lc.load_layered_config("layered_water.yaml"),
+                                caller_reserve_bytes=RESERVE, lifecycle_extra_reserve_bytes=RESERVE)
+lop, boundary = setup.lifecycle_operator, setup.state
+state = dw.start_daily_lineage(lop, boundary, expected_parent=wl.expect_parent(boundary), run_digest=RUN_DIGEST)
+plan  = dw.next_plan(state, p_mm, i_mm_h, t_mm)                         # the selection and its reason, before any mutation
+res   = dw.daily_water_action(lop, state, expected_parent=wl.expect_parent(state), plan=plan, pet_terrain_m_s=PET)
+# res.status == "complete": res.state is the accepted boundary after ONE daily update, res.receipt its bounded scalars
+# res.status == "capacity_failure": res.fallback is the evidence; then run the FULL storm:
+storm = dw.begin_daily_storm(lop, state, expected_parent=wl.expect_parent(state), plan=plan, fallback_of=res.fallback, control=CONTROL)
+# P > T: dw.begin_daily_storm(..., plan=plan, control=CONTROL) directly; drive wl.evolve_storm(...) until it GENUINELY completes, then
+day = dw.finish_daily_storm(lop, done, expected_parent=wl.expect_parent(done), plan=plan, pet_terrain_m_s=PET)
+```
+
+Plant withdrawals use the existing `wl.request_withdrawal` (LEAF calculates T; SYRUP accepts what the soil can supply and reports it), then `wl.close_interevent`. The CUDA path has the same sequence through the CUDA factories (`native_dense_cuda_profile`, `layered_case_cuda`) and refuses a CPU state.
+
+**Parameters.** The only new inputs are the three descriptor numbers and a run identity (64 hexadecimal characters chosen by the caller). Units: P mm, I mm/h, T mm; soil state m; PET in m/s over the one 86 400 s day; clocks in seconds; volumes in m³ over the active cells. The layered-water file is the **same file of Section 14.6** (layers, θ_r, θ_fc, θ_s, `bottom: open` or `closed`, preferential weights, initial moisture); nothing in it is new for N15. `T` is *not* a file key.
+
+**Clocks.** There are two clocks and they are kept apart. The *nominal ordinal* counts the accepted daily occurrences. The *native physical clock* counts seconds: a recharge or zero-rain occurrence advances it by exactly 86 400 s; a storm occurrence advances it by the storm duration, its recession to genuine completion **plus** one 86 400 s day. A year of nominal days can therefore be longer than 365 physical days; no growth, evaporation or transpiration runs during wind, rain or recession, and nothing is applied afterwards to those durations. The storm forcing keeps *local* times (0 to the rain duration D) and records its physical origin; the storm's absolute edges are origin and origin+D. This clock contract is new and versioned for N15 only; the old dated calendar and its checkpoints are not changed or reinterpreted.
+
+**Receipts and outputs.** Each accepted occurrence returns a bounded receipt of scalars: `branch` (`no_rain`, `recharge`, `storm`, `storm_fallback`), the plan's `selection` (what the rule chose; a fallback keeps `selection: recharge` and sets `branch: storm_fallback`), `capacity_failing_columns`, `recharge_m3` (credited as external rain), the **modeled** `preferential_intake_m3` and `matrix_intake_m3` (these are reported separately and are **not** changed by the recharge pulse), `drainage_m3`, `soil_evaporation_m3`, `surface_evaporation_m3`, `export_m3`, the occurrence start, the day start and end and the plan, forcing and parent digests. `wl.audit_lifecycle` gives the closure residual against the floating-point bound. Wetting history J and cumulative matrix intake are **never reset** by recharge, a rain end, a checkpoint or a day; the explicit controlled reset of the box above is the only reset.
+
+**Restart (version 3).** Between accepted occurrences, and also in the middle of a storm, the physical state and the daily cursor are saved by the V3 codecs (CPU `lifecycle_checkpoint_v3`, profile `native9f_dense_lifecycle_cpu_v3`; CUDA `lifecycle_checkpoint_cuda_v3`). To resume, rebuild the same fixed components (source profile, case, layered file, reference bed), supply the run identity, the role and, for a storm, the same descriptor, and load; the loaded operator and state are adopted by the caller. A V3 directory is accepted only by V3 code. The earlier V1/V2 CPU and CUDA helpers refuse an N15 state and V3 refuses a cursor-free state: there is **no migration**. A genuine, frozen C1 V2 CUDA checkpoint is kept as a *wrong-version control* (refused), not as a migration source. The occurrence count is bounded at 2⁶³−1 and a checkpoint is refused if a counter would exceed it.
+
+**Refusals (typed `DailyRefusal` codes).** `entry`, `forcing`, `memory`, `occurrence`, `router_step_rejected`, `state`, `step_refused`, `storm_incomplete`. A refusal before or during a staged trial leaves the accepted state unchanged. In particular, a day step whose retained surface water makes the router's gravity-wave CFL number exceed 0.5 is refused as `router_step_rejected`; the example script shows it truthfully (Section 14.14). It is not erased by substeps or a looser CFL. A storm is complete only when the native storm completes; reaching a step or time limit is `storm_incomplete`, never completion.
+
+**Examples.** `examples/native_daily_recharge/` (in the archive; Section 14.14) contains one script and compact result files for: recharge, open-bottom drainage, closed-bottom retention, the whole-P native fallback on a flat closed owned case, a V3 save/load and a later storm at the new clock. The stored results are the author's CPU NumPy and compiled Numba runs. Root independently ran the CPU scenarios and the CUDA branch of the script (all with checkpoint, positive T and later storm) and recorded them in the whole-phase receipt; the author of this guide ran no GPU code.
+
+**Limits.** Small fixed-geometry fixtures only (4×6 dense cells, fixed layers and hydraulic properties); recharge is a *user-chosen approximation* to infiltration, not Tietjen's or MAHLERAN's exact law; the retained-wet/CFL limit above; general repeated-storm infiltration and automatic recovery of the wetting history are unqualified; no splash, texture-to-property, soil remapping, LEAF cover feedback, windowed bed, daily scheduler, weather CSV, field validation, large-domain or performance claim.
+
+### 14.14 Example input sets and remaining release work
+
+The scheduler commit holds two example directories (the public input set that the release run used): `examples/native_leaf_calendar_cli/` (a 6×4-cell, 0.25 m case, a two-layer water file, a scenario with interevent, rain and interevent periods, a two-species catalog, one plant with a `SURFACE` anchor and its metadata, `run.template.yaml` and a stdlib helper `fill_config.py` that copies the inputs outside the source tree and fills the absolute paths) and `examples/native_production/` (a production template whose placeholders are filled by `render-config`). The development sequence for the first is:
+
+```
+python fill_config.py OUTDIR --masy-root SEALED_MASY --syrup-root SEALED_SYRUP_109 --leaf-root CLEAN_LEAF_8DA --native-target NATIVE9F_BUNDLE
+cd OUTDIR
+python -B -m masy.native_water_run manifest SEALED_MASY masy_manifest.json
+python -B -m masy.native_water_run manifest SEALED_SYRUP_109 syrup_manifest.json
+python -B -m masy.native_water_run run run.yaml
+```
+
+with `PYTHONPATH` set to the sealed MASY `src`.
+
+A third example, `examples/native_daily_recharge/`, belongs to the separate N15 source of Section 14.13. It needs the materialized native-9f bundle and the N15 `src`; `python daily_recharge_example.py --bundle BUNDLE --scenario recharge --workdir NEW_DIR` (scenarios `recharge`, `open_drainage`, `closed_retention`, `fallback`; `--backend numpy|numba`; `--checkpoint`, `--later-storm`) prints one compact JSON record. Its stored results were produced with the existing MAPLE environment on CPU, with the operating system's real available-memory reading and a **new** work directory for every run (an existing work or checkpoint directory is refused and nothing is deleted or rewritten; `check_preservation.py` demonstrates this on sentinel files). The JSON summary reports `first_day_audit_before_T` (the first occurrence, before the T withdrawal, checkpoint and later storm) separately from `final_state` and `closure`, which is the native audit of the final accepted state, with T and the later storm counted once; `check_results.py` verifies that on the stored results. Without `--pet-m-s 1e-7` the `fallback` scenario ends in the typed `router_step_rejected` refusal (the retained pond of the saturated closed flat column makes the router CFL number 28 720 on the one daily step) and the script reports it rather than hiding it. Earlier water-only examples in development task snapshots name absolute paths on one machine and are historical. The example grid, units, catalog and plant values are small test values, not calibrated parameters.
+
+Not supplied by this guide: portable per-user review receipts, because a receipt is bound to a machine-specific recipe (Section 14.10), and any qualification beyond the bounded fixture. The release source commits are published; the documentation itself is packaged and committed as a separate later step. The earlier task-snapshot example water files carry a `soil_factor` comment that wrongly calls it the evaporation share; the committed example files have no such comment and `soil_factor` is the site factor (Section 14.6).

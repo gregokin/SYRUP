@@ -1,0 +1,33 @@
+{
+  "schema": "syrup.phase15.component_acceptance.v1",
+  "status": "ACCEPTED_BOUNDED_NATIVE_DAILY_PHYSICAL_RESTART",
+  "utc": "2026-11-12T13:57:58.371613+00:00",
+  "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+  "package_file_count": 114,
+  "source_manifest": "root_s4_correction02_source_manifest.json",
+  "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+  "maple": {
+    "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "scope": "actual materialized historical9f nativeDense bundle, not latestmain"
+  },
+  "independent_results": {
+    "cpu_full_restart_controls": "42passed203.90s on correction01snapshot; all physicalCPU/helpercode unchanged at finalsource",
+    "current_source_cpu_metadata": "21passed25.78s on final82e9, fixtureSHA/sourceguards/plans",
+    "current_source_cpu_fresh_process": "NumPy AND compiledNumba uninterrupted-vs-partialresume EXACT acrossfourlaterstages including completedstorm/day/Tclose/latercompletedstorm; root_s4_final_cpu_result.json",
+    "gpu_first": "16passed(all15freshprocesspauses+scenario control) beforewrong-testfixture; root_s4c1_gpu_run.json",
+    "gpu_tail": "5passed17deselected46.70s; realtamper/plan/source/counter/duplicate/lowHOST+DEVICE controls; root_s4tail_gpu_run.json",
+    "current_source_gpu": "3passed61.58s wrong-version genuineC1fixture plusfreshpartial/afterTcloseresumes; root_s4c2_gpu_run.json",
+    "current_source_gpu_old_guard": "1passed4.96s C1oldhelperpinrefusesnewsourcebeforearchivepublish; root_s4last_gpu_run.json"
+  },
+  "reviewed_delta_after_first_gpu": "only lifecycle_checkpoint_cuda_v3_plan.py:explicit1bytepartialfalsemetadataallowance; no physicalengine/kernel/hydrologic/state changes; newtest usesimmutable genuineC1V2 fixture",
+  "source_guards": "oldC1 helperpins/schemas unchanged, no migration/rebind/fakeclass; newV3 explicit daily/progress/clock/type/counter binding",
+  "limits": [
+    "genuine4x6Dense nativefixtures, fixedlayergeometry; no Windowed/large-domain/field qualification",
+    "actualquietretained1e-9m/SATclosed onedayCFL refusal preserved, not hidden or substepped",
+    "general repeated-storm wetting-front recovery unqualified, no implicit reset",
+    "native API and physical restart only, no complete daily MASYweather scheduler/CSV/LEAF redesign",
+    "Phase1.5notcomplete until S5examples/manuals/finalqualification and authorizedcommitpush"
+  ],
+  "known_open_confirmed_defects": []
+}

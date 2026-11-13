@@ -1,0 +1,35 @@
+{
+  "status": "ACCEPTED_COMMITTED_C1_LOWLEVEL_CPU_CUDA_CONTROLS",
+  "utc": "2026-11-12T09:02:19.820808+00:00",
+  "commit": "e40a1b8fc56a96920db4ffbd182d4068fa5de3e8",
+  "source_facts": {
+    "maple": {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/phase0_native9f_case_profile_20261110/outputs/cache/55d1485a03c385240bab57edf7fba6cad5230628729b30b8a19d96d094ddaa5c/source/src/maple/__init__.py",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    "syrup": {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/worktrees/syrup/src/maple_syrup/__init__.py",
+      "sha256": "afcad53691b9d295ed560116d313419c08fc5ffe9b227a4bdd9c922f93c52671",
+      "files": 109
+    }
+  },
+  "exec_session": 38971,
+  "closed_reaped": true,
+  "passed": 154,
+  "skipped": 0,
+  "duration_s": 16.98,
+  "gpu_uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+  "free_check": "portable_gpu_availability.json",
+  "evidence": [
+    "portable_gpu_command.json",
+    "portable_gpu_stdout.log",
+    "portable_gpu_stderr.log",
+    "c1_portable_gpu_tests.xml"
+  ],
+  "limits": [
+    "Portable low-level equation/accounting controls only",
+    "No committed full-runtime storm/LEAF acceptance or large-domain/field qualification",
+    "Actual MAPLE9f is explicitly selected historical qualification source, not current live latest"
+  ]
+}

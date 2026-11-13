@@ -1,0 +1,46 @@
+geometry:
+  active_layer_thickness_m: 0.002
+  boundary_x: periodic
+  boundary_y: periodic
+  bulk_density_kg_m3: 1250.0
+  dx_m: 0.25
+  dy_m: 0.25
+  nx: 6
+  ny: 4
+  voxel_dz_m: 0.1
+grain_classes:
+- class_id: fine
+  diameter_m: 5.0e-05
+  is_aggregate: false
+  particle_density_kg_m3: 2650.0
+- class_id: sand
+  diameter_m: 0.00025
+  is_aggregate: false
+  particle_density_kg_m3: 2650.0
+- class_id: coarse
+  diameter_m: 0.001
+  is_aggregate: false
+  particle_density_kg_m3: 2650.0
+grain_mixture:
+  fractions:
+    coarse: 0.3
+    fine: 0.2
+    sand: 0.5
+location:
+  latitude_deg: 35.0
+requested_diagnostics:
+  transport: true
+run_name: location_case
+sediment_availability:
+  available_fraction_by_class:
+    coarse: 1.0
+    fine: 0.5
+    sand: 0.75
+  global_available_fraction: 1.0
+seed: 1173
+topography:
+  base: flat
+  nz: 4
+  perturbation:
+    correlation_length_m: 0.3
+    relief_m: 0.005

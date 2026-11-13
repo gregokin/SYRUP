@@ -1,0 +1,24 @@
+{
+  "scope": "Exact native9f distribution metadata used in actual C1 CPU and GPU runtime prepares; no source code or third-party environment",
+  "maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "reference_bundle": "55d1485a03c385240bab57edf7fba6cad5230628729b30b8a19d96d094ddaa5c",
+  "files": {
+    "METADATA": {
+      "sha256": "dc1b5653aab75868578b7d478b3d015b146ba1fe4ea4907cc26d806d68120cca",
+      "bytes": 697
+    },
+    "WHEEL": {
+      "sha256": "b59a1e1a3b56c5645f769944ec4ddde3954f94b3509ef6ca8989f1ee0c00cbc0",
+      "bytes": 92
+    },
+    "entry_points.txt": {
+      "sha256": "9430d41e28e96a53fa455b84c6a4b6122484d21e6ce8151c6c40854db190c870",
+      "bytes": 82
+    },
+    "top_level.txt": {
+      "sha256": "08ab2a56c8503c742c762013475ad2955377d2001a9fc03e4e8bc22e09af0844",
+      "bytes": 6
+    }
+  }
+}

@@ -70,6 +70,18 @@ legacy step); the event budget in the CLI uses the MAPLE-derived `volume_roundof
 modify an input (`HydraulicStepRejected` is the only recoverable class: retry the SAME state with a smaller dt).
 
 Nothing here was run by its author (file-only tools); Codex records results.
+
+SURFACE STAGE (task phase1_surface_stage_20261110). The lateral arithmetic of both methods is now a SURFACE-ONLY operation
+(`explicit_surface_core`, `local_inertial_surface_core`, wrapped by `CpuSurfaceRouter`; interface records in
+`maple_syrup.surface_routing`): input = the post-vertical-exchange surface depth, the existing face momentum (local inertia),
+the accepted start time and a positive dt; output = `SurfaceStep` (routed depth/momentum at t + dt, velocity, face depths/
+volumes, export, balances, CFL, limiter diagnostics). It owns no soil bucket and needs no `ColumnParameters`, `ColumnStep` or
+`HydraulicState`. `CpuHydraulicSolver` keeps its public API and bucket output unchanged: `step` still runs the accepted
+`infiltration.column_step` first, then delegates the lateral stage to the same core (`compose_hydraulic_step` rebuilds the
+historical `HydraulicStep` from the `SurfaceStep` and the `ColumnStep`); its arithmetic, operation order, checks and messages
+are unchanged (verified against the frozen original in tests/surface_routing/). A standalone router additionally refuses a
+non-finite or negative INPUT depth anywhere (`surface_routing.INPUT_DEPTH_BITS`, resolved first) and admits its declared
+memory before allocating (`surface_routing.estimate_surface_memory`); the historical solvers pass `UNLIMITED_ADMISSION`.
 """
 
 from __future__ import annotations
@@ -78,7 +90,7 @@ import hashlib
 import math
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 
@@ -95,6 +107,25 @@ from maple_syrup.routing import (
     GRAVITY_M_S2,
     RoutingGraph,
 )
+from maple_syrup.surface_routing import (
+    INPUT_DEPTH_BITS,
+    UNLIMITED_ADMISSION,
+    ExperimentalGeometryError,
+    ExperimentalHydrologyError,
+    HydraulicStepRejected,
+    SurfaceState,
+    SurfaceStep,
+    _real,
+    admit_bytes,
+    advance_time,
+    check_dt_cap,
+    check_positive_dt,
+    check_state_time,
+    check_surface_structure,
+    default_host_available_bytes,
+    estimate_surface_memory,
+    validate_surface_state,
+)
 
 __all__ = [
     "DEFAULT_CFL_MAX",
@@ -105,23 +136,30 @@ __all__ = [
     "QUALIFICATION_STATUS",
     "TRANSFER_SCOPE",
     "CpuHydraulicSolver",
+    "CpuSurfaceRouter",
     "ExperimentalGeometryError",
     "ExperimentalHydrologyError",
+    "ExplicitStatics",
     "HydraulicControl",
     "HydraulicState",
     "HydraulicStep",
     "HydraulicStepRejected",
     "LocalInertialGeometry",
     "advance_time",
+    "build_explicit_statics",
+    "compose_hydraulic_step",
+    "explicit_surface_core",
     "implicit_quadratic_friction_flux",
     "build_local_inertial_geometry",
     "check_dt_cap",
     "check_state_time",
     "donor_cells_by_cell",
     "local_inertial_face_flux",
+    "local_inertial_surface_core",
     "open_faces_from_graph",
     "resolve_flags",
     "stage_face_diagnostics",
+    "surface_state_of",
     "validate_hydraulic_state",
 ]
 
@@ -141,6 +179,7 @@ LOCAL_BITS = {"state_nonfinite": 1 << 0, "closed_face": 1 << 1, "open_inflow": 1
 _SCALAR_NAMES = ("storage change", "export", "budget residual", "balance tolerance", "outlet discharge")
 CFL_NAMES = {"explicit": "characteristic CFL (3/2) k sqrt(h) dt/dx",
              "local_inertial": "gravity-wave CFL dt sqrt(2 g h_face) / dx"}
+INPUT_DEPTH_MESSAGE = "surface depth must be finite and >= 0 everywhere (inactive cells included)"
 TRANSFER_SCOPE = (
     "MAPLE read_transfer_counters counts only its instrumented helpers (to_host / to_device); a raw cupy.asarray(host value) "
     "bypasses those counters. In CuPy14.2 the Python-scalar path uses a fill kernel; host arrays can incur uncounted copies. "
@@ -164,27 +203,7 @@ QUALIFICATION_STATUS = (
 )
 
 
-class ExperimentalHydrologyError(ValueError):
-    """Invalid request, state, geometry or a failed check of an experimental solver. Raised before a result exists; no
-    caller array is modified."""
-
-
-class HydraulicStepRejected(ExperimentalHydrologyError):
-    """The step is valid but too large for this state (CFL bound or, without the limiter, a negative depth): retry the SAME
-    state with a smaller dt. Every other error is deliberately not this class."""
-
-
-class ExperimentalGeometryError(ExperimentalHydrologyError):
-    """Unsupported or invalid geometry/boundary specification. Raised while the geometry is built."""
-
-
 # --- control, state, step -------------------------------------------------------------------------------------------
-def _real(value: Any, name: str, error=ExperimentalHydrologyError) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float, np.integer, np.floating)):
-        raise error(f"{name} must be a real number, got {type(value).__name__}")
-    return float(value)
-
-
 @dataclass(frozen=True)
 class HydraulicControl:
     """Numerical options of a hydraulic solver (not of the driver): the CFL bound, the optional positivity limiter and the
@@ -282,8 +301,9 @@ class HydraulicStep:
     face_flow_depth_m: Any = None
 
 
-def stage_face_diagnostics(step: HydraulicStep) -> dict[str, Any]:
-    """Stage-consistent face diagnostics of an accepted step (computed on demand, fresh arrays in the step's namespace).
+def stage_face_diagnostics(step: Any) -> dict[str, Any]:
+    """Stage-consistent face diagnostics of an accepted step (`HydraulicStep` or `SurfaceStep`; computed on demand, fresh arrays
+    in the step's namespace).
 
     Units: `face_flow_depth_m` m, `face_velocity_m_s` m/s (signed, along the face normal: +east/+north for local inertia,
     the downstream direction for the explicit `out` faces), `face_froude` dimensionless. STAGE: the depth is the one the flux
@@ -310,45 +330,16 @@ def stage_face_diagnostics(step: HydraulicStep) -> dict[str, Any]:
     return out
 
 
-# --- continuation metadata --------------------------------------------------------------------------------------------
-def check_dt_cap(value: Any, name: str = "state.next_dt_cap_s") -> float | None:
-    """None (a fresh event) or a real (bool, str, bytes, arrays are refused, never coerced), finite, strictly positive step cap in
-    s; returns it as a float."""
-    if value is None:
-        return None
-    cap = _real(value, name)
-    if not (math.isfinite(cap) and cap > 0.0):
-        raise ExperimentalHydrologyError(f"{name} must be None or finite and > 0, got {cap!r}")
-    return cap
-
-
-# --- strict state time ------------------------------------------------------------------------------------------------
-def check_state_time(t_s: Any, name: str = "state.t_s") -> float:
-    """A real (bool, str and None are refused, never coerced) finite number >= 0."""
-    t = _real(t_s, name)
-    if not (math.isfinite(t) and t >= 0.0):
-        raise ExperimentalHydrologyError(f"{name} must be finite and >= 0, got {t!r}")
-    return t
-
-
-def advance_time(t_s: float, dt_s: float) -> float:
-    """`t + dt` for a validated `t >= 0` and `dt > 0`; refuses an overflowing end time and a step that does not advance
-    floating time (`t + dt == t`)."""
-    t_new = t_s + dt_s
-    if not math.isfinite(t_new):
-        raise ExperimentalHydrologyError(f"state.t_s + dt_s overflows FP64 (t = {t_s}, dt = {dt_s})")
-    if not t_new > t_s:
-        raise ExperimentalHydrologyError(f"dt_s = {dt_s} does not advance floating time at t = {t_s}")
-    return t_new
-
-
 # --- shared error resolution (CPU and CUDA use the same order and messages) --------------------------------------------
 def resolve_flags(method: str, flags: int, scalar_nonfinite: tuple[bool, ...], residual_failed: bool, cfl_value: float,
                   cfl_max: float, limiter: str) -> None:
-    """Raise the FIRST failure: state-input errors (local inertia), the recoverable CFL rejection, non-finite output, negative
-    depth (a rejection when the limiter is off, otherwise an error), the per-cell balance, the non-finite scalars, the global
-    balance. Returns None if nothing failed."""
+    """Raise the FIRST failure: an invalid INPUT depth (standalone surface routers only; the historical solvers mask that bit),
+    state-input errors (local inertia), the recoverable CFL rejection, non-finite output, negative depth (a rejection when the
+    limiter is off, otherwise an error), the per-cell balance, the non-finite scalars, the global balance. Returns None if
+    nothing failed."""
     bits = EXPLICIT_BITS if method == "explicit" else LOCAL_BITS
+    if flags & INPUT_DEPTH_BITS[method]:
+        raise ExperimentalHydrologyError(INPUT_DEPTH_MESSAGE)
     if method == "local_inertial":
         if flags & bits["state_nonfinite"]:
             raise ExperimentalHydrologyError("state face fluxes must be finite everywhere")
@@ -376,13 +367,22 @@ def resolve_flags(method: str, flags: int, scalar_nonfinite: tuple[bool, ...], r
         raise ExperimentalHydrologyError("global water balance (storage change + export) violated beyond FP64 tolerance")
 
 
+def _check_control(method: str, control: HydraulicControl | None) -> HydraulicControl:
+    """The validated control with the two method restrictions (same messages as the historical constructors)."""
+    control = (HydraulicControl() if control is None else control).validated()
+    if method == "explicit" and control.limiter != "off":
+        raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method; the explicit "
+                                         "method is positive by its CFL bound")
+    if method == "explicit" and control.friction_treatment != "lagged":
+        raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; the explicit "
+                                         "kinematic wave has no momentum friction")
+    return control
+
+
 # --- static geometry ------------------------------------------------------------------------------------------------
-def donor_cells_by_cell(graph: RoutingGraph) -> np.ndarray:
-    """`(4, n_cells)` int64: flat cell index of the donor in `DONOR_SLOTS` order (the legacy `sdirin` order), -1 = none.
-    Built from the HOST receiver/active arrays exactly as the graph builder does."""
-    ny, nx = graph.shape
-    receiver = np.asarray(graph.receiver).reshape(-1)
-    active = np.asarray(graph.active).reshape(-1)
+def _donor_table(shape: tuple[int, int], receiver: np.ndarray, active: np.ndarray) -> np.ndarray:
+    """`(4, n_cells)` int64 donor table from HOST flat receiver/active arrays (see `donor_cells_by_cell`)."""
+    ny, nx = shape
     rows, cols = (a.reshape(-1) for a in np.indices((ny, nx)))
     own = rows * nx + cols
     out = np.full((4, ny * nx), -1, dtype=np.int64)
@@ -393,6 +393,15 @@ def donor_cells_by_cell(graph: RoutingGraph) -> np.ndarray:
         is_donor = active & ok & active[src] & (receiver[src] == own)
         out[s] = np.where(is_donor, src, -1)
     return out
+
+
+def donor_cells_by_cell(graph: RoutingGraph) -> np.ndarray:
+    """`(4, n_cells)` int64: flat cell index of the donor in `DONOR_SLOTS` order (the legacy `sdirin` order), -1 = none.
+    Built from the HOST receiver/active arrays exactly as the graph builder does."""
+    ny, nx = graph.shape
+    receiver = np.asarray(graph.receiver).reshape(-1)
+    active = np.asarray(graph.active).reshape(-1)
+    return _donor_table((int(ny), int(nx)), receiver, active)
 
 
 def open_faces_from_graph(graph: RoutingGraph) -> list[tuple[int, int, int, int]]:
@@ -541,6 +550,32 @@ def build_local_inertial_geometry(elevation_full_m: np.ndarray, active: np.ndarr
         input_sha256=digest.hexdigest())
 
 
+@dataclass(frozen=True, eq=False)
+class ExplicitStatics:
+    """Host description of the explicit kinematic wave on one graph: `(ny, nx)` `active`/`outlet` bool and conveyance `k`
+    (views of the graph's own read-only arrays, no copy), the `(4, n_cells)` donor table (owned) and the graph identity."""
+
+    shape: tuple[int, int]
+    dx_m: float
+    active: np.ndarray
+    outlet: np.ndarray
+    k: np.ndarray
+    donors: np.ndarray
+    graph_input_sha256: str
+
+
+def build_explicit_statics(graph: RoutingGraph) -> ExplicitStatics:
+    """The explicit method's static data from a NumPy `RoutingGraph` (the same arrays the historical solver used)."""
+    if not isinstance(graph, RoutingGraph):
+        raise ExperimentalHydrologyError("graph must be a RoutingGraph")
+    if graph.xp is not np:
+        raise ExperimentalHydrologyError("the CPU reference needs a NumPy graph (no transfer)")
+    shape = (int(graph.shape[0]), int(graph.shape[1]))
+    return ExplicitStatics(shape=shape, dx_m=float(graph.dx_m), active=np.asarray(graph.active), outlet=np.asarray(graph.outlet),
+                           k=np.asarray(graph.conveyance).reshape(shape), donors=donor_cells_by_cell(graph),
+                           graph_input_sha256=str(graph.input_sha256))
+
+
 # --- state validation (xp-generic: NumPy or CuPy arrays) ------------------------------------------------------------
 def validate_hydraulic_state(xp: ModuleType, state: Any, *, method: str, shape: tuple[int, int],
                              faces: tuple | None = None) -> None:
@@ -648,7 +683,7 @@ def local_inertial_face_flux(ftype: np.ndarray, zmax: np.ndarray, fric: np.ndarr
     return q, hf
 
 
-# --- CPU reference solver --------------------------------------------------------------------------------------------
+# --- the surface-only cores (the NumPy reference arithmetic, unchanged, on a post-vertical depth) --------------------
 def _zero_pad_cols(a: np.ndarray, left: bool) -> np.ndarray:
     pad = np.zeros((a.shape[0], 1))
     return np.concatenate([pad, a], axis=1) if left else np.concatenate([a, pad], axis=1)
@@ -659,10 +694,297 @@ def _zero_pad_rows(a: np.ndarray, below: bool) -> np.ndarray:
     return np.concatenate([pad, a], axis=0) if below else np.concatenate([a, pad], axis=0)
 
 
+def _depth_input_flag(method: str, hc: np.ndarray) -> int:
+    """The INPUT-depth bit of the standalone routers (non-finite or negative anywhere, inactive cells included)."""
+    return INPUT_DEPTH_BITS[method] if (not np.all(np.isfinite(hc)) or np.any(hc < 0.0)) else 0
+
+
+def explicit_surface_core(statics: ExplicitStatics, control: HydraulicControl, hc: np.ndarray, dt: float, t_new: float, *,
+                          implementation: str = "numpy", check_depth: bool) -> SurfaceStep:
+    """The explicit kinematic-wave lateral stage on the post-vertical depth `hc` (host float64 `(ny, nx)`), validated `dt > 0`
+    and end time `t_new`. The historical solver's `_explicit` arithmetic, term for term; `check_depth` adds the standalone
+    input-depth refusal (the historical solver passes False: its depth is the accepted column's output)."""
+    shape, dx = statics.shape, statics.dx_m
+    area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
+    active, outlet, k = statics.active, statics.outlet, statics.k
+    flags = _depth_input_flag("explicit", hc) if check_depth else 0
+    if flags:
+        resolve_flags("explicit", flags, (False,) * 5, False, 0.0, control.cfl_max, "off")
+    with np.errstate(all="ignore"):
+        sqrt_h = np.sqrt(hc)
+        q_used = np.where(active, (sqrt_h * hc) * k, 0.0)
+        cfl_cell = np.where(active, ((1.5 * k) * sqrt_h) * dt_over_dx, 0.0)
+        out_vol = np.where(active, dtdx_area * q_used, 0.0)
+        flat = out_vol.reshape(-1)
+        idx = np.where(statics.donors >= 0, statics.donors, 0)
+        total = np.where(statics.donors[0] >= 0, flat[idx[0]], 0.0)
+        for s in (1, 2, 3):
+            total = total + np.where(statics.donors[s] >= 0, flat[idx[s]], 0.0)
+        inflow = total.reshape(shape)
+        h_new = hc + ((inflow - out_vol) / area)
+        q_inst = np.where(active, (np.sqrt(h_new) * h_new) * k, 0.0)
+        wet = h_new > 0.0
+        velocity = np.where(wet, q_inst / np.where(wet, h_new, 1.0), 0.0)
+        balance = np.where(active, np.abs((h_new - hc) - ((inflow - out_vol) / area)), 0.0)
+        scale = np.where(active, (hc + h_new) + ((inflow + out_vol) / area), 0.0)
+        storage = area * np.sum(h_new - hc)
+        export = np.sum(np.where(outlet, out_vol, 0.0))
+        residual = storage + export
+        gtol = BALANCE_RTOL * (int(np.count_nonzero(active)) + 2) * area * np.sum(scale)
+        outlet_q = dx * np.sum(np.where(outlet, q_inst, 0.0))
+        max_cfl = float(np.max(cfl_cell))
+    if max_cfl > control.cfl_max:
+        flags |= EXPLICIT_BITS["cfl"]
+    if not all(np.all(np.isfinite(a)) for a in (h_new, out_vol, q_used, q_inst, velocity, scale, balance)):
+        flags |= EXPLICIT_BITS["nonfinite"]
+    if np.any(h_new < 0.0):
+        flags |= EXPLICIT_BITS["negative"]
+    if np.any(balance > BALANCE_RTOL * scale):
+        flags |= EXPLICIT_BITS["balance"]
+    scalars = tuple(not math.isfinite(float(v)) for v in (storage, export, residual, gtol, outlet_q))
+    resolve_flags("explicit", flags, scalars, bool(abs(residual) > gtol), max_cfl, control.cfl_max, "off")
+    return SurfaceStep(
+        method="explicit", implementation=implementation, dt_s=dt, state=SurfaceState(t_new, h_new),
+        velocity_m_s=velocity, face_volume_m3={"out": out_vol}, used_flux_m2_s={"out": q_used},
+        export_m3=export, outlet_discharge_m3_s=outlet_q, storage_change_m3=storage, budget_residual_m3=residual,
+        max_cfl=max_cfl, max_cell_balance_residual_m=float(np.max(balance)), limited_cells=0, limited_volume_m3=0.0,
+        cfl_kind=CFL_NAMES["explicit"], face_flow_depth_m={"out": hc})
+
+
+def local_inertial_surface_core(g: LocalInertialGeometry, control: HydraulicControl, hc: np.ndarray, qx_old: np.ndarray,
+                                qy_old: np.ndarray, dt: float, t_new: float, *, implementation: str = "numpy",
+                                check_depth: bool) -> SurfaceStep:
+    """The local-inertial lateral stage on the post-vertical depth `hc` and the existing face fluxes (host float64 arrays of
+    the exact shapes), validated `dt > 0` and end time `t_new`. The historical solver's `_local_inertial` arithmetic, term
+    for term; `check_depth` as in `explicit_surface_core`."""
+    ny, nx = g.shape
+    dx = g.dx_m
+    area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
+    active = g.active
+    flags = _depth_input_flag("local_inertial", hc) if check_depth else 0
+    if flags:
+        resolve_flags("local_inertial", flags, (False,) * 5, False, 0.0, control.cfl_max, control.limiter)
+    if not (np.all(np.isfinite(qx_old)) and np.all(np.isfinite(qy_old))):
+        flags |= LOCAL_BITS["state_nonfinite"]
+    if np.any((g.fx_type == 0) & (qx_old != 0.0)) or np.any((g.fy_type == 0) & (qy_old != 0.0)):
+        flags |= LOCAL_BITS["closed_face"]
+    if np.any((g.fx_type == 2) & (qx_old * g.fx_sign < 0.0)) or np.any((g.fy_type == 2) & (qy_old * g.fy_sign < 0.0)):
+        flags |= LOCAL_BITS["open_inflow"]
+    eta = g.z + hc
+    qx, hfx = local_inertial_face_flux(
+        g.fx_type, g.fx_zmax, g.fx_fric, g.fx_kb, g.fx_sign, qx_old, _zero_pad_cols(hc, True), _zero_pad_cols(hc, False),
+        _zero_pad_cols(eta, True), _zero_pad_cols(eta, False), dt, dx, control.friction_treatment)
+    qy, hfy = local_inertial_face_flux(
+        g.fy_type, g.fy_zmax, g.fy_fric, g.fy_kb, g.fy_sign, qy_old, _zero_pad_rows(hc, True), _zero_pad_rows(hc, False),
+        _zero_pad_rows(eta, True), _zero_pad_rows(eta, False), dt, dx, control.friction_treatment)
+    limited_cells, limited_volume = 0, 0.0
+    with np.errstate(all="ignore"):
+        if control.limiter == "donor":
+            west, east, south, north = qx[:, :-1], qx[:, 1:], qy[:-1, :], qy[1:, :]
+            out = ((np.where(-west > 0.0, -west, 0.0) + np.where(east > 0.0, east, 0.0))
+                   + (np.where(-south > 0.0, -south, 0.0) + np.where(north > 0.0, north, 0.0)))
+            out_v = dtdx_area * out
+            avail = hc * area
+            limited = out_v > avail
+            phi = np.where(limited, (avail / np.where(limited, out_v, 1.0)) * LIMITER_SAFETY, 1.0)
+            ones_c, ones_r = np.ones((ny, 1)), np.ones((1, nx))
+            phi_a_x, phi_b_x = np.concatenate([ones_c, phi], axis=1), np.concatenate([phi, ones_c], axis=1)
+            phi_a_y, phi_b_y = np.concatenate([ones_r, phi], axis=0), np.concatenate([phi, ones_r], axis=0)
+            qx = np.where(qx > 0.0, qx * phi_a_x, np.where(qx < 0.0, qx * phi_b_x, qx))
+            qy = np.where(qy > 0.0, qy * phi_a_y, np.where(qy < 0.0, qy * phi_b_y, qy))
+            limited_cells = int(np.count_nonzero(limited))
+            limited_volume = float(np.sum(np.where(limited, out_v * (1.0 - phi), 0.0)))
+        west, east, south, north = qx[:, :-1], qx[:, 1:], qy[:-1, :], qy[1:, :]
+        div = (east - west) + (north - south)
+        h_new = hc - (dt_over_dx * div)
+        wet = h_new > 0.0
+        safe = np.where(wet, h_new, 1.0)
+        ux = np.where(wet, (0.5 * (west + east)) / safe, 0.0)
+        uy = np.where(wet, (0.5 * (south + north)) / safe, 0.0)
+        speed = np.sqrt(ux * ux + uy * uy)
+        balance = np.where(active, np.abs((h_new - hc) + (dt_over_dx * div)), 0.0)
+        scale = np.where(active, (hc + h_new) + dt_over_dx * ((np.abs(west) + np.abs(east))
+                                                              + (np.abs(south) + np.abs(north))), 0.0)
+        storage = area * np.sum(h_new - hc)
+        out_x = np.where(g.fx_type == 2, qx * g.fx_sign, 0.0)
+        out_y = np.where(g.fy_type == 2, qy * g.fy_sign, 0.0)
+        outward = np.sum(out_x) + np.sum(out_y)
+        export = dtdx_area * outward
+        residual = storage + export
+        gtol = BALANCE_RTOL * (int(np.count_nonzero(active)) + 2) * area * np.sum(scale)
+        outlet_q = dx * outward
+        hf_max = max(float(np.max(hfx)), float(np.max(hfy)))
+        max_cfl = float(dt_over_dx * np.sqrt(2.0 * GRAVITY_M_S2 * hf_max))
+    if max_cfl > control.cfl_max:
+        flags |= LOCAL_BITS["cfl"]
+    if np.any(h_new < 0.0):
+        flags |= LOCAL_BITS["negative"]
+    if not all(np.all(np.isfinite(a)) for a in (qx, qy, h_new, speed, scale, balance)):
+        flags |= LOCAL_BITS["nonfinite"]
+    if np.any(balance > BALANCE_RTOL * scale):
+        flags |= LOCAL_BITS["balance"]
+    scalars = tuple(not math.isfinite(float(v)) for v in (storage, export, residual, gtol, outlet_q))
+    resolve_flags("local_inertial", flags, scalars, bool(abs(residual) > gtol), max_cfl, control.cfl_max, control.limiter)
+    return SurfaceStep(
+        method="local_inertial", implementation=implementation, dt_s=dt, state=SurfaceState(t_new, h_new, qx, qy),
+        velocity_m_s=speed, face_volume_m3={"x": dtdx_area * qx, "y": dtdx_area * qy},
+        used_flux_m2_s={"x": qx, "y": qy}, export_m3=export, outlet_discharge_m3_s=outlet_q, storage_change_m3=storage,
+        budget_residual_m3=residual, max_cfl=max_cfl, max_cell_balance_residual_m=float(np.max(balance)),
+        limited_cells=limited_cells, limited_volume_m3=limited_volume, cfl_kind=CFL_NAMES["local_inertial"],
+        face_flow_depth_m={"x": hfx, "y": hfy})
+
+
+# --- adapters between the surface records and the historical bucket records -------------------------------------------
+def surface_state_of(state: HydraulicState) -> SurfaceState:
+    """The surface part (time, depth, face momentum) of a historical `HydraulicState`; the soil water is left behind."""
+    if not isinstance(state, HydraulicState):
+        raise ExperimentalHydrologyError(f"state must be a HydraulicState, got {type(state).__name__}")
+    return SurfaceState(state.t_s, state.depth_m, state.qx_m2_s, state.qy_m2_s)
+
+
+def compose_hydraulic_step(surface: SurfaceStep, column: ColumnStep) -> HydraulicStep:
+    """The historical `HydraulicStep` of a bucket step = the surface step after the accepted column stage `column` on the same
+    interval: the state carries the column's soil water and the surface's routed depth/momentum/time. Bucket output stays
+    bucket output; nothing is recomputed."""
+    if not isinstance(surface, SurfaceStep) or not isinstance(column, ColumnStep):
+        raise ExperimentalHydrologyError("compose_hydraulic_step needs a SurfaceStep and a ColumnStep")
+    s = surface.state
+    state = HydraulicState(s.t_s, s.depth_m, column.soil_water_m, s.qx_m2_s, s.qy_m2_s)
+    return HydraulicStep(
+        method=surface.method, implementation=surface.implementation, dt_s=surface.dt_s, state=state, column=column,
+        velocity_m_s=surface.velocity_m_s, face_volume_m3=surface.face_volume_m3, used_flux_m2_s=surface.used_flux_m2_s,
+        export_m3=surface.export_m3, outlet_discharge_m3_s=surface.outlet_discharge_m3_s,
+        storage_change_m3=surface.storage_change_m3, budget_residual_m3=surface.budget_residual_m3, max_cfl=surface.max_cfl,
+        max_cell_balance_residual_m=surface.max_cell_balance_residual_m, limited_cells=surface.limited_cells,
+        limited_volume_m3=surface.limited_volume_m3, cfl_kind=surface.cfl_kind, face_flow_depth_m=surface.face_flow_depth_m)
+
+
+# --- the NumPy surface router -----------------------------------------------------------------------------------------
+class CpuSurfaceRouter:
+    """Pure NumPy reference of the surface-only lateral operation (the oracle of the Numba and CUDA routers). See the
+    `surface_routing` module docstring for the contract. `step(state, dt)`: fresh outputs, raises before a result exists, never
+    writes an input; `HydraulicStepRejected` means "retry the same state with a smaller dt"."""
+
+    implementation = "numpy"
+    xp = np
+
+    def __init__(self, method: str, graph: RoutingGraph, *, geometry: LocalInertialGeometry | None = None,
+                 control: HydraulicControl | None = None, reserve_bytes: int = 0,
+                 available_bytes_fn: Callable[[], int] | None = None):
+        if method not in METHODS:
+            raise ExperimentalHydrologyError(f"method must be one of {METHODS}, got {method!r}")
+        if not isinstance(graph, RoutingGraph):
+            raise ExperimentalHydrologyError("graph must be a RoutingGraph")
+        if graph.xp is not np:
+            raise ExperimentalHydrologyError("the CPU reference needs a NumPy graph (no transfer)")
+        control = _check_control(method, control)
+        self.method, self.graph, self.control = method, graph, control
+        self.shape = (int(graph.shape[0]), int(graph.shape[1]))
+        self.dx_m = float(graph.dx_m)
+        self.active = np.asarray(graph.active)
+        self.geometry, self.statics = None, None
+        # cheap structural checks first (types, shape, dx: no domain-wide array is created)
+        if method == "explicit":
+            if geometry is not None:
+                raise ExperimentalHydrologyError("the explicit method takes no geometry")
+        else:
+            if not isinstance(geometry, LocalInertialGeometry):
+                raise ExperimentalHydrologyError("the local-inertial method needs a LocalInertialGeometry")
+            if geometry.shape != self.shape or geometry.dx_m != self.dx_m:
+                raise ExperimentalHydrologyError("the geometry does not match the graph (shape, dx, active mask, friction)")
+        # memory: the declared estimate (its preparation scratch includes the transient comparison masks of the geometry
+        # equality checks below) is admitted BEFORE any domain-wide comparison, static table or compiled context exists,
+        # before every `initial_state` and before every step
+        self.memory = estimate_surface_memory(method, self.shape, backend=self.implementation, limiter=control.limiter,
+                                              reserve_bytes=reserve_bytes)
+        self.available_bytes_fn = self._default_available() if available_bytes_fn is None else available_bytes_fn
+        if not callable(self.available_bytes_fn):
+            raise ExperimentalHydrologyError("available_bytes_fn must be callable")
+        admit_bytes(self.memory, self.available_bytes_fn, "preparation", need=self.memory.preparation_required_bytes)
+        if method == "local_inertial":
+            # the actual domain-wide equality checks (one transient N-cell mask each), after admission; a mismatch is still the
+            # same error class and message as before, it is merely ordered after a memory refusal when both apply
+            if (not np.array_equal(geometry.active, self.active)
+                    or not np.array_equal(geometry.friction, np.asarray(graph.friction_factor))):
+                raise ExperimentalHydrologyError("the geometry does not match the graph (shape, dx, active mask, friction)")
+            self.geometry = geometry
+        self._prepare_statics(graph, geometry)
+
+    def _prepare_statics(self, graph: RoutingGraph, geometry: LocalInertialGeometry | None) -> None:
+        """SUBCLASS hook, called after admission: build what the lateral core reads (the NumPy reference owns the host donor
+        table for the explicit method and references the caller's geometry; a compiled subclass builds its own context)."""
+        if self.method == "explicit":
+            self.statics = build_explicit_statics(graph)
+
+    def _default_available(self) -> Callable[[], int]:
+        return default_host_available_bytes
+
+    # -- state ------------------------------------------------------------------------------------------------------
+    def _faces(self):
+        g = self.geometry
+        return None if g is None else (g.fx_type, g.fx_sign, g.fy_type, g.fy_sign)
+
+    def initial_state(self, depth_m: Any, *, t_s: float = 0.0) -> SurfaceState:
+        """Validated copy of a surface at rest (zero face momentum for local inertia) at the accepted time `t_s`. Order:
+        structure, time, memory admission of the copy, then the copy and the value checks."""
+        if type(depth_m) is not np.ndarray or depth_m.dtype != np.float64 or tuple(depth_m.shape) != self.shape:
+            raise ExperimentalHydrologyError(f"depth_m must be a host float64 array with shape {self.shape}")
+        time_s = check_state_time(t_s, "t_s")
+        admit_bytes(self.memory, self.available_bytes_fn, "initialization", need=self.memory.initialization_required_bytes)
+        ny, nx = self.shape
+        faces = (None, None) if self.method == "explicit" else (np.zeros((ny, nx + 1)), np.zeros((ny + 1, nx)))
+        state = SurfaceState(time_s, np.array(depth_m, copy=True), *faces)
+        self.validate_state(state)
+        return state
+
+    def validate_state(self, state: SurfaceState) -> None:
+        validate_surface_state(np, state, method=self.method, shape=self.shape, faces=self._faces())
+
+    def admit_step(self) -> int:
+        """Compare the declared per-step requirement (static + step allocation + reserve) with the reported available bytes;
+        raises `SurfaceMemoryError` before anything is allocated. Called by `step`; exposed for callers that admit a whole
+        composed stage at once."""
+        return admit_bytes(self.memory, self.available_bytes_fn, "step")
+
+    def describe(self) -> dict[str, Any]:
+        return {"operation": "surface-only lateral stage", "method": self.method, "implementation": self.implementation,
+                "control": {"cfl_max": self.control.cfl_max, "limiter": self.control.limiter,
+                            "friction_treatment": self.control.friction_treatment},
+                "cfl_kind": CFL_NAMES[self.method], "shape": list(self.shape), "dx_m": self.dx_m,
+                "geometry": None if self.geometry is None else self.geometry.summary(),
+                "graph_input_sha256": str(self.graph.input_sha256), "memory": self.memory.as_dict(),
+                "inputs": "post-vertical surface depth, existing face momentum (local inertia), accepted start time, dt > 0",
+                "outputs": "routed depth/momentum at t + dt, velocity, face depths/volumes, export, balances, CFL, limiter",
+                "excluded": "rain, infiltration, evaporation, transpiration, growth, sediment, bed, reroute, checkpoint, soil",
+                "transfer_scope": TRANSFER_SCOPE, "qualification": QUALIFICATION_STATUS}
+
+    # -- one step ---------------------------------------------------------------------------------------------------
+    def step(self, state: SurfaceState, dt_s: float) -> SurfaceStep:
+        """ONE pure lateral step from the accepted surface `state` over `dt_s > 0`. Order: record type and time, dt, array
+        structure, memory admission, then the input-depth and momentum value checks inside the core (raised before any
+        result)."""
+        t_state = check_surface_structure(np, state, method=self.method, shape=self.shape)
+        dt = check_positive_dt(dt_s)
+        t_new = advance_time(t_state, dt)
+        self.admit_step()
+        return self._lateral(state.depth_m, state.qx_m2_s, state.qy_m2_s, dt, t_new, check_depth=True)
+
+    def _lateral(self, hc: Any, qx_old: Any, qy_old: Any, dt: float, t_new: float, *, check_depth: bool) -> SurfaceStep:
+        """The lateral core on structurally validated inputs (the historical solvers call this with the accepted column's depth
+        and `check_depth=False`; a SUBCLASS replaces it with its compiled form)."""
+        if self.method == "explicit":
+            return explicit_surface_core(self.statics, self.control, hc, dt, t_new, implementation=self.implementation,
+                                         check_depth=check_depth)
+        return local_inertial_surface_core(self.geometry, self.control, hc, qx_old, qy_old, dt, t_new,
+                                           implementation=self.implementation, check_depth=check_depth)
+
+
+# --- CPU reference solver (historical bucket API, unchanged output) ---------------------------------------------------
 class CpuHydraulicSolver:
     """Pure NumPy reference of both candidates (the oracle of the CUDA forms). `step(rain, state, dt)` is pure: fresh outputs,
     raises before a result exists, never writes an input; `HydraulicStepRejected` means "retry the same state with a smaller
-    dt". The column physics is the accepted `infiltration.column_step` (validated) evaluated on the state first."""
+    dt". The column physics is the accepted `infiltration.column_step` (validated) evaluated on the state first; the lateral
+    stage is the surface-only core behind `CpuSurfaceRouter` (same arithmetic as before the extraction)."""
 
     implementation = "numpy"
     xp = np
@@ -675,31 +997,33 @@ class CpuHydraulicSolver:
             raise ExperimentalHydrologyError("graph must be a RoutingGraph and params a ColumnParameters")
         if graph.xp is not np or params.xp is not np:
             raise ExperimentalHydrologyError("the CPU reference needs a NumPy graph and NumPy parameters (no transfer)")
-        control = (HydraulicControl() if control is None else control).validated()
-        if method == "explicit" and control.limiter != "off":
-            raise ExperimentalHydrologyError("the donor limiter belongs to the local-inertial method; the explicit "
-                                             "method is positive by its CFL bound")
-        if method == "explicit" and control.friction_treatment != "lagged":
-            raise ExperimentalHydrologyError("friction_treatment belongs to the local-inertial method; the explicit "
-                                             "kinematic wave has no momentum friction")
+        control = _check_control(method, control)
         if tuple(params.shape) != tuple(graph.shape) or not np.array_equal(params.active_mask, graph.active):
             raise ExperimentalHydrologyError("column parameters must match the graph shape and active mask")
         self.method, self.graph, self.params, self.control = method, graph, params, control
         self.shape = tuple(graph.shape)
         self.dx_m = float(graph.dx_m)
         self.active = np.asarray(graph.active)
-        self.geometry = None
+        # the lateral stage: the surface-only router of this implementation, with the HISTORICAL admission policy (none)
+        self._surface = self._build_surface(method, graph, geometry, control)
+        self.geometry = self._surface.geometry
         if method == "explicit":
-            self.k = np.asarray(graph.conveyance).reshape(self.shape)
-            self.outlet = np.asarray(graph.outlet)
-            self.donors = donor_cells_by_cell(graph)
-        else:
-            if not isinstance(geometry, LocalInertialGeometry):
-                raise ExperimentalHydrologyError("the local-inertial method needs a LocalInertialGeometry")
-            if (geometry.shape != self.shape or geometry.dx_m != self.dx_m or not np.array_equal(geometry.active, self.active)
-                    or not np.array_equal(geometry.friction, np.asarray(graph.friction_factor))):
-                raise ExperimentalHydrologyError("the geometry does not match the graph (shape, dx, active mask, friction)")
-            self.geometry = geometry
+            # the historical attributes (host views and the host donor table) exactly as before the extraction; a compiled
+            # router owns no host table, so the historical compiled solver builds its own copy as its original constructor did
+            statics = self._surface.statics if self._surface.statics is not None else build_explicit_statics(graph)
+            self.k, self.outlet, self.donors = statics.k, statics.outlet, statics.donors
+
+    def _build_surface(self, method: str, graph: RoutingGraph, geometry: LocalInertialGeometry | None,
+                       control: HydraulicControl) -> CpuSurfaceRouter:
+        """SUBCLASS hook: the surface router whose `_lateral` this solver's lateral stage delegates to."""
+        # the historical constructors ignore a geometry given to the explicit method; the standalone router refuses one
+        return CpuSurfaceRouter(method, graph, geometry=geometry if method == "local_inertial" else None, control=control,
+                                available_bytes_fn=UNLIMITED_ADMISSION)
+
+    @property
+    def surface(self) -> CpuSurfaceRouter:
+        """The surface-only router this solver's lateral stage runs on (read-only)."""
+        return self._surface
 
     # -- state ------------------------------------------------------------------------------------------------------
     def initial_state(self, depth_m: Any, soil_water_m: Any, *, t_s: float = 0.0) -> HydraulicState:
@@ -754,133 +1078,15 @@ class CpuHydraulicSolver:
 
     def _column(self, rain_rate_m_per_s: Any, state: HydraulicState, dt_s: float) -> ColumnStep:
         """The accepted column stage on the state. A SUBCLASS hook (the compiled `experimental_numba.NumbaHydraulicSolver`
-        overrides it, `_explicit` and `_local_inertial` and inherits every public check of `step`, `initial_state` and
-        `validate_state`); the NumPy arithmetic of this class is unchanged."""
+        overrides it and inherits every public check of `step`, `initial_state` and `validate_state`); the NumPy arithmetic
+        of this class is unchanged."""
         return column_step(self.params, state.depth_m, state.soil_water_m, rain_rate_m_per_s, dt_s)
 
     def _explicit(self, col: ColumnStep, state: HydraulicState, dt: float, t_new: float) -> HydraulicStep:
-        shape, dx = self.shape, self.dx_m
-        area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
-        active, outlet, k = self.active, self.outlet, self.k
-        hc = col.depth_m
-        with np.errstate(all="ignore"):
-            sqrt_h = np.sqrt(hc)
-            q_used = np.where(active, (sqrt_h * hc) * k, 0.0)
-            cfl_cell = np.where(active, ((1.5 * k) * sqrt_h) * dt_over_dx, 0.0)
-            out_vol = np.where(active, dtdx_area * q_used, 0.0)
-            flat = out_vol.reshape(-1)
-            idx = np.where(self.donors >= 0, self.donors, 0)
-            total = np.where(self.donors[0] >= 0, flat[idx[0]], 0.0)
-            for s in (1, 2, 3):
-                total = total + np.where(self.donors[s] >= 0, flat[idx[s]], 0.0)
-            inflow = total.reshape(shape)
-            h_new = hc + ((inflow - out_vol) / area)
-            q_inst = np.where(active, (np.sqrt(h_new) * h_new) * k, 0.0)
-            wet = h_new > 0.0
-            velocity = np.where(wet, q_inst / np.where(wet, h_new, 1.0), 0.0)
-            balance = np.where(active, np.abs((h_new - hc) - ((inflow - out_vol) / area)), 0.0)
-            scale = np.where(active, (hc + h_new) + ((inflow + out_vol) / area), 0.0)
-            storage = area * np.sum(h_new - hc)
-            export = np.sum(np.where(outlet, out_vol, 0.0))
-            residual = storage + export
-            gtol = BALANCE_RTOL * (int(np.count_nonzero(active)) + 2) * area * np.sum(scale)
-            outlet_q = dx * np.sum(np.where(outlet, q_inst, 0.0))
-            max_cfl = float(np.max(cfl_cell))
-        flags = 0
-        if max_cfl > self.control.cfl_max:
-            flags |= EXPLICIT_BITS["cfl"]
-        if not all(np.all(np.isfinite(a)) for a in (h_new, out_vol, q_used, q_inst, velocity, scale, balance)):
-            flags |= EXPLICIT_BITS["nonfinite"]
-        if np.any(h_new < 0.0):
-            flags |= EXPLICIT_BITS["negative"]
-        if np.any(balance > BALANCE_RTOL * scale):
-            flags |= EXPLICIT_BITS["balance"]
-        scalars = tuple(not math.isfinite(float(v)) for v in (storage, export, residual, gtol, outlet_q))
-        resolve_flags("explicit", flags, scalars, bool(abs(residual) > gtol), max_cfl, self.control.cfl_max, "off")
-        new_state = HydraulicState(t_new, h_new, col.soil_water_m)
-        return HydraulicStep(
-            method="explicit", implementation=self.implementation, dt_s=dt, state=new_state, column=col,
-            velocity_m_s=velocity, face_volume_m3={"out": out_vol}, used_flux_m2_s={"out": q_used},
-            export_m3=export, outlet_discharge_m3_s=outlet_q, storage_change_m3=storage, budget_residual_m3=residual,
-            max_cfl=max_cfl, max_cell_balance_residual_m=float(np.max(balance)), limited_cells=0, limited_volume_m3=0.0,
-            cfl_kind=CFL_NAMES["explicit"], face_flow_depth_m={"out": hc})
+        """The lateral stage on the column's output depth (a compatibility hook kept for callers/tests; the arithmetic is
+        `explicit_surface_core` through the solver's surface router, with the column's depth already validated)."""
+        return compose_hydraulic_step(self._surface._lateral(col.depth_m, None, None, dt, t_new, check_depth=False), col)
 
     def _local_inertial(self, col: ColumnStep, state: HydraulicState, dt: float, t_new: float) -> HydraulicStep:
-        g = self.geometry
-        ny, nx = self.shape
-        dx = self.dx_m
-        area, dtdx_area, dt_over_dx = dx * dx, dt * dx, dt / dx
-        active = self.active
-        hc = col.depth_m
-        qx_old, qy_old = state.qx_m2_s, state.qy_m2_s
-        flags = 0
-        if not (np.all(np.isfinite(qx_old)) and np.all(np.isfinite(qy_old))):
-            flags |= LOCAL_BITS["state_nonfinite"]
-        if np.any((g.fx_type == 0) & (qx_old != 0.0)) or np.any((g.fy_type == 0) & (qy_old != 0.0)):
-            flags |= LOCAL_BITS["closed_face"]
-        if np.any((g.fx_type == 2) & (qx_old * g.fx_sign < 0.0)) or np.any((g.fy_type == 2) & (qy_old * g.fy_sign < 0.0)):
-            flags |= LOCAL_BITS["open_inflow"]
-        eta = g.z + hc
-        qx, hfx = local_inertial_face_flux(
-            g.fx_type, g.fx_zmax, g.fx_fric, g.fx_kb, g.fx_sign, qx_old, _zero_pad_cols(hc, True), _zero_pad_cols(hc, False),
-            _zero_pad_cols(eta, True), _zero_pad_cols(eta, False), dt, dx, self.control.friction_treatment)
-        qy, hfy = local_inertial_face_flux(
-            g.fy_type, g.fy_zmax, g.fy_fric, g.fy_kb, g.fy_sign, qy_old, _zero_pad_rows(hc, True), _zero_pad_rows(hc, False),
-            _zero_pad_rows(eta, True), _zero_pad_rows(eta, False), dt, dx, self.control.friction_treatment)
-        limited_cells, limited_volume = 0, 0.0
-        with np.errstate(all="ignore"):
-            if self.control.limiter == "donor":
-                west, east, south, north = qx[:, :-1], qx[:, 1:], qy[:-1, :], qy[1:, :]
-                out = ((np.where(-west > 0.0, -west, 0.0) + np.where(east > 0.0, east, 0.0))
-                       + (np.where(-south > 0.0, -south, 0.0) + np.where(north > 0.0, north, 0.0)))
-                out_v = dtdx_area * out
-                avail = hc * area
-                limited = out_v > avail
-                phi = np.where(limited, (avail / np.where(limited, out_v, 1.0)) * LIMITER_SAFETY, 1.0)
-                ones_c, ones_r = np.ones((ny, 1)), np.ones((1, nx))
-                phi_a_x, phi_b_x = np.concatenate([ones_c, phi], axis=1), np.concatenate([phi, ones_c], axis=1)
-                phi_a_y, phi_b_y = np.concatenate([ones_r, phi], axis=0), np.concatenate([phi, ones_r], axis=0)
-                qx = np.where(qx > 0.0, qx * phi_a_x, np.where(qx < 0.0, qx * phi_b_x, qx))
-                qy = np.where(qy > 0.0, qy * phi_a_y, np.where(qy < 0.0, qy * phi_b_y, qy))
-                limited_cells = int(np.count_nonzero(limited))
-                limited_volume = float(np.sum(np.where(limited, out_v * (1.0 - phi), 0.0)))
-            west, east, south, north = qx[:, :-1], qx[:, 1:], qy[:-1, :], qy[1:, :]
-            div = (east - west) + (north - south)
-            h_new = hc - (dt_over_dx * div)
-            wet = h_new > 0.0
-            safe = np.where(wet, h_new, 1.0)
-            ux = np.where(wet, (0.5 * (west + east)) / safe, 0.0)
-            uy = np.where(wet, (0.5 * (south + north)) / safe, 0.0)
-            speed = np.sqrt(ux * ux + uy * uy)
-            balance = np.where(active, np.abs((h_new - hc) + (dt_over_dx * div)), 0.0)
-            scale = np.where(active, (hc + h_new) + dt_over_dx * ((np.abs(west) + np.abs(east))
-                                                                  + (np.abs(south) + np.abs(north))), 0.0)
-            storage = area * np.sum(h_new - hc)
-            out_x = np.where(g.fx_type == 2, qx * g.fx_sign, 0.0)
-            out_y = np.where(g.fy_type == 2, qy * g.fy_sign, 0.0)
-            outward = np.sum(out_x) + np.sum(out_y)
-            export = dtdx_area * outward
-            residual = storage + export
-            gtol = BALANCE_RTOL * (int(np.count_nonzero(active)) + 2) * area * np.sum(scale)
-            outlet_q = dx * outward
-            hf_max = max(float(np.max(hfx)), float(np.max(hfy)))
-            max_cfl = float(dt_over_dx * np.sqrt(2.0 * GRAVITY_M_S2 * hf_max))
-        if max_cfl > self.control.cfl_max:
-            flags |= LOCAL_BITS["cfl"]
-        if np.any(h_new < 0.0):
-            flags |= LOCAL_BITS["negative"]
-        if not all(np.all(np.isfinite(a)) for a in (qx, qy, h_new, speed, scale, balance)):
-            flags |= LOCAL_BITS["nonfinite"]
-        if np.any(balance > BALANCE_RTOL * scale):
-            flags |= LOCAL_BITS["balance"]
-        scalars = tuple(not math.isfinite(float(v)) for v in (storage, export, residual, gtol, outlet_q))
-        resolve_flags("local_inertial", flags, scalars, bool(abs(residual) > gtol), max_cfl, self.control.cfl_max,
-                      self.control.limiter)
-        new_state = HydraulicState(t_new, h_new, col.soil_water_m, qx, qy)
-        return HydraulicStep(
-            method="local_inertial", implementation=self.implementation, dt_s=dt, state=new_state, column=col,
-            velocity_m_s=speed, face_volume_m3={"x": dtdx_area * qx, "y": dtdx_area * qy},
-            used_flux_m2_s={"x": qx, "y": qy}, export_m3=export, outlet_discharge_m3_s=outlet_q, storage_change_m3=storage,
-            budget_residual_m3=residual, max_cfl=max_cfl, max_cell_balance_residual_m=float(np.max(balance)),
-            limited_cells=limited_cells, limited_volume_m3=limited_volume, cfl_kind=CFL_NAMES["local_inertial"],
-            face_flow_depth_m={"x": hfx, "y": hfy})
+        return compose_hydraulic_step(
+            self._surface._lateral(col.depth_m, state.qx_m2_s, state.qy_m2_s, dt, t_new, check_depth=False), col)

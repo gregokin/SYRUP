@@ -1,0 +1,537 @@
+{
+ "array_backend": "cupy",
+ "binding": {
+  "array_backend": "cupy",
+  "context_sha256": "ab9e681b40f46f20fae9fb40eae2c9ee5f8463d71182f3296654f1915d7ce46a",
+  "dx_m": "0x1.0000000000000p-2",
+  "extra_reserve_bytes": 1048576,
+  "hydraulic_backend": "cuda",
+  "lifecycle_profile": "maple_syrup.water_lifecycle/native9f_cuda_dense_or_bedless_boundary_entry_reset_UNQUALIFIED",
+  "lop_sha256": "d853b9f73c42b15a5c1f99583a07c032f29e20b18b6488ebe9c8959e52415e7e",
+  "n_cells": 24,
+  "n_classes": 3,
+  "n_faces": 58,
+  "n_layers": 2,
+  "n_voxels": 4,
+  "native_material_sha256": "7caa40dde2f7ebd8f22ebb1eaa379a453a4ed86a9663be60eed845489e338426",
+  "native_reserve_bytes": 16777216,
+  "profile": "native9f_dense_lifecycle_cuda_v2",
+  "role": "boundary",
+  "runtime_sha256": "d118b7e74b4b6722481718e090ba753ab277f7bcfa67a2d57ca7ed87c7a0462d",
+  "schema": "maple-syrup-water-lifecycle-checkpoint-cuda/2",
+  "shape": [
+   4,
+   6
+  ],
+  "source_kind": null,
+  "storm": null,
+  "topology": {
+   "generation": 0,
+   "identity_sha256": "de23190025db25f105d6a0f3065fd1e67f6a6ea4b49a5259e16e218efbabb999",
+   "n_closed_components": 0,
+   "source_sha256": "2f09537df18a7125a597cf0c161b4e1f889d5eaf3b7d98e9421e1f5fc2263058",
+   "topology_sha256": "c10b5233ec0eeba27163eecf393dea9726462a33ae73a0b8470f264bc6bfd574"
+  }
+ },
+ "binding_sha256": "25d4bf1a711ac042df12ec508d43c3c9e71d95f4ff76448ed7d9e6468e1f42c5",
+ "files": {
+  "lifecycle_state.npz": "cea3250662f00092d670a9c953de9445e160d6d7a9f2c7a2fe791b754d7a08ce",
+  "maple_state.npz": "6c4da5840527565f0c6855bb7ff949d8dc69ac5f9ea1c0b6c4c5ecd653bc3e69"
+ },
+ "hydraulic_backend": "cuda",
+ "identity": {
+  "case_identity_sha256": "9af7289fda9ef0da44559cf14298ea48b5f4ab4317082a08052120c92221af59",
+  "cursor_digest": "d06b248012e96ec11afe7ceba5f52220bf1a4a2d3f041fe2d4769b3edab1a9ff",
+  "fence_identity": "masy.native_water_calendar/1;native=9f466d2cfcd5:fbc504bbcd1ec0c0;syrup=afcad53691b9d295;masy=f35668a12059012b;syrupm=24fb12cebe4c8e8e;profile=native9f_layered_factory_afca_cuda_v1;delivery=53a3e569dff6fd9d:5c29d2bfd5002ec3:5f7eaaf5a964c42f",
+  "kind": "masy_combined_physical_part/1",
+  "next_index": 3,
+  "scenario_sha256": "c8b989828cf3e68478347994f0fbd10aef92baa75a335785ef783e9e011e7b76",
+  "state_t_s_hex": "0x1.52aaa00000000p+17"
+ },
+ "manifest_sha256": "df7215203fb6cc19dcb4093af4884fec8503de5a905c09ff0ad5827b07e85a62",
+ "payload": {
+  "arrays": {
+   "cumulative_intake_m": {
+    "dtype": "<f8",
+    "shape": [
+     24
+    ]
+   },
+   "native_0006": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0007": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0008": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     3
+    ]
+   },
+   "native_0009": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     3
+    ]
+   },
+   "native_0010": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0011": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0012": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0013": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0014": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0015": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0016": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0017": {
+    "dtype": "<f8",
+    "shape": [
+     7,
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0018": {
+    "dtype": "<i8",
+    "shape": [
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0019": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     6
+    ]
+   },
+   "native_0020": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     6
+    ]
+   },
+   "native_0021": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     6,
+     3
+    ]
+   },
+   "native_0022": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     6,
+     3
+    ]
+   },
+   "qx_m2_s": {
+    "dtype": "<f8",
+    "shape": [
+     4,
+     7
+    ]
+   },
+   "qy_m2_s": {
+    "dtype": "<f8",
+    "shape": [
+     5,
+     6
+    ]
+   },
+   "soil_water_m": {
+    "dtype": "<f8",
+    "shape": [
+     2,
+     24
+    ]
+   },
+   "topo_source_full": {
+    "dtype": "<f8",
+    "shape": [
+     6,
+     8
+    ]
+   },
+   "wetting_m": {
+    "dtype": "<f8",
+    "shape": [
+     24
+    ]
+   }
+  },
+  "native": {
+   "committed_topography": {
+    "fields": {
+     "commit_count": 0,
+     "committed_active_layer_mass_by_class_kg": {
+      "array": "native_0021"
+     },
+     "committed_voxel_mass_by_class_kg": {
+      "array": "native_0022"
+     },
+     "elevation_offset_m": {
+      "array": "native_0020"
+     },
+     "last_commit_time_s": 0.0,
+     "reference_elevation_m": {
+      "array": "native_0019"
+     }
+    },
+    "type": "CommittedTopographyState"
+   },
+   "ledger": {
+    "fields": {
+     "actual_mass_negative_compensation_kg": {
+      "array": "native_0017"
+     },
+     "actual_mass_negative_kg": {
+      "array": "native_0016"
+     },
+     "actual_mass_positive_compensation_kg": {
+      "array": "native_0015"
+     },
+     "actual_mass_positive_kg": {
+      "array": "native_0014"
+     },
+     "largest_residual_kg": 0.0,
+     "n_physical_touches": {
+      "array": "native_0018"
+     },
+     "numerical_residual_negative_compensation_kg": {
+      "array": "native_0013"
+     },
+     "numerical_residual_negative_kg": {
+      "array": "native_0012"
+     },
+     "numerical_residual_positive_compensation_kg": {
+      "array": "native_0011"
+     },
+     "numerical_residual_positive_kg": {
+      "array": "native_0010"
+     },
+     "pending_bed_mass_change_kg": {
+      "array": "native_0006"
+     },
+     "pending_compensation_kg": {
+      "array": "native_0007"
+     },
+     "process_totals_compensation_kg": {
+      "array": "native_0009"
+     },
+     "process_totals_kg": {
+      "array": "native_0008"
+     }
+    },
+    "type": "SedimentLedgerState"
+   }
+  },
+  "scalars": {
+   "lifecycle": {
+    "control": null,
+    "digest": "21d5b40760e329e2afc700abc3d51edb43ef7c1ab23a597164b0076f6970f088",
+    "episode": 1,
+    "lifetime": {
+     "anchor_soil_m3": {
+      "f": "0x1.b000000000000p-5"
+     },
+     "anchor_surface_m3": {
+      "f": "0x0.0p+0"
+     },
+     "anchor_t_s": {
+      "f": "0x0.0p+0"
+     },
+     "drainage_m3": {
+      "f": "0x1.803bffa8c7376p-8"
+     },
+     "export_m3": {
+      "f": "0x1.03913ee4377efp-14"
+     },
+     "matrix_intake_m3": {
+      "f": "0x1.44499bb256a70p-12"
+     },
+     "max_abs_local_residual_m3": {
+      "f": "0x1.c180000000000p-57"
+     },
+     "n_folds": 9,
+     "n_hydro_steps": 1484,
+     "n_t_requests": 3,
+     "preferential_intake_m3": {
+      "f": "0x1.025816d0da375p-18"
+     },
+     "rain_m3": {
+      "f": "0x1.89374bc6a7efap-12"
+     },
+     "requested_transpiration_m3": {
+      "f": "0x1.62e54b2a2028ep-14"
+     },
+     "soil_evaporation_m3": {
+      "f": "0x1.cebb917bb180ep-10"
+     },
+     "soil_evaporation_unmet_m3": {
+      "f": "0x0.0p+0"
+     },
+     "stage_bound_m3": {
+      "f": "0x1.02529c672b5c7p-33"
+     },
+     "surface_evaporation_m3": {
+      "f": "0x0.0p+0"
+     },
+     "surface_evaporation_unmet_m3": {
+      "f": "0x1.ee12f9df89745p-9"
+     },
+     "surface_return_m3": {
+      "f": "0x0.0p+0"
+     },
+     "transpiration_m3": {
+      "f": "0x1.62e54b2a2028ep-14"
+     },
+     "unmet_transpiration_m3": {
+      "f": "0x0.0p+0"
+     }
+    },
+    "lop_sha256": "d853b9f73c42b15a5c1f99583a07c032f29e20b18b6488ebe9c8959e52415e7e",
+    "mark": {
+     "drainage_m3": {
+      "f": "0x1.dffd4639bb400p-19"
+     },
+     "export_m3": {
+      "f": "0x1.03913ee4377efp-14"
+     },
+     "hydro_bound_m3": {
+      "f": "0x1.d3a8c4665ea6ap-34"
+     },
+     "matrix_intake_m3": {
+      "f": "0x1.44499bb256a70p-12"
+     },
+     "max_abs_residual_m3": {
+      "f": "0x1.c180000000000p-57"
+     },
+     "n_requests": 2,
+     "n_steps": 1340,
+     "preferential_intake_m3": {
+      "f": "0x1.025816d0da375p-18"
+     },
+     "rain_m3": {
+      "f": "0x1.89374bc6a7efap-12"
+     },
+     "requested_transpiration_m3": {
+      "f": "0x1.7ced620ff859dp-15"
+     },
+     "soil_evaporation_m3": {
+      "f": "0x1.cb11e77ebbd03p-11"
+     },
+     "soil_evaporation_unmet_m3": {
+      "f": "0x0.0p+0"
+     },
+     "surface_evaporation_m3": {
+      "f": "0x0.0p+0"
+     },
+     "surface_evaporation_unmet_m3": {
+      "f": "0x1.f77b80a159be6p-10"
+     },
+     "surface_return_m3": {
+      "f": "0x0.0p+0"
+     },
+     "t_soil_bound_m3": {
+      "f": "0x1.b97d3687d5ae0p-47"
+     },
+     "transpiration_m3": {
+      "f": "0x1.7ced620ff859dp-15"
+     },
+     "unmet_transpiration_m3": {
+      "f": "0x0.0p+0"
+     }
+    },
+    "phase": {
+     "episode": 1,
+     "hydro_steps": 145,
+     "kind": "interevent",
+     "local_ledger": {
+      "hydrology": {
+       "drainage_m3": {
+        "f": "0x1.dffd4639bb400p-19"
+       },
+       "elapsed_s": {
+        "f": "0x1.53d5400000000p+16"
+       },
+       "export_m3": {
+        "f": "0x1.03913ee4377efp-14"
+       },
+       "global_residual_bound_m3": {
+        "f": "0x1.d3a8c4665ea6ap-34"
+       },
+       "matrix_intake_m3": {
+        "f": "0x1.44499bb256a70p-12"
+       },
+       "max_abs_global_residual_m3": {
+        "f": "0x1.c180000000000p-57"
+       },
+       "n_steps": 1340,
+       "preferential_intake_m3": {
+        "f": "0x1.025816d0da375p-18"
+       },
+       "rain_m3": {
+        "f": "0x1.89374bc6a7efap-12"
+       },
+       "soil_evaporation_m3": {
+        "f": "0x1.cb11e77ebbd03p-11"
+       },
+       "soil_evaporation_unmet_m3": {
+        "f": "0x0.0p+0"
+       },
+       "surface_evaporation_m3": {
+        "f": "0x0.0p+0"
+       },
+       "surface_evaporation_unmet_m3": {
+        "f": "0x1.f77b80a159be6p-10"
+       },
+       "surface_return_m3": {
+        "f": "0x0.0p+0"
+       },
+       "transpiration_m3": {
+        "f": "0x0.0p+0"
+       }
+      },
+      "transpiration": {
+       "actual_m3": {
+        "f": "0x1.7ced620ff859dp-15"
+       },
+       "max_abs_request_residual_m3": {
+        "f": "0x0.0p+0"
+       },
+       "max_abs_soil_residual_m3": {
+        "f": "0x1.4bec000000000p-58"
+       },
+       "n_requests": 2,
+       "requested_m3": {
+        "f": "0x1.7ced620ff859dp-15"
+       },
+       "soil_bound_m3": {
+        "f": "0x1.b97d3687d5ae0p-47"
+       },
+       "unmet_m3": {
+        "f": "0x0.0p+0"
+       }
+      }
+     },
+     "parent_digest": "77fad961ac53039fcc011c3426193c364d9d8210dda752128cd8333f4804820b",
+     "source_digest": "a504f3640cd8ad7da27697fa2d3b1b808ec57f1502f7271caf3c4174cd4ef87e",
+     "t_end_s": {
+      "f": "0x1.52aaa00000000p+17"
+     },
+     "t_start_s": {
+      "f": "0x1.5180000000000p+16"
+     }
+    },
+    "request_sequence": 3,
+    "reset_count": 0,
+    "revision": 12,
+    "role": "boundary",
+    "storm_operator_sha256": "d483911649300c53892890fa0f612b7c380c58e2c532b507496d4faa00b85f83",
+    "t_s": {
+     "f": "0x1.52aaa00000000p+17"
+    }
+   }
+  }
+ },
+ "profile": "native9f_dense_lifecycle_cuda_v2",
+ "role": "boundary",
+ "runtime": {
+  "byteorder": "little",
+  "compute_capability": "6.1",
+  "cuda_driver": "13000",
+  "cuda_runtime": "12090",
+  "cupy": "14.2.0",
+  "device_name": "NVIDIA GeForce GTX 1080 Ti",
+  "float64_eps": "0x1.0000000000000p-52",
+  "machine": "x86_64",
+  "numpy": "2.5.3",
+  "python_implementation": "CPython",
+  "python_version": "3.12.3"
+ },
+ "schema": "maple-syrup-water-lifecycle-checkpoint-cuda/2",
+ "sizes": {
+  "lifecycle_state.npz": 43344,
+  "maple_state.npz": 12052
+ },
+ "source": {
+  "algorithm": "sha256(sorted relpath NUL file_sha256 LF), excl __pycache__/*.pyc/*.pyo; v1",
+  "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "maple_syrup_n_files": 109,
+  "maple_syrup_tree_sha256": "afcad53691b9d295ed560116d313419c08fc5ffe9b227a4bdd9c922f93c52671"
+ },
+ "source_kind": null
+}
