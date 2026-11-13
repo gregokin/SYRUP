@@ -1,6 +1,6 @@
 {
   "schema": "syrup.phase2.publication.v1",
-  "status": "source_published_bounded_native_CPU_CUDA_APIs_main_integration_pending",
+  "status": "source_published_bounded_native_CPU_CUDA_APIs_integrated_into_main",
   "note": "Separate publication record. The immutable qualification receipt phase2_qualification.json is unchanged; its publication.published=false means as of that qualification. This file names no commit of the document tree that contains it.",
   "source": {
     "commit": "71bb8fe0bb0ed2d17ee302e4502ba0511032d416",
@@ -25,6 +25,11 @@
     "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
   },
   "scope": "Native Python APIs only; independently accepted for the bounded scope in phase2_qualification.md. Not a production CLI or coordinator schema, not a full scheduled MAPLE-SYRUP-LEAF simulation, not field validation, not a large-domain memory fit.",
-  "main_integration": null,
+  "main_integration": {
+    "merge_commit": "6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06",
+    "origin_main_observed_same_by_root": true,
+    "postmerge_controls_passed": 18,
+    "tree_identical_to_experimental_docs_commit": "95324ca9c6834a053d4c7806a6d11b67443aaff6"
+  },
   "historical_cli_release_C1_unchanged": "e40a1b8fc56a96920db4ffbd182d4068fa5de3e8"
 }

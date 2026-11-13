@@ -1,6 +1,8 @@
 # Subsurface hydrology design
 
-## Current Phase 2 design — 2026-11-13
+> Current status: the bounded native Phase 2 APIs are implemented, independently qualified and integrated into main at `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`. See [phase2_qualification.md](phase2_qualification.md) and [phase2_publication.json](phase2_publication.json). The design and implementation milestones below retain their original historical status wording; they do not describe current release readiness.
+
+## Historical Phase 2 design — 2026-11-13
 
 Soil layers float with the evolving surface (fixed user thicknesses), preserving per-layer water mass/volume through geometry reassignment; there is no geometry-only erosion water sink in this treatment, which supersedes earlier eroded-soil-water-disappearance proposals below (kept as history). The native storm already runs gravity/redistribution every hydraulic step, so there is no rain-off reset. A pure property update can leave new SAT below retained water, which the standard step refuses before its cascade; the user-approved staged treatment reuses the gravity cascade on the NEW field capacity (open bottom exports once; closed bottom returns only unavoidable excess to surface water), as design only, with implementation and qualification pending. User-resolved (2026-11-13): affected columns refresh at the transport-event handoff with properties held during an event; the full voxel-grid bottom is fixed, flat and impermeable (only actual soil stores water; open lower boundary only for a profile ending above rock). See [phase2_completion_architecture.md](phase2_completion_architecture.md). Green–Ampt history is retained and its behavior with refreshed parameters is a qualification item. Full statement: [phase2_floating_profile_design.md](phase2_floating_profile_design.md).
 

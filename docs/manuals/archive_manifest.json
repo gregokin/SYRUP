@@ -2,15 +2,15 @@
   "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results; the Native Phase 2 qualification record, status pages, source manifest, publication record and exact example script); no model source/third-party environment/deep bed",
   "files": {
     "README.md": {
-      "sha256": "c675789ec7951421f400b50f0b7a32e5e75df0d96a50a39bdde169c149fb71c4",
-      "bytes": 7035
+      "sha256": "fd81ac9587c60f7bbcde3ee9dd5290ad5551954e0365050211256e3b6aa2b943",
+      "bytes": 7089
     },
     "SYRUP_CLI_User_Guide.docx": {
-      "sha256": "21c3efb7be8dec87ce955cc8c1b0e51f60070dbafbe80e24941dcce3617cb061",
-      "bytes": 246674
+      "sha256": "9a2c856490b1c9823196363487c76a36ea3480519774e664882f9fa179230a87",
+      "bytes": 246717
     },
     "SYRUP_Model_Structure_and_Physics.docx": {
-      "sha256": "3c78f3b9733bcb8e147d62348032b1bea6651b4014fa74a6ec3b35caf9f0a954",
+      "sha256": "3dd6bb5415fd9449381fb488a5455f6318e93684989c0311a4310c91c0856096",
       "bytes": 184981
     },
     "assets/layered_water_ownership.png": {
@@ -38,11 +38,11 @@
       "bytes": 43763
     },
     "document_build.json": {
-      "sha256": "138328f5a730d85cd4007d6b0191f1cdad88558dee106800ddc1bcd77fb5e1ac",
+      "sha256": "98f4e0cc3ae7a8474b0d2c551f6b993ab14781422eb2776293c52c82fad163b0",
       "bytes": 690
     },
     "documentation_verification.json": {
-      "sha256": "7f276aeb96840db5255eb39cc131e60abe1dbe7c547eabdc2cea56c37d8a3aaf",
+      "sha256": "b14b44b097a007d240b2e290175b4eb0f67138743ab7f09d07efcb088cb01407",
       "bytes": 8264
     },
     "examples/native9f_metadata/README.md": {
@@ -230,28 +230,28 @@
       "bytes": 143128
     },
     "qualification/design.md": {
-      "sha256": "d9e67c78026c87e168fd3bde46b65a0253ee9a77adc2fa950f46e73dd502cf67",
-      "bytes": 25225
+      "sha256": "d97350761746903bbd15dd04eda4708a237c8464b408b397e8218fa6bdc1624d",
+      "bytes": 26986
     },
     "qualification/development_phases_20261109.md": {
-      "sha256": "824513486f4fca430fa639dd8dc9c746ad2180c9a44949e2e94c4c0117661c39",
-      "bytes": 26878
+      "sha256": "5786cf2a7fc755402b799248e5d37011b63407ceb56bbc21af6b655ab6d04f50",
+      "bytes": 26997
     },
     "qualification/ecohyd_reference_sources.md": {
       "sha256": "15d97d48d1e54e732606c92f0c36f118d081d212b873fbea490990ffd3e359df",
       "bytes": 3247
     },
     "qualification/implementation.md": {
-      "sha256": "971b288dc5502e48eb91a489eea4f7fbabfacc3095703fcd61413943d245f9db",
-      "bytes": 19788
+      "sha256": "8bd7f942926ffb403e0db73c5ca3c90792cff649529c65230baf276f30ef0ae3",
+      "bytes": 21421
     },
     "qualification/leaf_water_contract.md": {
       "sha256": "9359d577b41614790addbc6bc1c2ea692e53313f0c351672b487a30f5b8a9a9c",
       "bytes": 4701
     },
     "qualification/parameter_reference.md": {
-      "sha256": "8bcf729d9aaa928dce5658cdce2f697311bdc885006294367bec7ce373a542bc",
-      "bytes": 34363
+      "sha256": "c161ce014204639d0391870d6f64ad5958a434b33e7e10859f033cbb034d12bb",
+      "bytes": 34529
     },
     "qualification/phase15_acceptance.json": {
       "sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
@@ -322,8 +322,8 @@
       "bytes": 2795
     },
     "qualification/phase2_daily_moisture_output.md": {
-      "sha256": "61f76af3bc4e8702d8f3966ada1348e31af53b473ede7b077c61d2340de41d1d",
-      "bytes": 4276
+      "sha256": "022e018f13bd07327465555fcb44b9a798fe59d5f1d91b5ec7a76408e63114de",
+      "bytes": 4330
     },
     "qualification/phase2_daily_moisture_output_acceptance.json": {
       "sha256": "ae398e7544b64083992bb43add4e2d5f1919b7930609b318d2b4b501a66a57ad",
@@ -350,8 +350,8 @@
       "bytes": 3445
     },
     "qualification/phase2_floating_profile_design.md": {
-      "sha256": "9dd2e8a9007fd7852eced4687ae150e15c117d6cfafdc30f0200763ad549854b",
-      "bytes": 8554
+      "sha256": "589457773eef46bfae5bcda677b0f375ef8399dd2a32b1bec0c35cb1200e3673",
+      "bytes": 8608
     },
     "qualification/phase2_lifecycle_checkpoint.md": {
       "sha256": "ee3e0197335371b2cadff596ed143d7d6a73e63b6089c842560f2a64bb66d7c7",
@@ -366,24 +366,24 @@
       "bytes": 5485
     },
     "qualification/phase2_native_status.md": {
-      "sha256": "45db9d148f6f43404de14408b79c2092338bb6c1adb076b37f6c089d3aca8e73",
-      "bytes": 1968
+      "sha256": "d77a2c66000dd9895ebcae2d62fc25c14ec49966bd3640647c69437c7ced6c83",
+      "bytes": 2016
     },
     "qualification/phase2_native_wind_check.md": {
       "sha256": "267dc4a5d2f7517bc2bff30b696c9810c376ccfcefbf6b3217f39bb6d39c351d",
       "bytes": 3037
     },
     "qualification/phase2_publication.json": {
-      "sha256": "7852eef0952d1d6ecf2c8017046ac640e2965a654698852238d69e0b63efedda",
-      "bytes": 1838
+      "sha256": "724c65079fdd2da5a12e4545a99a7834aaa77ce42119a2a0f0b49df3fe249a17",
+      "bytes": 2076
     },
     "qualification/phase2_qualification.json": {
       "sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
       "bytes": 11934
     },
     "qualification/phase2_qualification.md": {
-      "sha256": "b91607b92c05c0a14fb8562b63f678185c4c0258fefb4deea1c04c6d9fd96187",
-      "bytes": 5966
+      "sha256": "8e490b3c0f48e4c98446b2a396c532cc3d2eb789cd3e2aa1889c0e1658940d4b",
+      "bytes": 6014
     },
     "qualification/phase2_source_manifest.json": {
       "sha256": "e237f7caf3f82c9f30d679f2d3eac4b567b17abc4221b55b62c8ef3abfb665b8",
@@ -406,8 +406,8 @@
       "bytes": 8433
     },
     "user_guide.md": {
-      "sha256": "83b888e7fbbeb1ebfa091d4b8171cc3a29f6c4a131b0cf01467ae4fb9193f494",
-      "bytes": 126873
+      "sha256": "ab4d503a193c15908465f7768b2adb7f1385541372dc8ec0d1b7f317adaec9dd",
+      "bytes": 126921
     }
   },
   "native_phase15": {

@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Phase 1 (layered water, scheduled command) | **Committed and published**; its sources and recipes are the ones in the table below and never change. | "Current status and sources" and every section down to "Historical examples" |
 | Phase 1.5 (daily small-rain recharge, source N15) | **Committed and published** (`06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`, package `82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107`, 114 files). A native Python API; no CLI flag, weather CSV or MASY daily scheduler. | [phase15_qualification.md](phase15_qualification.md), `phase15_acceptance.json` |
-| Phase 2 (evolving soil profile, native floating API) | **Independently qualified at a bounded native-API scope and source-published (`phase2_qualification.json`, `phase2_publication.json`); field validation is NOT claimed; integration into `main` is pending.** Explicit opt-in Python API, not the scheduled `masy.native_water_run` command and not a published CLI. | Last section, "Phase 2 native floating-profile API"; [phase2_native_status.md](phase2_native_status.md) |
+| Phase 2 (evolving soil profile, native floating API) | **Independently qualified at a bounded native-API scope and source-published (`phase2_qualification.json`, `phase2_publication.json`); field validation is NOT claimed; integration into `main` is published at merge `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`.** Explicit opt-in Python API, not the scheduled `masy.native_water_run` command and not a published CLI. | Last section, "Phase 2 native floating-profile API"; [phase2_native_status.md](phase2_native_status.md) |
 
 The Phase 1 and 1.5 file and command descriptions below keep their historical schemas
 (`masy.native_water_run.v1`/`v2`, `maple-syrup-layered-case/1`): the old command and
@@ -236,7 +236,7 @@ An incomplete native call (per-call step budget exhausted) is logged and the sam
 ## Phase 2 native floating-profile API (explicit opt-in Python)
 
 **Status.** The Phase 2 components below are independently qualified one by one, each with its
-own receipt (`phase2_*_acceptance.json`), and as a whole by the immutable `phase2_qualification.json` (clean source package 169 files, SHA-256 `3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82`; 111 CPU/host and 39 actual-GPU controls; 18 portable source guards). The separate `phase2_publication.json` records the source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416` on `feature/subsurface-evolving-soil` (integration into `main` pending); the qualification receipt's own `publication` fields mean as of qualification. Field validation is **not claimed**. The old Phase 1/1.5 recipes, locks, source identities and checkpoints are unchanged and are never
+own receipt (`phase2_*_acceptance.json`), and as a whole by the immutable `phase2_qualification.json` (clean source package 169 files, SHA-256 `3917dba4f59f662650bdf6fb08c10e4fece9d3de601c4b42ad41c9a796382c82`; 111 CPU/host and 39 actual-GPU controls; 18 portable source guards). The separate `phase2_publication.json` records the source commit `71bb8fe0bb0ed2d17ee302e4502ba0511032d416` on `feature/subsurface-evolving-soil` (integration into `main` published at merge `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`); the qualification receipt's own `publication` fields mean as of qualification. Field validation is **not claimed**. The old Phase 1/1.5 recipes, locks, source identities and checkpoints are unchanged and are never
 repointed to the Phase 2 source. The Phase 2 objects are Python arguments and returned objects, **not** YAML keys: the
 parser of `layered_water.yaml` and `run.yaml` does not recognise them, and no Phase 2 command-line flag has been
 published or qualified.
@@ -306,7 +306,7 @@ Green and Ampt (1911) and Tietjen et al. (2009, 2010): see the layered-water ref
 
 ### Former finalization checklist (historical)
 
-The checklist that stood here before publication (whole-phase receipt, GPU daily corrections, closed-file qualification, DOCX/ZIP rebuild) is closed by `phase2_qualification.json` and `phase2_publication.json`. Still later: integration into `main`, Phase 2.5 (LEAF vegetation projection) and Phase 3.
+The checklist that stood here before publication (whole-phase receipt, GPU daily corrections, closed-file qualification, DOCX/ZIP rebuild) is closed by `phase2_qualification.json` and `phase2_publication.json`. Main integration is published at merge `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`. Still later: Phase 2.5 (LEAF vegetation projection) and Phase 3.
 
 ## Historical examples (task snapshots; not release recipes)
 

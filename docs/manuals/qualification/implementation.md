@@ -1,5 +1,11 @@
 # Subsurface column: first implementation guide
 
+> Current status: the bounded native Phase 2 APIs are implemented, independently qualified and integrated into main at `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`. See [phase2_qualification.md](phase2_qualification.md) and [phase2_publication.json](phase2_publication.json). The design and implementation milestones below retain their original historical status wording; they do not describe current release readiness.
+
+## Historical Phase 2 design clarification — 2026-11-13
+
+For the floating-profile treatment, see [phase2_floating_profile_design.md](phase2_floating_profile_design.md): per-layer water preserved through geometry reassignment, gravity always on in new production entry points (historical test switches untouched), bottom drainage an exactly-once loss, and a staged capacity reconciliation (new properties staged, existing gravity cascade reused on the NEW field capacity before final validation, one bounded pass over changed columns) that the standard validate-before-cascade step does not yet provide. Refresh happens for affected columns at the transport-event handoff (properties held during an event), and the flat impermeable full-grid bottom limits soil to actual soil portions; see [phase2_completion_architecture.md](phase2_completion_architecture.md) for the slice plan and the actual source interfaces. Later work must be changed-cells-only and bounded, with staged atomic parent/generation/restart support and NumPy/Numba/CUDA tests. This paragraph records the proposed Phase 2 interface; it does not qualify the new floating treatment or retract existing implemented/qualified column functionality.
+
 ## Current Phase 1 status — 2026-11-12
 
 The opt-in fixed-bed layered water and LEAF calendar is now bounded-qualified

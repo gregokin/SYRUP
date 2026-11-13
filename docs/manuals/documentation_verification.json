@@ -1,11 +1,11 @@
 {
-  "utc": "2026-11-13T23:09:28.763596+00:00",
+  "utc": "2026-11-13T23:16:47.383577+00:00",
   "release_status": "final",
   "documents": [
     {
       "file": "SYRUP_CLI_User_Guide.docx",
-      "sha256": "21c3efb7be8dec87ce955cc8c1b0e51f60070dbafbe80e24941dcce3617cb061",
-      "bytes": 246674,
+      "sha256": "9a2c856490b1c9823196363487c76a36ea3480519774e664882f9fa179230a87",
+      "bytes": 246717,
       "zip_crc_ok": true,
       "xml_and_relationship_parts_parse": true,
       "relationship_parts": 3,
@@ -28,7 +28,7 @@
     },
     {
       "file": "SYRUP_Model_Structure_and_Physics.docx",
-      "sha256": "3c78f3b9733bcb8e147d62348032b1bea6651b4014fa74a6ec3b35caf9f0a954",
+      "sha256": "3dd6bb5415fd9449381fb488a5455f6318e93684989c0311a4310c91c0856096",
       "bytes": 184981,
       "zip_crc_ok": true,
       "xml_and_relationship_parts_parse": true,
