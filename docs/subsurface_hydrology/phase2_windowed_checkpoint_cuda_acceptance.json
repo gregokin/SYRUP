@@ -1,0 +1,88 @@
+{
+  "status": "independently_accepted_bounded_native_Windowed_CUDA_physical_child",
+  "utc": "2026-11-13T16:51:01.317973+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_windowed_c1_snapshot158",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_windowed_c1_snapshot158_manifest.json",
+  "source_manifest_sha256": "60cf9d631302bcf1423e963b454b1ccacc5bb17f02361ccd711a66437a4bb0f8",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "root_CPU_tests": {
+    "new_host": 40,
+    "existing_floating_child": 39,
+    "CPU_H2C4_context": 29,
+    "existing_resume": 62,
+    "kernel_guards": 26,
+    "total_passed": 196,
+    "skipped": 1
+  },
+  "actual_GPU_tests": {
+    "total_passed": 25,
+    "elapsed_s": 209.51,
+    "uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "same_launch_idle_0MiB_0percent": true,
+    "scope": [
+      "Dense17corecontrolsretained withauthenticstorage-mismatchrefusal",
+      "Windowedk0/k12currentpayloadroundtrip+bitexactcontinuationmatchedDenseGPU",
+      "nativeexternaldeepreferencesnotcopied,pendingjournalrefusal",
+      "invalidprefixwithrecomputedfilehashesrefusednativeHOSTloadbeforedeviceplacement",
+      "missing/wrongexternaldeepstoreanddeeprecordtamperunchangedtargetretry",
+      "Windowedtwopoolneed-1/exact/cachemodels",
+      "sameGPUFRESHprocessWindowedrestoreH0only,nooriginalbed/owner/probe",
+      "actualN50003V60W3windowresidency/trueallocatorpeakvsmodel+measuredrounding/3releasedplateau"
+    ]
+  },
+  "independent_valid_dimension_controls": [
+    {
+      "ny": 3,
+      "nx": 4,
+      "native_V": 300,
+      "native_K": 6,
+      "phase_bins": 8,
+      "native_window_voxels": 3,
+      "native_mapped_cache_bound_B": 7372800,
+      "reported_device_need_B": 2160064,
+      "reported_host_payload_need_B": 11830588,
+      "declared_host_python_allowance_B": 65536,
+      "reported_total_host_need_B": 11896124,
+      "exact_need_load_passed": true,
+      "error": null,
+      "unlimited_control_passed": true,
+      "scope": "Root independent valid genuine native dimension variation, no original owner at restore"
+    },
+    {
+      "ny": 3,
+      "nx": 4,
+      "native_V": 5000,
+      "native_K": 6,
+      "phase_bins": 32,
+      "native_window_voxels": 3,
+      "native_mapped_cache_bound_B": 122880000,
+      "reported_device_need_B": 2243404,
+      "reported_host_payload_need_B": 127476820,
+      "declared_host_python_allowance_B": 65536,
+      "reported_total_host_need_B": 127542356,
+      "exact_need_load_passed": true,
+      "error": null,
+      "unlimited_control_passed": true,
+      "scope": "Root independent valid genuine native dimension variation, no original owner at restore"
+    }
+  ],
+  "production_diff_vs_qualified_integrated158": [
+    "floating_checkpoint_cuda.py ONLY"
+  ],
+  "native_prefix_validation_note": "The native untrusted packet decoder alone checks structure/binding but not content. Native load_windowed_state_snapshot invokes validate_windowed_partition and re-encodes from source deep store; that content proof precedes device placement/trusted decode. Actual corruption controls passed.",
+  "test_reconciliation": "Five whole-author-snapshot155/157 checks preserved AST-identically in historical_source_audits.py nondefault record; public per-interface guards replace permanent module-count assumptions. Strong Root exact-one-import AST scalar guard copied byte-identically. No production SourcePair/kernel guard weakened.",
+  "storage_claim_correction": "Original test compared TOTAL249804587Bcheckpoint to144008640Blogicalbedandasserted20xsmaller; false becausecompaniondenseflow/phase/ledgerslarge. CorrectedTESTONLYall158productionEXACToriginal: genuinewindowW3/V60data ratio exactly5%, validatesrealnativeNPZshape/no-fullNVKdeepbedmember andexternaldeeprefs; reportsnativewindow/prefix/other/companion/TOTAL separately. AllocatorchecksunchangedandNOWactuallypassed.",
+  "profile": "floating-vertical/2-cuda",
+  "schemas": {
+    "dense": "maple-syrup-floating-pond-checkpoint/7",
+    "windowed": "maple-syrup-floating-pond-checkpoint/8"
+  },
+  "limits": [
+    "NativephysicalchildONLY; generalGPUH0outer/dailyphysicalrestart/active-lifecyclemetadata/windhandoffremainotherwork.",
+    "Mapping-cache modelhonestboundcanbeveryconservative actualV5000case122880000Bcacheevenresidence3voxels; no claimresidentNPZ13KBboundswholeprocess.",
+    "SingleGPU0/smallfixtureplusN50003V60moderate notlargecatchmentorfullChastrestormqualification.",
+    "Historicaldifferent-sourcefilesremainstrictsourcepairrefused; noautomaticmigration/rebinding."
+  ],
+  "committed": false
+}

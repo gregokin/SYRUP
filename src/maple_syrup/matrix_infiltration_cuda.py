@@ -16,6 +16,9 @@ column's device (checked BEFORE any allocation or launch).
 
 CuPy, a visible device and a loadable kernel are required (`require_cuda`); any failure is a
 `MatrixBackendUnavailableError`, never a NumPy fallback. Nothing here was run by its author; Codex records results.
+
+Phase 2 S2-B2.c: the kernel text is now rendered from shared pieces by the pure, fail-closed `render_source` (see the comment above `_NEWTON`). The common rendering is byte-identical to the previous text
+(`COMMON_SOURCE_SHA256`); the explicit spatial matrix operator renders the SAME Newton helpers and body with its own readers in `maple_syrup.spatial_matrix_infiltration_cuda`.
 """
 
 from __future__ import annotations
@@ -39,14 +42,19 @@ from maple_syrup.matrix_infiltration import (
 )
 from maple_syrup.routing_cuda import COMPILE_OPTIONS
 
-__all__ = ["COMPILE_OPTIONS", "KERNEL_NAME", "LAUNCHES_PER_STEP", "THREADS", "current_device_id", "kernel_provenance",
-           "kernel_source", "load_kernel", "prepare_runner", "require_cuda"]
+__all__ = ["BODY_TOKENS", "COMMON_SOURCE_SHA256", "COMMON_SUBSTITUTIONS", "HISTORICAL_COMMON_SOURCE_SHA256", "NUMERICAL_REVISION", "COMPILE_OPTIONS", "KERNEL_NAME", "LAUNCHES_PER_STEP", "THREADS", "current_device_id",
+           "kernel_provenance", "kernel_source", "load_kernel", "prepare_runner", "render_source", "require_cuda"]
 
 KERNEL_NAME = "maple_syrup_matrix_step"
 LAUNCHES_PER_STEP = 1
 
 # Flag bits, stage order and the Newton loop mirror matrix_infiltration.reference_step / _numba exactly.
-_SOURCE_TEMPLATE = r"""
+#
+# Phase 2 S2-B2.c (ONE physical body, two renderings): the kernel text is written ONCE as the pieces below. The COMMON rendering (`_SOURCE`) reproduces the recorded current kernel text byte for byte (its sha256 is
+# `COMMON_SOURCE_SHA256`, checked at import and by the tests): the common launch ABI and options are unchanged; the arithmetic differs from the pre-review02 text ONLY by the bounded combined intake (`NUMERICAL_REVISION`). The explicit SPATIAL rendering (`maple_syrup.spatial_matrix_infiltration_cuda`)
+# supplies its own reader macros, its own `__device__` head and a reduction tail, and substitutes the designated `@@TOKEN@@` read sites of the shared body. `render_source` is PURE and fails closed:
+# every token must be supplied, each must occur exactly the declared number of times in the body, no token may remain, and the Newton text (`_NEWTON`) is never edited.
+_NEWTON = r"""
 #define LOG1PMX_TERMS __LOG1PMX_TERMS__
 
 __device__ __forceinline__ double log1pmx(const double u)
@@ -100,7 +108,9 @@ __device__ __forceinline__ double ga_increment(const double j_old, const double 
     return r_dt + y;
 }
 
-extern "C" __global__ void maple_syrup_matrix_step(
+"""
+
+_COMMON_HEAD = r"""extern "C" __global__ void maple_syrup_matrix_step(
     const long long n, const int nl,
     const double* pool_in, const double* standing_in, const double* rate_in, const double* w_in,
     const double* wet_in, const double* cum_in, const unsigned char* active, const double dt,
@@ -109,9 +119,9 @@ extern "C" __global__ void maple_syrup_matrix_step(
     const double cell_tol, const double tol, const int max_iter, const double no_flag,
     double* pool_out, double* w_out, double* wet_out, double* cum_out, double* intake_out, double* rows)
 {
-    const long long i = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
-    if (i >= n) return;
-    const bool a = active[i] != 0;
+"""
+
+_BODY = r"""@@LANE@@    const bool a = active[i] != 0;
     unsigned int f = 0u;
     double before = 0.0;
     for (int l = 0; l < nl; ++l) {
@@ -119,7 +129,7 @@ extern "C" __global__ void maple_syrup_matrix_step(
         const double wl = w_in[p];
         if (!isfinite(wl)) f |= 1u << 0;
         if (wl < 0.0) f |= 1u << 1;
-        if (wl > sat_m[l] + cap_tol[l]) f |= 1u << 2;
+        if (wl > @@SATB_L@@) f |= 1u << 2;
         before = before + wl;
         w_out[p] = wl;
     }
@@ -149,14 +159,14 @@ extern "C" __global__ void maple_syrup_matrix_step(
         if (pool > inc + scale_c) f |= 1u << 14;
     }
     if (a && dt > 0.0) {
-        const double k = kmap[i];
-        const double psi = psimap[i];
-        const double g = gmap[i];
+        const double k = @@K@@;
+        const double psi = @@PSI@@;
+        const double g = @@G@@;
         const double w0 = w_in[i];
-        double deficit = fc_m[0] - w0;
+        double deficit = @@FC0@@ - w0;
         if (deficit < 0.0) deficit = 0.0;
-        const double b = psi * (deficit / dz[0]);
-        double room = sat_m[0] - w0;
+        const double b = psi * (deficit / @@DZ0@@);
+        double room = @@SAT0@@ - w0;
         if (room < 0.0) room = 0.0;
         double t_u = 0.0, tau = 0.0;
         bool run_post = false, inside = false;
@@ -192,12 +202,20 @@ extern "C" __global__ void maple_syrup_matrix_step(
             post = c2;
             if (pool_left < post) post = pool_left;
             if (room_left < post) post = room_left;
+        }
+        /* ONE combined actual intake (S2-B2.c review02), the same ordering as the NumPy/Numba bodies: bound pre + post by the pool, then by the room, BEFORE anything is published. Inactive bound:
+           byte-identical arithmetic. Active bound: the ponded actual is re-derived, post = intake - pre (>= 0 exactly: pre <= pool and pre <= room), so pool, soil, history and ledger share the SAME actuals. */
+        intake = pre + post;
+        bool reduced = false;
+        if (intake > pool) { intake = pool; reduced = true; }
+        if (intake > room) { intake = room; reduced = true; }
+        if (run_post) {
+            if (reduced) post = intake - pre;
             if (g > 0.0) adv = post / g;
             j_o = j1 + adv;
         } else {
             j_o = j1;
         }
-        intake = pre + post;
         double bounded = candidate;
         if (pool < bounded) bounded = pool;
         rejected = bounded - intake;
@@ -210,7 +228,7 @@ extern "C" __global__ void maple_syrup_matrix_step(
             const double w = w_out[(long long)l * n + i];
             if (!isfinite(w)) f |= 1u << 16;
             if (w < 0.0) f |= 1u << 17;
-            if (w > sat_m[l] + cap_tol[l]) f |= 1u << 18;
+            if (w > @@SATB_L@@) f |= 1u << 18;
             after = after + w;
         }
         if ((!isfinite(pool_o)) || (!isfinite(j_o)) || (!isfinite(c_o))) f |= 1u << 16;
@@ -230,7 +248,13 @@ extern "C" __global__ void maple_syrup_matrix_step(
     pool_out[i] = pool_o;
     wet_out[i] = j_o;
     cum_out[i] = c_o;
-    if (a) {
+@@STORE@@
+"""
+
+# Designated read/store sites of the body and how often each occurs (fail-closed render contract).
+BODY_TOKENS = {"@@LANE@@": 1, "@@SATB_L@@": 2, "@@FC0@@": 1, "@@DZ0@@": 1, "@@SAT0@@": 1, "@@K@@": 1, "@@PSI@@": 1, "@@G@@": 1, "@@STORE@@": 1}
+
+_COMMON_STORE = r"""    if (a) {
         intake_out[i] = intake;
         rows[0 * n + i] = before;
         rows[1 * n + i] = after;
@@ -251,11 +275,50 @@ extern "C" __global__ void maple_syrup_matrix_step(
         intake_out[i] = 0.0;
         for (int row = 0; row < 15; ++row) rows[(long long)row * n + i] = 0.0;
     }
-    rows[15 * n + i] = (f == 0u) ? no_flag : (double)(f & (0u - f));
+    rows[15 * n + i] = (f == 0u) ? no_flag : (double)(f & (0u - f));"""
+
+#: The common rendering of every token: exactly the text the previous kernel contained at that site.
+COMMON_SUBSTITUTIONS = {
+    "@@LANE@@": r"""    const long long i = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
+    if (i >= n) return;
+""",
+    "@@SATB_L@@": "sat_m[l] + cap_tol[l]", "@@FC0@@": "fc_m[0]", "@@DZ0@@": "dz[0]", "@@SAT0@@": "sat_m[0]", "@@K@@": "kmap[i]", "@@PSI@@": "psimap[i]", "@@G@@": "gmap[i]",
+    "@@STORE@@": _COMMON_STORE,
 }
-"""
-# The fixed series length is a module constant shared with the reference and the Numba kernel (same arithmetic).
-_SOURCE = _SOURCE_TEMPLATE.replace("__LOG1PMX_TERMS__", str(int(LOG1PMX_TERMS)))
+
+
+def render_source(*, readers: str = "", head: str | None = None, substitutions: dict[str, str] | None = None, tail: str = "") -> str:
+    """PURE rendering (no registry, no cache, no state) of a matrix CUDA source: the shared Newton text, the caller's reader macros, the caller's kernel/device head (default: the common kernel head), the ONE
+    shared body with every `@@TOKEN@@` replaced by the caller's text (default: the common text) and the closing brace, then an optional tail. Fails closed (`MatrixError`) on any contract drift."""
+    if not all(isinstance(x, str) for x in (readers, tail)) or not (head is None or isinstance(head, str)):
+        raise MatrixError("readers, head and tail must be strings")
+    subs = dict(COMMON_SUBSTITUTIONS if substitutions is None else substitutions)
+    if set(subs) != set(BODY_TOKENS) or not all(isinstance(v, str) for v in subs.values()):
+        raise MatrixError(f"the substitutions must define exactly {sorted(BODY_TOKENS)}")
+    if any("@@" in v for v in subs.values()):
+        raise MatrixError("render contract drift: a substitution may not contain a token marker")
+    body = _BODY
+    for token, count in BODY_TOKENS.items():
+        if body.count(token) != count:
+            raise MatrixError(f"render contract drift: token {token} occurs {body.count(token)} times in the shared body, expected {count}")
+    for token in BODY_TOKENS:
+        body = body.replace(token, subs[token])
+    if "@@" in body:
+        raise MatrixError("render contract drift: an unreplaced token remains in the shared body")
+    return _NEWTON.replace("__LOG1PMX_TERMS__", str(int(LOG1PMX_TERMS))) + readers + (_COMMON_HEAD if head is None else head) + body + "}\n" + tail
+
+
+_SOURCE = render_source()
+#: sha256 of the common kernel text BEFORE the shared-body factoring (S2-B2.c) and BEFORE the review02 arithmetic correction: HISTORICAL evidence only (old runs/snapshots keep their own recorded identities and
+#: are never rebound to the current source).
+HISTORICAL_COMMON_SOURCE_SHA256 = "b58178dfc303f48364f7bfdcd744a08bf821da481ae61d8f347981c3bee5c05f"
+#: sha256 of the CURRENT common kernel text: the previous text with the S2-B2.c review02 bounded-combined-intake arithmetic (the only intended difference; see `NUMERICAL_REVISION`). The common rendering must
+#: reproduce it exactly; the digest changes explicitly with that approved arithmetic fix and nothing else.
+COMMON_SOURCE_SHA256 = "b9e131308266af692f9a40b3edb09a21df349c67406b6b6927820e1607b4f3d2"
+NUMERICAL_REVISION = ("S2-B2.c review02: the combined actual intake `pre + post` is bounded by the offered pool and by the top-layer room before anything is published; the ponded actual is re-derived as "
+                      "`intake - pre` ONLY when that bound is active (valid inputs whose separately bounded parts recombine one ulp above a bound no longer produce a negative pool); no epsilon, no clipping of negatives afterwards")
+if hashlib.sha256(_SOURCE.encode()).hexdigest() != COMMON_SOURCE_SHA256:  # fail closed at import: the common text/ABI must not drift
+    raise MatrixError("the common matrix CUDA source no longer renders to its recorded current text (COMMON_SOURCE_SHA256)")
 
 _MODULES: dict[int, Any] = {}
 _FUNCTIONS: dict[int, Any] = {}
@@ -316,6 +379,8 @@ def kernel_provenance() -> dict[str, Any]:
         "module": "maple_syrup.matrix_infiltration_cuda",
         "kernels": [KERNEL_NAME],
         "source_sha256": hashlib.sha256(_SOURCE.encode()).hexdigest(),
+        "historical_source_sha256": HISTORICAL_COMMON_SOURCE_SHA256,
+        "numerical_revision": NUMERICAL_REVISION,
         "compile_options": list(COMPILE_OPTIONS),
         "threads_per_block": THREADS,
         "launches_per_step": LAUNCHES_PER_STEP,

@@ -1,0 +1,940 @@
+"""R2a: genuine CPU FILE checkpoint of a continuing FLOATING Pond state (Stage 1: the restart TARGET is built from the GENUINE ORIGINAL immutable case, so its HELD template is the original one).
+
+NEW explicit profile (never the historical `maple-syrup-pond-checkpoint/1|2`, which cannot serve a floating event: its `_validate_state` rebuilds the bucket hydraulics from `event.column`, which is None, and its arrays carry no
+W/J/I/D/held maps): schemas `maple-syrup-floating-pond-checkpoint/1` (dense bed) and `/2` (published resident-window bed), directory of `floating_pond_checkpoint.json` + the native MAPLE snapshot `maple_state.npz`
+(a COMPANION component with its own `syrup_floating_pond_checkpoint_schema` provenance; windowed: deep-store REFERENCES only, never a copied store) + `pond_continuation.npz`. Historical schemas/loaders/guards are untouched; no
+auto-upgrade or rebinding.
+
+Saved: every array of the Pond event state (reused `pond_checkpoint._extract/_specs`), the CURRENT floating inventory/history W, J, I and canonical depth D, the soil clock, and the HELD template facts (the prepared
+field-capacity / saturation maps, D0, the layer-0 conductivity record, the stable root column / matrix / preferential content identities, the owner config identity, generation and the native source witness of the ORIGINAL
+property source). Restore never derives a property from the checkpoint (eroded/deposited) bed and never validates W against D0: W is validated against the CURRENT geometry by the R1a prepare path.
+
+Capability chain (every refusable step precedes the single registration): file reading -> `VerifiedFloatingInputs` (minted ONLY here, after the manifest, source pair, identity, binding, file hashes, archive/header audits, native
+snapshot provenance, held-template and static checks; it claims NO physical acceptance) -> `floating_resume.prepare_from_verified_inputs` (official geometry view / continued state / history rebind: a one-shot target-bound
+prepared record + the candidate state) -> `vertical.resume_scope(prepared)`: the independent floating validation (`_validate_floating_state`, the historical validator with ONLY the hydraulic block replaced), scalar equality, the
+event's full `_check_state` and the native water/sediment audits -> `vertical.adopt_resumed(prepared)` LAST. Any failure leaves the registry, stats, accepted payloads and the target untouched.
+
+Memory: an explicit `available_bytes_fn` is required for both calls. Stage 0 (manifest bytes + hash/header buffers) is admitted before the manifest is read; Stage 1 (full composed model from the DECLARED and then header-VERIFIED
+dimensions: companion table, native snapshot, host copies, validator/topology/phase working sets, the R1a prepare model) is admitted before any payload array is loaded. Exclusions: interpreter/JIT/allocator pool, the
+already-live target event, whole-process memory. A need that does not fit refuses before any payload array allocation (the bounded manifest/hash/header reads of stage 0 may have happened, which is stated, not hidden).
+
+CPU only: a CUDA event/vertical is refused explicitly before any transfer or read. Limits: Stage 1 requires the original-case factory in the restarting process (no general long-run/daily restart claim); no nominal-daily cursor.
+"""
+# ruff: noqa: BLE001  (the verbatim validator copy and the loader convert any native failure into one typed refusal, as the historical codec does)
+from __future__ import annotations
+
+import contextlib
+import dataclasses
+import hashlib
+import json
+import os
+import shutil
+import tempfile
+import threading
+import weakref
+import zipfile
+from collections.abc import Callable
+from pathlib import Path
+from types import MappingProxyType
+from typing import Any
+
+import numpy as np
+
+from maple_syrup import floating_pond as fp
+from maple_syrup import floating_resume as fr
+from maple_syrup import pond_checkpoint as pc
+from maple_syrup.characteristic_transport import PhaseState
+from maple_syrup.checkpoint import DEFAULT_MAX_CHECKPOINT_BYTES
+from maple_syrup.pond_bed import (
+    committed_displacement_m,
+    gate_displacement_m,
+    physical_full_source,
+)
+from maple_syrup.pond_checkpoint import (
+    _MAX_NDIM,
+    PondCheckpointError,
+    _audit_array_table,
+    _check_arrays,
+    _dtype_ok,
+    _extract,
+    _fields_mismatch,
+    _hash_file,
+    _hex,
+    _initial_topology,
+    _int,
+    _json_dumps,
+    _native_checks,
+    _native_decode,
+    _native_encode,
+    _native_expected,
+    _npy_preflight,
+    _read_npy_header,
+    _real,
+    _rebuild_topology,
+    _refuse,
+    _require_published,
+    _reset_receipts,
+    _sha256_text,
+    _specs,
+    _topology_fields,
+    _validate_commit_log,
+    _validate_handoff,
+    _zip_audit,
+)
+from maple_syrup.pond_event import SCHEMA as POND_EVENT_SCHEMA
+from maple_syrup.pond_event import PondDryHandoff, PondEvent, PondEventState
+from maple_syrup.pond_network import PondTopology
+from maple_syrup.pond_transport import face_network_from_pond_topology, validate_phase
+from maple_syrup.sediment_bed import (
+    BedState,
+    is_windowed_bed,
+    reroute_threshold_m,
+)
+
+__all__ = ["MANIFEST_NAME", "SCHEMA", "SCHEMA_V2", "WINDOWED_SCHEMA", "WINDOWED_SCHEMA_V2", "VerifiedFloatingInputs", "load_floating_pond_checkpoint", "require_inputs", "save_floating_pond_checkpoint"]
+
+SCHEMA = "maple-syrup-floating-pond-checkpoint/1"  # R2a, original exact semantics (no terminal-exchange count; calls == 2*steps + 2*splash); still READ, never written
+WINDOWED_SCHEMA = "maple-syrup-floating-pond-checkpoint/2"
+SCHEMA_V2 = "maple-syrup-floating-pond-checkpoint/3"  # S4-1: adds the producer-maintained terminal native-call count (calls == 2*steps + 2*splash + terminal_calls); written by `save_floating_pond_checkpoint`
+WINDOWED_SCHEMA_V2 = "maple-syrup-floating-pond-checkpoint/4"
+READ_SCHEMAS = (SCHEMA, WINDOWED_SCHEMA, SCHEMA_V2, WINDOWED_SCHEMA_V2)
+PROFILE = "floating-vertical/1"
+MANIFEST_NAME = "floating_pond_checkpoint.json"
+PAYLOADS = pc.PAYLOADS
+MANIFEST_KEYS = frozenset({"schema", "profile", "identity", "status", "array_backend", "hydraulic_backend", "source", "binding", "binding_sha256", "floating", "files", "payload", "native_dense", "manifest_sha256"})
+WINDOWED_MANIFEST_KEYS = MANIFEST_KEYS | {"bed_storage", "deep_storage"}
+MANIFEST_KEYS_V2 = MANIFEST_KEYS | {"terminal_exchange"}
+WINDOWED_MANIFEST_KEYS_V2 = WINDOWED_MANIFEST_KEYS | {"terminal_exchange"}
+
+
+def _is_windowed(schema: str) -> bool:
+    return schema in (WINDOWED_SCHEMA, WINDOWED_SCHEMA_V2)
+
+
+def _is_v2(schema: str) -> bool:
+    return schema in (SCHEMA_V2, WINDOWED_SCHEMA_V2)
+FLOATING_KEYS = frozenset({"vertical_identity", "root_column_sha256", "root_matrix_op_sha256", "root_pref_sha256", "owner_config_sha256", "generation", "source_witness", "soil_t_s_hex", "n_layers", "shape", "has_ks"})
+CPU_BACKENDS = ("numpy", "numba")
+HASH_BUFFER_BYTES = 1 << 20
+TOPOLOGY_ARRAYS_PER_CELL = 48  # declared allowance: rebuilt topology/geometry/escape arrays and their comparison temporaries, in 8-byte cell units
+HEADER_AUDIT_BYTES = 1 << 16
+
+
+class FloatingCheckpointError(PondCheckpointError):
+    """Typed narrow refusal of the floating file checkpoint."""
+
+
+_MINT = threading.local()
+_INPUTS: weakref.WeakSet = weakref.WeakSet()
+_DIGESTS: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()  # inputs -> private integrity digest bound after minting (never a field of the record)
+_CONSUMED: weakref.WeakSet = weakref.WeakSet()  # private one-shot state: a caller cannot reset it
+
+
+@contextlib.contextmanager
+def _minting():
+    _MINT.ok = True
+    try:
+        yield
+    finally:
+        _MINT.ok = False
+
+
+def _fail(message: str) -> None:
+    raise FloatingCheckpointError(message)
+
+
+@dataclasses.dataclass(frozen=True, eq=False)
+class VerifiedFloatingInputs:
+    """Capability produced ONLY by actually reading and verifying a floating checkpoint FILE (manifest, source pair, identity, binding, hashes, archive/header audits, native snapshot provenance, held template and static
+    checks). It claims NO physical acceptance: the independent floating validation, the native audits and the registration happen later, after the payload is provisionally resolvable. One-shot; not copyable."""
+
+    schema: str
+    storage: str
+    event_config_sha256: str
+    forcing_sha256: str
+    vertical_identity: str
+    backend: str
+    soil_t_s: float
+    root_column_sha256: str
+    root_matrix_op_sha256: str
+    root_pref_sha256: str | None
+    owner_config_sha256: str
+    generation: int
+    source_witness: str
+    source_pair: Any
+    held: Any
+    current: Any
+    parent: Any  # raw candidate PondEventState (soil water NOT yet registered)
+    scalars_json: str
+
+    def __post_init__(self) -> None:
+        if not getattr(_MINT, "ok", False):
+            _fail("VerifiedFloatingInputs is minted only by load_floating_pond_checkpoint after reading and verifying a file")
+        _INPUTS.add(self)
+
+    def __copy__(self):
+        _fail("VerifiedFloatingInputs is an owned capability and cannot be copied")
+
+    def __deepcopy__(self, memo):
+        _fail("VerifiedFloatingInputs is an owned capability and cannot be copied")
+
+    def __reduce_ex__(self, protocol):
+        _fail("VerifiedFloatingInputs is not serialisable")
+
+
+_INPUT_HELD = ("theta_field_capacity", "theta_saturation", "depth0_m")
+_INPUT_CURRENT = ("water_m", "wetting_m", "cumulative_intake_m", "depth_m")
+_INPUT_SCALARS = (("schema", str), ("storage", str), ("event_config_sha256", str), ("forcing_sha256", str), ("vertical_identity", str), ("backend", str), ("soil_t_s", float), ("root_column_sha256", str),
+                  ("root_matrix_op_sha256", str), ("owner_config_sha256", str), ("generation", int), ("source_witness", str), ("scalars_json", str))
+
+
+def _check_input_layout(inputs: Any) -> None:
+    """EXACT metadata of every verified-input field BEFORE any byte is hashed, viewed or copied: scalar types, containers, array key sets, exact C-contiguous read-only float64 ndarrays of the declared shapes."""
+    for name, kind in _INPUT_SCALARS:
+        if type(getattr(inputs, name)) is not kind:
+            _fail(f"verified-input field {name} is malformed (integrity)")
+    if inputs.root_pref_sha256 is not None and type(inputs.root_pref_sha256) is not str:
+        _fail("verified-input field root_pref_sha256 is malformed (integrity)")
+    pair = inputs.source_pair
+    if not isinstance(pair, MappingProxyType) or any(type(k) is not str or type(v) not in (str, int) for k, v in pair.items()):
+        _fail("the verified inputs' source pair is malformed (integrity)")
+    if not isinstance(inputs.held, MappingProxyType) or not isinstance(inputs.current, MappingProxyType):
+        _fail("the verified inputs' containers were replaced (integrity)")
+    if set(inputs.held) not in (set(_INPUT_HELD), set(_INPUT_HELD) | {"ks_m_s"}) or set(inputs.current) != set(_INPUT_CURRENT):
+        _fail("the verified inputs' array sets are malformed (integrity)")
+    N = int(inputs.current["depth_m"].shape[0]) if type(inputs.current.get("depth_m")) is np.ndarray and inputs.current["depth_m"].ndim == 1 else -1
+    L = int(inputs.current["water_m"].shape[0]) if type(inputs.current.get("water_m")) is np.ndarray and inputs.current["water_m"].ndim == 2 else -1
+    expected = {("held", "theta_field_capacity"): (L, N), ("held", "theta_saturation"): (L, N), ("held", "depth0_m"): (N,), ("held", "ks_m_s"): (N,), ("current", "water_m"): (L, N), ("current", "wetting_m"): (N,),
+                ("current", "cumulative_intake_m"): (N,), ("current", "depth_m"): (N,)}
+    for group in ("held", "current"):
+        for name, a in getattr(inputs, group).items():
+            if type(a) is not np.ndarray or a.dtype != np.float64 or a.shape != expected[(group, name)] or not a.flags.c_contiguous or a.flags.writeable:
+                _fail(f"verified-input array {group}.{name} is not an exact read-only C-contiguous float64 ndarray of the declared shape (integrity)")
+
+
+def _input_digest(inputs: Any) -> str:
+    """Integrity digest of EVERY verified-input field: scalars, identities, the source pair, every array's dtype/shape and C bytes (direct `memoryview`, no copy) and the identity of the referenced parent state (an immutable
+    value by the R1a convention; not deep-copied)."""
+    h = hashlib.sha256()
+    meta = {name: getattr(inputs, name) for name, _k in _INPUT_SCALARS if name != "soil_t_s"}
+    meta["soil_t_s"] = float(inputs.soil_t_s).hex()
+    meta["root_pref_sha256"] = inputs.root_pref_sha256
+    meta["source_pair"] = {k: inputs.source_pair[k] for k in sorted(inputs.source_pair)}
+    meta["parent_id"] = id(inputs.parent)
+    meta["held_keys"], meta["current_keys"] = sorted(inputs.held), sorted(inputs.current)
+    h.update(json.dumps(meta, sort_keys=True, default=repr).encode())
+    for group, names in (("held", sorted(inputs.held)), ("current", list(_INPUT_CURRENT))):
+        for name in names:
+            a = getattr(inputs, group)[name]
+            h.update(f"{group}.{name}|{a.dtype}|{a.shape}".encode())
+            h.update(memoryview(a).cast("B"))
+    return h.hexdigest()
+
+
+def require_inputs(inputs: Any) -> None:
+    """Genuinely minted by the loader, unconsumed (private one-shot state) AND intact: exact metadata first, then the recomputed integrity digest must equal the one bound at minting (a field rebinding, replaced container or
+    array, or altered scalar is refused)."""
+    if type(inputs) is not VerifiedFloatingInputs or inputs not in _INPUTS or inputs not in _DIGESTS:
+        _fail("not genuinely minted VerifiedFloatingInputs (a plain record, copy or caller dict carries no authority)")
+    if inputs in _CONSUMED:
+        _fail("the verified inputs were already consumed")
+    _check_input_layout(inputs)
+    try:
+        digest = _input_digest(inputs)
+    except (TypeError, ValueError, BufferError) as exc:
+        _fail(f"the verified inputs could not be digested ({type(exc).__name__}); integrity refused")
+    if digest != _DIGESTS[inputs]:
+        _fail("the verified inputs no longer match the integrity digest bound at verification time (altered or rebound)")
+
+
+def consume_inputs(inputs: Any) -> None:
+    """The ONE-SHOT consumption (called by the shared preparation AFTER every refusable preparation step succeeded): private registry state, not a caller-resettable flag."""
+    _CONSUMED.add(inputs)
+
+
+def _check_event(event: Any) -> Any:
+    if type(event) is not PondEvent or event.vertical is None or type(event.vertical) is not fp.FloatingPondVertical:
+        _fail("event must be a PondEvent with a FloatingPondVertical")
+    v = event.vertical
+    if v.backend not in CPU_BACKENDS or getattr(event.xp, "__name__", None) != "numpy" or event.control.backend not in CPU_BACKENDS:
+        _fail(f"CUDA floating file checkpoint unsupported (vertical {v.backend!r}, hydraulic {event.control.backend!r}): refused before any transfer or read")
+    return v
+
+
+def _read(fn: Callable[[], int] | None, need: int, what: str) -> None:
+    if not callable(fn):
+        _fail("an explicit available_bytes_fn is required (no unlimited reader)")
+    avail = fn()
+    if isinstance(avail, (bool, np.bool_)) or not isinstance(avail, (int, np.integer)) or int(avail) < 0:
+        _fail(f"the available-bytes reader must return a non-Boolean integer >= 0, got {avail!r}")
+    if need > int(avail):
+        raise fp.nfs.NativeFloatingMemoryError(f"{what} needs an estimated {need} B but only {int(avail)} B are reported available; nothing was changed")
+
+
+def _reserve(value: Any) -> int:
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or int(value) < 0:
+        _fail(f"reserve_bytes must be an integer >= 0, got {value!r}")
+    return int(value)
+
+
+def _binding(event: PondEvent, schema: str) -> dict:
+    """The historical binding of the event (static inputs by value; `column_sha256` is the digest of None for a floating event and is replaced), plus the floating profile facts."""
+    b = dict(pc._binding(event, pc.WINDOWED_SCHEMA if _is_windowed(schema) else pc.SCHEMA))
+    b["schema"] = schema
+    b["profile"] = PROFILE
+    b["column_sha256"] = "floating-vertical-no-bucket-column"
+    b["vertical_identity"] = event.vertical.identity
+    return b
+
+
+def _floating_specs(L: int, N: int, has_ks: bool) -> dict:
+    s = {"fl_water": ((L, N), "<f8", "nn", "host"), "fl_wetting": ((N,), "<f8", "nn", "host"), "fl_cum_intake": ((N,), "<f8", "nn", "host"), "fl_depth": ((N,), "<f8", "nn", "host"),
+         "fl_depth0": ((N,), "<f8", "nn", "host"), "fl_held_fc": ((L, N), "<f8", "nn", "host"), "fl_held_sat": ((L, N), "<f8", "nn", "host")}
+    if has_ks:
+        s["fl_ks"] = ((N,), "<f8", "nn", "host")
+    return s
+
+
+def _read_manifest(path: Path) -> dict:
+    import stat as _stat
+
+    meta = path / MANIFEST_NAME
+    try:
+        info = os.lstat(meta)
+    except OSError as exc:
+        _fail(f"floating checkpoint manifest is missing: {exc}")
+    if not _stat.S_ISREG(info.st_mode):
+        _fail("floating checkpoint manifest is not a regular file")
+    if info.st_size > pc.MAX_MANIFEST_BYTES:
+        _fail("floating checkpoint manifest exceeds the bounded size")
+
+    def no_constants(token: str) -> Any:
+        raise ValueError(f"non-finite JSON constant {token}")
+
+    def no_duplicates(pairs: list) -> dict:
+        out: dict = {}
+        for k, v in pairs:
+            if k in out:
+                raise ValueError(f"duplicate manifest key {k!r}")
+            out[k] = v
+        return out
+
+    try:
+        with meta.open("rb") as handle:
+            data = json.loads(handle.read(pc.MAX_MANIFEST_BYTES + 1).decode("utf-8"), parse_constant=no_constants, object_pairs_hook=no_duplicates)
+    except (ValueError, UnicodeDecodeError, RecursionError, OSError) as exc:
+        _fail(f"floating checkpoint manifest is not strict JSON: {exc}")
+    if not isinstance(data, dict):
+        _fail("floating checkpoint manifest must be a JSON object")
+    return data
+
+
+def _seal(manifest: dict) -> dict:
+    body = {k: v for k, v in manifest.items() if k != "manifest_sha256"}
+    return {**body, "manifest_sha256": _sha256_text(_json_dumps(body))}
+
+
+def _model_bytes(event: PondEvent, v: Any, *, table_bytes: int, native_bytes: int, reserve: int) -> int:
+    """Composed COLD host model of one save/load from DECLARED/verified dimensions (no constant): companion table bytes counted for the raw read, the placed copy and the validator's `_extract` views; the native snapshot
+    (verified uncompressed bytes) loaded plus its rebuilt `BedState` copies; the rebuilt topology/phase/audit working sets from N, nc, phase_bins; hash/header buffers; the R1a prepare model (current payload, view, hydraulic copies,
+    integrity digest, first-use source hash); the single reserve."""
+    ny, nx = event.shape
+    N = ny * nx
+    nc, nb = int(event.nc), int(event.control.phase_bins)
+    working = (TOPOLOGY_ARRAYS_PER_CELL * N + 4 * N * nc * nb + 8 * N * nc) * 8
+    return 3 * int(table_bytes) + 2 * int(native_bytes) + working + 8 * N + HASH_BUFFER_BYTES + HEADER_AUDIT_BYTES + fr.prepare_model_bytes(v) + int(reserve)
+
+
+
+# --- independent validation (verbatim copy of the historical validator; ONLY the hydraulic block is replaced) ----------
+def _validate_floating_state(event: PondEvent, state: Any, handoff: PondDryHandoff | None,
+                    storage: str = "dense") -> tuple[dict, dict, PondTopology]:
+    """FLOATING copy of `pond_checkpoint._validate_state` (identical except the declared hydraulic block; drift-guarded by test). FULL independent validation of a state (or the dry state of a handoff). Never calls `event.step`, never consults the
+    event's runtime cache for its own checks. Returns `(arrays, scalars, fresh_topology)`. `storage` is the checkpoint's bed
+    storage ("dense" or "windowed"); a bed of the other kind is refused (no cross-storage conversion)."""
+    from maple.core.backend import array_namespace, to_bool, to_host
+
+    xp, ctx = event.xp, event.context
+    if not isinstance(state, PondEventState):
+        _refuse("state must be a PondEventState")
+    if state.schema != POND_EVENT_SCHEMA:
+        _refuse(f"state schema {state.schema!r} is not {POND_EVENT_SCHEMA!r}")
+    if state.config_sha256 != event.config_sha256 or state.forcing_sha256 != event.forcing_sha256:
+        _refuse("state was built under a different event configuration or forcing")
+    if state.status != ("wet" if handoff is None else "dry"):
+        _refuse(f"state status {state.status!r} does not match the checkpoint kind")
+    arrays, scalars = _extract(state, handoff, xp)
+    _check_arrays(arrays, _specs(event, dry=handoff is not None), xp)
+
+    # topology: an independent fresh build from the HELD source, every field and digest compared (generation preserved)
+    init = _initial_topology(event)
+    top = state.topology
+    if not isinstance(top, PondTopology):
+        _refuse("state.topology must be a PondTopology")
+    generation = _int(top.generation, "topology generation")
+    fresh = _rebuild_topology(event, arrays["topo_source"], generation)
+    bad = _fields_mismatch(_topology_fields(top), _topology_fields(fresh))
+    if bad:
+        _refuse(f"saved topology differs from an independent build of its held source in {bad}")
+    if fresh.identity_sha256 != init.identity_sha256 or not np.array_equal(arrays["datum_full"], init.source_z_full):
+        _refuse("the state does not belong to the event's ORIGINAL initial topology / source datum")
+    if arrays["datum_committed"].shape != tuple(event.shape):
+        _refuse("datum committed elevation shape mismatch")
+
+    # hydraulics against the faces of the fresh topology (a freshly built solver, not the event cache)
+    # FLOATING hydraulic replacement (the ONLY declared difference from the historical `_validate_state`): the genuine floating faces/solver of the event's vertical on the rebuilt topology, validating the
+    # hydraulic state against the REGISTERED (or provisionally resolved) floating payload -- never a bucket `ColumnParameters` (None for a floating event) and never a fake column
+    try:
+        pond = event.vertical.build_hydraulics(fresh, control=event.control.hydraulic)
+        pond.solver.validate_state(state.hydraulic)
+    except Exception as exc:
+        raise PondCheckpointError(f"floating hydraulic state is invalid for the rebuilt faces: {exc}") from None
+    hyd = state.hydraulic
+    if hyd.next_dt_cap_s is not None and _real(hyd.next_dt_cap_s, "next_dt_cap_s") <= 0.0:
+        _refuse("next_dt_cap_s must be None or positive")
+
+    # held source / datum identity and the geometry gate
+    held_host = np.asarray(to_host(state.held_source_m))
+    try:
+        expected = physical_full_source(state.datum.initial_full_m, state.datum.initial_committed_m, held_host, fresh.active)
+    except Exception as exc:
+        raise PondCheckpointError(f"held source cannot be combined with the datum: {exc}") from None
+    if not np.array_equal(expected, fresh.source_z_full):
+        _refuse("held source and topology source differ (source identity / generation mismatch)")
+    bed = state.bed
+    if not isinstance(bed, BedState) or array_namespace(bed.water.depth_m) is not xp:
+        _refuse("the bed is not an actual MAPLE BedState in the event namespace")
+    if is_windowed_bed(bed) != (storage == "windowed"):
+        _refuse(f"the bed storage ({'windowed' if is_windowed_bed(bed) else 'dense'}) is not the checkpoint's ({storage}); "
+                "no cross-storage conversion exists")
+    if getattr(event.control, "bed_storage", "dense") != storage:
+        _refuse(f"the event control's bed_storage ({getattr(event.control, 'bed_storage', 'dense')!r}) is not the "
+                f"checkpoint's ({storage!r}); a windowed checkpoint needs a PondEventControl(bed_storage='windowed')")
+    if storage == "windowed":
+        _require_published(bed)
+    _native_checks(bed, event, scalars["t_s"], storage)
+    if not to_bool(xp.array_equal(bed.water.depth_m, hyd.depth_m)):
+        _refuse("native water depth differs from the hydraulic depth")
+    active_dev = xp.asarray(fresh.active)
+    try:
+        threshold = reroute_threshold_m(ctx)
+        gate = gate_displacement_m(bed, ctx, state.held_source_m, active_dev)
+        net = committed_displacement_m(bed, state.held_source_m, active_dev)
+    except Exception as exc:
+        raise PondCheckpointError(f"geometry gate cannot be evaluated: {exc}") from None
+    if not (gate < threshold and net < threshold):
+        _refuse(f"the held source lags the bed by {max(gate, net)} m >= the commit threshold {threshold} m: not an accepted state")
+
+    # phase partition of the ACTUAL mobile pool
+    try:
+        network = face_network_from_pond_topology(fresh, xp=xp)
+        phase = PhaseState(fraction=state.phase_fraction, position_m=state.phase_position_m, dx_m=fresh.dx_m,
+                           n_bins=event.control.phase_bins, xp=xp)
+        validate_phase(network, bed.water.mobile_mass_by_cell_class_kg, phase)
+    except Exception as exc:
+        raise PondCheckpointError(f"phase state does not partition the mobile pool: {exc}") from None
+
+    _validate_scalars(event, state, scalars, handoff)
+    if handoff is not None:
+        _validate_handoff(event, state, handoff, arrays)
+
+    # native ledger audit (water and sediment closure); also binds the event runtime lazily to the verified topology
+    try:
+        audit = event.audit(state)
+    except Exception as exc:
+        raise PondCheckpointError(f"event audit failed: {exc}") from None
+    if audit["water"]["closes"] is not True or audit["sediment"]["closes"] is not True:
+        _refuse("water / sediment budgets of the state do not close")
+    if handoff is not None:
+        # measured global budget (the live audit's reset removal) and the declared receipts must agree to MAPLE's bound
+        receipts = _reset_receipts(state, event)
+        measured = float(audit["water"]["reset_removed_m3"])
+        bound = receipts["surface"][1] + receipts["soil"][1]
+        declared = [("accounting", handoff.accounting["surface_removed_m3"] + handoff.accounting["soil_removed_m3"])]
+        final = handoff.accounting["final_audit"]["water"].get("reset_removed_m3")
+        if final is not None:
+            declared.append(("final_audit", final))
+        for label, value in declared:
+            if abs(_real(value, label) - measured) > 2.0 * bound:
+                _refuse(f"declared reset removal ({label}: {value!r}) disagrees with the measured water budget "
+                        f"({measured!r}, bound {2.0 * bound!r})")
+    return arrays, scalars, fresh
+
+
+def _check_canonical_depth(event: PondEvent, v: Any, bed: Any, depth: np.ndarray, available_bytes_fn: Callable[[], int], reserve: int) -> None:
+    """COLD full check that the stored/loaded current canonical depth `D` of every ACTIVE column equals the native canonical depth of the loaded bed (the compact native reader, native NumPy order, bounded batches, its own
+    admission against the explicit reader). The R1a prepare path and the event validation do not read D against the bed, so a tampered or stale D would otherwise be accepted."""
+    from maple_syrup import native_floating_soil as nfs
+
+    active = np.asarray(v._active_host()).reshape(-1)
+    idx = np.flatnonzero(active).astype(np.int64)
+    nb = nfs.NativeBed(bed.voxel_column, bed.active_layer, event.context.geometry, event.context.grain_classes, event.context.mass_resolution_kg, np.array(active.reshape(v.shape)))
+    try:
+        got = nfs.read_canonical_depth(nb, v.config, idx, np.zeros(v.n_cells), batch_cells=v.batch_cells, available_bytes_fn=available_bytes_fn, reserve_bytes=reserve)
+    except fp.nfs.NativeFloatingMemoryError:
+        raise
+    except Exception as exc:
+        _fail(f"the native canonical depth of the bed cannot be read: {exc}")
+    if not np.array_equal(got, np.asarray(depth)[idx]):
+        _fail("the stored current canonical depth differs from the native canonical depth of the checkpoint bed (stale or tampered depth record)")
+
+
+# --- scalar validator (verbatim copy of the historical one; ONLY the native-call rule is extended) ----------------------------------
+def _validate_scalars(event: PondEvent, state: PondEventState, scalars: dict, handoff: PondDryHandoff | None) -> None:
+    """FLOATING copy of `pond_checkpoint._validate_scalars` (identical except the declared native-call rule, which adds the producer-maintained terminal count; drift-guarded by test). Counter / clock / source consistency (every relation is an invariant of the accepted step of `PondEvent`)."""
+    c, wl, q, top = scalars["counters"], scalars["water"], scalars["quiet"], state.topology
+    t = scalars["t_s"]
+    n_steps = c["n_accepted_steps"]
+    if n_steps != wl["n_steps"]:
+        _refuse("accepted-step counter disagrees with the water ledger step count")
+    if wl["t_end_s"] != t or wl["t0_s"] > t or (n_steps == 0) != (wl["t0_s"] == t):
+        _refuse("water ledger clock disagrees with the state clock")
+    if c["n_refreshes"] != top.generation or c["n_refreshes"] > c["n_commits"]:
+        _refuse("refresh counter disagrees with the topology generation / commits")
+    if c["n_maple_trigger_commits"] + c["n_net_elevation_commits"] + c["n_final_commits"] > c["n_commits"]:
+        _refuse("commit reason counters exceed the commit counter")
+    if c["n_splash_exchanges"] > n_steps or (event.splash is None and c["n_splash_exchanges"]):
+        _refuse("splash exchange counter inconsistent")
+    base = 2 * n_steps + 2 * c["n_splash_exchanges"]
+    calls = scalars["sediment"]["n_native_calls"]
+    terminal = state.sediment.n_terminal_native_calls  # PRODUCER-maintained by `_settle_terminal` (S4-1); 0 for every state of a /1 or /2 file
+    if type(terminal) is not int or terminal < 0:
+        _refuse("terminal native-call count must be an integer >= 0")
+    if (terminal > 0) != bool(np.any(np.asarray(state.sediment.deposited_terminal) > 0.0)):
+        _refuse("terminal native-call count disagrees with the terminal deposition ledger")
+    if (calls != base + terminal) if handoff is None else (calls not in (base + terminal, base + terminal + 1)):
+        _refuse("native call counter disagrees with the accepted steps and terminal exchanges")
+    _validate_commit_log(state.counters.commit_log, event, c, top.generation)
+    if handoff is not None:
+        if q != {"since_s": None, "last_t_s": None, "window_depth_change_m": 0.0, "ready": False}:
+            _refuse("a completed state must carry the reset quiet monitor")
+        return
+    # a RETAINED terminal settlement that woke the flow returns the FRESH quiet monitor of a wet state with accepted steps (`settle_retaining_water` -> `PondQuiet()`); it is accepted ONLY with the producer's own evidence that a
+    # terminal settlement ran (a terminal native call or the forced final commit counter), never as a general relaxation
+    fresh = q == {"since_s": None, "last_t_s": None, "window_depth_change_m": 0.0, "ready": False}
+    woken = fresh and n_steps > 0 and (terminal > 0 or c["n_final_commits"] > 0)
+    if not woken and ((q["last_t_s"] is None) != (n_steps == 0) or (q["last_t_s"] is not None and q["last_t_s"] != t)):
+        _refuse("quiet monitor time differs from the accepted state")
+    pol = event.policy
+    since = q["since_s"]
+    if since is None:
+        if q["ready"] or q["window_depth_change_m"] != 0.0:
+            _refuse("quiet monitor without an interval cannot be ready or carry a depth change")
+    else:
+        if not (event.schedule.end_s <= since <= q["last_t_s"]) or q["window_depth_change_m"] > pol.max_depth_change_m:
+            _refuse("quiet interval is outside the rain end, the state time or the depth-change bound")
+        if q["ready"] != bool(q["last_t_s"] - since >= pol.hold_s):
+            _refuse("quiet ready flag disagrees with the hold time")
+
+
+# --- save ----------------------------------------------------------------------------------------------------------------
+def _floating_arrays(v: Any, payload: Any) -> tuple[dict, dict]:
+    """Host arrays of the floating block and the manifest facts, from the vertical's HELD template and the CURRENT payload (sealed copies)."""
+    t = v.held_template()
+    maps = t.column._maps
+    arrays = {"fl_water": np.array(payload.state.water_m, copy=True), "fl_wetting": np.array(payload.history.wetting_m, copy=True), "fl_cum_intake": np.array(payload.history.cumulative_intake_m, copy=True),
+              "fl_depth": np.array(payload.depth_m, copy=True), "fl_depth0": np.array(t.depth0_m, copy=True), "fl_held_fc": np.array(maps["theta_field_capacity"], copy=True),
+              "fl_held_sat": np.array(maps["theta_saturation"], copy=True)}
+    if t.ks_m_s is not None:
+        arrays["fl_ks"] = np.array(t.ks_m_s, copy=True)
+    for name, a in arrays.items():
+        arrays[name] = np.ascontiguousarray(a, dtype=np.float64)
+    facts = {"vertical_identity": v.identity, "root_column_sha256": t.column.sha256, "root_matrix_op_sha256": t.matrix_op.sha256,
+             "root_pref_sha256": None if t.preferential is None else t.preferential.sha256, "owner_config_sha256": t.config_sha256, "generation": int(t.generation), "source_witness": t.source_witness,
+             "soil_t_s_hex": float(payload.state.t_s).hex(), "n_layers": int(v.n_layers), "shape": [int(v.shape[0]), int(v.shape[1])], "has_ks": t.ks_m_s is not None}
+    return arrays, facts
+
+
+def save_floating_pond_checkpoint(path: Any, state: Any, event: PondEvent, identity: dict, *, available_bytes_fn: Callable[[], int], reserve_bytes: int = 0,
+                                  max_bytes: int = DEFAULT_MAX_CHECKPOINT_BYTES) -> Path:
+    """Write a NEW floating checkpoint directory for a wet `PondEventState` of `event` (module docstring). Everything is validated BEFORE the first byte is written; a Windowed bed must already be PUBLISHED (no pending trust,
+    no publication here); staged no-overwrite rename; nothing is committed, rerouted, reset or finalised."""
+    from maple.core.backend import to_host
+    from maple.io.outputs.snapshot import save_state_snapshot
+
+    v = _check_event(event)
+    limit = pc._max_bytes(max_bytes)
+    reserve = _reserve(reserve_bytes)
+    ident = pc._canonical_identity(identity)
+    target = Path(path)
+    if os.path.lexists(target):
+        _fail(f"checkpoint path already exists (no overwrite): {target}")
+    parent = target.resolve().parent
+    if not parent.is_dir():
+        _fail(f"the parent directory of the checkpoint does not exist: {parent}")
+    target = parent / target.name
+    if type(state) is not PondEventState or state.status != "wet":
+        _fail("save needs a genuine wet PondEventState (the floating profile has no dry handoff)")
+    windowed = isinstance(state.bed, BedState) and is_windowed_bed(state.bed)
+    if windowed:
+        _require_published(state.bed)  # a pending journal is refused before any other work (publish through the event's own storage policy first)
+    L, N = v.n_layers, v.n_cells
+    # composed admission from the ACTUAL dimensions BEFORE any host copy
+    spec_bytes = 0
+    for name, (shape, dtype, _sign, _loc) in {**_specs(event, dry=False), **_floating_specs(L, N, v.held_template().ks_m_s is not None)}.items():
+        if None not in shape:
+            spec_bytes += int(np.prod(shape, dtype=np.int64)) * np.dtype(dtype).itemsize
+    bed = state.bed
+    native_bytes = (pc._windowed_resident_nbytes(bed, pc._deep_record(bed.voxel_column, event), ident) if windowed
+                    else pc._tree_nbytes(bed.voxel_column) + pc._tree_nbytes(bed.active_layer) + pc._tree_nbytes(bed.sediment_availability) + pc._tree_nbytes(bed.water))
+    _read(available_bytes_fn, _model_bytes(event, v, table_bytes=spec_bytes, native_bytes=native_bytes, reserve=reserve), "floating checkpoint save")
+    try:
+        event._check_state(state)
+    except Exception as exc:
+        _fail(f"the state is not valid for this event: {exc}")
+    try:
+        payload = v.current_payload(state.hydraulic.soil_water_m)
+    except fp.FloatingPondError as exc:
+        _fail(f"the state's soil water was not issued by this vertical: {exc}")
+    if float(state.hydraulic.t_s) != float(payload.state.t_s):
+        _fail("the hydraulic clock differs from the soil clock")
+    storage = "windowed" if windowed else "dense"
+    if storage != event.control.bed_storage:
+        _fail("the bed storage differs from the event's configured storage")
+    arrays, scalars, _fresh = _validate_floating_state(event, state, None, storage)
+    fl_arrays, facts = _floating_arrays(v, payload)
+    _check_canonical_depth(event, v, state.bed, fl_arrays["fl_depth"], available_bytes_fn, reserve)
+    if not np.array_equal(arrays["hyd_soil"], fl_arrays["fl_water"].sum(axis=0).reshape(tuple(v.shape))):
+        _fail("the derived soil water does not equal the layer sum of the floating inventory")
+    table: dict[str, dict] = {}
+    host: dict[str, np.ndarray] = {}
+
+    def add_host(name: str, array: Any) -> None:
+        h = np.array(np.asarray(to_host(array) if not isinstance(array, np.ndarray) else array), copy=True, order="C")
+        if not _dtype_ok(h.dtype.str) or h.ndim > _MAX_NDIM:
+            _fail(f"{name}: dtype {h.dtype.str} / ndim {h.ndim} not allowed")
+        host[name] = h
+        table[name] = {"dtype": h.dtype.str, "shape": [int(n) for n in h.shape]}
+
+    for name, array in arrays.items():
+        add_host(name, array)
+    for name, array in fl_arrays.items():
+        add_host(name, array)
+
+    def add_native(array: np.ndarray) -> str:
+        name = f"native_{len(host):04d}"
+        host[name] = array
+        table[name] = {"dtype": array.dtype.str, "shape": [int(n) for n in array.shape]}
+        return name
+
+    native = {"ledger": _native_encode(bed.ledger, add_native), "committed_topography": _native_encode(bed.committed_topography, add_native)}
+    schema = WINDOWED_SCHEMA_V2 if windowed else SCHEMA_V2  # the extended terminal-count profile is the ONLY one written
+    binding = _binding(event, schema)
+    vox = bed.voxel_column.mass_kg if not windowed else None
+    manifest = {"schema": schema, "profile": PROFILE, "identity": ident, "status": "wet", "array_backend": event.xp.__name__, "hydraulic_backend": event.control.backend, "source": pc.pond_checkpoint_source_pair(),
+                "binding": binding, "binding_sha256": _sha256_text(_json_dumps(binding)), "floating": facts, "files": {},
+                "payload": {"scalars": scalars, "arrays": table, "native": native, "accounting": None},
+                "native_dense": None if windowed else {"voxel_shape": [int(n) for n in vox.shape], "native_bytes": int(native_bytes)}}
+    manifest["terminal_exchange"] = {"n_terminal_native_calls": int(state.sediment.n_terminal_native_calls)}  # producer-maintained (`_settle_terminal`); distinguished by the new schema, never implied by an old manifest
+    deep = None
+    if windowed:
+        deep = pc._deep_record(bed.voxel_column, event)
+        manifest["bed_storage"] = "windowed"
+        manifest["deep_storage"] = deep
+    try:
+        _json_dumps(manifest)
+    except (TypeError, ValueError) as exc:
+        _fail(f"manifest is not strict JSON: {exc}")
+    estimate = sum(a.nbytes for a in host.values()) + native_bytes
+    if estimate > limit:
+        _fail(f"checkpoint needs about {estimate} uncompressed bytes, above max_bytes = {limit}; nothing was written")
+    staging = Path(tempfile.mkdtemp(prefix=f".{target.name}.partial-", dir=parent))
+    try:
+        provenance = {"syrup_floating_pond_checkpoint_schema": schema, "requires_companion": True, "identity": ident, "binding_sha256": manifest["binding_sha256"], "array_backend": event.xp.__name__,
+                      "hydraulic_backend": event.control.backend, "status": "wet"}
+        if windowed:
+            from maple.surface.voxels.windowed_snapshot import (
+                save_windowed_state_snapshot,
+            )
+
+            provenance.update(pc._windowed_provenance(deep))
+            save_windowed_state_snapshot(bed.voxel_column, bed.active_layer, scalars["t_s"], staging / PAYLOADS[0], step=scalars["counters"]["n_accepted_steps"], geometry=event.context.geometry,
+                                         mass_resolution_kg=event.context.mass_resolution_kg, sediment_availability=bed.sediment_availability, water=bed.water, provenance=provenance)
+        else:
+            save_state_snapshot(bed.voxel_column, bed.active_layer, scalars["t_s"], staging / PAYLOADS[0], step=scalars["counters"]["n_accepted_steps"],
+                                reason="SYRUP floating pond checkpoint component: companion continuation file required", geometry=event.context.geometry,
+                                mass_resolution_kg=event.context.mass_resolution_kg, sediment_availability=bed.sediment_availability, water=bed.water, provenance=provenance)
+        np.savez(staging / PAYLOADS[1], **host)
+        total, audited = 0, {}
+        for name in PAYLOADS:
+            audited[name] = _zip_audit(staging / name, limit, budget_used=total)
+            total += sum(audited[name].values())
+        _npy_preflight(staging / PAYLOADS[1], audited[PAYLOADS[1]], table)
+        if windowed:
+            pc._windowed_snapshot_preflight(staging / PAYLOADS[0], audited[PAYLOADS[0]], _native_expected(event, deep))
+        else:
+            _npy_preflight(staging / PAYLOADS[0], audited[PAYLOADS[0]], None)
+            manifest["native_dense"]["native_member_bytes"] = int(sum(audited[PAYLOADS[0]].values()))
+        files = {name: _hash_file(staging / name, limit)[0] for name in PAYLOADS}
+        sealed = _seal({**manifest, "files": files})
+        _write_manifest(staging / MANIFEST_NAME, sealed)
+        if os.path.lexists(target):
+            _fail("checkpoint destination appeared during the write; nothing was overwritten")
+        os.rename(staging, target)
+    except BaseException:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+    return target
+
+
+def _write_manifest(path: Path, manifest: dict) -> None:
+    text = _json_dumps(manifest)
+    with path.open("x", encoding="utf-8") as handle:
+        handle.write(text)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+# --- load ----------------------------------------------------------------------------------------------------------------
+def _dense_native_dims_check(path: Path, sizes: dict[str, int], rec: Any) -> int:
+    """Cross-validate the ACTUAL native dense snapshot dimensions from the member headers against the manifest record (BEFORE any array is loaded); returns the verified uncompressed member bytes."""
+    if not isinstance(rec, dict) or set(rec) != {"voxel_shape", "native_bytes", "native_member_bytes"}:
+        _fail("native_dense record keys mismatch")
+    shape = rec["voxel_shape"]
+    if not isinstance(shape, list) or len(shape) != 4 or any(type(n) is not int or n < 1 for n in shape):
+        _fail("native_dense voxel_shape is malformed")
+    total = int(sum(sizes.values()))
+    if type(rec["native_member_bytes"]) is not int or total != rec["native_member_bytes"]:
+        _fail("the native snapshot member bytes differ from the manifest's record")
+    found = 0
+    try:
+        with zipfile.ZipFile(path) as archive:
+            for info in archive.infolist():
+                with archive.open(info) as member:
+                    got, fortran, dtype = _read_npy_header(member, f"{path.name}:{info.filename}")
+                if len(got) == 4 and dtype.str == "<f8" and not fortran and list(got) == shape:
+                    found += 1
+    except FloatingCheckpointError:
+        raise
+    except (ValueError, EOFError, OSError, zipfile.BadZipFile, SyntaxError, TypeError, KeyError) as exc:
+        _fail(f"{path.name}: malformed .npy header or archive: {exc}")
+    if found != 1:
+        _fail("the native snapshot's voxel array header does not match the manifest's recorded dimensions")
+    return total
+
+
+def _check_windowed_snapshot_floating(snapshot: Any, data: dict, deep: dict) -> None:
+    """Floating-schema twin of `pond_checkpoint._check_windowed_snapshot` (its provenance expectation is hard-wired to the historical schema)."""
+    from maple.core.types.voxel import WindowedVoxelColumnState
+
+    keys = {"voxel_column", "active_layer", "sediment_availability", "water", "time_s", "step", "validated", "restartable", "is_diagnostic", "provenance"}
+    if not isinstance(snapshot, dict) or set(snapshot) != keys:
+        _fail("windowed MAPLE snapshot fields differ from the native layout")
+    if snapshot["validated"] is not True or snapshot["restartable"] is not True or snapshot["is_diagnostic"] is not False:
+        _fail("invalid MAPLE windowed snapshot (not validated / restartable, or diagnostic)")
+    wanted = {"syrup_floating_pond_checkpoint_schema": data["schema"], "requires_companion": True, "identity": data["identity"], "binding_sha256": data["binding_sha256"],
+              "array_backend": data["array_backend"], "hydraulic_backend": data["hydraulic_backend"], "status": data["status"], **pc._windowed_provenance(deep)}
+    if snapshot["provenance"] != wanted:
+        _fail("MAPLE windowed snapshot provenance is not bound to this manifest")
+    column = snapshot["voxel_column"]
+    if not isinstance(column, WindowedVoxelColumnState) or column.pending_deep is not None:
+        _fail("the snapshot column is not a published WindowedVoxelColumnState")
+    store, header = column.deep_store, column.deep_store.header
+    if (int(store.format_version) != deep["store_format_version"] or store.manifest_digest != deep["physical_manifest_digest"] or store.logical_manifest_digest != deep["logical_manifest_digest"]
+            or header.digest() != deep["header_digest"] or str(Path(store.store_dir).resolve()) != deep["store_dir"] or int(store.version_id) != deep["generation"]
+            or int(column.generation) != deep["generation"] or int(column.n_voxels) != deep["n_voxels"] or int(column.window_kg.shape[2]) != deep["window_voxels"]
+            or int(header.chunk_columns) != deep["chunk_columns"] or int(store.n_chunks) != deep["n_chunks"] or [str(c) for c in header.class_ids] != deep["class_ids"]
+            or column.height_packet is None or int(column.height_packet.packet_terms) != deep["packet_terms"]):
+        _fail("the loaded deep-store version is not the one recorded in the manifest (identity, format, geometry or store location differ)")
+
+
+def _check_held(v: Any, facts: dict, arrays: dict) -> None:
+    """The target's HELD template (built from the GENUINE ORIGINAL case) must equal the stored held facts and map bytes exactly: nothing is re-derived from the checkpoint bed."""
+    t = v.held_template()
+    maps = t.column._maps
+    ok = (facts["root_column_sha256"] == t.column.sha256 and facts["root_matrix_op_sha256"] == t.matrix_op.sha256 and facts["root_pref_sha256"] == (None if t.preferential is None else t.preferential.sha256)
+          and facts["owner_config_sha256"] == t.config_sha256 and facts["generation"] == int(t.generation) and facts["source_witness"] == t.source_witness and facts["has_ks"] == (t.ks_m_s is not None)
+          and np.array_equal(arrays["fl_held_fc"], maps["theta_field_capacity"]) and np.array_equal(arrays["fl_held_sat"], maps["theta_saturation"]) and np.array_equal(arrays["fl_depth0"], t.depth0_m)
+          and (t.ks_m_s is None or np.array_equal(arrays["fl_ks"], t.ks_m_s)))
+    if not ok:
+        _fail("the target's HELD template differs from the file's stored held maps / identities / source facts (the restart target must be built from the genuine ORIGINAL case)")
+
+
+def load_floating_pond_checkpoint(path: Any, event: PondEvent, expected_identity: dict, *, available_bytes_fn: Callable[[], int], reserve_bytes: int = 0,
+                                  max_bytes: int = DEFAULT_MAX_CHECKPOINT_BYTES, expected_bed_storage: str | None = None) -> PondEventState:
+    """Restore a floating checkpoint into `event` (a fresh PondEvent whose vertical was built from the GENUINE ORIGINAL case). Returns the registered wet `PondEventState` (module docstring for the order)."""
+    from maple.io.outputs.snapshot import load_state_snapshot
+
+    from maple_syrup.pond_event import PondEventError
+
+    v = _check_event(event)
+    limit = pc._max_bytes(max_bytes)
+    reserve = _reserve(reserve_bytes)
+    if expected_bed_storage is not None and expected_bed_storage not in pc.STORAGES:
+        _fail(f"expected_bed_storage must be None or one of {pc.STORAGES}")
+    expected = pc._canonical_identity(expected_identity)
+    root = Path(path)
+    if root.is_symlink() or not root.is_dir():
+        _fail(f"checkpoint path is not a plain directory: {root}")
+    root = root.resolve()
+    if {p.name for p in root.iterdir()} != {MANIFEST_NAME, *PAYLOADS}:
+        _fail("floating checkpoint directory must contain exactly the manifest and the two payload files")
+    # stage 0: the bounded manifest read (3 copies: bytes, text, parsed tree) + hash/header buffers, admitted BEFORE the manifest is read
+    try:
+        msize = os.lstat(root / MANIFEST_NAME).st_size
+    except OSError as exc:
+        _fail(f"floating checkpoint manifest is missing: {exc}")
+    _read(available_bytes_fn, 3 * int(msize) + HASH_BUFFER_BYTES + HEADER_AUDIT_BYTES + reserve, "floating checkpoint manifest read")
+    data = _read_manifest(root)
+    schema = data.get("schema")
+    if schema not in READ_SCHEMAS:
+        _fail(f"checkpoint schema {schema!r} is not a floating pond checkpoint schema (historical pond/event checkpoints are not read by this profile)")
+    windowed = _is_windowed(schema)
+    v2 = _is_v2(schema)
+    if expected_bed_storage is not None and (expected_bed_storage == "windowed") != windowed:
+        _fail("the checkpoint's bed storage is not the expected one (no cross-storage conversion)")
+    keys = (WINDOWED_MANIFEST_KEYS_V2 if windowed else MANIFEST_KEYS_V2) if v2 else (WINDOWED_MANIFEST_KEYS if windowed else MANIFEST_KEYS)
+    if set(data) != keys:
+        _fail(f"manifest keys mismatch: missing {sorted(keys - set(data))}, unknown {sorted(set(data) - keys)}")
+    if _hex(data["manifest_sha256"], "manifest_sha256") != _seal(data)["manifest_sha256"]:
+        _fail("manifest hash mismatch (the manifest was modified)")
+    if data["profile"] != PROFILE:
+        _fail("unknown profile")
+    if data["identity"] != expected:
+        _fail("checkpoint case / source / config identity differs from the expected identity")
+    if data["source"] != pc.pond_checkpoint_source_pair():
+        _fail("source pair mismatch: the imported maple_syrup / maple packages differ from the ones that wrote the checkpoint (refused before any payload is read)")
+    if data["array_backend"] != "numpy" or data["hydraulic_backend"] not in CPU_BACKENDS or data["hydraulic_backend"] != event.control.backend:
+        _fail("backend mismatch: the floating file profile is CPU only and the hydraulic backend must equal the event's")
+    if data["status"] != "wet":
+        _fail("a floating checkpoint is a wet state")
+    binding = _binding(event, schema)
+    if data["binding"] != binding or data["binding_sha256"] != _sha256_text(_json_dumps(binding)):
+        diff = sorted(k for k in binding if not isinstance(data["binding"], dict) or data["binding"].get(k) != binding[k])
+        _fail(f"event binding mismatch (static inputs differ from the ones that wrote the checkpoint): {diff}")
+    facts = data["floating"]
+    if not isinstance(facts, dict) or set(facts) != FLOATING_KEYS:
+        _fail("floating block keys mismatch")
+    if facts["vertical_identity"] != v.identity or facts["n_layers"] != v.n_layers or facts["shape"] != [int(v.shape[0]), int(v.shape[1])]:
+        _fail("the floating block does not describe the target vertical")
+    payload = data["payload"]
+    if not isinstance(payload, dict) or set(payload) != pc.PAYLOAD_KEYS or payload["accounting"] is not None:
+        _fail("payload keys mismatch")
+    files = data["files"]
+    if not isinstance(files, dict) or set(files) != set(PAYLOADS):
+        _fail("payload file set mismatch")
+    terminal_calls = 0  # a /1 or /2 manifest has NO terminal-exchange field: its count is 0 by definition and the ORIGINAL rule (calls == 2*steps + 2*splash) applies unchanged
+    if v2:
+        rec = data["terminal_exchange"]
+        if not isinstance(rec, dict) or set(rec) != {"n_terminal_native_calls"} or type(rec["n_terminal_native_calls"]) is not int or rec["n_terminal_native_calls"] < 0:
+            _fail("terminal_exchange record is malformed")
+        terminal_calls = rec["n_terminal_native_calls"]
+    deep = pc._check_deep_record(data["deep_storage"], event, limit) if windowed else None
+    if windowed and data["bed_storage"] != "windowed":
+        _fail("bed_storage mismatch")
+    if event.control.bed_storage != ("windowed" if windowed else "dense"):
+        _fail("the event's bed storage is not the checkpoint's")
+    # hashes, archive directory, declared table and header audits (bounded streaming buffers; no payload array is expanded)
+    for name in PAYLOADS:
+        if _hash_file(root / name, limit)[0] != _hex(files[name], f"files[{name}]"):
+            _fail(f"checkpoint payload hash mismatch: {name}")
+    total, member_sizes = 0, {}
+    for name in PAYLOADS:
+        sizes = _zip_audit(root / name, limit, budget_used=total)
+        total += sum(sizes.values())
+        member_sizes[name] = sizes
+    specs = {**_specs(event, dry=False), **_floating_specs(v.n_layers, v.n_cells, bool(facts["has_ks"]))}
+    table = payload["arrays"]
+    _audit_array_table(table, specs, member_sizes[PAYLOADS[1]], limit)
+    _npy_preflight(root / PAYLOADS[1], member_sizes[PAYLOADS[1]], table)
+    if windowed:
+        pc._windowed_snapshot_preflight(root / PAYLOADS[0], member_sizes[PAYLOADS[0]], _native_expected(event, deep))
+        native_bytes = int(sum(member_sizes[PAYLOADS[0]].values()))
+    else:
+        _npy_preflight(root / PAYLOADS[0], member_sizes[PAYLOADS[0]], None)
+        native_bytes = _dense_native_dims_check(root / PAYLOADS[0], member_sizes[PAYLOADS[0]], data["native_dense"])
+    # stage 1: the FULL composed model from the verified dimensions, BEFORE any payload array is loaded
+    table_bytes = sum(int(np.prod(rec["shape"], dtype=np.int64)) * np.dtype(rec["dtype"]).itemsize for rec in table.values())
+    _read(available_bytes_fn, _model_bytes(event, v, table_bytes=table_bytes, native_bytes=native_bytes, reserve=reserve), "floating checkpoint load")
+    if windowed:
+        from maple.surface.voxels.windowed_snapshot import load_windowed_state_snapshot
+
+        remaining = limit - sum(member_sizes[PAYLOADS[1]].values())
+        if remaining < 1:
+            _fail("max_bytes leaves no room for the native snapshot after the companion")
+        ctx = event.context
+        try:
+            snapshot = load_windowed_state_snapshot(root / PAYLOADS[0], geometry=ctx.geometry, grain_classes=ctx.grain_classes, mass_resolution_kg=ctx.mass_resolution_kg, max_bytes=int(remaining))
+        except Exception as exc:
+            _fail(f"MAPLE windowed snapshot cannot be loaded (is the referenced deep-store version retained and unmodified?): {exc}")
+        _check_windowed_snapshot_floating(snapshot, data, deep)
+    else:
+        try:
+            snapshot = load_state_snapshot(root / PAYLOADS[0])
+        except Exception as exc:
+            _fail(f"MAPLE snapshot cannot be loaded: {exc}")
+        if not snapshot["validated"] or not snapshot["restartable"] or snapshot["is_diagnostic"]:
+            _fail("invalid MAPLE component snapshot (not validated / restartable, or diagnostic)")
+        try:
+            prov = json.loads(snapshot["provenance_json"])
+        except ValueError:
+            prov = None
+        if (not isinstance(prov, dict) or prov.get("syrup_floating_pond_checkpoint_schema") != schema or prov.get("binding_sha256") != data["binding_sha256"] or prov.get("identity") != data["identity"]
+                or prov.get("status") != "wet" or prov.get("array_backend") != data["array_backend"] or prov.get("hydraulic_backend") != data["hydraulic_backend"] or prov.get("requires_companion") is not True):
+            _fail("MAPLE snapshot provenance is not bound to this manifest")
+        if snapshot["water"] is None or snapshot["sediment_availability"] is None or snapshot["history_store_path"] or any(snapshot.get(k) is not None for k in pc._FOREIGN_SNAPSHOT_FIELDS):
+            _fail("MAPLE snapshot lacks water / availability or carries foreign optional state")
+    # companion arrays through the fixed whitelist
+    used: set[str] = set()
+    try:
+        archive = np.load(root / PAYLOADS[1], allow_pickle=False)
+    except Exception as exc:
+        _fail(f"companion cannot be opened: {exc}")
+    with archive:
+        if set(archive.files) != set(table):
+            _fail("companion arrays differ from the array table")
+
+        def get_array(name: Any) -> np.ndarray:
+            if not isinstance(name, str) or name not in table:
+                _fail(f"unknown array reference {name!r}")
+            if name in used:
+                _fail(f"aliased array {name}")
+            used.add(name)
+            rec = table[name]
+            try:
+                a = np.array(archive[name], copy=True, order="C")
+            except (ValueError, OSError, zipfile.BadZipFile, EOFError) as exc:
+                _fail(f"array {name} cannot be read: {exc}")
+            if a.dtype.str != rec["dtype"] or list(a.shape) != rec["shape"]:
+                _fail(f"array {name}: stored dtype / shape differ from the table")
+            if a.dtype.kind == "f" and not np.isfinite(a).all():
+                _fail(f"array {name} holds non-finite values")
+            a.flags.writeable = False
+            return a
+
+        if not isinstance(payload["native"], dict) or set(payload["native"]) != {"ledger", "committed_topography"}:
+            _fail("native companion keys mismatch")
+        host_arrays = {name: get_array(name) for name in specs}
+        ledger = _native_decode(payload["native"]["ledger"], get_array)
+        committed = _native_decode(payload["native"]["committed_topography"], get_array)
+    if used != set(table):
+        _fail("unused or missing companion arrays")
+    _check_held(v, facts, host_arrays)  # the stored held bytes vs the target built from the ORIGINAL case, before any state is built
+    scalars = payload["scalars"]
+    state = pc._build_state(event, scalars, host_arrays, lambda n: np.array(host_arrays[n], copy=True), lambda n: np.array(host_arrays[n], copy=True), snapshot, ledger, committed, "wet")
+    if terminal_calls:  # the historical builder knows no such field: carry the file's count into the additive ledger field (a /1 or /2 file keeps the default 0)
+        state = dataclasses.replace(state, sediment=dataclasses.replace(state.sediment, n_terminal_native_calls=terminal_calls))
+    fl = {k: host_arrays[k] for k in _floating_specs(v.n_layers, v.n_cells, bool(facts["has_ks"]))}
+    held = {"theta_field_capacity": fl["fl_held_fc"], "theta_saturation": fl["fl_held_sat"], "depth0_m": fl["fl_depth0"]}
+    if facts["has_ks"]:
+        held["ks_m_s"] = fl["fl_ks"]
+    current = {"water_m": fl["fl_water"], "wetting_m": fl["fl_wetting"], "cumulative_intake_m": fl["fl_cum_intake"], "depth_m": fl["fl_depth"]}
+    with _minting():
+        inputs = VerifiedFloatingInputs(schema, "windowed" if windowed else "dense", event.config_sha256, event.forcing_sha256, v.identity, v.backend, float.fromhex(facts["soil_t_s_hex"]),
+                                        facts["root_column_sha256"], facts["root_matrix_op_sha256"], facts["root_pref_sha256"], facts["owner_config_sha256"], int(facts["generation"]),
+                                        facts["source_witness"], MappingProxyType(dict(data["source"])), MappingProxyType(held), MappingProxyType(current), state, _json_dumps(scalars))
+    _DIGESTS[inputs] = _input_digest(inputs)  # computed OUTSIDE the tight mint window
+    prepared, new_state = fr.prepare_from_verified_inputs(event, inputs, available_bytes_fn=available_bytes_fn, reserve_bytes=reserve)
+    with v.resume_scope(prepared):  # provisional resolution: the registry is NOT touched; the INDEPENDENT validation runs here
+        try:
+            _check_canonical_depth(event, v, new_state.bed, inputs.current["depth_m"], available_bytes_fn, reserve)
+            _a, check_scalars, _fresh = _validate_floating_state(event, new_state, None, "windowed" if windowed else "dense")
+            if _json_dumps(check_scalars) != inputs.scalars_json:
+                _fail("scalars of the reconstructed state differ from the saved payload")
+            event._check_state(new_state)
+        except (PondCheckpointError, PondEventError, fp.FloatingPondError) as exc:
+            if isinstance(exc, FloatingCheckpointError):
+                raise
+            _fail(f"the restored floating state failed the independent validation: {exc}")
+    v.adopt_resumed(prepared)  # the ONE registration, LAST
+    return new_state

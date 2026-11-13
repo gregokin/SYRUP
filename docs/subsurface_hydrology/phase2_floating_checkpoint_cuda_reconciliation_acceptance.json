@@ -1,0 +1,37 @@
+{
+  "status": "independently_accepted_bounded_dense_cuda_reconciliation_with_H2C4_EB1",
+  "utc": "2026-11-13T16:23:26.771142+00:00",
+  "production_source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_dense_integrated_snapshot158",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_dense_integrated_snapshot158_manifest.json",
+  "source_manifest_sha256": "9db1f3f3072151175e59611a26bb6b3efa9a0d5db2875c0bb5c98d8884169f2c",
+  "test_only_followup_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_gpu_dense_integrated_tests_c1_snapshot158",
+  "all158_production_bytes_same_in_test_followup": true,
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "cpu_tests": {
+    "gpu_file_host_functional": 29,
+    "CPU_H2C4_outer": 29,
+    "CPU_floating_child_physical": 38,
+    "CPU_child_scalar_AST_guard_followup": 1,
+    "genuine_completion": 11,
+    "original_kernel_guards": 26,
+    "total_passed": 134,
+    "historical_author_candidate_audits_explicitly_deselected": 5
+  },
+  "actual_gpu_tests": {
+    "Dense_file_all": 17,
+    "genuine_Dense_Windowed_completion": 2,
+    "total_passed": 19,
+    "uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "same_child_idle_check_before_each_process": true
+  },
+  "preservation": "H2C4 canonical/save/load/deep-cache/manifest helpers retained; EB1 current-completion methods/old FP stepping AST unchanged; actual historical pond_checkpoint.py byte-identical; actual SourcePair/kernel/dependency guards unchanged. CPU scalar validator only one counted terminal per-class to_host; shared TESTsnapshot only four counted readbacks.",
+  "source_audit_note": "Five author-candidate-only whole155/157/old-baseline checks do not apply after legitimate H2C4+EB1 reconciliation. Excluded explicitly, preserved original evidence; portable per-interface audit reconciliation queued in Windowed candidate. No production source/provenance guard disabled.",
+  "test_guard_followup": "Old CPU scalar AST guard needed declared exact to_host import allowance; Root normalizes ONLY that exact single import, asserts specific counted field conversion, all remaining validation AST compared unchanged. Root targeted test passes; Claude independent review requested in lifecycle assignment. Root initial wrong string pattern aborted before edits, then corrected.",
+  "limits": [
+    "Qualified combined158 source only; later EB2 main159 has separate component acceptance; final source-pair integration remains whole-phase work.",
+    "Dense CUDA physical child/7 only, no Windowed8/generalGPUouter/dailyphysicalrestart claim.",
+    "No wind adapter or general whole-catchment acceptance."
+  ],
+  "committed": false
+}

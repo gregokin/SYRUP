@@ -838,10 +838,18 @@ TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST = '24c6e1478ed732df22f448eddf8cb16c3b72f24
 #: differs only by an upfront fixed-capacity gate. The exact class / count / binding checks below are unchanged.
 MERGED_39BCF79_MAPLE_DIGEST = 'af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec'
 #: Every source whose typed `JournalCapacityError` recognizer and overlay publishers are pinned (historical + candidate).
-TYPED_JOURNAL_SOURCE_DIGESTS = frozenset({TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST, MERGED_39BCF79_MAPLE_DIGEST})
+#: E4j (Phase 2): the EXACT native MAPLE `9f466d2cfcd52991b24496cf67f4562d6268afa9` package tree (digest of the imported package of the pinned
+#: materialization `5d850789...`, 412 files). Qualified against the merged 39bcf79 source by the read-only audit in
+#: `docs/subsurface_hydrology/phase2_native9f_storage.md`: `deep_store.py`, `windowed_step.py` (`publish_windowed_result`) and `windowed_pending.py`
+#: (`publish_pending_column`, `require_published_column`) are FILE-identical to 39bcf79; `JournalCapacityError`, `_require_journal_room`, `_resolve_encoding`
+#: and `publish_staged_windowed_commit` are AST-identical; the other `windowed_transfer.py` / `windowed_commit.py` changes are optional private evidence taps
+#: that are inert (None) on every path used here. One exact pin only: no broad fallback, no message catches, class identity/count/context rules unchanged.
+NATIVE9F_MAPLE_DIGEST = 'fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e'
+TYPED_JOURNAL_SOURCE_DIGESTS = frozenset({TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST, MERGED_39BCF79_MAPLE_DIGEST, NATIVE9F_MAPLE_DIGEST})
 JOURNAL_RECOGNIZER_SOURCES = {JOURNAL_RECOGNIZER_MAPLE_DIGEST: 'm94_pinned_message',
                               TYPED_JOURNAL_RECOGNIZER_MAPLE_DIGEST: 'typed_journal_capacity_error',
-                              MERGED_39BCF79_MAPLE_DIGEST: 'typed_journal_capacity_error'}
+                              MERGED_39BCF79_MAPLE_DIGEST: 'typed_journal_capacity_error',
+                              NATIVE9F_MAPLE_DIGEST: 'typed_journal_capacity_error'}
 
 
 def journal_recognizer_source() -> str | None:

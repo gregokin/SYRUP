@@ -1,0 +1,59 @@
+{
+  "schema": "syrup.root.component_acceptance/1",
+  "status": "accepted_bounded",
+  "component": "S4-1 retained terminal call count and current-boundary quiet-reset receipt in floating CPU checkpoint",
+  "utc": "2026-11-13T12:55:52.758014+00:00",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s4_1_c1_snapshot152",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s4_1_c1_source_manifest.json",
+  "production_hashes": {
+    "pond_event.py": "ce6c6ed295b6571b673cb6292d9403ffd99828df07e81a5213fa79b9bfc1e409",
+    "floating_checkpoint.py": "6b586eef27e42a8bcbdfa95ba441651014fa2df95d20e181a4c19ab0afe2fd32",
+    "pond_checkpoint.py": "94cd2339566646ba44f2015dad13a67194c26a8dd3cc85b56916f62d2b4a704f"
+  },
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "verification": {
+    "root_files": {
+      "passed": 39,
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s4_1_c1_cpu_runs/result.json"
+    },
+    "root_resume_and_historical_files": {
+      "passed": 276,
+      "skipped": 7
+    },
+    "root_composed_daily": {
+      "passed": 126,
+      "skipped": 26,
+      "source_guard_checks": 26,
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s4_1_c1_composed_daily_runs/result.json"
+    },
+    "root_independent_quiet_reproducer": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s4_1_independent_quiet_root_s4_1_c1_snapshot152.json",
+    "actual_gpu_retained_dense_and_windowed": {
+      "passed": 2,
+      "deselected": 15,
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s4_1_c1_terminal_gpu_runs/result.json",
+      "scope": "native retained Pond behavior, NOT GPUfilecodec"
+    }
+  },
+  "confirmed_defect_fixed": "Historical terminal/final-commit totals falsely justified a fresh quiet monitor after a later ordinary step. O(1) producer retained_quiet_reset_step now binds current accepted boundary; original genuine t3->3.2 reproducer refuses invalidquiet, water/sediment unmodified.",
+  "interfaces": {
+    "sediment_ledger_additive_default_fields": {
+      "n_terminal_native_calls": 0,
+      "retained_quiet_reset_step": null
+    },
+    "new_written_profiles": [
+      "maple-syrup-floating-pond-checkpoint/5",
+      "maple-syrup-floating-pond-checkpoint/6"
+    ],
+    "historical_floating_reads": "/1-/4 under original source/strictmanifest semantics; old missing-reset profiles cannot claim fresh quiet after acceptedsteps",
+    "old_pond_codec_sha_unchanged": "94cd2339566646ba44f2015dad13a67194c26a8dd3cc85b56916f62d2b4a704f",
+    "physics": "none; no kernel/routing/quietthreshold/hydrology changes"
+  },
+  "limits": [
+    "Original-held-template CPU target stillrequired; no general context reconstruction bycodec yet",
+    "No CPU/GPU daily physicalcheckpoint or fullstorm/daily handoff qualification",
+    "GPUretainedproducer2cases passed; GPUfilecodec stillunsupported",
+    "Actualempty-pool forcedcommit/topologywake fixture unavailable; producerbranchindependentofcount and checks reviewed, notclaimed tested",
+    "Secondnonemptystormsettlement uses explicit looser eventquietpolicy in fixture",
+    "Sourceguards/stores/restartlocks unchanged; nohistoricalsource rebinding; phase2notcomplete"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "status": "independently_accepted_bounded_CPU_event_lifecycle",
+  "utc": "2026-11-13T17:35:02.533302+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_eb3_c1_snapshot160",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_eb3_c1_snapshot160_manifest.json",
+  "source_manifest_sha256": "4ed69913941a17cbe0f3cb21725227b8ce14d3013fdf9a546b321c5beddb940c",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "root_cpu_tests": {
+    "lifecycle": 19,
+    "pond": 63,
+    "floating": 54,
+    "guards": 26,
+    "total_passed": 162
+  },
+  "root_runs": [
+    "root_eb3_c1_cpu_runs",
+    "root_eb3_c1_independent_runs",
+    "root_eb3_c1_fake_factory_runs",
+    "root_eb3_c1_bottom_ledger_runs"
+  ],
+  "independent_controls": {
+    "late_open_failure": "Actual native initializer then injected detach failure: original owner current/retryable.",
+    "parent_retention": "After genuine next rain step and caller release, old bed and water weakrefs dead; vertical boundary bed/initial state None. Diagnostic runtime_boundary_bed_is_old compares None is None after release and is NOT retention.",
+    "pending_positive_rain": "Refused before head mutation, genuine rain0 allowed.",
+    "fake_public_factory": "Exact public bind_shape + SimpleNamespace event refused before owner retirement.",
+    "positive_native_bottom_drain": "Explicit supported air_entry_override1kPa/open H=.03m<actual D=.12m, 12columns, actual native drainage .00263720538570778m3; lifetime drainage equals native once, residual -2.0816681711721685e-17m3 within existing bound1.323551512073646e-13m3. Refresh-bottom-export0 is correctly separate."
+  },
+  "physics_changes": false,
+  "limits": [
+    "CPU NumPy/Numba only; CUDA lifecycle still explicit refusal.",
+    "Native generation1 produced by actual terminal deposition; subsequent six steps carry source and remain below net gate. Second genuine build across later boundary/file restart generation>0 not yet qualified.",
+    "No daily wet bridge, native wind gap, physical lifecycle file codec or whole Phase2 acceptance.",
+    "Standing-water pending recert fixtures declare looser quiet thresholds; no whole Chastre proof."
+  ],
+  "committed": false
+}

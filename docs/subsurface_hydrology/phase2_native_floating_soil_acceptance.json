@@ -1,0 +1,43 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T08:05:16.974195+00:00",
+  "component": "E3c cold native floating refresh CPU/CUDA, texture Ks and hydraulic-equivalent actual depth",
+  "status": "accepted_bounded_component",
+  "source_manifest": "root_e3c_source_manifest.json",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "verification": "root_c_provider_c1_native_verification.json"
+  },
+  "module_count": 144,
+  "verification": {
+    "cpu_passed": 48,
+    "host_double_passed": 15,
+    "actual_gpu_passed": 14,
+    "launchers": [
+      "root_e3c_cpu_runs/result.json",
+      "root_e3c_gpu_runs/result.json"
+    ],
+    "independent": [
+      "root_e3b_equivalent_depth_root_e3c_snapshot.json",
+      "root_e3b_independent_dense_root_e3c_snapshot.json",
+      "root_e3b_independent_windowed_root_e3c_snapshot.json"
+    ]
+  },
+  "review": [
+    "Raw actual depth refresh separated from porous slab/bottom/FC/SAT reconciliation. Actual depth metadata advances while legal water/J/cumulative/time stay exact on equivalent geometry.",
+    "Witness v2 binds actual mask pattern; exact native Dense/Windowed source validation and once-only parent adoption retained.",
+    "Explicit texture_ks mode preserves measured upper layer Ks, history; default explicit conductivity unchanged.",
+    "Existing 142 non-E3 package modules byte-exact against root_e3b_c2_source_manifest.json."
+  ],
+  "supersedes_limits": [
+    "Historical CPU C2 receipt remains immutable; raw-depth-only cascade defect fixed here.",
+    "Previous E3b/C1 mask mismatch defect fixed, witness version changed explicitly."
+  ],
+  "limits": [
+    "Cold O(NVK) exact boundary scan; not hot evolving Pond integration.",
+    "No floating physical checkpoint, daily profile/CLI, wind scheduler or large-domain/field validation accepted.",
+    "GPU cold host texture computation uses bounded tiles with counted transfers; not an end-to-end GPU speed claim."
+  ],
+  "publication": "Uncommitted; requires whole Phase 2 qualification before authorized publication."
+}

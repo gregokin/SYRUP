@@ -1,0 +1,33 @@
+{
+  "schema": "syrup.phase2.cuda_shared_body_acceptance.v1",
+  "status": "ACCEPTED_COMMON_CUDA_SHARED_BODY_REFACTOR_ONLY",
+  "utc": "2026-11-12T17:32:09.097294+00:00",
+  "source": {
+    "package_sha256": "610ca226b067e74d8ca86b1e41c87dc1d84574bcd1e106b84979b8043bdda500",
+    "file_count": 118,
+    "changed_from_A3": [
+      "subsurface_cuda.py"
+    ],
+    "subsurface_cuda_sha256": "b4055a8514f9db1c52946f385a31736c694a77e1df6e31e1d0e566736cf627ef",
+    "native_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "native_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "host": "30 passed1.61s: common preprocessed step tokens and eight untouched Python function ASTs equivalent, host-compiled old/new execution, exact launch/ledger/cold-import/provenance tests.",
+    "GPU": "23 passed1skip2.81s;32cases256arrays bit-exact vs previous actual frozen A3 CUDA execution. Same-launcher fresh physicalGPU0 UUID0MiB0%17:30:45UTC; .venv-cupy genuine9fCUDA materialization.",
+    "scope": "All117otherA3productionfiles byte-identical, so NumPy/Numba paths unchanged. Old locks/receipts/source metadata unchanged; source hash change recorded openly.",
+    "evidence": [
+      "root_s2_a4_1_cpu_runs/result.json",
+      "root_s2_a4_1_gpu_runs/result.json",
+      "root_s2_a4_1_common_gpu/comparison.json",
+      "root_s2_a4_1_source_manifest.json"
+    ]
+  },
+  "limits": [
+    "Common CUDA source refactor only. No spatial GPU evolution, native moving bed, storm, restart or wholePhase2 acceptance.",
+    "Dormant generic source-variant registration is an experimental rendering hook, not qualified extensible physics or arbitrary-source support; narrow/stateless spatial rendering planned next.",
+    "No GPU performance/register/scaling claim from small bitwise controls.",
+    "Three user physics decisions remain pending. All work uncommitted until whole accepted Phase2; no old checkpoint/source rebinding."
+  ],
+  "known_open_confirmed_physics_defects": []
+}

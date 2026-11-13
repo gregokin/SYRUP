@@ -163,17 +163,28 @@ def _admit(column, required_bytes, stage):
 
 # ------------------------------------------------------------------ fused kernels (outputs + flags + rows)
 def _fused_numpy(w, q, residual, satb, active_u8, out_w, actual, unmet, scale, rows):
-    '''NumPy reference of the fused kernel (vectorized; [L,N] temporaries are counted as scratch).'''
+    '''NumPy reference of the fused kernel (vectorized over cells; [L,N] temporaries are counted as scratch).
+    S2-B1.a: the two layer parameters are read ONLY through `residual[l]` / `satb[l]` inside a per-layer loop (the
+    readers: the cached `(L,)` arrays of the common operator, no copy; an indexable of per-layer scalars OR `(N,)`
+    rows would serve a later spatial variant without an `(L, N)` bound tensor). Every element is the same IEEE
+    operation as the former whole-array form and every REDUCTION (`sum/min/max(axis=0)`, flag `any`) is unchanged and
+    still taken over the whole `(L, N)` arrays, so the sums, reduction order and signed zeros are those of before.'''
     act = active_u8 != 0
-    avail = w - residual[:, None]
-    np.maximum(avail, 0.0, out=avail)
-    np.minimum(q, avail, out=actual)
-    np.subtract(w, actual, out=out_w)
-    np.subtract(q, actual, out=unmet)
     scale.fill(0.0)
-    np.divide(actual, q, out=scale, where=q > 0.0)
+    for l in range(w.shape[0]):  # outside the errstate block, exactly as the former whole-array arithmetic was
+        wl, ql = w[l], q[l]
+        avail = wl - residual[l]
+        np.maximum(avail, 0.0, out=avail)
+        np.minimum(ql, avail, out=actual[l])
+        np.subtract(wl, actual[l], out=out_w[l])
+        np.subtract(ql, actual[l], out=unmet[l])
+        np.divide(actual[l], ql, out=scale[l], where=ql > 0.0)
     with np.errstate(invalid='ignore'):
-        bad_w = ~((w >= 0.0) & (w <= satb[:, None]))
+        bad_w = None
+        for l in range(w.shape[0]):
+            layer_bad = ~((w[l] >= 0.0) & (w[l] <= satb[l]))
+            bad_w = layer_bad if bad_w is None else (bad_w | layer_bad)
+        bad_w = bad_w[None, :]
         bad_q = ~(q >= 0.0) | (q == np.inf)
         bad_inactive = (q > 0.0) & ~act[None, :]
         rows[_ROW_W_BEFORE] = np.where(act, w.sum(axis=0), 0.0)
@@ -190,9 +201,43 @@ def _fused_numpy(w, q, residual, satb, active_u8, out_w, actual, unmet, scale, r
 try:
     from numba import njit as _njit
 
-    @_njit(cache=True)
-    def _fused_numba(w, q, residual, satb, active_u8, out_w, actual, unmet, scale, rows):
-        L, N = w.shape
+    # S2-B1.a: the two layer parameters are read ONLY through these inline readers (the common operator's cached `(L,)`
+    # arrays, no copy, no local). fastmath stays False.
+    @_njit(cache=True, inline='always')
+    def _read_residual(residual, l, j):
+        return residual[l]
+
+    @_njit(cache=True, inline='always')
+    def _read_satb(satb, l, j):
+        return satb[l]
+
+    # S2-B1.b: the PHYSICAL DECISIONS of the compiled withdrawal (validity flags, availability, the min, the unmet and the fulfilment fraction) live in the two SCALAR-ONLY inline helpers below and nowhere else.
+    # The common kernel and the fixed-spatial Numba kernel of `maple_syrup.spatial_transpiration` both call them; the surrounding loops only store the results and accumulate the per-cell reduction rows
+    # (bookkeeping, repeated structurally in both kernels and checked bit for bit by the per-column controls). The helpers take and return SCALARS only: passing arrays into an inlined per-element helper
+    # costs the compiled loop 1.7-3x (measured), a tuple of scalars does not. Expressions, order and flag arithmetic are those of the previous kernel; fastmath stays False.
+    @_njit(cache=True, inline='always')
+    def _withdraw_available(wv, r):
+        a = wv - r
+        if a < 0.0:
+            a = 0.0
+        return a
+
+    @_njit(cache=True, inline='always')
+    def _withdraw_cell(wv, qv, r, sb, act, f):
+        """Returns `(flags, actual, water_after, unmet, scale)` for one (layer, cell); `f` is the cell's flag accumulator so far."""
+        inf = np.inf
+        if not (wv >= 0.0 and wv <= sb):
+            f = f if (int(f) & 1) else f + 1.0
+        if not (qv >= 0.0) or qv == inf:
+            f = f if (int(f) & 2) else f + 2.0
+        if (not act) and qv > 0.0:
+            f = f if (int(f) & 4) else f + 4.0
+        a = _withdraw_available(wv, r)
+        t = qv if qv < a else a
+        return f, t, wv - t, qv - t, (t / qv if qv > 0.0 else 0.0)
+
+    @_njit(cache=True, inline='always')
+    def _withdraw_init_rows(rows, N):
         inf = np.inf
         for j in range(N):
             rows[0, j] = 0.0
@@ -203,30 +248,25 @@ try:
             rows[5, j] = inf
             rows[6, j] = 0.0
             rows[7, j] = 0.0
+
+    @_njit(cache=True)
+    def _fused_numba(w, q, residual, satb, active_u8, out_w, actual, unmet, scale, rows):
+        inf = np.inf
+        L, N = w.shape
+        _withdraw_init_rows(rows, N)
         for l in range(L):
-            r = residual[l]
-            sb = satb[l]
             for j in range(N):
+                r = _read_residual(residual, l, j)
+                sb = _read_satb(satb, l, j)
                 wv = w[l, j]
                 qv = q[l, j]
                 act = active_u8[j] != 0
-                f = rows[6, j]
-                if not (wv >= 0.0 and wv <= sb):
-                    f = f if (int(f) & 1) else f + 1.0
-                if not (qv >= 0.0) or qv == inf:
-                    f = f if (int(f) & 2) else f + 2.0
-                if (not act) and qv > 0.0:
-                    f = f if (int(f) & 4) else f + 4.0
+                f, t, o, um, sc = _withdraw_cell(wv, qv, r, sb, act, rows[6, j])
                 rows[6, j] = f
-                a = wv - r
-                if a < 0.0:
-                    a = 0.0
-                t = qv if qv < a else a
-                o = wv - t
                 out_w[l, j] = o
                 actual[l, j] = t
-                unmet[l, j] = qv - t
-                scale[l, j] = t / qv if qv > 0.0 else 0.0
+                unmet[l, j] = um
+                scale[l, j] = sc
                 if act:
                     rows[0, j] += wv
                     rows[1, j] += o
@@ -239,8 +279,24 @@ try:
                     rows[7, j] = qv
 except ImportError:  # pragma: no cover
     _fused_numba = None
+    _withdraw_available = _withdraw_cell = _withdraw_init_rows = None
 
-_CUDA_SRC = r'''
+# S2-B1.a: the physical text is written ONCE (`_CUDA_BODY`); the two layer parameters, the lane guard and the row epilogue are named
+# macros. The common reader definitions below reproduce the previous kernel token for token (tests compare the preprocessed text with the
+# frozen source); a later spatial variant renders the SAME body with other readers/epilogue through the pure `render_withdrawal_source`
+# (no registry, no cache). Compile options, kernel name, launch arguments, rows and the CuPy packet reductions are unchanged.
+WITHDRAW_MACROS = ("WITHDRAW_GUARD", "WITHDRAW_RESIDUAL", "WITHDRAW_SATB", "WITHDRAW_STORE")
+
+_CUDA_COMMON_READERS = r'''
+#define WITHDRAW_GUARD if (j >= N) return;
+#define WITHDRAW_RESIDUAL(l) residual[l]
+#define WITHDRAW_SATB(l) satb[l]
+#define WITHDRAW_STORE(sw_, sa_, st_, su_, sq_, mn_, flags_, qm_) \
+    rows[0 * N + j] = sw_; rows[1 * N + j] = sa_; rows[2 * N + j] = st_; rows[3 * N + j] = su_; rows[4 * N + j] = sq_; \
+    rows[5 * N + j] = mn_; rows[6 * N + j] = (double)flags_; rows[7 * N + j] = qm_;
+'''
+
+_CUDA_COMMON_HEAD = r'''
 extern "C" __global__ void withdraw_fused(const double* __restrict__ w, const double* __restrict__ q,
                                           const double* __restrict__ residual, const double* __restrict__ satb,
                                           const unsigned char* __restrict__ active_u8,
@@ -248,7 +304,9 @@ extern "C" __global__ void withdraw_fused(const double* __restrict__ w, const do
                                           double* __restrict__ unmet, double* __restrict__ scale,
                                           double* __restrict__ rows, const int L, const long long N) {
     long long j = (long long)blockIdx.x * blockDim.x + threadIdx.x;
-    if (j >= N) return;
+'''
+
+_CUDA_BODY = r'''    WITHDRAW_GUARD
     /* IEEE-754 positive infinity via a header-free CUDA device intrinsic (NVRTC has no INFINITY/math.h) */
     const double positive_inf = __longlong_as_double(0x7ff0000000000000LL);
     const bool act = active_u8[j] != 0;
@@ -258,10 +316,10 @@ extern "C" __global__ void withdraw_fused(const double* __restrict__ w, const do
         long long i = (long long)l * N + j;
         double wv = w[i];
         double qv = q[i];
-        if (!(wv >= 0.0 && wv <= satb[l])) flags |= 1;
+        if (!(wv >= 0.0 && wv <= WITHDRAW_SATB(l))) flags |= 1;
         if (!(qv >= 0.0) || qv == positive_inf) flags |= 2;
         if (!act && qv > 0.0) flags |= 4;
-        double a = wv - residual[l];
+        double a = wv - WITHDRAW_RESIDUAL(l);
         if (a < 0.0) a = 0.0;
         double t = (qv < a) ? qv : a;
         double o = wv - t;
@@ -270,10 +328,24 @@ extern "C" __global__ void withdraw_fused(const double* __restrict__ w, const do
         if (o < mn) mn = o;
         if (qv > qm) qm = qv;
     }
-    rows[0 * N + j] = sw; rows[1 * N + j] = sa; rows[2 * N + j] = st; rows[3 * N + j] = su; rows[4 * N + j] = sq;
-    rows[5 * N + j] = mn; rows[6 * N + j] = (double)flags; rows[7 * N + j] = qm;
+    WITHDRAW_STORE(sw, sa, st, su, sq, mn, flags, qm)
 }
 '''
+
+
+def render_withdrawal_source(readers, kernel_head, tail=''):
+    '''PURE rendering (no registry, no cache, no state) of the withdrawal CUDA source: the caller's reader macros, the caller's kernel head
+    (signature up to and including the lane index) and the ONE shared body, then an optional tail. `readers` must define every macro of
+    `WITHDRAW_MACROS`; the body is never copied or edited.'''
+    if not all(isinstance(s, str) for s in (readers, kernel_head, tail)):
+        raise SubsurfaceError('readers, kernel_head and tail must be strings')
+    missing = [m for m in WITHDRAW_MACROS if '#define ' + m not in readers]
+    if missing:
+        raise SubsurfaceError(f'the reader macros do not define {missing}')
+    return readers + kernel_head + _CUDA_BODY + tail
+
+
+_CUDA_SRC = render_withdrawal_source(_CUDA_COMMON_READERS, _CUDA_COMMON_HEAD)
 
 
 # ------------------------------------------------------------------ operator
@@ -494,6 +566,7 @@ def estimate_combined_memory(column, *, extra_reserve_bytes=0, query_available=T
     '''Scalar combined estimate (no allocation): hydro step estimate + T estimate (state counted once)
     + column reserve + caller reserve. query_available=False never calls available_bytes_fn.
     with_evaporation_share=True counts the caller's optional (N,) post-cap evaporation share field.'''
+    ss._check_column(column)  # typed refusal of a foreign column object (S2-A.1 correction01); a proper SoilColumn runs the unchanged body below
     L, N = _as_size(column.n_layers, 'column.n_layers'), _as_size(column.n_cells, 'column.n_cells')
     reserve, extra = _as_bytes(column.reserve_bytes, 'column.reserve_bytes'), _as_bytes(extra_reserve_bytes, 'extra_reserve_bytes')
     backend = _check_backend(column.backend)

@@ -1,0 +1,43 @@
+{
+  "schema": "syrup.phase2.spatial_withdrawal_cpu_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_CPU_TRIAL_COMPONENT_ONLY",
+  "utc": "2026-11-12T19:29:43.026867+00:00",
+  "source": {
+    "syrup_candidate_base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "package_sha256": "11baa135d830011f6d12f640d7de25fb1c99e4e5f495e0049b20fa6f3051ebda",
+    "file_count": 120,
+    "spatial_transpiration_sha256": "3080cb0aac46e1c9b9a8d641d5ece294d596076d643a2e006c22b269efee1c44",
+    "subsurface_transpiration_sha256": "7b2a53dacb3b245ff3b821337f91c385b43b46ce974bf753e7dcb950a0431e8b",
+    "delta_from_accepted_B1_a": "One new spatial_transpiration.py; only existing subsurface_transpiration.py changes (private scalar Numba helpers). Other118 production files byte-identical. Correction01 changes only the new module finite-volume guard.",
+    "native_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "actual_cpu_and_cuda_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "final_CPU": "123 spatial tests passed; NumPy and Numba EACH48scenarios336individual spatial columns: W/actual/unmet/scale BITEXACT to frozen preimplementation common reference; availability exact; unchanged state/requests/maps/clock, native closure; dyadic75% example exact.",
+    "common_regression": "Before final new-module-only guard: 15 shared-body +14 existing tests passed,2GPUskip. EACHCPU backend common48scenarios336columns bitexact. Relevant common module unchanged in final correction.",
+    "GPU_common_only": "48cases192arrays BITEXACT to saved actual old CUDA common withdrawal. Tested pre-correction package snapshot root_s2_b1_b_snapshot; final correction only changes CPU-only new module, relevant common CUDA sources unchanged. Fresh GPU0 UUID 0MiB/0%19:21:09UTC, genuine9f CUDA bundle. NOT spatial CUDA support.",
+    "memory": "L3N50001 final warm traced peaks NumPy9771714B/model18066152B; Numba8804416B/model9265976B. Compiled staged rows explicitly source-counted800016B; tracing incomplete, not double-counted. Source inspection + independently run author quota/NRT/release tests; no whole-process bound.",
+    "performance": "Independent common identical-data interleaved old/new at131071cells ratios .987/1.022/.9996/.9726 for L1/3/5/9. Small8192cell timings noisy both directions; no universal performance claim. Old array-helper regression fixed before freeze. Spatial/common illustrative mismatched workloads explicitly not a matched cost comparison.",
+    "correction": "Finite inputs producing nonrepresentable global volume/scale now typed SubsurfaceError before strict bound helper; no physics/default/tolerance/common-interface change. Original raw ValueError independently reproduced bothbackends; final typed refusal independently reproduced bothbackends."
+  },
+  "evidence": [
+    "root_s2_b1_b_c1_cpu_runs/result.json",
+    "root_s2_b1_b_preview_cpu_runs/result.json",
+    "root_s2_b1_b_c1_source_manifest.json",
+    "root_s2_b1_b_c1_package_identity.json",
+    "root_s2_b1_b_actual_native_identities.json",
+    "root_s2_b1_b_gpu_retry_runs/result.json",
+    "root_s2_b1_b_common_gpu/comparison.json",
+    "root_s2_b1_b_safety_root_s2_b1_b_c1_snapshot.json",
+    "root_s2_b1_b_common_timing_settled_root_s2_b1_b_snapshot.json"
+  ],
+  "limits": [
+    "Pure fixed explicit-property NumPy/Numba trial only; no spatial CUDA operator yet.",
+    "No generation/accepted-parent/occurrence/exactly-once receipt, native lifecycle, LEAF adoption, storm or restart qualification. Property SHA/time do not identify water generation.",
+    "No moving geometry, water-fate, property-provider, root remapping or whole Phase2 acceptance. Three scientific choices pending.",
+    "Availability floor is not minimum legal inventory; below-residual water remains legal. No cross-layer compensation, root plasticity or demand/growth calculation.",
+    "Old global diagnostic flag max preserved; may omit additional rejected-cell reasons.",
+    "Historical source guards/locks/restarts unchanged. All Phase2 code remains uncommitted until whole-phase qualification."
+  ],
+  "known_open_confirmed_component_defects": []
+}

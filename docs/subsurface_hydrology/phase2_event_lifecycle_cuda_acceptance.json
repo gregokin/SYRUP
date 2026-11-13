@@ -1,0 +1,54 @@
+{
+  "utc": "2026-11-13T19:29:29.176879+00:00",
+  "status": "independently_accepted_bounded_GPU_event_lifecycle",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_event_lifecycle_cuda_c5_snapshot163",
+  "manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_event_lifecycle_cuda_c5_snapshot163_manifest.json",
+  "manifest_sha256": "d0b2e38c7a9854652b8442cafe5e323067ffa6d011005fc939fd010249aba78e",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "required_accepted_dependency": {
+    "receipt": "root_gpu_refresh_c5_acceptance.json",
+    "receipt_sha256": "b9a438f21df238dac506d8f91b4e63e00ab3ced6d752933211f0eb51b8e63f91",
+    "production_files": {
+      "floating_event_refresh_cuda.py": "03138ee8b4ac170adf2f37aab4b24269aaa1190f70e66c50f47702a4285e2352",
+      "native_floating_soil_cuda.py": "d647ba32895da4bd459b6f24d549eac144e8cec2917d1a11bc4275148052678e",
+      "floating_preferential_infiltration.py": "21d2bedaf15ff69d5a84a3b1968292a8f2b5d50653cf920616a38e5823ec7448"
+    }
+  },
+  "tests": {
+    "Root_C5_CPU": 60,
+    "Root_C3_GPU": 11,
+    "Root_C4_GPU_target": 1,
+    "Root_C5_GPU_target": 1,
+    "actual_GPU_13": "13 controls qualified across C3/C4/C5, all163productionbyteidenticalC1; not13newlyrerunC5.",
+    "inherited_C1_FP_CPU": 54
+  },
+  "independent_review": "One same FloatingEventLineage authority, current resident W/J/I/D, canonical new root and actual native bed; late owner retirement/head replacement; actual native completion required; exact Hprime once and cumulative audit; no physics/kernel changes. Constructor metadata initialized before GPU from_boundary branch.",
+  "verified": [
+    "Dense and genuine native published Windowed actual storm\u2192complete\u2192refresh\u2192reopen4positiveRainsteps\u2192genuinecomplete\u2192secondclose; current W/J/I advance and ledger close.",
+    "Actual current-device gate before readers on open/close/begin; two-pool component needminus/exact/reserves and failure leaves accepted head intact.",
+    "Canonical H0 export current new root; old parent bed/W weak refs released after next real step.",
+    "Supported airentry1kPa actual openbottom drainage counted once.",
+    "Post-initialization property perturbation causes actual positive capacityreturn; Hprime exactonce, pendingrecession noteligible, positiveRain refusedheadunchanged; realRain0begin+oneactualstep native water audit closes."
+  ],
+  "test_setup_corrections": [
+    "30mm/h reopen fixture fails quiet criterion through1604.4s matchedCPU; Root interruptedonlyownGPUchild after1037.82s. No completion/modeldefect claim. Positive0.01mm/h samefixture genuinely completes5.15s and still advances W/J/I; defaults/policies unchanged.",
+    "Boundary constructor references depth; owner constructor owns additional8N bytes. Correct boundary published model, not inflated production guard.",
+    "Old wake test perturbed beforeinitialization, so no real propertychange; corrected perturb afternativecomplete.",
+    "Two Root C5 selector invocations selected0tests; preserved as setup errors, no model executed."
+  ],
+  "production": {
+    "floating_pond.py": "9b5b75a7e81ae13df31a4bfb83664228eaace6fc369e4daf018eea4a8abfa857",
+    "floating_pond_cuda.py": "42cb22e7c5d1af4f297260c68e2dcc8747936a4d3bf63657be016109b37cf9fc",
+    "floating_event_lifecycle.py": "2786e5bd64932726eb38e5029e837097ac0e14ecac3895ba4f43fe735fdf7519",
+    "floating_event_lifecycle_cuda.py": "9acfb91495fcf6e713ca9c1b7da98e18a46157b71a9bcb08118cccd9097d822d"
+  },
+  "limits": [
+    "No daily GPU bridge, lifecycle/dailycursor file, nativewindadapter or wholePhase2 acceptance.",
+    "No actual generation>0 crossing/carry/secondcrossing fixture here; continued codec separate.",
+    "Pending returned-water R0one-step qualified; full quiet completion of that added-water recession not run.",
+    "Constructor reopening test uses tiny positiveRain engineeringfixture, not quantitative erosion/stormbenchmark.",
+    "No wholeChastre/scaling or processmemorybound claim."
+  ],
+  "committed": false
+}

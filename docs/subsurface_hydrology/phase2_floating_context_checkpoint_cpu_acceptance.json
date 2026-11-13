@@ -1,0 +1,156 @@
+{
+  "status": "independently_accepted_bounded_cpu_context_container",
+  "utc": "2026-11-13T15:25:23.865219+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_snapshot155",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_source_manifest.json",
+  "source_manifest_sha256": "e74154189dc2cee031fff239687ac90e6a88a65453b107cf5416e85533876157",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "scope": "Versioned CPU outer H0 held-law container plus unchanged genuine floating child /5 Dense /6 Windowed, original static primitive factory, no original bed/NativeOwner needed at load. Physical child validators/source guards preserved.",
+  "cpu_tests": {
+    "outer_context": 29,
+    "floating_child": 39,
+    "floating_resume": 62,
+    "historical_dense": 107,
+    "historical_windowed": 107,
+    "source_guards": 26,
+    "total_passed": 370,
+    "total_skipped": 7
+  },
+  "independent_controls": {
+    "root_h2_valid_deep_root_h2_c4_snapshot155.json": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_snapshot155",
+      "native_voxel_shape": [
+        3,
+        4,
+        10000,
+        6
+      ],
+      "native_archive": {
+        "compressed_file_B": 5768669,
+        "raw_member_B": 5765671
+      },
+      "reported_composed_need_B": 34100594,
+      "exact_reported_need_load_succeeds": true,
+      "failure": null,
+      "unlimited_control_succeeds": true,
+      "restored_native_voxel_shape": [
+        3,
+        4,
+        10000,
+        6
+      ],
+      "scope": "Actual native producer with 10000 voxel capacity; original deep bed built only at source, static restore builds no bed."
+    },
+    "root_h2_valid_wide_root_h2_c4_snapshot155.json": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_snapshot155",
+      "native_voxel_shape": [
+        32,
+        32,
+        4,
+        6
+      ],
+      "native_archive": {
+        "compressed_file_B": 407677,
+        "raw_member_B": 404679
+      },
+      "reported_composed_need_B": 34016767,
+      "exact_reported_need_load_succeeds": true,
+      "failure": null,
+      "unlimited_control_succeeds": true,
+      "restored_native_voxel_shape": [
+        32,
+        32,
+        4,
+        6
+      ],
+      "scope": "Actual native producer with 1024 cells and 4 voxel capacity; original deep bed built only at source, static restore builds no bed."
+    },
+    "root_h2_windowed_deep_root_h2_c4_snapshot155.json": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_snapshot155",
+      "actual_native_class": "WindowedVoxelColumnState",
+      "full_n_voxels": 300,
+      "resident_shape": [
+        3,
+        4,
+        3,
+        6
+      ],
+      "actual_deep_store_mapping_bound_B": 7372800,
+      "resident_archive": {
+        "stored_file_B": 13150,
+        "raw_member_B": 11588
+      },
+      "reported_composed_need_B": 17452894,
+      "exact_model_load_succeeds": true,
+      "refusal": null,
+      "unlimited_same_file_control_succeeds": true,
+      "scope": "Genuine native Windowed resident snapshot references DEEP store; resident archive is not the whole deep-store cache."
+    },
+    "root_h2_deep_save_v2_root_h2_c4_snapshot155.json": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_snapshot155",
+      "native_shape": [
+        3,
+        4,
+        10000,
+        6
+      ],
+      "save_initial_declared_model_B": 29787940,
+      "exact_model_save_succeeds": true,
+      "refusal": null,
+      "unlimited_same_state_control_succeeds": true,
+      "note": "Corrected real save-model call includes actual n_voxels, as new fc.save does; original first-stage-only probe is preserved."
+    },
+    "root_h2_held_tamper_root_h2_c4_snapshot155.json": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_c4_snapshot155",
+      "refusals": [
+        {
+          "case": "texture_Ks",
+          "typed": "ContextCheckpointError",
+          "reason": "the held context cannot be restored: the re-prepared matrix operator does not reproduce the recorded sha256",
+          "static_factory_calls": 0
+        },
+        {
+          "case": "preferential_a3",
+          "typed": "ContextCheckpointError",
+          "reason": "the held context cannot be restored: the re-prepared preferential operator does not reproduce the recorded sha256",
+          "static_factory_calls": 0
+        },
+        {
+          "case": "raw_matrix_vegetation_factor",
+          "typed": "ContextCheckpointError",
+          "reason": "the held context cannot be restored: the reconstructed native config does not reproduce the recorded config sha256",
+          "static_factory_calls": 0
+        }
+      ],
+      "unmodified_valid_file_retry_plus_3_physical_steps_bitexact": true
+    }
+  },
+  "earlier_independent_safety_control": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h2_independent_v2_root_h2_c2_snapshot155.json",
+  "verified_fixes": [
+    "Large incompatible context rejected before np.load or owned array copies; dimension-based composed admission.",
+    "No original/probe bed in static restore recipe, full real current-bed/native validation retained.",
+    "Atomic renameat2 NOREPLACE, payload/dirs fsync, explicit post-publication indeterminate durability.",
+    "Shared actual child dimensions and phase-bin load model; no compressed-size heuristic.",
+    "Actual canonical-depth reader stage included in save/load models, live context/native/payload overlap included.",
+    "Windowed mapping-cache bound derives from actual qualified native deep-store arithmetic; resident snapshot is not the external deep store.",
+    "Manifest bounded stat-size read avoids fixed32MiB transient allocation.",
+    "Recomputed-hash texture Ks, preferential a3 and raw matrix vegetation changes rejected before static factory; untouched file plus3 native steps bitexact."
+  ],
+  "interfaces": [
+    "context_load_need_bytes/load_floating_context_checkpoint accept optional batch_cells policy default native4096; factory vertical must not exceed declared policy.",
+    "Caller static factory admits its own setup; container-owned working-set model is separate.",
+    "Old CPU child profiles/1-/6 and strict source binding retained, no automatic migration/rebinding."
+  ],
+  "historical_pond_checkpoint_sha256": "94cd2339566646ba44f2015dad13a67194c26a8dd3cc85b56916f62d2b4a704f",
+  "limits": [
+    "CPU NumPy/Numba, Dense/published native Windowed only; this container rejects CUDA.",
+    "No daily physical cursor restart, complete wind-water-plant simulation, field-scale/Chastre fit or whole-phase acceptance.",
+    "Actual traced owned peaks are fixture-level, exclude interpreter/JIT and whole-process baseline; cold source cache may add budget.",
+    "Overlay cache formula uses actual native bound but no dedicated traced overlay case; larger stores beyond testedV1200 not scaling proof.",
+    "Actual nonempty second terminal settlement covered in child qualification; outer fixture second settlement is empty, native call counter unchanged.",
+    "Windowed pending-journal branch call-order tested with native predicate interposition; not a new real pending-journal fixture.",
+    "Source changes for later GPU scalar conversion must be separately reconciled/retested."
+  ],
+  "no_commit": true
+}

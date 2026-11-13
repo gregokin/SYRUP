@@ -1,0 +1,245 @@
+{
+  "task": "phase2_evolving_soil_20261112/S2-B2.c",
+  "status": "accepted_bounded_component",
+  "accepted_by": "Codex independent review after Claude implementation and review01/review02/review03 corrections",
+  "utc": "2026-11-12T22:03:33.537756+00:00",
+  "source_package_sha256": "3c0646fb663f739e8f0f416989b85362ebc1c2b2be40ac60175070e698b7e002",
+  "file_count": 124,
+  "final_snapshot": "root_s2_b2_c_c3_snapshot",
+  "tested_physical_snapshot": "root_s2_b2_c_review02_preview_snapshot",
+  "final_source_byte_identical_to_tested": true,
+  "final_test_delta": "Only packaged minimal triggers, loader and focused portability checks; independently tested final normal and isolated portable checkout.",
+  "source_manifest": "root_s2_b2_c_final_source_manifest.json",
+  "native": {
+    "cpu": {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple",
+      "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    "cuda": {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple",
+      "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    }
+  },
+  "diff": {
+    "changed_from_accepted_B2_b": [
+      "matrix_infiltration.py",
+      "matrix_infiltration_numba.py",
+      "matrix_infiltration_cuda.py",
+      "spatial_matrix_infiltration_cuda.py",
+      "spatial_matrix_infiltration.py"
+    ],
+    "other_production_files_unchanged": 119
+  },
+  "verification": {
+    "cpu": {
+      "final_bounded_intake": 157,
+      "portable_bounded_intake_passed": 154,
+      "portable_explicit_historical_skips": 3,
+      "spatial_matrix": 325,
+      "common_matrix": 41,
+      "cuda_host": 125,
+      "cuda_host_gated_skips": 120
+    },
+    "actual_cuda": {
+      "matrix_suite_passed": 245,
+      "host_subset": 125,
+      "actual_device_definitions": 120,
+      "gpu_index": 0,
+      "gpu_uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+      "device": "GTX1080Ti",
+      "fresh_idle_guard": "0MiB AND0% before every Root GPU child"
+    },
+    "reference": {
+      "matrix_scenarios_each_backend": 32,
+      "columns_each_backend": 224,
+      "cpu_all5_arrays_bitexact": true,
+      "cuda_tolerance": "rtol2e-12/atol1e-14 to original NumPy; 30/32 scenarios bitexact",
+      "old_common_gpu_cases": 160,
+      "old_common_gpu_arrays_bitexact": 704
+    },
+    "original_refusal_controls": {
+      "minimal_cases_each_backend": 2,
+      "common_spatial_5arrays_bitexact": true,
+      "decimal_pool_balance_exact": true,
+      "clock_inputs_unchanged": true
+    },
+    "room_controls": {
+      "cases_each_backend": 3,
+      "old_and_corrected_each_numpy_numba_cuda": true
+    },
+    "device_memory_probe": {
+      "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_s2_b2_c_review02_preview_snapshot/src/maple_syrup/spatial_matrix_infiltration.py",
+      "source_sha256": "3b5929e0e4de26ff878794ce00d3408720c871aea343222ff5a42db8f3e6ad6c",
+      "allocation": {
+        "requests": [
+          400024,
+          400024,
+          400024,
+          400024,
+          1600096,
+          46920,
+          136
+        ],
+        "model_device": 3247248,
+        "output_payload": 3200192,
+        "charged_outputs": 3202048,
+        "host_packet_payload": 272,
+        "host_to_device": 0,
+        "device_to_host": 1,
+        "device_to_host_bytes": 136
+      },
+      "pool_iterations": [
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ],
+        [
+          10457088,
+          13706752
+        ]
+      ],
+      "kernel_resources": {
+        "step": {
+          "max_threads_per_block": 768,
+          "shared_size_bytes": 16896,
+          "const_size_bytes": 0,
+          "local_size_bytes": 0,
+          "num_regs": 78,
+          "ptx_version": 61,
+          "binary_version": 61,
+          "cache_mode_ca": 0,
+          "max_dynamic_shared_size_bytes": 32256,
+          "preferred_shared_memory_carveout": -1
+        },
+        "finalize": {
+          "max_threads_per_block": 1024,
+          "shared_size_bytes": 30720,
+          "const_size_bytes": 0,
+          "local_size_bytes": 0,
+          "num_regs": 38,
+          "ptx_version": 61,
+          "binary_version": 61,
+          "cache_mode_ca": 0,
+          "max_dynamic_shared_size_bytes": 18432,
+          "preferred_shared_memory_carveout": -1
+        },
+        "validate": {
+          "max_threads_per_block": 1024,
+          "shared_size_bytes": 0,
+          "const_size_bytes": 0,
+          "local_size_bytes": 0,
+          "num_regs": 8,
+          "ptx_version": 61,
+          "binary_version": 61,
+          "cache_mode_ca": 0,
+          "max_dynamic_shared_size_bytes": 49152,
+          "preferred_shared_memory_carveout": -1
+        }
+      },
+      "owner_and_owned_map_and_law_released": true,
+      "status": "PASS",
+      "scope": "Bounded fixed-spatial matrix CUDA step probe; valid dt0 identity iterations test memory only, not solver completion or a storm. Pool policy/compiler/context/caller inputs excluded."
+    },
+    "matched_component_timing": [
+      {
+        "L": 3,
+        "N": 10000,
+        "numpy_ms": 6.2360299999999995,
+        "numba_ms": 3.0959999999999996,
+        "cuda_ms": 0.53137,
+        "numba_over_cuda": 5.82644861396014,
+        "cuda_spatial_over_current_common": 0.44878806024606194
+      },
+      {
+        "L": 3,
+        "N": 200000,
+        "numpy_ms": 153.129852,
+        "numba_ms": 55.060403,
+        "cuda_ms": 2.538096,
+        "numba_over_cuda": 21.693585664214435,
+        "cuda_spatial_over_current_common": 1.0205985837619176
+      },
+      {
+        "L": 5,
+        "N": 10000,
+        "numpy_ms": 5.384815,
+        "numba_ms": 3.14314,
+        "cuda_ms": 0.557109,
+        "numba_over_cuda": 5.64187618580924,
+        "cuda_spatial_over_current_common": 0.4608762049099771
+      },
+      {
+        "L": 5,
+        "N": 200000,
+        "numpy_ms": 149.989983,
+        "numba_ms": 60.988043999999995,
+        "cuda_ms": 2.4051519999999997,
+        "numba_over_cuda": 25.35725143358923,
+        "cuda_spatial_over_current_common": 1.0361215231273124
+      }
+    ]
+  },
+  "numerical_revision": {
+    "defect": "Old pre+post recombination could exceed pool or room by one ulp for valid inputs, producing strict negative-pool refusal or slight capacity overshoot.",
+    "correction": "Bound COMBINED authoritative intake by pool then room before water/history publication; recompute ponded actual only if reduced; unchanged candidate/Newton/flags/tolerances; no negative erasure/epsilon.",
+    "source_text_current_sha256": "b9e131308266af692f9a40b3edb09a21df349c67406b6b6927820e1607b4f3d2",
+    "historical_sha256": "b58178dfc303f48364f7bfdcd744a08bf821da481ae61d8f347981c3bee5c05f",
+    "split_precision": "pre/post and J agree with authoritative intake to existing FP64 bounds, not exact real arithmetic; Sterbenz qualification documented.",
+    "inherited_defect_status": "resolved in qualified current candidate; old immutable sources/results remain historical"
+  },
+  "interfaces": [
+    "Spatial matrix APIs accept genuine CUDA SpatialSoilColumn/state and explicit persistent J/cumulative history; exact backend/device metadata and separate device/host quotas.",
+    "CPU canonical identities and existing memory estimates unchanged.",
+    "Common CUDA provenance adds historical_source_sha256 and numerical_revision; current rendered-source SHA explicitly changes only for approved numerical correction."
+  ],
+  "limits": [
+    "Pure fixed explicit-property/geometry trial component: NO native lifecycle/generation/exactly-once/restart/LEAF/storm/moving-bed/provider acceptance.",
+    "No history reset/recovery or new repeated-storm drying rule.",
+    "Performance is matched component wrappers with startup separate, not fullstorm/Fortran/large-domain readiness; memory probe excludes caller bed/context/compiler/pool policy.",
+    "Existing profiles/source guards/restart identities remain unchanged and are not rebound or migrated.",
+    "WholePhase2 remains incomplete and uncommitted."
+  ],
+  "evidence": [
+    "report_s2_b2_c_matrix_cuda.md",
+    "report_s2_b2_c_review01.md",
+    "report_s2_b2_c_review02.md",
+    "report_s2_b2_c_review03.md",
+    "root_s2_b2_c_gpu_runs/result.json (initial failures, preserved)",
+    "root_s2_b2_c_negative_probe.json",
+    "root_s2_b2_c_minimal_refusal_controls.json",
+    "root_s2_b2_c_bounded_preview_suite_cpu_runs/result.json",
+    "root_s2_b2_c_bounded_preview_suite_gpu_runs/result.json",
+    "root_s2_b2_c_c3_final_cpu_runs/result.json",
+    "root_s2_b2_c_c3_final_cpu_runs/portable_result.json",
+    "root_s2_b2_c_bounded_preview_regressions_runs/result.json (325pass; following harness config-path error, no model failure)",
+    "root_s2_b2_c_bounded_common_retry_runs/result.json (41pass)"
+  ]
+}

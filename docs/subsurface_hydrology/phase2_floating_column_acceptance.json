@@ -1,0 +1,80 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T05:05:44.581581+00:00",
+  "component": "D1 floating partial/zero porous soil column, shared physical kernels and staged capacity reconciliation",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_d1b_c2_snapshot",
+  "source_manifest": "root_d1b_c2_source_manifest.json",
+  "module_count": 133,
+  "source_package_sha256": "448a9eff0695dbd9a4d5f592fa735a458f4c75ab00332211a2fa6e6e3f91b341",
+  "new_modules": [
+    "src/maple_syrup/floating_soil_layers.py",
+    "src/maple_syrup/floating_soil_layers_cuda.py",
+    "src/maple_syrup/floating_soil_layers_numba.py",
+    "src/maple_syrup/subsurface_cuda_floating.py"
+  ],
+  "older129_changed_modules": [
+    "src/maple_syrup/subsurface_numba.py"
+  ],
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "files": 412,
+    "bundle_verification": "root_c_provider_c1_native_verification.json"
+  },
+  "verification": {
+    "c1_full_cpu_host": {
+      "passed": 227,
+      "skipped": 32,
+      "evidence": "root_d1b_c1_cpu_runs/result.json"
+    },
+    "final_c2_cpu": {
+      "passed": 143,
+      "scope": "all floating CPU/Numba, exact Root controls and rendered-source host checks including final admission changes"
+    },
+    "final_historical_guards": {
+      "passed": 9,
+      "evidence": "root_d1b_c2_cpu_runs/historical_guard.out"
+    },
+    "final_c2_actual_gpu": {
+      "passed": 31,
+      "skipped": 1,
+      "skip_reason": "only authorized GPU0 visible; requires two devices",
+      "evidence": "root_d1b_c2_gpu_runs/result.json"
+    },
+    "final_c2_resident_payload": "root_d1b_resident_payload_v2_root_d1b_c2_snapshot.json",
+    "final_c2_gpu_bad_parent": "root_d1b_gpu_parent_refusals_root_d1b_c2_snapshot.json",
+    "final_c2_memory_admission": "root_d1b_admission_order_root_d1b_c2_snapshot.json",
+    "historical_arrays": {
+      "numpy_scenarios": 960,
+      "numba_scenarios": 960,
+      "all_array_hashes_equal": true,
+      "exception": "only refused NaN payload/sign canonicalized",
+      "evidence": "root_d1b_c1_common_ab_comparison.json",
+      "C2_all_compiled_sources_unchanged": true
+    },
+    "c1_to_c2_source_review": "only one module changed, CPU admission reordered and two docstrings; CUDA function physical body AST-identical, all other132 modules byte-identical",
+    "performance": {
+      "evidence": "root_d1b_c1_default_numba_timing_runs/comparison.json",
+      "median_candidate_baseline_ratio": 0.9957910971575485,
+      "range": [
+        0.9462582961833832,
+        1.0814049911330836
+      ],
+      "scope": "warm common Numba column, ABBA processes, startup excluded; eight controls; not full storm",
+      "reference_count_calls_baseline_and_final": 47,
+      "raw_llvm_byte_identical": false,
+      "prior_systematic_12_to_22_percent_regression_removed": true
+    }
+  },
+  "limits": [
+    "Pure component: no authoritative native bed-depth witness, changed-column lifecycle adoption, Pond sediment/erosion integration or physical restart yet.",
+    "Source-state tokens are metadata, not proof of accepted water inventory; old-owner values validated, E must supply actual parent/generation authority.",
+    "Matrix/preferential infiltration and root withdrawals on partial/zero columns remain D2.",
+    "NumPy mixed open/closed reference takes two passes, both counted.",
+    "One Numba timing control was8.1 percent slower; median0.996 and no systematic slowdown; this is not an end-to-end scaling proof.",
+    "Every-N-days G0 writer remains accepted separately; floating schema and actual final-day driver hook not complete.",
+    "No large-domain or observed-field validation claim; GPU N50003 component only."
+  ],
+  "publication": "Uncommitted; whole Phase2 adoption/publication remains required."
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T08:38:31.387361+00:00",
+  "component": "E4k exact native9f optional Windowed storage-admission source qualification",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_e4k_snapshot",
+  "source_manifest": "root_e4k_source_manifest.json",
+  "changed_production_files": [
+    "src/maple_syrup/storage_admission.py"
+  ],
+  "module_sha256": "092c11b9941479a525892f98434d58ea2d3d59c4b52f27b5f927dcbe1d303333",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_source_audit": "root_e4k_preliminary_admission_source_audit.json",
+  "verification": {
+    "cpu_new_tests_passed": 11,
+    "cpu_cuda_gated_skips": 3,
+    "cpu_prior_compat_passed": 95,
+    "cpu_historical39bc_identity_assertion_deselected": 1,
+    "cpu_evidence": "root_e4k_cpu_runs/result.json",
+    "actual_cuda_tests_passed": 3,
+    "cuda_evidence": "root_e4k_gpu_runs/result.json",
+    "independent_actual_gpu_transactions": "root_e4k_gpu_payload_probe_runs/result.json",
+    "public_rounded_payload_peak_B": 54272,
+    "public_native_new_device_peak_B": 1633524,
+    "paired_rounded_payload_peak_B": 158720,
+    "paired_native_new_device_peak_B": 1649028
+  },
+  "review": [
+    "Only one explicit source added to exact membership guard; unknown digest still refused before planner import or readers; original39bc pin retained.",
+    "Actual native planner file byte-identical39bc/9f, strict options/reserves/journal/gather/device contracts preserved.",
+    "Root real device public and paired transactions admitted using actual default memory readers, explicitzero reserves, warm pool allocation peak below native planner estimates.",
+    "Historical test asserting current runtime MUST equal39bc is intentionally not adapted or mislabeled passing on9f; author full post suite recorded95pass1historicalfailure."
+  ],
+  "limits": [
+    "Optional explicit driver admission only, not automatic protection or whole-process/large-domain bound.",
+    "Memory controls are small warm fixtures, pool payload incl rounding only; context/compiler/unpooled allocations excluded.",
+    "OnlyGPU0 visible; actual alternate-device branch unavailable, numeric mismatch guards retain CPU coverage.",
+    "No avalanche/nondefaultgather/coupledPond/restart/daily/scaling acceptance."
+  ],
+  "publication": "Uncommitted; patch pending stable main writer boundary."
+}

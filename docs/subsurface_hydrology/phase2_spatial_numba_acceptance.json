@@ -1,0 +1,39 @@
+{
+  "schema": "syrup.phase2.spatial_numba_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_NUMPY_NUMBA_COMPONENT",
+  "utc": "2026-11-12T17:14:51.088890+00:00",
+  "source": {
+    "base_commit": "a5b8b18358e0d014fe13c9f48d00eb582710655a",
+    "package_sha256": "dba2bba1e48a05c701e55432077e347003fbffeba9400ba056c46594cc5aa437",
+    "file_count": 118,
+    "changed_from_A2": [
+      "spatial_soil_layers.py",
+      "subsurface_numba.py"
+    ],
+    "subsurface_numba_sha256": "e0b9acf97510b31e14442fcc36bf4679ed1052436e3adf8332420713bf9ae1fd",
+    "spatial_soil_layers_sha256": "7600fe77f6035606465ca877e868adf7c5efbda695a576849cec8db1590b0def",
+    "native_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "native_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "CPU": "1061 passed,23 skipped: spatial water311; spatial compiled141; parameters469/15skip; common/pulse140/8skip. Genuine existing MAPLE .venv and historical9f materialized bundle. No new GPU evolution tests in this slice.",
+    "reference_columns": "Each NumPy and Numba: 24 scenarios168individualcolumns plus mixed96scenarios1056columns, all seven water/flux arrays bit-exact vs previously computed accepted common-column controls. Clocks exact; original states/forcing/maps unchanged; native balance bounds pass.",
+    "common_regression": "512arrays over64NumPy/Numba scenarios match prior accepted source exactly. Additional interleaved timing controls compare all arrays to separately loaded old kernel.",
+    "compiled_body": "Two genuine CPUDispatcher nopython variants of ONE physical body, read-only input signature, nofastmath/noNPfallback. Root AST per-cell physical statements identical under parameter-reader renames; compile/owner-release/admission/typed-refusal/NRT allocation tests passed.",
+    "memory": "Final common specialization aliases old parameter vectors and retains only old factor scratch. Earlier runtime-branch draft risk resolved BEFORE tested snapshot. Independent smallN/highL (up to8192) Python-inclusive peak delta0or184B vs baseline, no layer-growing extra; Python overhead excluded from old array estimate. Spatial own O(L) locals counted explicitly, no LN parameter expansion/copies.",
+    "timing": "Root single-thread warmed isolated common kernel new/old ratios0.9670\u20131.0309 over12 cases L1/3/5,N65536/262144,two modes; no consistent overall regression. Spatial shared-property validated wrapper at262144cells: Numba1.14\u20131.31x faster for1/3layers; NumPy about1.18x faster at5layers in this specific all-active/open-bottom workload. Not a uniform speedup, storm/Fortran/scaling claim.",
+    "raw_logs": "root_s2_a3_cpu_runs,root_s2_a3_timing_v2_cpu_runs,root_s2_a3_final_checks_cpu_runs,root_s2_a3_body_audit.json; snapshots/manifests and original harness failures retained."
+  },
+  "interface_changes": [
+    "Explicit trial APIs accept Numba-prepared CPU owners, in addition to NumPy; CUDA evolution still typed refused.",
+    "estimate_spatial_operation_memory accepts explicit CPU backend; state tag spatial_explicit_cpu_state; water_evolution metadata explicit_trial_functions/evolution_backends/unsupported_backends. No native lifecycle, operator or codec admission widened.",
+    "New compiled_spatial_kernel/spatial_launch/local_scratch_doubles; bounded two-function cache only, no owner data."
+  ],
+  "limits": [
+    "Fixed explicit geometry/properties column component only. No actual bed remap/property provider/LEAF/storm/lifecycle/checkpoint or moving-bed acceptance.",
+    "Three user physics questions remain unanswered; no inferred policy, wetting-history reset or source-lock migration.",
+    "CPU only evolution; actual GPU support/qualification next A4. No full-domain scaling claim.",
+    "WholePhase2 remains incomplete/uncommitted. Author source hash used a different documented recipe; authoritative qualification digest here is existing native provenance.source_tree_digest."
+  ],
+  "known_open_confirmed_component_defects": []
+}

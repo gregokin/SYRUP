@@ -1,0 +1,9 @@
+# Phase 2 native status
+
+The bounded native water APIs are implemented and independently qualified on the [clean source manifest](phase2_source_manifest.json). The exact qualification and limits are in [the release record](phase2_qualification.json) and [its human-readable discussion](phase2_qualification.md). Source publication and main integration are being finalized; this does not qualify a full three-model scheduled simulation or field performance.
+
+The final clean-source checks passed 111 CPU/host controls and 39 actual GPU controls, plus one host source-identity check inside the GPU run. They cover accepted event/daily handoff, current W/J/I, conservative evolving properties, native Dense/Windowed storage, genuine completion, restart identity, seven-day N=3 output, quota/refusal purity and release of temporary restore carriers. Earlier component receipts retain their exact original source identities and scope; their counts are not presented as if all were rerun here.
+
+Moisture snapshots and physical restart are different outputs. Optional every-N saves follow completed nominal days, actual withdrawals and closure. The closed-parent physical files preserve the accepted water/bed/routing state and daily identity; unfinished events and pending storm/recession are refused. Historical locks and profiles are never rebound.
+
+The native wind-to-soil refresh check is an [engineering control](phase2_native_wind_check.md), with 12 genuinely changed cells and preserved W/J/I. Production wind adapters and the temporal coordinator remain separate. Phase 2.5 LEAF cover projection follows this publication before Phase 3 observational-validation planning. No field-validation or large-domain-fit claim is made.

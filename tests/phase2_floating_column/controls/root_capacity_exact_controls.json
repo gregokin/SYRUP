@@ -1,0 +1,246 @@
+{
+  "scope": "Root exact rational arithmetic controls for user-agreed downward-only FC cascade and final capacity surface return; NOT model execution or field validation. Return per layer is explicit flux, not erased water; no upward soil refill invented. Physics capacities supplied directly, no texture-method assumptions.",
+  "controls": [
+    {
+      "label": "new_sat_reduction_open_drains_to_fc",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "60",
+        "25"
+      ],
+      "new_fc": [
+        "40",
+        "25"
+      ],
+      "new_sat": [
+        "50",
+        "45"
+      ],
+      "open_above_bedrock": true,
+      "expected_water": [
+        "40",
+        "25"
+      ],
+      "expected_percolation": [
+        "20"
+      ],
+      "expected_bottom_export": "20",
+      "expected_surface_return": "0",
+      "exact_balance": true
+    },
+    {
+      "label": "closed_uses_deeper_room_before_return",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "100",
+        "0",
+        "0"
+      ],
+      "new_fc": [
+        "30",
+        "30",
+        "30"
+      ],
+      "new_sat": [
+        "50",
+        "50",
+        "50"
+      ],
+      "open_above_bedrock": false,
+      "expected_water": [
+        "30",
+        "30",
+        "40"
+      ],
+      "expected_percolation": [
+        "70",
+        "40"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "0",
+      "exact_balance": true
+    },
+    {
+      "label": "closed_total_excess_surface",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "100",
+        "100",
+        "0"
+      ],
+      "new_fc": [
+        "30",
+        "30",
+        "30"
+      ],
+      "new_sat": [
+        "50",
+        "50",
+        "50"
+      ],
+      "open_above_bedrock": false,
+      "expected_water": [
+        "50",
+        "50",
+        "50"
+      ],
+      "expected_percolation": [
+        "50",
+        "50"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "50",
+      "exact_balance": true
+    },
+    {
+      "label": "bedrock_newly_occupies_lower_slots",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "20",
+        "30",
+        "40"
+      ],
+      "new_fc": [
+        "25",
+        "10",
+        "0"
+      ],
+      "new_sat": [
+        "45",
+        "20",
+        "0"
+      ],
+      "open_above_bedrock": false,
+      "expected_water": [
+        "20",
+        "20",
+        "0"
+      ],
+      "expected_percolation": [
+        "0",
+        "0"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "50",
+      "exact_balance": true
+    },
+    {
+      "label": "all_soil_eroded_surface_return",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "10",
+        "20",
+        "30"
+      ],
+      "new_fc": [
+        "0",
+        "0",
+        "0"
+      ],
+      "new_sat": [
+        "0",
+        "0",
+        "0"
+      ],
+      "open_above_bedrock": false,
+      "expected_water": [
+        "0",
+        "0",
+        "0"
+      ],
+      "expected_percolation": [
+        "0",
+        "0"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "60",
+      "exact_balance": true
+    },
+    {
+      "label": "closed_lower_overfull_no_unapproved_upward_soil_fill",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "0",
+        "0",
+        "100"
+      ],
+      "new_fc": [
+        "30",
+        "30",
+        "30"
+      ],
+      "new_sat": [
+        "50",
+        "50",
+        "50"
+      ],
+      "open_above_bedrock": false,
+      "expected_water": [
+        "0",
+        "0",
+        "50"
+      ],
+      "expected_percolation": [
+        "0",
+        "0"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "50",
+      "exact_balance": true
+    },
+    {
+      "label": "at_field_capacity_closed_has_storage",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "25",
+        "25"
+      ],
+      "new_fc": [
+        "25",
+        "25"
+      ],
+      "new_sat": [
+        "45",
+        "45"
+      ],
+      "open_above_bedrock": false,
+      "expected_water": [
+        "25",
+        "25"
+      ],
+      "expected_percolation": [
+        "0"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "0",
+      "exact_balance": true
+    },
+    {
+      "label": "zero_geometry_change_no_flux_at_fc_open",
+      "units": "mm water equivalent depth",
+      "initial_water": [
+        "25",
+        "25"
+      ],
+      "new_fc": [
+        "25",
+        "25"
+      ],
+      "new_sat": [
+        "45",
+        "45"
+      ],
+      "open_above_bedrock": true,
+      "expected_water": [
+        "25",
+        "25"
+      ],
+      "expected_percolation": [
+        "0"
+      ],
+      "expected_bottom_export": "0",
+      "expected_surface_return": "0",
+      "exact_balance": true
+    }
+  ]
+}

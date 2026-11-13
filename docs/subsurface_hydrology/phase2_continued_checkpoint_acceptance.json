@@ -1,0 +1,43 @@
+{
+  "utc": "2026-11-13T19:15:50.471144+00:00",
+  "status": "independently_accepted_bounded_CPU_continued_origin_physical_checkpoint",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_continued_checkpoint_c1_snapshot162",
+  "manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_continued_checkpoint_c1_snapshot162_manifest.json",
+  "manifest_sha256": "a1a07351c8390c7aa504bf46a5592ab6b9b7a3003f3fb25b86e58d4dc255c278",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "Root_C1_tests": {
+    "continued": 39,
+    "old_checkpoint": 39,
+    "strict_preservation_guards": 26,
+    "total": 104,
+    "independent_header_probe": "Resealed larger co_routing_source with small original manifest now typed refusal before np.load; reads[]."
+  },
+  "inherited_exact_unchanged_parts_tests": {
+    "original": 180,
+    "description": "Original35continued+39oldcheckpoint+29CPUouter+51pond+26guards. C1 changes only new origin reader preflight/hex checks; all161otherproduction unchanged. Not180newlyrerunC1."
+  },
+  "production": {
+    "floating_checkpoint.py": "a72b969fff013e63b3b13a542f9330d87d587f8a9dab06d7390ff65e0b07d09f",
+    "floating_continued_checkpoint.py": "edf8d73c53e99f46779275c3b10fbc4b076c852296bb3d5a5058fa2ed876fd93"
+  },
+  "interfaces": {
+    "schemas": [
+      "maple-syrup-floating-continued-pond-checkpoint/1",
+      "maple-syrup-floating-continued-pond-checkpoint/2"
+    ],
+    "profile": "floating-vertical-continued-origin/1",
+    "explicit_original_topology": "Required genuine original generation0 topology distinct from carried routing origin; old loaders/default profiles refuse new family.",
+    "old_original_rule": "unchanged",
+    "counter_rule": "local n_refreshes == current routing generation - actual carried origin generation",
+    "current": "W/J/I/D, native bed and global datum preserved; source/kernel/native guards remain."
+  },
+  "limits": [
+    "CPU NumPy/Numba Dense/published native Windowed only.",
+    "Physical child profile, no outer lifecycle/dailycursor container or quiet/completion proof.",
+    "Genuine origin generation1/local0 and6nativecontinuationsteps qualified; no genuine second local reroute fixture.",
+    "Freshprocess four variants reconstruct H0 root, no originalbed/owner/probe after static recipe setup; static recipe helper currently constructs initial case during setup.",
+    "No GPU or large-domain readiness claim."
+  ],
+  "committed": false
+}

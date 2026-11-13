@@ -1,0 +1,36 @@
+{
+  "status": "independently_accepted_bounded_cpu_selected_completed_event_refresh",
+  "utc": "2026-11-13T16:19:23.930224+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_eb2_c1_snapshot157",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_eb2_c1_snapshot157_manifest.json",
+  "source_manifest_sha256": "87665d6a989515ddf0888d6e3b46fc58a6fe989d05cb21c9a90deb7c2ff4cd49",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "root_cpu_tests": {
+    "new_refresh": 18,
+    "existing_native": 48,
+    "completion": 11,
+    "guards": 26,
+    "total_passed": 103,
+    "skipped": 4
+  },
+  "independent_controls": {
+    "zero_available_reader": "Typed refusal before any N-scaled owned np.array; copies[]; completion unconsumed. Original15B prematurecopy independently reproduced/preserved.",
+    "canonical_preferential_identity": "Rebound public prepared operator and normal public factory on SAMEgenuine refreshcolumn, rawlawbitexact, SHAnowequal970b21a4914eddc03384a8c37139b60e0d2f309a2f518245678f4f635a6202a2; originalchainedSHA defect preserved.",
+    "current_water": "Real completed Dense/Windowed NumPy/Numba wet+terminal storms, selected actualgrossdirty vsfullcoldchildoracle onCURRENTW; J/I unchanged, no elapsedtime/rain/E/T/diffusion; Ks-onlynoextra cascade."
+  },
+  "production_scope": [
+    "new floating_event_refresh.py",
+    "native_floating_soil.py pure parts/factored closure/selected admission helpers, olddefaultsemantics preserved",
+    "floating_preferential_infiltration.py canonical cold new-root rebind helper sharinglaw"
+  ],
+  "limits": [
+    "Staging ONLY; no adopted-parent authority/property lifecycle/retirement/next occurrence/daily/restart/wind claim.",
+    "CPU NumPy/Numba only; CUDA typed refused.",
+    "Natural fixtures change properties in at most one column and produce no large return/export; trueFC/SAT surface return test uses explicitly declared provider perturbation.",
+    "Windowed modelincludesactualcachebound; traced peak fixture Dense only.",
+    "Root refreshed held-context export/reconstruction is later owning-lifecycle API; canonicalcomponentID equality now proven, nofakeOwner/context.",
+    "Current depth already reconciled in storm; D>D0 deposition boundary fixture not exercised here."
+  ],
+  "committed": false
+}

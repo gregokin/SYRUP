@@ -1,0 +1,79 @@
+{
+  "schema": "syrup.root.component_acceptance/1",
+  "component": "G3S3 CUDA initialized soil-only daily lifecycle and optional every-N diagnostic output",
+  "status": "accepted_bounded",
+  "utc": "2026-11-13T12:26:06.621405+00:00",
+  "reviewer": "Codex independent of Claude author",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s3_c2_snapshot151",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s3_c1_source_manifest.json",
+  "production_hashes": {
+    "floating_daily.py": "0dfa5de9e029f2dd70784703c871fa04b708c4352f3776a22e42abfaebc5c17e",
+    "floating_daily_cuda.py": "748cad795dddebeacd96e5b2fb745f157518ec25f3d80774d902d673a7251bc9",
+    "floating_daily_output.py": "d81fbeae063bac6b040e2b7dfc183751b4dc2644917a8e415908355e31cc61b9",
+    "native_floating_soil.py": "f4ae668ca4bfcae54c212950848cf6432aa745657564e8c1ddc860917f3f6769",
+    "floating_soil_layers_cuda.py": "4108c3da73c82209f07c73f04e5a3606748a72c467492b244e54dc995df0fd49",
+    "floating_evaporation.py": "c879415f2b1913cc5da16b414fc2ffc8b661720e19e97d923c5823f5aeca2bd6",
+    "floating_transpiration_cuda.py": "7cc3f6a0bde5c102acdf365d943ca65a9499640df0a9d4de44c8f1748e65ff7f"
+  },
+  "test_only_c2_production_preservation": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s3_c2_production_preserved.json",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package_file_count": 412,
+    "package_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "cuda_bundle": "53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366"
+  },
+  "verification": {
+    "root_cpu": {
+      "passed": 126,
+      "skipped": 26,
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s3_c1_cpu_runs/result.json"
+    },
+    "root_actual_gpu": {
+      "passed": 26,
+      "skipped": 0,
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s3_c2_gpu_runs/result.json",
+      "device_uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+      "guard": "same-launcher 0MiB and0percent beforechild"
+    },
+    "root_independent": {
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s3_independent_v2_gpu_root_g3_s3_c1_snapshot151.json",
+      "cells": 50003,
+      "layers": 3,
+      "days": 10,
+      "backends": [
+        "numba",
+        "cuda"
+      ],
+      "saved_days": [
+        3,
+        6,
+        9
+      ],
+      "geometry": "genuine native stratified Dense with shallow columns, masked rock and other inactive cells",
+      "water_agreement": "existing rtol2e-12 atol1e-14",
+      "saved_arrays": "accepted W/D/mask bitexact; postactual proportional withdrawals",
+      "retained_gpu_allocations_B": 17708032,
+      "plateau": "identical allten days afterparents/trials released",
+      "warm_extra_pool_peak_B": 6426624,
+      "composed_day_plus_withdrawal_device_model_B": 15248320,
+      "tracked_non_save_close": "2D2H calls40B; noH2D",
+      "tracked_saved_close": "audit40B +1650099B actualW/D/mask; boundedG1chunks; noH2D"
+    }
+  },
+  "review_findings": {
+    "confirmed_fixed": "CUDA malformed withdrawal request was admitted/readers beforemetadata; existing fsl._check_vec nowbeforeouteradmit, currentdevicegatefirst",
+    "test_fixes": "cumulative dayclock and immediate-idempotent vs resumed-byte-verification assertions; no numerical change",
+    "memory_measurement": "true allocator-observed warmpeak, liveend separatelynamed, actualallocationrounding recorded; no arbitrarycountfudge",
+    "root_fixture_errors": "original host stagingquota belowdeclaredmin and positive demand oninactive cells correctlyrefused; originalfailuresretained, successorfixture documentroot_g3_s3_independent_v1_setup_correction.md"
+  },
+  "limits": [
+    "Starts genuine fresh generation0 NativeOwner; no actual completed storm/Pond/windhandoff",
+    "Soil-only: positive surface return refused; fullstorm is requiredoutcome/forcing notexecuted here",
+    "No general heldcontext or dailyphysical filecheckpoint/freshprocess GPUdailyrestart claim",
+    "Diagnostic frames notphysicalcheckpoints; output resume requiresgenuine existing/restored daily state",
+    "OnlyGPU0 currentdevice branch; multidevice unavailable",
+    "Moderate native columns notChastre/fullcatchment/fullprocessmemoryscaling proof",
+    "Transfer counters trackinstrumentedMAPLE helpers, notimplicitbackendscalar synchronizations",
+    "Source guards, oldprofiles/defaults/kernels unchanged; phase2notcomplete; notyetadoptedontomaincandidate"
+  ]
+}

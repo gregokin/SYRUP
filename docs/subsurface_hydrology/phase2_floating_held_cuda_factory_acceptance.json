@@ -1,0 +1,117 @@
+{
+  "status": "independently_accepted_bounded_cuda_held_factory",
+  "utc": "2026-11-13T14:44:46.495992+00:00",
+  "source_snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_snapshot155",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_source_manifest.json",
+  "source_manifest_sha256": "6e574f88e3eefc948945874a4d6a76f5e7137ba1f842c3e965a9be983df0c466",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "changes": [
+    "floating_pond.py: optional CUDA-specific quotas and genuine-context backend dispatch, CPU path retained",
+    "floating_pond_cuda.py: extracted common water-free metadata/model setup; new held factory references mask/edges/D0 and allocates only zero rows"
+  ],
+  "cpu": {
+    "factory_host": 7,
+    "prior_cpu_factory": 6,
+    "prior_cuda_host": 19,
+    "prior_pond": 54,
+    "prior_pond_gpu_skips": 17,
+    "source_guards": 26,
+    "total_pass": 112
+  },
+  "gpu": {
+    "factory_pass": 20,
+    "author_skips": 4,
+    "prior_native_owner_storm_pass": 17,
+    "prior_held_context_pass": 29,
+    "total_pass": 66,
+    "gpu_uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "same_child_free_guard": "0MiB and0% before each launch"
+  },
+  "independent_controls": {
+    "source": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_snapshot155",
+    "scope": "Independent real CUDA factory-only cases, not physical file or step continuation.",
+    "cases": [
+      {
+        "layers": 65,
+        "mode": "explicit",
+        "preferential": "enabled",
+        "factory_H2D_B": 0,
+        "factory_D2H_B": 0
+      },
+      {
+        "layers": 65,
+        "mode": "explicit",
+        "preferential": "disabled",
+        "factory_H2D_B": 0,
+        "factory_D2H_B": 0
+      },
+      {
+        "layers": 65,
+        "mode": "texture_ks",
+        "preferential": "enabled",
+        "factory_H2D_B": 0,
+        "factory_D2H_B": 0
+      },
+      {
+        "layers": 65,
+        "mode": "texture_ks",
+        "preferential": "disabled",
+        "factory_H2D_B": 0,
+        "factory_D2H_B": 0
+      }
+    ],
+    "typed_refusals": [
+      {
+        "name": "device_zero",
+        "typed": "FloatingMemoryError",
+        "device_first": true
+      },
+      {
+        "name": "device_need_minus_one",
+        "typed": "FloatingMemoryError",
+        "device_first": true
+      },
+      {
+        "name": "host_zero",
+        "typed": "FloatingMemoryError",
+        "device_first": true
+      },
+      {
+        "name": "host_need_minus_one",
+        "typed": "FloatingMemoryError",
+        "device_first": true
+      },
+      {
+        "name": "device_reserve_once",
+        "typed": "FloatingMemoryError",
+        "device_first": true
+      },
+      {
+        "name": "host_reserve_once",
+        "typed": "FloatingMemoryError",
+        "device_first": true
+      }
+    ],
+    "zero_work_before_refusal": true,
+    "exact_both_pools_plus_once_reserves_pass": true
+  },
+  "verification_logs": [
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_cpu_v2_runs",
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_guards_v3_runs",
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_gpu_runs",
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h_cuda_factory_independent_runs"
+  ],
+  "setup_failures_preserved": [
+    "Root initial combined suite import collision builders; corrected separate process suites",
+    "Root combined two old guard suites conftest collision; corrected separate process guards. Same frozen production bytes throughout."
+  ],
+  "limits": [
+    "Pure held-law vertical factory only: no initial W/J/I, no NativeOwner/bed reconstruction, no current-water adoption or GPU physical file restart qualification.",
+    "Actual fixture N50003 allocator peak and released plateau passed; no large catchment readiness inferred.",
+    "One GPU0 UUID only; no second-device qualification.",
+    "Function docstring still historical CPU-only refusal prose; final documentation correction queued before publication.",
+    "Four L65 preferential cases skipped by author definitions independently executed by Root and passed with zero counted factory transfers."
+  ],
+  "no_commit": true
+}

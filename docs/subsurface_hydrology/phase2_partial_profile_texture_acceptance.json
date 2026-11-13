@@ -1,0 +1,66 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T05:26:59.453863+00:00",
+  "component": "E1 explicit native available-material layer texture policy",
+  "status": "accepted_isolated_component_pending_main_candidate_patch",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_e1_c2_snapshot",
+  "source_manifest": "root_e1_c2_source_manifest.json",
+  "package_sha256": "796098ca9a7957313ed6f1e1ae19531bbbe005084e7f5821bcad52fe7728f1b5",
+  "changed_modules": [
+    "src/maple_syrup/soil_profile_texture.py"
+  ],
+  "all_other132_modules_unchanged": true,
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "verification": {
+    "root_cpu": {
+      "passed": 36,
+      "skipped": 2,
+      "evidence": "root_e1_c2_cpu_runs/result.json"
+    },
+    "root_actual_gpu": {
+      "passed": 2,
+      "scope": "Dense CUDA plus GPU-resident native Windowed with CPU reduction",
+      "evidence": "root_e1_c2_gpu_runs/result.json"
+    },
+    "independent_exact_fraction": {
+      "controls_each": 4,
+      "modes": [
+        "numpy",
+        "numba",
+        "cuda_dense",
+        "windowed",
+        "windowed_numba",
+        "cuda_windowed_numba"
+      ],
+      "all_physical_array_hashes_identical": true,
+      "evidence": [
+        "root_e1_public_fraction_numpy_root_e1_c2_snapshot.json",
+        "root_e1_public_fraction_numba_root_e1_c2_snapshot.json",
+        "root_e1_public_fraction_cuda_dense_root_e1_c2_snapshot.json",
+        "root_e1_public_fraction_v3_windowed_root_e1_c2_snapshot.json",
+        "root_e1_public_fraction_v3_windowed_numba_root_e1_c2_snapshot.json",
+        "root_e1_public_fraction_v3_cuda_windowed_numba_root_e1_c2_snapshot.json"
+      ],
+      "oracle": "root_e1_partial_texture_fraction_controls.json"
+    },
+    "initial_refused_root_fixture": "Root initially requested invalid window2 and archive chunk2; native setup correctly refused. Scripts/logs preserved. Valid v3 uses W3/C64 without changing oracle terrain/material. Separate actual-GPU native deep fixture tests archived material below resident floor."
+  },
+  "behavior": {
+    "new_keyword": "coverage=partial_over_base",
+    "default": "coverage=full retains strict missing-depth/top-cap refusals",
+    "empty_layers": "exact zero material/coverage; zero fractions mean undefined texture, not invented soil",
+    "new_validation": "finite/nonnegative, operation-derived coverage consistency, chunked counted boolean downloads; no second fullN mask upload/CUB workspace",
+    "scratch": "56B per chunk cell in output namespace plus one B host-flag buffer, reuse explicitly checked against already admitted native validation/fixed working allowance; Python overhead separately covered"
+  },
+  "limits": [
+    "Not canonical hydraulic bedrock-depth classification; represented_depth remains old sequential segment-height diagnostic.",
+    "Existing Windowed native full validation and host archived gather/reduction preserved; not a resident GPU archive compute path.",
+    "Whole-grid output allocation still exists; compact changed-column consumption remains E follow-up, see root_e_selected_column_memory_note.md.",
+    "No native water/property/adoption/restart/field/large-domain acceptance.",
+    "Pending reviewed patch adoption after D2 writer and affected jobs stop; do not overwrite active D2 sources."
+  ],
+  "publication": "Uncommitted; publish only with independently accepted wholePhase2."
+}

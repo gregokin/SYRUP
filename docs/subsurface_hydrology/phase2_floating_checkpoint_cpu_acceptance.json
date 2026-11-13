@@ -1,0 +1,29 @@
+{
+  "status": "accepted_bounded_CPU_original_held_template_file_checkpoint",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_r2a_c1_snapshot",
+  "manifest_sha256": "159114c76c75f2c1dbdbecbde1711d6f40c21f6c6853f5944c86ffa9ed515535",
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "native_maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "sources": {
+    "src/maple_syrup/floating_checkpoint.py": "107e921ee033339c87c6d1610ecf6065016b9f9415afb5f7b63fb80eb3fd3466",
+    "src/maple_syrup/floating_resume.py": "8798344aeeac2b0757f990ad4a704161abb45f7d24b555c95eea4ec28f918aa8"
+  },
+  "root_tests": {
+    "new_file_CPU": 22,
+    "old_inmemory_CPU": 62,
+    "historical_guards": 26
+  },
+  "independent_controls": "Actual file-produced input alteration rejected, private one-shot reset rejected, direct prepare zero budget rejected before copies (empty copy-request list)",
+  "evidence": [
+    "root_r2a_c1_cpu_runs/result.json",
+    "root_r2a_independent_c1_root_r2a_c1_snapshot.json"
+  ],
+  "limits": [
+    "Requires target built from genuine ORIGINAL case/held template; no general long-run restoration context factory",
+    "No CUDA file profile, no daily cursor/output policy checkpoint",
+    "Retained-terminal deposition native-call scalar check remains unsupported and must be completed before wholePhase2",
+    "File-level actual W greater than original D0 capacity fixture not yet produced; shared R1 current-geometry preparation qualified",
+    "Real published native Windowed restart tested; pending-journal refusal was only a call-order test here",
+    "Parent record referenced by immutable-value convention, not deep-sealed"
+  ]
+}

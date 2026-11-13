@@ -1,0 +1,70 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T06:36:13.749483+00:00",
+  "component": "G1 floating moisture diagnostic W+D+mask frame codec; no cadence authority",
+  "status": "accepted_bounded_component_pending_main_candidate_adoption",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g1_c1_snapshot",
+  "source_manifest": "root_g1_c1_source_manifest.json",
+  "module_count": 141,
+  "new_module": "src/maple_syrup/floating_moisture_frame.py",
+  "new_module_sha256": "ba1ef652c37571da4bfc3a323f32dbed97b848b096fbf9dd7c5a9dc42b2f32b9",
+  "prior140_modules_unchanged": true,
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "verification": "root_c_provider_c1_native_verification.json"
+  },
+  "verification": {
+    "root_cpu": {
+      "passed": 39,
+      "skipped": 2,
+      "evidence": "root_g1_c1_cpu_runs/result.json"
+    },
+    "root_actual_gpu": {
+      "passed": 1,
+      "skipped": 1,
+      "skip": "second-device control requires two devices, only authorizedGPU0 visible",
+      "evidence": "root_g1_c1_gpu_runs/result.json"
+    },
+    "root_independent_reproductions": [
+      "root_g1_c1_independent_repro_numpy.json",
+      "root_g1_c1_independent_repro_cuda.json"
+    ],
+    "actual_gpu_streaming": {
+      "L": 256,
+      "N": 8192,
+      "chunk_bytes": 196608,
+      "peak_live_downloaded_host_payload_B": 52224,
+      "prior_peak_B": 8458240,
+      "bound_is_chunk_plus_metadata_not_L_times_chunk": true
+    },
+    "reconstruction_tracemalloc": {
+      "thickness_payload_B": 6400000,
+      "observed_peak_B": 6400400,
+      "theta_observed_peak_B": 6502256,
+      "python_headers_separate": true
+    },
+    "exact_byte_count_control": {
+      "reported_B": 2405,
+      "actual_B": 2405
+    },
+    "raw_probe_metadata_caveat": "The root repro field admitted_host_staging_bytes380044B is evaluated from ACTUAL manifest length. C1 actually admits a conservative ANALYTIC manifest bound before construction, so this field is a lower comparison bound, not a spy measurement of admission. The52224B downloadedpayload is below either bound. Original immutable evidence retained."
+  },
+  "corrections": [
+    "one downloaded water row at a time; bounded validation/replay, no per-layer piece list",
+    "in-place geometry/moisture reconstruction and typed preallocation budgets",
+    "device guard and analytic metadata admission before edge value scratch/JSON",
+    "exact bytes and typed date overflow",
+    "strict writer-source replay identity; no historical source rebinding",
+    "seal failures truthful, unknown unsealed reservations preserved"
+  ],
+  "limits": [
+    "Pure codec accepts attribution metadata, does not prove accepted native state or count nominal days.",
+    "Not a physical restart; does not store full property maps, bed, J or biological state.",
+    "Unknown/unsealed reservations refused untouched; complete owned crash recovery is later G2 responsibility.",
+    "No CLI policy or actual final-post-transpiration daily hook yet; full every-N feature remains incomplete.",
+    "One supported authorized GPU0 tested; cross-device test skipped.",
+    "No large-domain complete coupled simulation or field-validation claim."
+  ],
+  "publication": "Uncommitted; apply bounded new-file patch only at stable main-writer boundary."
+}

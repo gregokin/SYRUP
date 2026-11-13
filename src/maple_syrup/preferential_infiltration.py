@@ -828,6 +828,160 @@ def _validate_scalar_map_input(column: ss.SoilColumn, value: Any, name: str) -> 
     ss._check_dynamic(column, name, value, (column.n_cells,))
 
 
+class _DeriveContext(NamedTuple):
+    """PRIVATE honest context of the geometry-independent pathway derivation (Phase 2 S2-B2.b): the namespace, the
+    dimensions, the active mask and the per-contribution array check. It is NOT a column, layers object or operator:
+    the explicit spatial operator supplies the same fields from its own sealed owner."""
+
+    xp: ModuleType
+    n_layers: int
+    n_cells: int
+    active: Any  # (N,) bool in the namespace
+    check_contribution: Callable[[int, Any], None]  # exact-array metadata check of one streamed contribution
+    reduce: Callable[[str, Any], float] | None = None  # OPTIONAL cold-reduction hook (S2-B2.d); None = the namespace's own reductions, expression for expression (see `_reduce`)
+
+
+REDUCE_KINDS = ("count_nonfinite", "min", "max", "count_nan")
+
+
+def _reduce(ctx: _DeriveContext, kind: str, array: Any) -> float:
+    """The cold scalar reductions of the derivation. With `ctx.reduce is None` (the common CPU/CUDA and the CPU spatial callers) they are exactly the previous expressions
+    (`to_float(xp.sum(~xp.isfinite(a)))`, `to_float(xp.min(a))`, `to_float(xp.max(a))`, `to_float(xp.sum(xp.isnan(a)))`); an explicit spatial-CUDA caller supplies a bounded, counted
+    reducer instead of the library reductions. An unknown kind is refused (never treated as another kind), by the default path and by the hook alike."""
+    if kind not in REDUCE_KINDS:
+        raise PreferentialError(f"unknown cold reduction kind {kind!r}; expected one of {REDUCE_KINDS}")
+    if ctx.reduce is not None:
+        return float(ctx.reduce(kind, array))
+    from maple.core.backend import to_float
+
+    xp = ctx.xp
+    if kind == "count_nonfinite":
+        return to_float(xp.sum(~xp.isfinite(array)))
+    if kind == "min":
+        return to_float(xp.min(array))
+    if kind == "max":
+        return to_float(xp.max(array))
+    return to_float(xp.sum(xp.isnan(array)))
+
+
+def _derive_pathway(ctx: _DeriveContext, a3_map: Any, max_fraction: float, background: Any, species: Sequence[Any],
+                    species_contributions: Iterable[Any] | None) -> tuple[Any, Any, Any, int]:
+    """The ONE derivation of the per-cell pathway maps from the explicit inputs: returns `(rate, receiver, beta,
+    n_enabled)` with `rate` = k = -log1p(-beta)/3600 (+inf where beta == 1, 0 on inactive cells), `receiver` (L, N) =
+    r_l (zero where beta == 0 or inactive) and `beta` (N,) the hourly fraction, the layer sum checked against the
+    closed form. `a3_map` is read only: an `(N,)` array or a read-only broadcast view of a scalar. Species
+    contributions are consumed lazily one `(N,)` array at a time and never retained. Shared by the common and the
+    explicit spatial preparations (no copy of the law)."""
+    xp, L, N, active = ctx.xp, ctx.n_layers, ctx.n_cells, ctx.active
+    from maple.core.backend import errstate
+
+    inactive = ~active
+    background_on = background is not None and background.enabled
+    # Build scratch plan (BUILD_SCRATCH_DOUBLES_PER_CELL doubles + BUILD_SCRATCH_MASK_BYTES_PER_CELL bytes per cell
+    # beyond the persistent maps): cover (N), denominator (N), layer-sum (N) and one (N) temporary, the a3 map (N,
+    # counted as scratch because it is not kept), plus transient boolean masks. `numerator` becomes the receiver map,
+    # `scratch` becomes beta and `temp` becomes the rate map: all persistent, counted in parameter_bytes.
+    cover = xp.zeros(N, dtype=np.float64)
+    numerator = xp.zeros((L, N), dtype=np.float64)
+    temp = xp.empty(N, dtype=np.float64)
+    n_enabled = 0
+    consumed = 0
+    if species:
+        iterator = iter(species_contributions)
+        for s, sp in enumerate(species):
+            try:
+                c = next(iterator)
+            except StopIteration:
+                raise PreferentialError(f"species_contributions yielded {consumed} arrays for {len(species)} species") from None
+            consumed += 1
+            ctx.check_contribution(s, c)
+            if _reduce(ctx, "count_nonfinite", c) != 0.0:  # transient (N,) bool (default path)
+                raise PreferentialError(f"species_contributions[{s}] must be finite everywhere")
+            if _reduce(ctx, "min", c) < 0.0:
+                raise PreferentialError(f"species_contributions[{s}] must be >= 0 everywhere")
+            if not sp.enabled:
+                continue  # all-zero receiving weights: this species' pathway is disabled, its cover is ignored
+            n_enabled += 1
+            xp.add(cover, c, out=cover)
+            normalized = sp.normalized
+            for layer in range(L):
+                u = float(normalized[layer])
+                if u != 0.0:
+                    xp.multiply(c, u, out=temp)
+                    xp.add(numerator[layer], temp, out=numerator[layer])
+        try:
+            next(iterator)
+        except StopIteration:
+            pass
+        else:
+            raise PreferentialError(f"species_contributions yielded more than {len(species)} arrays")
+    # numerator_l <= C term by term (u <= 1), so a finite C certifies every numerator entry
+    if _reduce(ctx, "count_nonfinite", cover) != 0.0:
+        raise PreferentialError("the summed species contributions overflowed FP64; refused, not clipped")
+    with errstate(xp=xp, all="ignore"):
+        denominator = cover + 1.0  # (N,)
+        # g_l = a3 b_l + (1 - a3) / (1 + C) numerator_l  (in place in `numerator`)
+        xp.subtract(1.0, a3_map, out=temp)
+        xp.divide(temp, denominator, out=temp)  # (1 - a3) / (1 + C)
+        scratch = xp.empty(N, dtype=np.float64)
+        background_normalized = background.normalized if background_on else None
+        for layer in range(L):
+            xp.multiply(numerator[layer], temp, out=numerator[layer])
+            if background_on:
+                b = float(background_normalized[layer])
+                if b != 0.0:
+                    xp.multiply(a3_map, b, out=scratch)
+                    xp.add(numerator[layer], scratch, out=numerator[layer])
+        layer_sum = xp.zeros(N, dtype=np.float64)
+        for layer in range(L):
+            xp.add(layer_sum, numerator[layer], out=layer_sum)
+        # closed-form sum_l g_l in `scratch`: <= 1 exactly by monotone rounding (see the module docstring)
+        if background_on:
+            xp.add(a3_map, cover, out=scratch)
+            xp.divide(scratch, denominator, out=scratch)  # (a3 + C) / (1 + C)
+        else:
+            xp.divide(cover, denominator, out=scratch)
+            xp.subtract(1.0, a3_map, out=temp)
+            xp.multiply(temp, scratch, out=scratch)  # (1 - a3) C / (1 + C)
+        # build sanity: the layer sum agrees with the closed form within the MAPLE bound for L (S + 2) + 3 terms
+        coefficient = volume_roundoff_bound_m3(L * (n_enabled + 2) + 3, 1.0)
+        xp.subtract(layer_sum, scratch, out=temp)
+        xp.abs(temp, out=temp)
+        xp.add(scratch, layer_sum, out=denominator)  # both are >= 0: the magnitude scale
+        xp.multiply(denominator, coefficient, out=denominator)
+        xp.subtract(temp, denominator, out=temp)
+        worst = _reduce(ctx, "max", temp)
+        if not (worst <= 0.0):
+            raise PreferentialError("internal: the receiver layer sum disagrees with the closed-form response beyond "
+                                    f"the FP64 bound (worst excess {worst!r}); refused")
+        del denominator, a3_map
+        beta = scratch
+        xp.multiply(beta, max_fraction, out=beta)
+        xp.copyto(beta, 0.0, where=inactive)
+        lo, hi = _reduce(ctx, "min", beta), _reduce(ctx, "max", beta)
+        if not (0.0 <= lo and hi <= 1.0):
+            raise PreferentialError(f"beta must lie in [0, 1] everywhere, got [{lo!r}, {hi!r}]")
+        rate = temp  # k = -log1p(-beta) / 3600, +inf where beta == 1, 0 on inactive cells (beta is 0 there)
+        xp.negative(beta, out=rate)
+        xp.log1p(rate, out=rate)
+        xp.negative(rate, out=rate)
+        xp.divide(rate, SECONDS_PER_HOUR, out=rate)
+        # receiver split r_l = g_l / sum_l g_l (zero column where the sum vanishes), zero on inactive cells
+        receiver = numerator
+        positive = layer_sum > 0.0  # (N,) bool
+        xp.copyto(layer_sum, 1.0, where=~positive)  # safe divisor
+        for layer in range(L):
+            xp.divide(receiver[layer], layer_sum, out=receiver[layer])
+            xp.copyto(receiver[layer], 0.0, where=~positive)
+            xp.copyto(receiver[layer], 0.0, where=inactive)
+            if _reduce(ctx, "count_nonfinite", receiver[layer]) != 0.0:
+                raise PreferentialError("internal: derived receiver map is not representable; refused")
+        del positive, layer_sum, cover
+    if _reduce(ctx, "count_nan", rate) != 0.0:
+        raise PreferentialError("internal: derived rate map is not representable; refused")
+    return rate, receiver, beta, n_enabled
+
+
 def prepare_preferential(column: ss.SoilColumn, *, a3: Any, max_fraction_per_hour: Any, max_intake_rate_m_s: Any,
                          background_receiver_weights: Any, species_receiver_weights: Sequence[Any] = (),
                          species_contributions: Iterable[Any] | None = None,
@@ -884,128 +1038,28 @@ def prepare_preferential(column: ss.SoilColumn, *, a3: Any, max_fraction_per_hou
         background_receiver_weights, L, "background_receiver_weights")
     species = tuple(receiver_weights(w, L, f"species_receiver_weights[{s}]")
                     for s, w in enumerate(species_receiver_weights))
-    from maple.core.backend import errstate, to_device, to_float, to_host
+    from maple.core.backend import to_device, to_host
 
     a3_map, a3_summary = _scalar_or_cell_map(column, a3, "a3", low=0.0, high=1.0)
     max_rate, rate_summary = _scalar_or_cell_map(column, max_intake_rate_m_s, "max_intake_rate_m_s", low=0.0,
                                                  high=math.inf, allow_inf=True)
     active = column.active
-    inactive = ~active
-    background_on = background is not None and background.enabled
-    # Build scratch plan (BUILD_SCRATCH_DOUBLES_PER_CELL doubles + BUILD_SCRATCH_MASK_BYTES_PER_CELL bytes per cell
-    # beyond the persistent maps): cover (N), denominator (N), layer-sum (N) and one (N) temporary, the a3 map (N,
-    # counted as scratch because it is not kept), plus transient boolean masks. `numerator` becomes the receiver map,
-    # `scratch` becomes beta and `temp` becomes the rate map: all persistent, counted in parameter_bytes.
-    cover = xp.zeros(N, dtype=np.float64)
-    numerator = xp.zeros((L, N), dtype=np.float64)
-    temp = xp.empty(N, dtype=np.float64)
-    n_enabled = 0
-    consumed = 0
-    if species:
-        iterator = iter(species_contributions)
-        for s, sp in enumerate(species):
-            try:
-                c = next(iterator)
-            except StopIteration:
-                raise PreferentialError(f"species_contributions yielded {consumed} arrays for {len(species)} species") from None
-            consumed += 1
-            ss._check_dynamic(column, f"species_contributions[{s}]", c, (N,))
-            if to_float(xp.sum(~xp.isfinite(c))) != 0.0:  # transient (N,) bool
-                raise PreferentialError(f"species_contributions[{s}] must be finite everywhere")
-            if to_float(xp.min(c)) < 0.0:
-                raise PreferentialError(f"species_contributions[{s}] must be >= 0 everywhere")
-            if not sp.enabled:
-                continue  # all-zero receiving weights: this species' pathway is disabled, its cover is ignored
-            n_enabled += 1
-            xp.add(cover, c, out=cover)
-            normalized = sp.normalized
-            for layer in range(L):
-                u = float(normalized[layer])
-                if u != 0.0:
-                    xp.multiply(c, u, out=temp)
-                    xp.add(numerator[layer], temp, out=numerator[layer])
-        try:
-            next(iterator)
-        except StopIteration:
-            pass
-        else:
-            raise PreferentialError(f"species_contributions yielded more than {len(species)} arrays")
-    # numerator_l <= C term by term (u <= 1), so a finite C certifies every numerator entry
-    if to_float(xp.sum(~xp.isfinite(cover))) != 0.0:
-        raise PreferentialError("the summed species contributions overflowed FP64; refused, not clipped")
-    with errstate(xp=xp, all="ignore"):
-        denominator = cover + 1.0  # (N,)
-        # g_l = a3 b_l + (1 - a3) / (1 + C) numerator_l  (in place in `numerator`)
-        xp.subtract(1.0, a3_map, out=temp)
-        xp.divide(temp, denominator, out=temp)  # (1 - a3) / (1 + C)
-        scratch = xp.empty(N, dtype=np.float64)
-        background_normalized = background.normalized if background_on else None
-        for layer in range(L):
-            xp.multiply(numerator[layer], temp, out=numerator[layer])
-            if background_on:
-                b = float(background_normalized[layer])
-                if b != 0.0:
-                    xp.multiply(a3_map, b, out=scratch)
-                    xp.add(numerator[layer], scratch, out=numerator[layer])
-        layer_sum = xp.zeros(N, dtype=np.float64)
-        for layer in range(L):
-            xp.add(layer_sum, numerator[layer], out=layer_sum)
-        # closed-form sum_l g_l in `scratch`: <= 1 exactly by monotone rounding (see the module docstring)
-        if background_on:
-            xp.add(a3_map, cover, out=scratch)
-            xp.divide(scratch, denominator, out=scratch)  # (a3 + C) / (1 + C)
-        else:
-            xp.divide(cover, denominator, out=scratch)
-            xp.subtract(1.0, a3_map, out=temp)
-            xp.multiply(temp, scratch, out=scratch)  # (1 - a3) C / (1 + C)
-        # build sanity: the layer sum agrees with the closed form within the MAPLE bound for L (S + 2) + 3 terms
-        coefficient = volume_roundoff_bound_m3(L * (n_enabled + 2) + 3, 1.0)
-        xp.subtract(layer_sum, scratch, out=temp)
-        xp.abs(temp, out=temp)
-        xp.add(scratch, layer_sum, out=denominator)  # both are >= 0: the magnitude scale
-        xp.multiply(denominator, coefficient, out=denominator)
-        xp.subtract(temp, denominator, out=temp)
-        worst = to_float(xp.max(temp))
-        if not (worst <= 0.0):
-            raise PreferentialError("internal: the receiver layer sum disagrees with the closed-form response beyond "
-                                    f"the FP64 bound (worst excess {worst!r}); refused")
-        del denominator, a3_map
-        beta = scratch
-        xp.multiply(beta, max_fraction, out=beta)
-        xp.copyto(beta, 0.0, where=inactive)
-        lo, hi = to_float(xp.min(beta)), to_float(xp.max(beta))
-        if not (0.0 <= lo and hi <= 1.0):
-            raise PreferentialError(f"beta must lie in [0, 1] everywhere, got [{lo!r}, {hi!r}]")
-        rate = temp  # k = -log1p(-beta) / 3600, +inf where beta == 1, 0 on inactive cells (beta is 0 there)
-        xp.negative(beta, out=rate)
-        xp.log1p(rate, out=rate)
-        xp.negative(rate, out=rate)
-        xp.divide(rate, SECONDS_PER_HOUR, out=rate)
-        # receiver split r_l = g_l / sum_l g_l (zero column where the sum vanishes), zero on inactive cells
-        receiver = numerator
-        positive = layer_sum > 0.0  # (N,) bool
-        xp.copyto(layer_sum, 1.0, where=~positive)  # safe divisor
-        for layer in range(L):
-            xp.divide(receiver[layer], layer_sum, out=receiver[layer])
-            xp.copyto(receiver[layer], 0.0, where=~positive)
-            xp.copyto(receiver[layer], 0.0, where=inactive)
-            if to_float(xp.sum(~xp.isfinite(receiver[layer]))) != 0.0:
-                raise PreferentialError("internal: derived receiver map is not representable; refused")
-        del positive, layer_sum, cover
-        xp.copyto(max_rate, 0.0, where=inactive)
-    if to_float(xp.sum(xp.isnan(rate))) != 0.0:
-        raise PreferentialError("internal: derived rate map is not representable; refused")
+    rate, receiver, beta, n_enabled = _derive_pathway(
+        _DeriveContext(xp, L, N, active, lambda s_i, c: ss._check_dynamic(column, f"species_contributions[{s_i}]", c, (N,))),
+        a3_map, max_fraction, background, species, species_contributions)
+    del a3_map
+    xp.copyto(max_rate, 0.0, where=~active)
     sat_xp = to_device(np.array(column.layers.saturation_m), xp) if xp is not np else np.array(column.layers.saturation_m)
     tol_xp = to_device(np.array(column.layers.capacity_tolerance_m), xp) if xp is not np else np.array(
         column.layers.capacity_tolerance_m)
     # sealing: largest map first so the sealing copy and the freed scratch do not overlap more than declared
     owned_receiver = _Owned(_SEAL, xp, xp.ascontiguousarray(receiver))
-    del receiver, numerator
+    del receiver
     owned = KernelMaps(_Owned(_SEAL, xp, xp.ascontiguousarray(rate)), _Owned(_SEAL, xp, xp.ascontiguousarray(max_rate)),
                        owned_receiver, _Owned(_SEAL, xp, xp.ascontiguousarray(sat_xp)),
                        _Owned(_SEAL, xp, xp.ascontiguousarray(tol_xp)))
     owned_beta = _Owned(_SEAL, xp, xp.ascontiguousarray(beta))
-    del rate, max_rate, beta, temp, scratch, sat_xp, tol_xp
+    del rate, max_rate, beta, sat_xp, tol_xp
     if xp is np:
         host_owned, host_beta = owned, owned_beta
     else:  # one-time cold downloads into sealed host mirrors (largest first)
@@ -1037,20 +1091,40 @@ def admit_step(op: PreferentialOperator) -> int:
 
 
 # --- the reference step -------------------------------------------------------------------------------------------------
+class _StepContext(NamedTuple):
+    """PRIVATE honest context of the shared NumPy body: exactly what the body needs besides the arrays (Phase 2
+    S2-B2.b). It is NOT a column, layers object or operator."""
+
+    n_layers: int
+    n_cells: int
+    active: Any  # (N,) bool
+    cell_tol: float  # cell_closure_coefficient(L)
+
+
 def reference_step(op: PreferentialOperator, maps: KernelMaps, surface_in: np.ndarray, water_in: np.ndarray,
                    dt: float) -> StepArrays:
     """NumPy reference of one step: loops over layers, vectorised over cells, the SAME IEEE operations in the SAME
     order as the compiled kernels (only `expm1` may differ by an ulp between libraries), in place on the fresh
     outputs with a counted transient peak. `maps` are the operator's private zero-copy handles. Validation is
-    recorded in flag rows, not raised here."""
+    recorded in flag rows, not raised here. The body is `_reference_step_body`, shared with the explicit spatial
+    operator; this wrapper passes the cached `(L,)` vectors exactly as before."""
+    rate, max_rate, recv, sat_m, cap_tol = maps
+    ctx = _StepContext(op.n_layers, op.n_cells, op.column.active, op.cell_closure_coefficient)
+    return _reference_step_body(ctx, rate, max_rate, recv, sat_m, cap_tol, surface_in, water_in, dt)
+
+
+def _reference_step_body(ctx: _StepContext, rate: Any, max_rate: Any, recv: Any, sat_m: Any, cap_tol: Any,
+                         surface_in: np.ndarray, water_in: np.ndarray, dt: float) -> StepArrays:
+    """The ONE NumPy physical body. `rate`/`max_rate` are `(N,)` arrays (a read-only broadcast view allowed),
+    `recv` the `(L, N)` receiver map, `sat_m` and `cap_tol` INDEXABLE per-layer readers (`x[layer]` -> a scalar or
+    an `(N,)` row): the cached `(L,)` arrays of the common operator or lazy readers of an explicit spatial owner."""
     from maple.core.backend import errstate
 
     xp = np
-    L, N = op.n_layers, op.n_cells
-    active = op.column.active
+    L, N = ctx.n_layers, ctx.n_cells
+    active = ctx.active
     inactive = ~active
-    rate, max_rate, recv, sat_m, cap_tol = maps
-    cell_tol = op.cell_closure_coefficient
+    cell_tol = ctx.cell_tol
 
     surface_out = xp.array(surface_in, dtype=np.float64, copy=True)
     water_out = xp.array(water_in, dtype=np.float64, copy=True)
@@ -1202,6 +1276,12 @@ def _read_packet(xp: ModuleType, arrays: StepArrays) -> np.ndarray:
 
 
 def _resolve(op: PreferentialOperator, packet: np.ndarray) -> PreferentialBudget:
+    return _resolve_core(op.column.cell_area_m2, op.n_layers, op.n_cells, packet)
+
+
+def _resolve_core(area: float, n_layers: int, n_cells: int, packet: np.ndarray) -> PreferentialBudget:
+    """Backend- and owner-independent budget of ONE packet (private; shared with the explicit spatial operator):
+    `area` is applied ONCE, finiteness is checked BEFORE the strict MAPLE bound helper."""
     if packet.shape != (PACKET_LENGTH,):
         raise PreferentialError(f"internal: packet shape {packet.shape}")
     low, n_flagged = float(packet[7]), int(packet[8])
@@ -1209,11 +1289,10 @@ def _resolve(op: PreferentialOperator, packet: np.ndarray) -> PreferentialBudget
         bit = int(low).bit_length() - 1 if math.isfinite(low) and low >= 1.0 else None
         message = FLAG_MESSAGES[bit] if bit is not None and 0 <= bit < N_FLAGS else "validation packet is corrupt"
         raise PreferentialStepError(f"{message} ({n_flagged} cell(s) flagged)", bit=bit, n_flagged=n_flagged)
-    area = op.column.cell_area_m2
     before, after, h_in, h_out, isolated, attempted, intake = (float(v) * area for v in packet[:7])
     soil_residual = (after - before) - intake
     surface_residual = (h_in - h_out) - intake
-    n_terms = (CELL_OPERATION_TERMS_PER_LAYER * op.n_layers + CELL_OPERATION_TERMS) * op.n_cells + ROW_COUNT
+    n_terms = (CELL_OPERATION_TERMS_PER_LAYER * n_layers + CELL_OPERATION_TERMS) * n_cells + ROW_COUNT
     operands = (abs(before), abs(after), abs(h_in), abs(h_out), abs(intake))
     if not all(math.isfinite(v) for v in (*operands, isolated, attempted, soil_residual, surface_residual)):
         raise PreferentialStepError("non-finite global water budget", bit=None, n_flagged=n_flagged)

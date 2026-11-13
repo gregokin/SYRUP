@@ -1,0 +1,73 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T06:10:30.370289+00:00",
+  "component": "D2 floating matrix/preferential intake and aggregate root withdrawal",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_d2_c1_snapshot",
+  "source_manifest": "root_d2_c1_source_manifest.json",
+  "module_count": 139,
+  "source_package_sha256": "fdb64a6f9801f75d85d06ba02fdb447a31d0a764ff3acf0e90ea64fac862970d",
+  "new_modules": [
+    "floating_matrix_infiltration.py",
+    "floating_matrix_infiltration_cuda.py",
+    "floating_preferential_infiltration.py",
+    "floating_preferential_infiltration_cuda.py",
+    "floating_transpiration.py",
+    "floating_transpiration_cuda.py"
+  ],
+  "old133_changed": [
+    "matrix_infiltration_numba.py",
+    "preferential_infiltration_numba.py",
+    "soil_profile_texture.py"
+  ],
+  "changed_scope": "two intended private floating Numba variants and independently accepted E1 texture reader; D1 and all other sources unchanged",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "verification": "root_c_provider_c1_native_verification.json"
+  },
+  "verification": {
+    "root_cpu": {
+      "passed": 105,
+      "skipped": 24,
+      "evidence": "root_d2_c1_cpu_runs/result.json"
+    },
+    "root_actual_gpu": {
+      "passed": 23,
+      "skipped": 1,
+      "skip": "two devices required, only authorized GPU0 visible",
+      "evidence": "root_d2_c1_gpu_runs/result.json"
+    },
+    "root_source_guards": "root_d2_c1_guards_runs/result.json",
+    "root_independent_controls": "root_d2_c1_independent_control.json",
+    "independent_control_details": "both NumPy/Numba user 75percent root-uptake example, original state unchanged; S100 vsS0 adds417600B forL2, and insufficient budget refuses before any receiver record built; unbounded dense plant helper absent",
+    "initial_root_collection_error": "root_d2_c1_review_runs source_guards combined two directories with conftest name imports; corrected by separate native pytest processes, no source changes"
+  },
+  "hardware": {
+    "uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "free_guard": "same-launcher0MiBAND0percent",
+    "hot_packets_B": {
+      "matrix": 136,
+      "preferential": 72,
+      "withdrawal": 64,
+      "availability": 8
+    },
+    "all_step_kernels_local_bytes": 0,
+    "allocation_scaling_test_N": 50003
+  },
+  "corrections": [
+    "removed optional unbounded P*L*N helper; production LEAF must use sparse edges and one aggregate withdrawal",
+    "species weight records included in preallocation HOST memory admission, CPU and CUDA",
+    "host and hardware numerical comparisons use existing2e-12/1e-14 bounds",
+    "scientific label Green-Ampt/Tietjen corrected without equation changes",
+    "E1 source pinned by exact guarded SHA, numeric texture engines unchanged"
+  ],
+  "limits": [
+    "Pure operators, not native generation/adoption authority; E3 must supply genuine parent and once-only adoption.",
+    "No Pond evolving-storm, physical checkpoint, LEAF lifecycle or final every-N-day driver acceptance by this component.",
+    "CUDA species-weight admission verified by host controls; no separate large-S device residency claim.",
+    "One beta=1 log1p divide-by-zero warning in CPU test gives the intended limiting rate, tests pass; no tolerance relaxation.",
+    "No field validation or large-domain complete-run claim."
+  ],
+  "publication": "uncommitted; whole Phase2 acceptance required"
+}

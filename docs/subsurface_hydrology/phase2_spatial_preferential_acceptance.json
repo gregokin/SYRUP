@@ -1,0 +1,42 @@
+{
+  "schema": "syrup.phase2.spatial_preferential_cpu_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_PREFERENTIAL_NUMPY_NUMBA_TRIAL_ONLY",
+  "utc": "2026-11-12T20:56:29.655059+00:00",
+  "source": {
+    "package_sha256": "976faaef532ff16b2b88abd5481243a29728f3969c92c6c78de53f8ed4fc1542",
+    "file_count": 123,
+    "preferential_infiltration_sha256": "2526986fc4c72ac806b5fe32388ce02ef773cf1d4053494eb12e9263f5eb58b3",
+    "preferential_infiltration_numba_sha256": "2441ffe1b23b87cba3504fe21f2e73061e05650858a5eb21db51a40ab331b15d",
+    "spatial_preferential_infiltration_sha256": "27aac739b5aef6ad61c161527f5605e698fb36a31fc84de8b48bd0f6d5cb997a",
+    "delta_from_B2_a": "Two private common preferential reference/derivation/budget/body-reader refactors plus NEW spatial_preferential_infiltration.py. Other120 existing production files exact; final correction changes only new module cold raw-weight hashing.",
+    "actual_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "actual_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "CPU": "Final601new preferential checks passed. Earlier unchanged-body325matrixregression+41oldpref tests passed. EachCPUbackend84scenarios588columns all4arrays BITEXACT to frozen original same-backend background+species controls; unchangedinputs/maps/clock/native closure.",
+    "common_regression": "EachCPUbackend352original common matrix/preferential arrays exact. Actual old common CUDA160cases704arrays exact, freshGPU0UUID0MiB0%20:48:39UTC/genuine9fCUDA bundle. Finalcorrection only new CPU spatial identity helper, common sources exact. NOT spatial CUDA preferential support.",
+    "memory_correction": "Root independently reproduced admitted preparation overflow from wholeweight hex buffers atvalidN1L4096/8192. Corrected4096B streaming helper preserves canonicalhashbytes. Rootfinalexact-quota peaks L1024 39814B/model98360B; L4096 135836/196664B; L8192 266860/327736B. No quota/estimate/physical/default change. Source before/after plus24focused hash/peak regressions independently run.",
+    "performance": "Root identical-input interleaved old/new common compiled kernels (L1/3/5,N10000/100000,disabled/flow), alloutput/row arrays exact; no consistent material steady-state regression. Wall/threadclocks recorded separately; author separately reports ~.3s increased one-time commoncompile. Not whole-storm or spatial speed claim.",
+    "source_review": "ONE shared preferential derivation/reference/body; species inputs streamed/no retainedS*N stack. One aggregate pathway/rate cap and ordered capacity-limited receiver allocation; no compensation for saturated receivers, no J/reset/growth/vegetation-feedback change. Fresh output inventory; cold metadata/source identity only, no hot rehash. Geometry/bounds read from real spatial owner, no fakelegacy columns or full derivedLNbound tensor."
+  },
+  "evidence": [
+    "root_s2_b2_b_c1_package_identity.json",
+    "root_s2_b2_b_c1_source_manifest.json",
+    "root_s2_b2_b_c1_cpu_runs/result.json",
+    "root_s2_b2_b_cpu_runs/result.json",
+    "root_s2_b2_b_preview_cpu_runs/result.json",
+    "root_s2_b2_b_gpu_runs/result.json",
+    "root_s2_b2_common_gpu_after_root_s2_b2_b_snapshot/comparison.json",
+    "root_s2_b2_b_prepare_memory_root_s2_b2_b_preview_snapshot.json",
+    "root_s2_b2_b_prepare_memory_root_s2_b2_b_c1_snapshot.json",
+    "root_s2_b2_b_common_timing_root_s2_b2_b_preview_snapshot.json"
+  ],
+  "limits": [
+    "Fixed explicit CPU trial; spatial CUDA preferential/matrix, native lifecycle/LEAF/storm/restart, moving geometry/provider/rootremapping not accepted.",
+    "No accepted-parent generation or exactly-once guarantee. ParameterSHA/time are not water generation.",
+    "Pathway species maps/weights remain prescribed until2.5; LEAF growth and equal-access withdrawal rules unchanged.",
+    "Array-payload estimates, not reservations or whole-process bounds; source-counted locals/NRT evidence and tracing scope distinguished.",
+    "Three user soil-policy choices pending. WholePhase2 incomplete/uncommitted; historical source guards/recipes/locks/checkpoints not rebound."
+  ],
+  "known_open_confirmed_component_defects": []
+}

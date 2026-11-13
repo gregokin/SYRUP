@@ -1,0 +1,36 @@
+{
+  "status": "accepted_bounded_initialized_soil_CPU_daily_and_every_N_diagnostics",
+  "utc": "2026-11-13T11:59:26.381220+00:00",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g3_s1_s2_c2_snapshot",
+  "manifest_sha256": "44302f85aa35ddfacb3f8c8124ba30a0c46bbf32ff87c0cd3702c81ab48f25f2",
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "native_maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "sources": {
+    "src/maple_syrup/native_floating_soil.py": "f4ae668ca4bfcae54c212950848cf6432aa745657564e8c1ddc860917f3f6769",
+    "src/maple_syrup/floating_daily.py": "f3a79d59039e5e3abb795c70aca6a36bfc35527498b5ef272494738cc3213882",
+    "src/maple_syrup/floating_daily_output.py": "d81fbeae063bac6b040e2b7dfc183751b4dc2644917a8e415908355e31cc61b9"
+  },
+  "root_tests": {
+    "daily_and_output_CPU": 112,
+    "historical_source_guards": 26,
+    "gated_GPU_unqualified_skips": 2
+  },
+  "independent_controls": "Original five issues and new close reader/reserve bypass now refuse; source-only fresh-process mismatch and changed physical evaporation partition refuse; native bed/W/history preserved on rejected trials",
+  "evidence": [
+    "root_g3_s1_s2_c2_cpu_runs/result.json",
+    "root_g3_s1_s2_independent_c2_root_g3_s1_s2_c2_snapshot.json",
+    "root_g3_s1_close_budget_root_g3_s1_s2_c2_snapshot.json",
+    "root_g3_s1_partition_binding_root_g3_s1_s2_c2_snapshot.json"
+  ],
+  "contract": [
+    "Every N completed nominal daily intervals after actual T and final daily/lifetime water audits; strict integer N; off without output",
+    "G1 saves actual W/D/mask/edges/time/source metadata, diagnostic only",
+    "One daily86400s column update, conservative direct recharge and true full-forcing-required outcome on capacity failure, no reset of J/I"
+  ],
+  "limits": [
+    "CPU NumPy/Numba only at this acceptance",
+    "Starts from genuine freshly initialized soil with no surface carry; no actual Pond/wind/event-end handoff or full-storm execution in this slice",
+    "No physical daily checkpoint or fresh-process reconstruction; output-record resumption requires genuine state supplied by future verified lifecycle",
+    "Not coupled model/field/scaling acceptance; GPU daily and native file/event integration remain"
+  ]
+}

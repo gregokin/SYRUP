@@ -1,0 +1,55 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T09:34:22.845815+00:00",
+  "component": "D3 official CPU/CUDA geometry views, shared history/law rebind and selected zero-time capacity operation",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_d3_c1_snapshot",
+  "source_manifest": "root_d3_c1_source_manifest.json",
+  "changed_production_files": [
+    "floating_soil_layers.py",
+    "floating_soil_layers_cuda.py",
+    "floating_matrix_infiltration.py",
+    "floating_preferential_infiltration.py"
+  ],
+  "verification": {
+    "host_tests_passed": 405,
+    "host_gpu_gated_and_other_skips": 63,
+    "host_evidence": "root_d3_c1_cpu_runs/result.json",
+    "actual_gpu_tests_passed": 5,
+    "gpu_evidence": "root_d3_c1_gpu_runs/result.json",
+    "independent_analytic_and_invalid_parent": [
+      "root_d3_independent_numpy_root_d3_c1_snapshot.json",
+      "root_d3_independent_cuda_root_d3_c1_snapshot.json"
+    ],
+    "actual_transfer_controls": "root_d3_c1_counter_root_d3_c1_snapshot.json",
+    "view_D2H_bytes": 32,
+    "view_D2H_calls": 1,
+    "selected_D2H_bytes": 136,
+    "selected_D2H_calls": 5,
+    "rebind_extra_transfers": 0,
+    "old_full_reconcile_D2H_bytes": 56,
+    "old_full_reconcile_D2H_calls": 1,
+    "H2D_bytes": 0,
+    "large_fixture": {
+      "L": 65,
+      "N": 50003,
+      "warm_view_pool_plateau": true
+    }
+  },
+  "review": [
+    "All unchanged 141 module source bytes preserved, including canonical CUDA numerical text/ABI; old full reconciliation unchanged, actual56B packet verified.",
+    "Official owned geometry maps pre-admitted with real defaults; device first, no parent-view chains or full map/hash/history download.",
+    "Actual root properties/law/history shared and actual rebinding transfer counters allzero.",
+    "Operation selection separate from actual domain; selected cascade reuses same kernel body; old parent checked across FULL actual domain before selective operation, output checked over full new actual domain.",
+    "Hand-calculated open export, closed partial/rock surface returns, unchanged unselected aboveFC/inactive inventory, exact clock and input-invalid refusal verified on NumPy and actualCUDA.",
+    "Receipt explicitly does not prove selection covers all geometry changes; native event controller must supply actual complete selection."
+  ],
+  "limits": [
+    "Pure column helpers, not full CUDA Pond/storm/Windowed event/restart/daily/output/field/scaling acceptance.",
+    "CUDA view validates static maps O(LN) on device; no device/host full-field transfer, but runtime cost remains.",
+    "CPU selected function uses NumPy body even for a Numba owner; old compiled full/step behavior remains and production CPU hot exchange currently uses bounded compiled subcolumns.",
+    "Large-L/N view fixture is payload/lifetime evidence only, not end-to-end model scaling.",
+    "Actual additional-device path untested with GPU0-only visibility."
+  ],
+  "publication": "Uncommitted; wholePhase2 required before publication."
+}

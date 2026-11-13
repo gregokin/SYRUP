@@ -1,0 +1,34 @@
+{
+  "schema": "syrup.phase2.withdrawal_shared_body_acceptance.v1",
+  "status": "ACCEPTED_COMMON_WITHDRAWAL_READER_REFACTOR_ONLY",
+  "utc": "2026-11-12T18:59:59.261435+00:00",
+  "source": {
+    "package_sha256": "649b18e4631b29680741f9c96293bdd20464cff5205ad1d1a4ac44b1fd4a5458",
+    "file_count": 119,
+    "subsurface_transpiration_sha256": "93f43704146f7eb98bff0e8ab7ad1e40053584306070811019eb790746c74dc3",
+    "only_changed_from_A4": "subsurface_transpiration.py",
+    "native_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "native_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "CPU": "15 newshared-body checks +14 existing transpiration checks passed,2skipped. Genuine MAPLE CPUenv/historical9fbundle.",
+    "reference": "EACHNumPy/Numba:48scenarios336genuinecommonindividualcolumns, allfour W/actual/unmet/scale arrays BITEXACTvs preimplementationfrozencommoncontrols; clocks unchanged/inputs unchanged/nativebounds pass.",
+    "GPU": "48cases192arrays BITEXACTvs savedactualoldCUDAwithdrawal. FreshGPU0UUID0MiB0%guard18:56:18UTC, .venv-cupy/genuine9fbundle.",
+    "source": "Other118productionfiles byte-identical; common API/guards/memory/packet/compileflags retained. Onephysicalbody perbackend; commonbounds alias existing vectors, no new allocation hidden.",
+    "proof_limits": "Hostcompiled/token/AST tests run independently; author timing/memory reports are additional evidence, not newly independent end-to-end performance claims.",
+    "evidence": [
+      "root_s2_b1_a_cpu_runs/result.json",
+      "root_s2_b1_a_gpu_runs/result.json",
+      "root_s2_b1_a_common_gpu/comparison.json",
+      "root_s2_b1_a_source_manifest.json"
+    ]
+  },
+  "limits": [
+    "Common withdrawal refactor only; no spatialoperator/availability, actualLEAF/native lifecycle/storm/restart or wholePhase2 acceptance.",
+    "PrivateNumba readers currentlycommon-only; genuine spatial binding/factory still must be implemented explicitly next, no copiedsolver or fakelegacycolumn.",
+    "ParameterSHA is NOT watergeneration; purecomponent reuse is not exactly-once stateadoption.",
+    "Oldglobalflagmaxdiagnostic behavior preserved; rejectedinvalid states canomitadditional flagreasons, no acceptedphysicalbehavior change.",
+    "Threephysicsquestions pending. No oldpin/capsule/restartmigration, no phasecommit beforewholequalification."
+  ],
+  "known_open_confirmed_common_physics_defects": []
+}

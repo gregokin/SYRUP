@@ -1,0 +1,60 @@
+{
+  "utc": "2026-11-13T20:12:19.816057+00:00",
+  "status": "independently_accepted_bounded_CUDA_continued_origin_physical_child_checkpoint",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_continued_checkpoint_cuda_c2_composed_snapshot165",
+  "manifest_sha256": "e5dedd30a2ec5a92df83f38580644d537323903b0019d8fad9045b0f99e9e88b",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "accepted_dependency": "root_gpu_event_lifecycle_c5_acceptance.json",
+  "production": {
+    "floating_checkpoint_cuda.py": "aeb51aeecc0c6a3d074b73f16c193302b0a139a331333973905d1dc1186d709e",
+    "floating_continued_checkpoint.py": "b00e8b2240dca0ced3dc6791ced0c41b767d8bedf532ee8fb25936089c3cc475",
+    "floating_continued_checkpoint_cuda.py": "c12261ab4731a1b3b82ca757e133d4d997bfe08aa7aea4e662f8fda5626aa9cc"
+  },
+  "Root_tests": {
+    "CPU_C1_composed": 199,
+    "CPU_breakdown": {
+      "new_host_and_matched_CPU": 24,
+      "CPU_continued": 39,
+      "GPU_outer_host": 70,
+      "historical_GPU_child_host": 40,
+      "preservation_guards": 26
+    },
+    "GPU_C1": 7,
+    "GPU_C2_failed_control_rechecks": 3,
+    "actualGPU_total": 10,
+    "generation2_skip": 1,
+    "wording": "7 C1+3 C2, identical165production. No claim10allrerunC2."
+  },
+  "independent_controls": [
+    "Genuine1kg native terminal deposit changes netelevation.0032m above.00075; matcheddeepCPU/GPU actualroutinggen1/globaloriginaldatum/carriedsource/localn_refreshes0; historicalvalidator remains strict.",
+    "Dense/publishedWindowed actualsave/load+4nativeGPUsteps bitwise vsuninterrupted; matchedCPU underdeclaredexistingtolerance.",
+    "ResidentcurrentW/J/I/D serializeincountedboundedchunks; originhostarray accounted inheader-derivedmodels.",
+    "Actualcurrentdevicegate beforereaders/pathcheck; two-poolzero/needminus/exact/reserves/headers; wrongsource/kernel/origin/datum/counters/backend/prefix/deepstoretampers refusedbeforeadoption; untouchedretryworks.",
+    "Twofreshprocessbackend/storageworkers saved/restoredcurrentphysicalstate fromH0+childfiles; setup originallybuildsoldcasebefore disablingconstructors (explicitlimitbelow).",
+    "CPUread_origin_core factoring preserves strictCPUbehavior and boundedallmemberNPYpreflight beforedecode; no duplicateddecoder."
+  ],
+  "test_corrections": [
+    "Original.1kgfixturecannottrigger.00075; actual1kgmatchingCPUfixtureandexplicitper-eventcomponentcompletionpolicyused, globaldefaultsunchanged.",
+    "Denseconditionalassertprecedencecorrected.",
+    "HistoricaloldSAVEcorrectlyraisesnativePondCheckpointError; specifictestcontractfixed, nooldvalidatorweakened.",
+    "Freshworkerhelperimportpathfixed; no broadfallback.",
+    "Historicalwholeauthor-treeaudit preservedverbatimnondefault; currentper-interfaceandactualSourcePair/native/kernelguardsretained."
+  ],
+  "interfaces": {
+    "schemas": [
+      "maple-syrup-floating-continued-cuda-pond-checkpoint/1",
+      "maple-syrup-floating-continued-cuda-pond-checkpoint/2"
+    ],
+    "profile": "floating-vertical-continued-origin/2-cuda",
+    "old_default": "original_topology=None keepshistorical7/8; mutualfamilyrefusal andnativeprovenancepreserved."
+  },
+  "limits": [
+    "Physicalchild only, noouter/lifecycle/dailycursor/quietcompletionproof.",
+    "FreshworkerSTATICsetup allocatesoriginaldevicebed/owner BEFOREdisablingconstructors; notyetno-original-bedallocationqualification; test-onlyrecipeimprovementqueued.",
+    "No genuine secondlocalreroute/gen2fixture.",
+    "Smallcontrolleddeepgeometry, componentmemorymodels; no wholeChastre/scaling guarantee.",
+    "In-flightpending-stormforcingproof remainsprocesslocal/unprovenafterphysicalchildload; no automaticmigration."
+  ],
+  "committed": false
+}

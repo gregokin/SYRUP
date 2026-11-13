@@ -1,0 +1,40 @@
+{
+  "schema": "syrup.root.component_acceptance/1",
+  "component": "H0 CPU water-free true held soil-law context export/reconstruction",
+  "status": "accepted_bounded",
+  "utc": "2026-11-13T13:07:42.485403+00:00",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_c2_snapshot152",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_c2_source_manifest.json",
+  "source_sha256": "c155ab282c0c731cbccad626170890a81a2c5c39c6a3180e32e0de50ba18f2c6",
+  "existing_151_source_bytes_unchanged": true,
+  "native_maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "verification": {
+    "root_tests": 310,
+    "root_source_guards": 26,
+    "result": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_c2_cpu_separate_runs/result.json",
+    "independent_original_controls": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_independent_root_h0_c2_snapshot152.json",
+    "independent_admitted_spec_memory": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_h0_spec_memory_root_h0_c2_snapshot152.json",
+    "original_metadata_2MB_owned_peak_B": 4502936,
+    "corrected_metadata_2MB_owned_peak_B": 1843,
+    "required_none": "typedrefusal beforemint",
+    "zero_export_budget": "zero ownedweightstacks",
+    "S1000_reconstruct_peak_B": 903413,
+    "S1000_reconstruct_model_B": 4334997,
+    "S1000_admitted_spec_peak_B": 290623,
+    "S1000_admitted_spec_model_B": 1138608
+  },
+  "scope": [
+    "True original NativeConfig including layerthickness/overridesNonevs{} and rawFC/SAT/D0/Ks/layouts, rootcolumn/matrix/pref contentidentities reproduced",
+    "ActualNumPy/NumBa publicfactories; originalbed/provider/ownerdisabled duringfreshprocessreconstruction",
+    "Explicitprefrawspec required andexactoperatorhash checked; noguessedcoefficients",
+    "Strict boundedmetadata/arraynames/dtypes/shapes/C/caps/sourcefacts; purelawcontext notphysicalauthority",
+    "NozeroW/J/I orfakeNativeOwner/state; retainedcontext hasnowater"
+  ],
+  "limits": [
+    "CPUonly; CUDA typedrefusedbeforecoercion",
+    "No physicalfilecodec/fromHeldContext yet; no currentbedsourceproof or physicalacceptance bypurecontext",
+    "DirectPreferentialSpec constructor copiesparameterinputs asdocumented; admittedhelper hasdimensionalmodel+calibrated512Bperarraymetadata+64KiBallowance",
+    "Memorymodels coverdeclaredownedworking-set notwholeprocess",
+    "Sourceguards/oldprofilesdefaultsnumericalbodies unchanged; wholephase2notcomplete"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T06:56:40.701033+00:00",
+  "component": "G2a genuine existing native daily final-close/every-N diagnostic hook",
+  "status": "accepted_bounded_fixed_column_native_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_g2a_c1_snapshot",
+  "source_manifest": "root_g2a_c1_source_manifest.json",
+  "module_count": 142,
+  "new_module": "src/maple_syrup/daily_moisture_output.py",
+  "new_module_sha256": "aa8a2c69162c18211d325926d7df986ef6b37b1e9de2046f5c5fc3b05533b33b",
+  "previous141_modules_unchanged": true,
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "verification": {
+    "root_cpu": {
+      "passed": 22,
+      "skipped": 1,
+      "evidence": "root_g2a_c1_cpu_runs/result.json"
+    },
+    "root_actual_gpu": {
+      "passed": 1,
+      "evidence": "root_g2a_c1_gpu_runs/result.json",
+      "contract": "all native-close counter fields identical when outputNone and notdue; due adds exactly8LNwaterbytes and L*ceil(N/chunk)copies, noH2D; existing64Bnativeauditsretained"
+    },
+    "root_independent_fresh_processes": "root_g2a_c1_restart_cpu_runs/result.json",
+    "root_restart_comparison": "root_g2a_c1_restart_comparison.json",
+    "fresh_process_details": "genuine source-verified/admitted native FILECASE+actualV3 checkpoint day1, NumPy and Numba full/resume processes; days2-4 physical/state/waterSHA exact; outputahead saved2,4 verifiedexisting, no overwrite",
+    "caller_binding": "required forwarded exact ExpectedParent, no automint ofacceptedparent; typeexactnativewriter, invalid/stale/alternatebranch/ducktypedcallbacks refusedbeforeclose",
+    "original_gpu_test_failure": "incorrect zeroentireclosebytes expectation, corrected relativebaseline, no scientific or audit changes"
+  },
+  "limits": [
+    "Current accepted fixed-full-porous DAILYlifecycle only, no fake DailyCursor or absolute-midnight cadence.",
+    "Actual LEAF requests may precede close, but tests use realnativewithdrawal API, not full LEAF growth simulation.",
+    "Floating W+D finalclose hook still requires actual new floating daily owner/E4; G1 codec alone supplies no cadence.",
+    "No new user-facing CLI/config key or MASY daily scheduler claimed.",
+    "Diagnostic snapshots are separate from V3 physicalrestart; no perday fullbedcheckpoint forced.",
+    "Uncommitted; whole Phase2/native profile qualification required before publication."
+  ]
+}

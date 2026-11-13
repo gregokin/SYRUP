@@ -1,0 +1,79 @@
+{
+  "schema": "syrup.phase2.spatial_withdrawal_cuda_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_NUMPY_NUMBA_CUDA_TRIAL_COMPONENT_ONLY",
+  "utc": "2026-11-12T19:50:04.625145+00:00",
+  "source": {
+    "package_sha256": "94be72e37e60f4030206704f62ffdec69f5e313248401058bc879b3b7c0f4961",
+    "file_count": 121,
+    "spatial_transpiration_sha256": "7dc89a1529efad994ec405dd41e0de5e8137f3a855bbcca33eed2215b35e68d1",
+    "spatial_transpiration_cuda_sha256": "1babc2baea4602ed04e72470ef0f0765b5a9c0126d7d24604b28567f1406e7de",
+    "delta_from_accepted_B1_b": "New spatial_transpiration_cuda.py plus CUDA opt-in/admission and shared publish factoring in spatial_transpiration.py. Other119 existing production files byte-identical, including all common bodies/defaults/guards.",
+    "actual_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "actual_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "CPU": "78 CUDA-host checks +125 spatial CPU checks +15 shared common checks +14 old checks passed =232.36hardware skips+2oldGPU skips. EachCPU backend48scenarios336spatial columns all4arrays bitexact to preimplementation frozen common controls, availability exact/clock unchanged/native closure. Common48scenarios336columns each also exact.",
+    "GPU": "114 suite checks passed (78host+36actualGPU), plus independent48scenarios336columns/dyadic75% example all4arrays BITEXACT to frozen controls. GTX1080Ti GPU0 only; fresh0MiB0%UUID guard before eachchild at19:45:13/43/45 and19:48:28UTC. .venv-cupy and genuine9f materialized bundle.",
+    "residency": "Root L4N50003: withdrawal own requested device payload6425472B exactly matches model; four retained outputs6400384B payload/6402048B pool charge. One64B nativeD2H,0H2D. Availability1600104B requests exactly model, one8B D2H/0H2D. Eight iterations stable used10854400B/total17282048B. Owner and owned dz map weakrefs released; compiled cache source-inspected function-only.",
+    "hardware_resources": {
+      "withdraw": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 8192,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 62,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 40960,
+        "preferred_shared_memory_carveout": -1
+      },
+      "finalize": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 16384,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 32,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 32768,
+        "preferred_shared_memory_carveout": -1
+      },
+      "availability": {
+        "max_threads_per_block": 1024,
+        "shared_size_bytes": 0,
+        "const_size_bytes": 0,
+        "local_size_bytes": 0,
+        "num_regs": 56,
+        "ptx_version": 61,
+        "binary_version": 61,
+        "cache_mode_ca": 0,
+        "max_dynamic_shared_size_bytes": 49152,
+        "preferred_shared_memory_carveout": -1
+      }
+    },
+    "timing": "Same deterministic geometry/properties/masks/water/requests across common/spatial and each backend. At200000columns spatial withdrawal NumPy/Numba/CUDA: L3 16.020/7.985/.559ms; L5 24.776/11.756/.634ms. Numba/CUDA14.29x/18.53x; at10000columns GPU benefit small. Wrapper latency only; cold setup separate. Preview and final121 production files byte-identical, so matched timing source exactly equals accepted source.",
+    "source_review": "One shared canonical CUDA withdrawal body, explicit sum/min/max block partial reductions, no8Nrows/CUB workspace/LNbound tensor, new kernel fmad disabled to preserve rounded raw products, old common options/source unchanged. Typed finite-volume refusal/native conservation; no new tolerances or clipping."
+  },
+  "evidence": [
+    "root_s2_b1_c_package_identity.json",
+    "root_s2_b1_c_source_manifest.json",
+    "root_s2_b1_c_cpu_runs/result.json",
+    "root_s2_b1_c_gpu_runs/result.json",
+    "root_s2_b1_c_residency_retry_gpu_runs/result.json",
+    "root_s2_b1_c_residency_root_s2_b1_c_snapshot.json",
+    "root_s2_b1_c_cuda_root_s2_b1_c_snapshot.json",
+    "root_s2_b1_c_matched_all_runs/result.json"
+  ],
+  "evidence_corrections": "First residency JSON aliased its mutable allocation-request list: execution assertions passed, but later availability logging changed the earlier displayed list. Original retained as root_s2_b1_c_residency_initial_log_list_alias.json; Root corrected list.copy and reran only probe under fresh GPU guard. No production defect or budget change.",
+  "limits": [
+    "Pure trial with fixed explicit geometry/properties, not accepted native water authority/lifecycle/LEAF/storm/restart/evolving-soil/PTF integration or wholePhase2.",
+    "Availability is not generation-bound; propertySHA/time do not identify water generation. No exact-once claim.",
+    "Old global flag max diagnostic limitation retained. No reset/rescale of persistent infiltration history.",
+    "GPU0 GTX1080Ti qualification only; multi-device misuse covered by host checks, not actual second-device execution. No other GPU used.",
+    "Bounded allocation model excludes existing caller inventory, owner parameters, compiler/context/allocator policies and whole process. No large-domain storm readiness extrapolation.",
+    "Three moving-soil/property physics choices remain pending. Phase2 uncommitted until complete qualification; historical locks/checkpoints/defaults unchanged."
+  ],
+  "known_open_confirmed_component_defects": []
+}

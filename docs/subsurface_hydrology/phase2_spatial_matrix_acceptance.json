@@ -1,0 +1,42 @@
+{
+  "schema": "syrup.phase2.spatial_matrix_cpu_acceptance.v1",
+  "status": "ACCEPTED_FIXED_EXPLICIT_SPATIAL_MATRIX_NUMPY_NUMBA_TRIAL_ONLY",
+  "utc": "2026-11-12T20:23:43.103720+00:00",
+  "source": {
+    "package_sha256": "f05dd79fbd1fab1768c46b91f66895ef6428735530021b7e717bdc238054bcf4",
+    "file_count": 122,
+    "matrix_infiltration_sha256": "64f2c2704004c1ee3df05c5740f9be17f36b780ce3c83a48c5e805548d2b368c",
+    "matrix_infiltration_numba_sha256": "3760f72c58fc15f4853f1be399544d4506577919b5d0950de090744e04335136",
+    "spatial_matrix_infiltration_sha256": "2f6e88cb2bc30833004605b27855d233ac7d6ab34ff3c3c2ae68e250067b80c1",
+    "delta_from_B1_c": "Only matrix_infiltration.py private reference/budget context factoring, matrix_infiltration_numba.py ONE-body compile-time common/spatial variants, NEW spatial_matrix_infiltration.py. Other119 existing production files exact.",
+    "actual_maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "actual_maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "independent_checks": {
+    "CPU": "325 new checks +41 existing matrix release checks passed. EachCPUbackend32matrixscenarios224columns all5W/pool/intake/J/cumulative arrays BITEXACT vs genuine PREimplementation same-backend controls. Original NumPy and Numba352referencearrays themselves exact onthisfixture.",
+    "common_regression": "EachCPUbackend80scenarios560columns/352arrays BITEXACT vs original common matrix+preferential. Actual old common CUDA160cases704arrays BITEXACT with fresh GPU0idle guard20:21:47UTC, genuine9f CUDA bundle. This is NOT spatial CUDA matrix support.",
+    "hand_controls": "Eachbackend: dyadic unponded intake and unscaledJ; supply-limited split; atFC retains capacity; atSAT retains surface pool andJ; pondedg0 preserves water/history; exactclock/unchangedinputs. Existing decimal/saturation/flag/continuation/quota/readonly/nopython/source-preservation tests independently run in325suite.",
+    "memory": "L3N50003 warm ponded measured NumPy19162661B/model31667976B; NumBa9254443B/model10866776B. Source-counted2L compiled locals and author NRT assertions run independently. Tracer coverage incomplete, no claimcompiledheapuniversallyinvisible/no doublecount. Caller inputs/ownerdata/compilation/interpreter exclusions explicit.",
+    "performance": "Root interleaved identical-input old/new common compiled kernels, preallocated outputs+diagnostic rows exact. L1/3/5,N10000/100000, ponded/unponded: wallratios.965\u20131.049, threadCPUratios.965\u20131.048. No consistent material steady-state regression; author separately observes ~.65s added one-time commoncompile startup. Not full-storm/spatial/GPU performance acceptance.",
+    "source": "ONE NumPy body andONE Numba physicalbody with geometry readers; unchanged scalar Newton helpers/tolerance/64iteration cap; common public guards/defaults/signature/estimates preserved. No fakelegacycolumns, fullLNboundtensor, per-ownercache, implicitJreset or newphysics."
+  },
+  "evidence": [
+    "root_s2_b2_a_package_identity.json",
+    "root_s2_b2_a_source_manifest.json",
+    "root_s2_b2_a_cpu_runs/result.json",
+    "root_s2_b2_a_preview_cpu_runs/result.json",
+    "root_s2_b2_a_preview_aux_cpu_runs/result.json",
+    "root_s2_b2_a_gpu_runs/result.json",
+    "root_s2_b2_common_gpu_after_root_s2_b2_a_snapshot/comparison.json",
+    "root_s2_b2_a_safety_root_s2_b2_a_preview_snapshot.json",
+    "root_s2_b2_a_common_timing_root_s2_b2_a_preview_snapshot.json"
+  ],
+  "limits": [
+    "Fixed explicit spatial CPU trial only. Spatial CUDA matrix/preferential/native lifecycle/storm/LEAF/restart/evolvingsoil/provider/rootremap not accepted.",
+    "History constructor is explicit validated initialization, not genuine-boundary enforcement. Operator/propertySHA/time are not accepted water-generation identity. No exactly-once claim.",
+    "Retain history; pre intake advancesJ unscaled, pondedpost/g. General repeated-storm recovery remains prior bounded unqualified science, no reset/rescale introduced.",
+    "No arbitrary split semigroup: b recomputed asWchanges. Exact split only appropriate unchanged-law controls; cross-libm Newton iteration counts not universally equated.",
+    "Three user soil-policy choices pending. WholePhase2 incomplete/uncommitted; historical sources/guards/locks/restarts not migrated."
+  ],
+  "known_open_confirmed_component_defects": []
+}

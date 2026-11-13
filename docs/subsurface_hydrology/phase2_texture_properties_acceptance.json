@@ -1,0 +1,150 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "component": "S2-C bounded texture to hydraulic properties provider",
+  "utc": "2026-11-13T03:04:56.602973+00:00",
+  "status": "accepted_bounded_component",
+  "whole_phase2_complete": false,
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_c_provider_c1_snapshot",
+  "source_manifest": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_c_provider_c1_source_manifest.json",
+  "module_count": 128,
+  "package_sha256": "b1e7337558216ab4018ba44da2b834dd776b947602661c096c468563c3cf731c",
+  "package_algorithm": "sha256 JSON sorted compact {src-relative-path:file_sha256}",
+  "changed_vs_B2d": [
+    "soil_texture_properties.py",
+    "soil_texture_properties_numba.py",
+    "soil_texture_properties_cuda.py"
+  ],
+  "root_correction": [
+    "CUDA detached owner/current-device gate before copy/admission readers",
+    "counted32B CUDA validation read",
+    "alloptional layout planner validation",
+    "real CUDA launch-grid limit before allocation"
+  ],
+  "source_files": {
+    "src/maple_syrup/soil_texture_properties.py": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+    "src/maple_syrup/soil_texture_properties_numba.py": "a6a7add411858328d42d08b95aa3219a0d818e6459505ba7c7766eb337c2da60",
+    "src/maple_syrup/soil_texture_properties_cuda.py": "c6f50ddefbc9393e049a08bc4788bd637b72e456cdc8b88c518f4558a9e4225e"
+  },
+  "maple_native_verification": [
+    {
+      "lane": "cpu",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source",
+      "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "files": 412,
+      "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "all_417_bundle_files_match": true
+    },
+    {
+      "lane": "cuda",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source",
+      "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "files": 412,
+      "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "all_417_bundle_files_match": true
+    }
+  ],
+  "verification": {
+    "cpu_suite": {
+      "passed": 203,
+      "runs": "root_c_c1_cpu_runs/result.json"
+    },
+    "actual_gpu_suite": {
+      "passed": 11,
+      "skipped": 1,
+      "skip_reason": "two visible devices needed; only user-authorized GPU0 visible",
+      "runs": "root_c_c1_gpu_runs/result.json"
+    },
+    "original_decimal80_controls": {
+      "numpy": {
+        "valid": 18,
+        "density_controls": 30,
+        "air_controls": 5,
+        "shared_million_cells_output_bytes": 72,
+        "status": "PASS"
+      },
+      "numba": {
+        "valid": 18,
+        "density_controls": 30,
+        "air_controls": 5,
+        "shared_million_cells_output_bytes": 72,
+        "status": "PASS"
+      },
+      "cuda": {
+        "valid": 18,
+        "density_controls": 30,
+        "air_controls": 5,
+        "shared_million_cells_output_bytes": 72,
+        "status": "PASS"
+      }
+    },
+    "actual_prepared_spatial_column_and_water_step": {
+      "numpy": {
+        "status": "PASS",
+        "backend": "numpy",
+        "L": 3,
+        "N": 257,
+        "actual_prepared_spatial_column": true,
+        "parameter_to_water_evolution_bound": "rtol2e-12 atol1e-14",
+        "inactive_bitexact": true,
+        "parent_bitexact": true,
+        "allocation": null,
+        "source_sha256": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+        "scope": "Pure explicit spatial provider to real spatial-column water step; not native bed or evolving-soil storm acceptance"
+      },
+      "numba": {
+        "status": "PASS",
+        "backend": "numba",
+        "L": 3,
+        "N": 257,
+        "actual_prepared_spatial_column": true,
+        "parameter_to_water_evolution_bound": "rtol2e-12 atol1e-14",
+        "inactive_bitexact": true,
+        "parent_bitexact": true,
+        "allocation": null,
+        "source_sha256": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+        "scope": "Pure explicit spatial provider to real spatial-column water step; not native bed or evolving-soil storm acceptance"
+      },
+      "cuda": {
+        "status": "PASS",
+        "backend": "cuda",
+        "L": 3,
+        "N": 257,
+        "actual_prepared_spatial_column": true,
+        "parameter_to_water_evolution_bound": "rtol2e-12 atol1e-14",
+        "inactive_bitexact": true,
+        "parent_bitexact": true,
+        "allocation": {
+          "requests": [
+            6168,
+            6168,
+            6168,
+            80,
+            32
+          ],
+          "model_bytes": 18616,
+          "output_bytes": 18504,
+          "counted_d2h": 32,
+          "cold_input_hash_chunk_reads": "separate direct bounded get(out=), not counted by MAPLE"
+        },
+        "source_sha256": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+        "scope": "Pure explicit spatial provider to real spatial-column water step; not native bed or evolving-soil storm acceptance"
+      }
+    }
+  },
+  "limits": [
+    "Pure parameter provider only: no native moving-bed/lifecycle/restart acceptance",
+    "Fine-earth supported-domain inputs explicit; unsupported regression outcomes refused, no clamping",
+    "Holding Eq4 normal-density air entry under density correction is explicit recipe choice, not full SPAW identity",
+    "No interface K/diffusivity, Green-Ampt suction or residual-moisture inference",
+    "Strict floating-point DF endpoints can refuse a one-ulp mathematical boundary; no domain widening",
+    "The count of32B covers the diagnostic packet only; cold bounded input hashing separately downloads chunks",
+    "Only device0 tested; other-current-device gate independently metadata mocked, actual multiGPU check skipped",
+    "No large-domain or field validation claim"
+  ],
+  "jobs_closed": [
+    36175,
+    18275,
+    48579,
+    7541
+  ]
+}

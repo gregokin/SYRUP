@@ -1,0 +1,43 @@
+{
+  "schema": "syrup_phase2_component_acceptance/1",
+  "utc": "2026-11-13T08:27:59.558991+00:00",
+  "component": "E4j exact native9f journal publication source pin and native Windowed prefix depth qualification",
+  "status": "accepted_bounded_component",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_e4j_snapshot",
+  "source_manifest": "root_e4j_source_manifest.json",
+  "changed_production_files": [
+    "src/maple_syrup/sediment_bed.py"
+  ],
+  "module_sha256": "c4cd7998c107f0df985c21bf51e5adb45d2d715109ee42b879a694ec1b218e07",
+  "native_maple": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "verification": "root_c_provider_c1_native_verification.json"
+  },
+  "independent_source_audit": "root_e4j_native_publication_source_audit.json",
+  "verification": {
+    "cpu_passed": 411,
+    "cpu_skipped": 38,
+    "cpu_evidence": "root_e4j_cpu_runs/result.json",
+    "gpu_enabled_publication_suite_passed": 88,
+    "gpu_enabled_publication_suite_skipped": 9,
+    "gpu_enabled_evidence": "root_e4j_publication_gpu_runs/result.json",
+    "actual_gpu_prefix_test_passed": 1,
+    "actual_gpu_producer_chain_stages": 4,
+    "actual_gpu_depth_control": "root_e4j_gpu_pending_probe_c1_runs/result.json",
+    "cpu_prefix": "Exact Dense oracle at genesis, after pickup, deposition with real pending journal, after publication, second sparse round, rock/empty and stale/cross-bed/missing packet controls."
+  },
+  "review": [
+    "Only one explicit exact package pin added; historical pins, strict class identity/count/context guards and all other143modules unchanged.",
+    "No new decoder or copied MAPLE physics; genuine native packet decoder and canonical native active-layer expression.",
+    "Root published-boundary API deliberately refuses pending journals; corrected independent GPU harness starts from full-validated genesis, follows actual native exchange descendants, checks real pending binding/cheap native invariants and authentic prefix packets before trusted decode. No arbitrary pending import admission or bypass.",
+    "Original Root GPU harness failure calling full PUBLISHED-only validator on pending state preserved; corrected separate script/results, production unchanged."
+  ],
+  "limits": [
+    "Bounded small native fixtures only; no large-domain/hot whole-storm/GPU performance claim.",
+    "Initial full published-column validation remains required; trusted hot descendant path needs genuine producer lineage, not merely metadata supplied by caller.",
+    "storage_admission remains separate39bc-only guard under E4k qualification; its50 old native9f failures and2 historical M94/freeze failures excluded from passing suites, not hidden.",
+    "No floating Pond integration/restart/daily/CLI acceptance by this component."
+  ],
+  "publication": "Uncommitted; pending patch must be applied only at stable main writer boundary."
+}

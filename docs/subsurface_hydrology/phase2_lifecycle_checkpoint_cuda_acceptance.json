@@ -1,0 +1,86 @@
+{
+  "utc": "2026-11-13T22:20:43.105229+00:00",
+  "status": "independently_accepted_bounded_CPU_CUDA_closed_parent_physical_lifecycle_files",
+  "snapshot": "/home/okin/SYRUP/agent_handoffs/tasks/phase2_evolving_soil_20261112/root_physical_lifecycle_cuda_c2_snapshot169",
+  "manifest_sha256": "4fe14e912cd98b115e65de113efa82b422080b43878573b4052ff857281b4a3b",
+  "maple_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_412_file_digest": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "dependencies": [
+    "root_closed_boundary_checkpoint_c2_acceptance.json",
+    "root_gpu_daily_integrated167_acceptance.json",
+    "root_cuda_continued_checkpoint_c2_acceptance.json",
+    "root_cuda_continued_static_c4_acceptance.json"
+  ],
+  "production": {
+    "floating_daily.py": "7db8246667a3f38f30f533ab469844a4d127a0417e612090e08bf50bf782f607",
+    "floating_event_daily_bridge.py": "7d61df96c8fc194642eb68ca8acb80ad95ebdd9175a4c51218c1d6554d51a778",
+    "floating_event_daily_bridge_cuda.py": "148d60ba933851f1d3ff7956382681341eb1732208057115249d850f3590f9c2",
+    "floating_event_lifecycle.py": "99e54c7a6262950663b58acd610e8220b0e7d134119e00e07cd716d864832381",
+    "floating_lifecycle_checkpoint.py": "398d82cf8caeb45de8881db3fb7e4691a438070d6bcf01fa3f6e9ba595356256",
+    "floating_lifecycle_checkpoint_cuda.py": "dc093464c994e7a0d2d0416f24a26ab1799bec19b99cf2229867adeef10c8d98"
+  },
+  "Root_tests": {
+    "C1_exact169_CPU": 109,
+    "C1_CPU_breakdown": {
+      "new_host": 15,
+      "CPU_file": 36,
+      "daily_cuda_host": 32,
+      "preservation_guards": 26
+    },
+    "C2_exact169_host": 17,
+    "C2_exact169_GPU": 19,
+    "same169_source_extraGPU_retention": 4,
+    "extra_retention_host_source_manifest": 1,
+    "source_delta_C1_to_C2": "Only restore_closed_day_cuda exception handler rethrows ALL MemoryError subclasses; no normal-path or CPU body changes. C1 GPU16passed/2invalidtestfailures kept separate, C2all19actualGPU rerun passed."
+  },
+  "interfaces": {
+    "CPU_profile": "maple-syrup-floating-lifecycle-checkpoint/1",
+    "CUDA_profile": "maple-syrup-floating-lifecycle-checkpoint/2-cuda",
+    "default_return": [
+      "lineage",
+      "head",
+      "closed",
+      "kind",
+      "manifest_sha256"
+    ],
+    "required_external_expected_manifest_sha256": true,
+    "accepted_roles": [
+      "genuine complete Boundary with nothing pending",
+      "genuine CLOSED daily state of current DailyHold"
+    ],
+    "inflight_roles_refused": [
+      "Occurrence",
+      "mid-day trial",
+      "pending storm",
+      "pending recession"
+    ]
+  },
+  "coverage": [
+    "Current authoritative W/J/I/D/H/q/native bed/carried routing+globaldatum+truthful localcounters preserved, GPUcontinuationbitwise andmatchedCPUtol, noowner/fakeclasses/quietproof reconstructed.",
+    "Closed-day execution/state/parent digest/revision/requestsequence/cursor/ledger/frameidentity recomputed/preserved; head installedLAST onfreshlineage andverifiedtokenone-shot.",
+    "Dense and nativeWindowed, fourfreshCPU/2freshGPUstaticrecipes nooriginalbed/owner/probe/providerconstruction onLOAD.",
+    "Actual7dayN3 withrealnativeevents/refresh, pausebefore3/6/chainedrestore/duplicate andframebytecontinuation; GPUtwo7daycontrolsactual.",
+    "Strictoldprofile/source/kernel/prefix/deepref/header/array/partition/semanticledger/role refusals, originalexternal-sealidentity/nooverwrite/retry; no migration.",
+    "Real omittedGPUreaders resolvedAFTERcurrentdevicegate; actualdefault-readerfiles byteidenticalexplicit-reader files. Two-poolzero/needminus/exact/reserve/currentdevice controls preservehead.",
+    "TypedandplainMemoryErrorinrealclosedrestore propagateoriginalclass, nohead installed, retryworks.",
+    "ActualweakrefGPU4: event,state,vertical,token,ledgers,andBOTHdevicephaseNDARRAYS directlyweak-referenced aredeadwhilekeepingresult/head/closedalive; currentWJI/D/H/qsame and nextnativeevent/dayworks. Noallocation/ownerproxyfallbackused."
+  ],
+  "confirmed_defects_fixed": [
+    "CUDAprovenancebackend/kernel nowvalidatedstrictlyagainstgenuineproducer/currentdescriptor, unchangedCPUvocabulary.",
+    "Optionalrealdefaultreaders nowresolvedonceaftergate beforecallable-only constructors.",
+    "Resourceexceptions retainMemoryErrorclass ratherthansemanticBridgeError.",
+    "OldCPUS1resultretainedunusedfullsedimentphase128xW; minimalschema+actualCPU/GPUweakrefproof."
+  ],
+  "test_defects_fixed": [
+    "No-op head.cursor=None (alreadyNone, entiremanifest+sealidentical) replacedactualdailycursor.ordinaldigesttamper.",
+    "Validseq+5 mustpresentoriginalwritersealforidentityrefusal; invalidseq-1 testedwithownsealforsemanticrefusal, matchingCPUcontract. No adversarialauthenticityclaim.",
+    "Ownold4mmsurfaceconnected-plane storagefixturesinterruptedwithrecordedIDs/preservedsource/logs, replacedqualifiedgenuineH0Rain0 actualdeep/wide/windowedfixtures."
+  ],
+  "limits": [
+    "Closedparentsonly; no in-flightpendingstormproducerforcingproof/scheduler/plants/windcheckpoint.",
+    "EveryNwriterrecord/N/source remainsseparate, bound throughpreservedframeidentity; no unsavedtimereconstruction.",
+    "Componentmodels andspecificCPUtracemalloc/admission andGPUfunctional/retention controls; no new whole-wet-day/RSS/large-catchmentfit guarantee. Originhosttopology/coldcarrier scratch remaindeclaredscope, no new measuredGPUcoldwholeouterpeak claim.",
+    "Oldsource/checkpointfamiliesstrict, no auto rebind/migrate."
+  ],
+  "committed": false
+}

@@ -1010,6 +1010,25 @@ def storage_m3(column: SoilColumn, state: SoilColumnState) -> float:
 
 
 # --- the reference step -------------------------------------------------------------------------------------------------
+class _CommonStepParams:
+    """Parameter access of the ONE reference body for a common-layer `SoilLayers` column: the very cached `(L,)` arrays/scalars the body always read (no copy, no
+    recomputation), so every common step performs exactly the same IEEE operations as before the body was factored."""
+
+    __slots__ = ("n_layers", "n_cells", "dz", "res_m", "fc_m", "sat_m", "cap_tol", "cond_down", "cond_up", "pair_inv", "directional", "closed_bottom", "gravity_drainage",
+                 "res_theta0", "stress", "factor")
+
+    def __init__(self, column: Any) -> None:
+        lay = column.layers
+        self.n_layers, self.n_cells = column.n_layers, column.n_cells
+        self.dz = lay.thickness_m
+        self.res_m, self.fc_m, self.sat_m, self.cap_tol = lay.residual_m, lay.field_capacity_m, lay.saturation_m, lay.capacity_tolerance_m
+        self.cond_down, self.cond_up, self.pair_inv = (lay.interface_conductance_down_m_s, lay.interface_conductance_up_m_s, lay.pair_inverse_thickness)
+        self.directional = lay.directional_diffusion  # donor-depth mode: distinct downward/upward factors
+        self.closed_bottom = lay.bottom_drainage == "closed"
+        self.gravity_drainage = lay.gravity_drainage
+        self.res_theta0, self.stress, self.factor = float(lay.theta_residual[0]), lay.theta_evaporation_stress, lay.evaporation_factor
+
+
 def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None,
                    recharge: float | None = None) -> StepArrays:
     """NumPy reference of one step: loops over layers, vectorised over cells, the SAME IEEE operations in the SAME order
@@ -1017,21 +1036,27 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
     output arrays with a counted transient peak (see NUMPY_SCRATCH_DOUBLES_PER_CELL). Validation is recorded in flag
     rows, not raised here; `step` reads the packet once and raises. Inputs are never written. `share` is the optional
     (N,) post-cap evaporation share (None: historical evaporation arithmetic in its historical order)."""
+    _check_column(column)  # typed refusal of a foreign column object (S2-A.1 correction01); a proper SoilColumn runs the unchanged body below
+    return _reference_step_body(_CommonStepParams(column), column.active, water_in, added, pet, dt, share, recharge)
+
+
+def _reference_step_body(params: Any, active: Any, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None,
+                         recharge: float | None = None) -> StepArrays:
+    """The ONE physical NumPy reference body (S2-A.2: factored out of `reference_step` without any arithmetic change). `params` supplies the per-layer values through INDEXABLE
+    attributes read as `X[k]`: for a common column the cached `(L,)` arrays (`_CommonStepParams`), for an explicit spatial parameter set lazy per-layer rows (scalar for a
+    shared layout, an `(N,)` row for a per-cell layout) built by `maple_syrup.spatial_soil_layers`. The stage order, helper constants, flags and bounds are those of the historical step."""
     from maple.core.backend import errstate
 
     xp = np
-    lay = column.layers
-    n_layers, n_cells = column.n_layers, column.n_cells
+    n_layers, n_cells = params.n_layers, params.n_cells
     n_if = n_layers - 1
-    active = column.active
     inactive = ~active
-    dz = lay.thickness_m
-    res_m, fc_m, sat_m, cap_tol = lay.residual_m, lay.field_capacity_m, lay.saturation_m, lay.capacity_tolerance_m
-    cond_down, cond_up, pair_inv = (lay.interface_conductance_down_m_s, lay.interface_conductance_up_m_s,
-                                    lay.pair_inverse_thickness)
-    directional = lay.directional_diffusion  # donor-depth mode: distinct downward/upward factors
-    closed_bottom = lay.bottom_drainage == "closed"
-    res_theta0, stress, factor = float(lay.theta_residual[0]), lay.theta_evaporation_stress, lay.evaporation_factor
+    dz = params.dz
+    res_m, fc_m, sat_m, cap_tol = params.res_m, params.fc_m, params.sat_m, params.cap_tol
+    cond_down, cond_up, pair_inv = params.cond_down, params.cond_up, params.pair_inv
+    directional = params.directional  # donor-depth mode: distinct downward/upward factors
+    closed_bottom = params.closed_bottom
+    res_theta0, stress, factor = params.res_theta0, params.stress, params.factor
     pulse = recharge is not None
     if pulse and (added is not None or not dt > 0.0):
         raise SubsurfaceError("the pulse-aware step takes no added-water tensor and requires dt > 0")
@@ -1097,7 +1122,7 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
                 xp.add(added_row, recharge, out=added_row, where=active)
                 del w0p
             # 3. gravity cascade, top to bottom within the step
-            if lay.gravity_drainage:
+            if params.gravity_drainage:
                 if closed_bottom:
                     # Remaining pore capacity of ALL deeper layers, measured on the post-addition storage, accumulated
                     # bottom-up into the interface rows of `percolation` (rows[k] = capacity below layer k; the row is
@@ -1266,6 +1291,7 @@ def reference_step(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: 
 
 def reference_runner(column: SoilColumn, water_in: Any, added: Any, pet: Any, dt: float, share: Any = None,
                      recharge: float | None = None) -> StepArrays:
+    _check_column(column)  # typed refusal of a foreign column object (S2-A.1 correction01); a proper SoilColumn runs the unchanged body below
     if recharge is None:  # the historical call, positionally identical
         return reference_step(column, water_in, added, pet, dt, share)
     return reference_step(column, water_in, added, pet, dt, share, recharge)
