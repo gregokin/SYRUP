@@ -58,6 +58,10 @@ publication reconciles with `ref() is not None and lineage.head is ref()`.
 
 RESTART. The new `Boundary` is a genuine complete lifecycle boundary (closed provenance/ledger vocabulary), so the UNCHANGED lifecycle checkpoint saves/restores it. No codec, profile or historical source semantics are changed or blessed.
 
+VEGETATION (Phase 2.5 compatibility guard). WH1 is a no-LEAF scope: the boundary it mints carries no vegetation record, and its prepared root keeps the carried operator by reference while the refresh paths use configuration scalars. A boundary that carries an applied
+vegetation generation (`parent.root.vegetation is not None`, the owning lifecycle's field; never a duck-typed or parsed record) is therefore REFUSED with `WindHandoffError` by `stage_wind_handoff`, `adopt_wind_handoff` and `restore_wind_context` BEFORE the context/pins, the child payload,
+any callback, array or admission work, with no mutation. A vegetation-aware wind handoff (carrying the generation/recipe, the bound covers and the per-cell law, and refreshing with the held per-cell law) is a later qualified interface; nothing here is silently reset or dropped.
+
 MEMORY. Explicit typed `WindHandoffLimits` (cells, voxels, classes, mobile-pool cohorts, scan batch, scan bytes, candidate bytes, receipt bytes) and the REAL available-bytes reader are checked before any copy/scan/predicate from the dimension-aware accepted native model
 (`nfs._estimate`) plus this module's declared terms (water comparison, the soil-state copy, the actual mobile-pool footprint, native-validity scratch, hash scratch, receipt). The zero-dirty path is covered (the continued soil-state copy, checks and receipt exist even
 with no dirty column). A declared modelled host payload of THIS module's own stages, NOT a whole-process bound; the native initializer/factory keep their own admission.
@@ -106,6 +110,12 @@ _MAX_DEPTH = 12
 
 class WindHandoffError(lc.LifecycleError):
     """Typed refusal of the wind handoff (a `LifecycleError`: the native stale/duplicate/wrong-head refusals of the lifecycle are raised unchanged and are caught by the same handler)."""
+
+
+def _refuse_vegetation(boundary: Any, what: str) -> None:
+    """Fail closed on a vegetation-bound boundary (module docstring, VEGETATION): the owning lifecycle's `BoundaryRoot.vegetation` field is the only authority; the check is a single attribute test and performs no read, allocation or callback."""
+    if boundary.root.vegetation is not None:
+        raise WindHandoffError(f"{what}: the boundary carries an applied vegetation generation; the vegetation-aware wind handoff is not qualified (WH1 is a no-LEAF scope and would drop the generation record, the bound covers and the per-cell law). Nothing was read or changed")
 
 
 class WindHandoffLimitError(WindHandoffError):
@@ -616,6 +626,7 @@ def restore_wind_context(boundary: Any, bed_context: Any, expected_record: Any) 
     """Rebuild the water-free context in a fresh process from a VERIFIED restored `Boundary`, the original static `BedContext` and the expected scalar record (`WindContext.record()`). The descriptor is recomputed from the boundary's actual bed and the static case
     (metadata and the active-mask pattern only: no row is hashed and no initial terrain is regenerated); it, the boundary root's original cold witness and the config identity must equal the record, else a typed refusal."""
     lc._record(boundary, lc.Boundary)
+    _refuse_vegetation(boundary, "restore_wind_context")
     if type(expected_record) is not dict or set(expected_record) != _RECORD_KEYS or expected_record["schema"] != CONTEXT_SCHEMA or expected_record["representation"] != "dense" or expected_record["backend"] != "numpy":
         raise WindHandoffError("the expected context record is malformed (closed key set, dense numpy)")
     root = boundary.root
@@ -740,6 +751,7 @@ def stage_wind_handoff(lineage: Any, parent: Any, final: Any, child: Any, *, con
     water carry -> full native bed validity -> descriptor -> cold row comparison -> candidate admission at the actual dirty count -> selected read, changed set, reconcile, closure -> new root/state -> surface return -> cumulative water identity -> bounded receipt ->
     integrity digest. Any refusal leaves the head, the parent, the child and every input untouched."""
     lc._expect(lineage, parent, lc.Boundary)
+    _refuse_vegetation(parent, "stage_wind_handoff")
     limits = _limits(limits)
     oid, osha = _occurrence(occurrence_id, occurrence_sha256)
     if type(context) is not WindContext or context not in _CONTEXTS:
@@ -923,6 +935,7 @@ def adopt_wind_handoff(lineage: Any, parent: Any, candidate: Any, *, available_b
     if type(candidate) is not WindHandoffCandidate or candidate not in _CANDIDATES:
         raise WindHandoffError("not a genuine WindHandoffCandidate")
     lc._expect(lineage, parent, lc.Boundary)
+    _refuse_vegetation(parent, "adopt_wind_handoff")
     before_publish = _callback(before_publish, "before_publish")
     if available_bytes_fn is not None and not callable(available_bytes_fn):
         raise WindHandoffError("available_bytes_fn must be callable or None")

@@ -1,0 +1,21 @@
+# Phase 2.5 qualification
+
+The native vegetation-feedback and closed-parent restart milestone is independently accepted at a bounded scope. The authoritative machine-readable evidence is phase25_qualification.json. This is a Python API release; it adds no CLI, YAML or scheduler format.
+
+The accepted SYRUP package contains 180 production files (SHA-256 37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0). It retains main 953e6fdf85b73e3fdf5a1ac7b0d97dea4df7dab1 and its non-vegetated wind handoff. Its dependencies are native MAPLE 9f466d2cfcd52991b24496cf67f4562d6268afa9 (412-file package fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e) and LEAF ff127d29bd1d40f17a1800ffeef87bf080343f67 on feature/syrup-hydrology-traits (28-file package 38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f). LEAF's external benchmarks.spatial_mapping helper is pinned separately to 333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5.
+
+Root verified 714 CPU tests and 37 actual-GPU tests on this exact production source, with imported source paths, complete package hashes and the external helper checked before and after each suite. The additional 69-test source-guard preflight overlaps those suites and is excluded from the total. CPU includes NumPy and Numba, Dense and genuine native Windowed beds. GPU qualification used the allocated physical GPU0 only, with a fresh idle-device check before each group. Two-visible-device controls remain skipped where the fixture exposes only one device.
+
+The release projects visible live and dead-standing canopies for splash, visible live canopies for soil-evaporation shading, and live plants only for infiltration. It fills the existing matrix and preferential laws once, with explicit receiving weights and the shared background/rate budget. MAPLE remains the sediment authority, SYRUP the water authority, and LEAF the plant authority. Applying a genuine vegetation generation at a complete boundary is a zero-time transition; it cannot change water, wetting history, sediment or clocks.
+
+The new water-free held-context profiles, diagnostic frames and physical checkpoint profiles are separate. Physical files restore complete boundaries or closed days through trusted external seals, exact source/helper pins and native owner factories. The stored recipe is labelled cached-derived after restore; it is never impersonated as a live LEAF producer. Current operator identities remain distinct from historical apply-time labels.
+
+A separate-process CPU experiment ran seven nominal days with a genuine LEAF session-generation advance, N=3 snapshots on days 3 and 6, a closed-day-5 physical save, fresh load and byte-identical continuation on days 6 and 7. It covered NumPy/Numba and Dense/Windowed. The session advance used real published dry, non-growing LEAF days, not a plant-growth experiment. GPU physical fresh-process continuation passed for Dense and Windowed; GPU output and lifecycle composition were checked separately. A single GPU day-5/N=3 fresh-process experiment was not run.
+
+The old WH1 interface explicitly refuses a vegetation-bound boundary, preventing its generation and covers from being lost. Its existing non-vegetated Dense NumPy behavior remains qualified. Positive vegetation-aware wind carry, GPU wind and Windowed wind require a later qualification.
+
+These tests do not establish field validation, catchment-scale memory fit, a complete scheduled three-model run, or general Green–Ampt drying/recovery. Memory bounds are declared payload models rather than whole-process guarantees. Diagnostic-output resume checks manifests; the full frame reader checks arrays. Source hashing retains the historical bytecode exclusions. Old receipts, clocks, defaults and restart identities are not migrated or rebound.
+
+Two Ruff diagnostics were reproduced unchanged on the 953e6fd baseline: an unused noqa in WH1 and an unused variable in native_source_witness. No new lint diagnostic was found across the 87 explicitly checked Python files. Raw setup errors and corrected test-worker failures remain in the task record; none is counted as a passing test.
+
+Publication revisions are recorded separately in phase25_publication.json so the qualification does not refer circularly to its own commit.

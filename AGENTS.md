@@ -1,5 +1,14 @@
 ## Current Phase 2 design note — 2026-11-13 (supersedes earlier Phase 2 water-fate wording for the floating treatment)
 
+## Phase 2.5 accepted native vegetation feedback — 2026-11-14 UTC
+
+Current official name: MAPLE–SYRUP, Sediment Yield, Runoff, and Underground Plumbing. Read docs/subsurface_hydrology/phase25_qualification.md and its JSON/source manifest before using the new native APIs. Exact production package180/37d89f23… is independently qualified by714CPU and37actualGPU tests; publication revisions are recorded separately. MAPLE9f/fbc412 and LEAFff127d29/38028 plus external helper333921 are the qualified sources, never mutable-live fallback.
+
+Splash uses visible live+dead-standing canopies. Infiltration and soil-evaporation shading use visible live plants only. Existing matrix/preferential terms are populated once; no extra plant conductivity multiplier. Root fractions remain fixed and distinct from explicit preferential receiving weights. Zero-time generation apply, cached law context, physical checkpoint and diagnostic frames have separate authority/format contracts; old profiles and identities remain strict. One water authority SYRUP, one bed authority MAPLE, plants LEAF.
+
+WH1 from main953 is preserved for nonvegetated DenseNumPy states. Vegetation-bound WH1 explicitly refuses before mutation; positive vegetation-aware wind carry is NOT qualified. No whole scheduled three-model run, GPUwind, field validation, catchment-memory fit or general wetting-history recovery is implied. Phases2 and2.5 now precede Phase3 observed-profile validation planning. Preserve all unrelated live dirty work, source capsules and running jobs. Continue automatic Codex–Claude workflow; Codex alone publishes independently accepted work under the user's phase commit/push authorization.
+
+
 ## Approved wet interevent substeps — 2026-11-13
 
 The user approved short hydrology/evaporation steps on wet interevent days when standing water requires surface-solver stability. Transpiration and growth occur once at that day's end. Dry interevent days retain one daily soil update. This explicitly supersedes the single-daily-hydrology restriction for wet interevent days only. Wind, rainfall and full rain recession still have evaporation, transpiration and growth off, and must genuinely complete before an interevent begins. Preserve the nominal-calendar/physical-time distinction and count every-N soil-moisture frames only after final audited daily close (post-transpiration). This is a resolved physics choice; implementation and verification remain required. See the Phase2 task completion program's wet_interevent_user_resolution_20261113.md.

@@ -40,7 +40,7 @@ from maple_syrup import subsurface as ss
 from maple_syrup.conservation import volume_roundoff_bound_m3
 
 __all__ = ["FLOATING_MATRIX_VERSION", "FloatingMatrixHistory", "FloatingMatrixMemory", "FloatingMatrixOperator", "FloatingMatrixRebinding", "FloatingMatrixStep", "estimate_floating_matrix_memory",
-           "floating_matrix_history", "floating_matrix_step", "prepare_floating_matrix", "rebind_floating_matrix_history", "verify_operator_identity"]
+           "floating_matrix_history", "floating_matrix_step", "held_cell_vegetation_factor", "prepare_floating_matrix", "rebind_floating_matrix_history", "verify_operator_identity"]
 
 FLOATING_MATRIX_VERSION = "1"
 OPERATOR_TAG = "maple_syrup.floating_matrix.operator.v1"
@@ -337,6 +337,13 @@ def prepare_floating_matrix(column: fsl.FloatingSoilColumn, *, conductivity_m_s:
     with _minting():
         return FloatingMatrixOperator(column, column.backend, column.n_layers, column.n_cells, column.sha256, sha, dict(zip(LAW_NAMES, kinds, strict=True)), int(sum(a.nbytes for a in law)), law,
                                       device_id=column.device_id)
+
+
+def held_cell_vegetation_factor(op: Any) -> Any:
+    """READ-ONLY accessor of the operator's HELD per-cell vegetation factor g (Phase 2.5): the sealed `(N,)` float64 law array itself (a reference, no copy, no download; a CUDA operator returns its device array) when the
+    operator was prepared with a cell `vegetation_factor`, else None (a scalar law: the caller's configuration scalar stays authoritative and nothing changes). Metadata revalidation only (`_check_operator`)."""
+    _check_operator(op)
+    return op._law[2] if op.layouts["vegetation_factor"] == "cell" else None
 
 
 def verify_operator_identity(op: Any) -> bool:

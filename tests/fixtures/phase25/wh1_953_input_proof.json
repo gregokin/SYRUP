@@ -1,0 +1,7 @@
+{
+ "git_commit": "953e6fdf85b73e3fdf5a1ac7b0d97dea4df7dab1",
+ "origin": "git show 953e6fd:src/maple_syrup/floating_wind_handoff.py (read once while preparing this fixture; the test never reads Git)",
+ "path": "floating_wind_handoff.py",
+ "schema": "syrup.phase25.wh1_input_proof/1",
+ "sha256": "a289e35b329bc33ec918768133ada9aef1d37089b110d4085fb8c97c4c09156b"
+}

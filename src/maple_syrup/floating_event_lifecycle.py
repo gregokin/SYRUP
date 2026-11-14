@@ -93,6 +93,7 @@ class BoundaryRoot(_Minted):
     host_active: Any = None  # CUDA only (sealed host O(N) mask / O(L) edges / the candidate's host canonical-depth record, by reference from the genuine producer); None on CPU
     edges_host: Any = None
     host_depth: Any = None
+    vegetation: Any = None  # Phase 2.5: the ONE current `vegetation_lifecycle.VegetationRecord` (compact sealed covers + identities) of an applied vegetation generation; None = no vegetation binding (every old path)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -138,6 +139,7 @@ class Occurrence(_Minted):
     cursor: Any = None
     pending_forcing: Any = None
     storm_match: Any = None
+    vegetation: Any = None  # the boundary root's vegetation record carried through the occurrence (None without a binding)
 
 
 class FloatingEventLineage:
@@ -302,7 +304,7 @@ def close_occurrence(lineage: Any, occurrence: Any, cap: Any, state: Any, *, ava
     prov = {"cold_anchor_witness": held.source_witness, "property_basis": fer.PROPERTY_BASIS, "execution_epoch": epoch, "cold_content_hash": None, "area_m2": area}
     role = "pending_recession" if float(ret.sum()) > 0.0 else "boundary"
     with _minting():
-        root = BoundaryRoot(cand.column, cand.matrix_op, cand.pref_op, cand.ks_m_s, cand.depth_m, cand.depth_m, cand.history, cand.water_state, occurrence.vertical.config, int(held.generation) + 1, held.source_witness, bed)
+        root = BoundaryRoot(cand.column, cand.matrix_op, cand.pref_op, cand.ks_m_s, cand.depth_m, cand.depth_m, cand.history, cand.water_state, occurrence.vertical.config, int(held.generation) + 1, held.source_witness, bed, vegetation=occurrence.vegetation)
         boundary = Boundary(role, root, bed, h_prime, state.hydraulic.qx_m2_s, state.hydraulic.qy_m2_s, (state.topology, state.held_source_m, state.datum), float(state.t_s), led, prov, occurrence.seq + 1, occurrence.cursor,
                             None if storm_match is not None else occurrence.pending_forcing, storm_match)
     fcm.consume_completion(cap, state, event=event)  # the completion is consumed LAST ...
@@ -320,6 +322,7 @@ def begin_occurrence(lineage: Any, boundary: Any, event_factory: Any, *, availab
                                                  host_memory_budget_bytes=host_memory_budget_bytes, host_reserve_bytes=host_reserve_bytes, host_available_bytes_fn=host_available_bytes_fn)
     event = event_factory(vert, boundary.routing[0])  # the factory builds the event on the CARRIED routing topology
     _admit_native(event, vert)
+    _check_bound_cover(event, boundary.root.vegetation)  # a bound vegetation generation: the event's ACTUAL cover is the bound splash cover (before any head change); None = the unchanged historical path
     pend = None if boundary.cursor is None else boundary.cursor.pending
     if pend is not None and boundary.storm_match != pend.forcing_digest:
         # a pending daily storm that is not yet matched MUST run its FULL native forcing: absolute edges/intensity/rain_scale/clock bound BEFORE any head mutation
@@ -337,10 +340,29 @@ def begin_occurrence(lineage: Any, boundary: Any, event_factory: Any, *, availab
     led["n_occurrences"] += 1
     with _minting():
         occ = Occurrence(event, vert, boundary.t_s, led, boundary.provenance, boundary.seq + 1, role="occurrence", cursor=boundary.cursor,
-                         pending_forcing=boundary.pending_forcing if (pend is not None and boundary.storm_match != pend.forcing_digest) else None, storm_match=boundary.storm_match)
+                         pending_forcing=boundary.pending_forcing if (pend is not None and boundary.storm_match != pend.forcing_digest) else None, storm_match=boundary.storm_match,
+                         vegetation=boundary.root.vegetation)
     vert.release_boundary_initial()  # the vertical forgets the boundary's bed and initial W/J/I (the registered current payload is the ONE water)
     lineage._head = occ
     return occ, state
+
+
+def _check_bound_cover(event: Any, veg: Any) -> None:
+    """With an applied vegetation generation the next native event must run the BOUND splash cover: the actual constructed `PondEvent.veg` (hashed into its native config identity at construction, never mutated afterwards) must
+    equal the record's cover bit for bit. A factory that prescribed any other cover is refused BEFORE the head changes. `veg is None` (no binding): nothing is checked (the historical behaviour)."""
+    if veg is None:
+        return
+    from maple_syrup import vegetation_lifecycle as vl
+
+    vl.verify_record(veg)  # genuine, unaltered record (O(1) fingerprint)
+    if event.vertical is not None and event.vertical.backend == "cuda":  # resident check: the record's device splash cover (prepared cold once) against the event's ACTUAL device cover, ONE counted scalar read (no host download)
+        from maple_syrup import floating_event_lifecycle_cuda as flc
+
+        if veg.splash_cover_device is None or not flc.arrays_equal_cuda(event.vertical.held_template().column, event.veg, veg.splash_cover_device):
+            raise LifecycleError("the event's vegetation cover is not the lineage's bound splash cover (build the event with the bound cover; refused before any head change)")
+        return
+    if not np.array_equal(np.asarray(event.veg), np.asarray(veg.splash_cover_2d)):
+        raise LifecycleError("the event's vegetation cover is not the lineage's bound splash cover (build the event with the bound cover; refused before any head change)")
 
 
 def _check_storm_binding(event: Any, f: Any, dx_m: float) -> None:
@@ -377,6 +399,8 @@ def export_boundary_held_context(boundary: Any, pref_spec: Any = None, *, availa
     from maple_syrup import floating_held_context as fhc
 
     _record(boundary, Boundary)
+    if boundary.root.vegetation is not None:
+        raise LifecycleError("the H0 held-context export does not support a vegetation-bound boundary yet (it would record the configuration scalar g, not the applied per-cell law); a versioned export comes next")
     vert = fp.FloatingPondVertical.from_boundary(boundary.root, available_bytes_fn=available_bytes_fn, reserve_bytes=reserve_bytes, memory_budget_bytes=memory_budget_bytes,
                                                  host_memory_budget_bytes=host_memory_budget_bytes, host_reserve_bytes=host_reserve_bytes, host_available_bytes_fn=host_available_bytes_fn)
     if vert.backend == "cuda":
@@ -417,6 +441,7 @@ class DailyHold(_Minted):
     host_active: Any = None  # CUDA only: the boundary root's sealed host mask / edges / host canonical-depth record, carried by reference so a GPU boundary after the day stays valid (None on CPU)
     edges_host: Any = None
     host_depth: Any = None
+    vegetation: Any = None  # the boundary root's vegetation record, carried through the day (None without a binding)
 
 
 _HOLD_BINDING: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()  # hold -> (weakref(parent boundary), weakref(lineage)): WEAK metadata, no strong retention of the boundary/root/W
@@ -431,7 +456,7 @@ def stage_daily_hold(lineage: Any, boundary: Any) -> DailyHold:
     with _minting():
         hold = DailyHold(r.column, r.matrix_op, r.pref_op, r.ks_m_s, r.depth_m, r.config, int(r.generation), r.source_witness, boundary.bed, boundary.surface_depth_m, boundary.qx_m2_s, boundary.qy_m2_s,
                          boundary.routing, dict(boundary.ledger), boundary.provenance, boundary.seq + 1, boundary.t_s, boundary.cursor, boundary.pending_forcing, boundary.storm_match,
-                         host_active=r.host_active, edges_host=r.edges_host, host_depth=r.host_depth)
+                         host_active=r.host_active, edges_host=r.edges_host, host_depth=r.host_depth, vegetation=r.vegetation)
     _HOLD_BINDING[hold] = (weakref.ref(boundary), weakref.ref(lineage))
     return hold
 
@@ -484,7 +509,7 @@ def rebase_boundary_from_day(lineage: Any, hold: Any, closed: Any, *, cursor: An
         raise LifecycleError(f"the cumulative water balance across event and day does not close: residual {resid!r} m3 exceeds the MAPLE volume bound {bound!r} m3; the hand-back is refused")
     led["residual_m3"], led["residual_bound_m3"] = float(resid), float(bound)
     with _minting():
-        root = BoundaryRoot(hold.column, hold.matrix_op, hold.pref_op, hold.ks_m_s, hold.depth_m, hold.depth_m, closed.history, closed.water, hold.config, hold.generation, hold.source_witness, bed, hold.host_active, hold.edges_host, hold.host_depth)
+        root = BoundaryRoot(hold.column, hold.matrix_op, hold.pref_op, hold.ks_m_s, hold.depth_m, hold.depth_m, closed.history, closed.water, hold.config, hold.generation, hold.source_witness, bed, hold.host_active, hold.edges_host, hold.host_depth, vegetation=hold.vegetation)
         boundary = Boundary("boundary", root, bed, depth, qx, qy, hold.routing, float(closed.water.t_s), led, hold.provenance, hold.seq + 1,
                             closed.cursor if cursor is None else cursor, pending_forcing, hold.storm_match if (closed.cursor if cursor is None else cursor).pending is not None else None)
     lineage._head = boundary
@@ -510,7 +535,7 @@ def day_runtime(hold: Any, state: Any, event_factory: Any, *, available_bytes_fn
         same = np.array_equal(np.asarray(hold.bed.water.depth_m), np.asarray(depth))
     bed = hold.bed if same else replace(hold.bed, water=replace(hold.bed.water, depth_m=depth))
     with _minting():
-        root = BoundaryRoot(hold.column, hold.matrix_op, hold.pref_op, hold.ks_m_s, hold.depth_m, hold.depth_m, state.history, state.water, hold.config, hold.generation, hold.source_witness, bed, hold.host_active, hold.edges_host, hold.host_depth)
+        root = BoundaryRoot(hold.column, hold.matrix_op, hold.pref_op, hold.ks_m_s, hold.depth_m, hold.depth_m, state.history, state.water, hold.config, hold.generation, hold.source_witness, bed, hold.host_active, hold.edges_host, hold.host_depth, vegetation=hold.vegetation)
     vert = fp.FloatingPondVertical.from_boundary(root, available_bytes_fn=available_bytes_fn, reserve_bytes=reserve_bytes, batch_cells=batch_cells, memory_budget_bytes=memory_budget_bytes,
                                                  host_memory_budget_bytes=host_memory_budget_bytes, host_reserve_bytes=host_reserve_bytes, host_available_bytes_fn=host_available_bytes_fn)  # CUDA: the full two-pool quota; a CPU hold refuses CUDA-only arguments
     event = event_factory(vert, hold.routing[0])  # the static case: control + context ONLY (no PondEventState, no sediment initialisation, no bed inventory)
@@ -558,12 +583,21 @@ class VerifiedRestore(_Minted):
     seal: str
 
 
-def saveable_head(lineage: Any) -> tuple:
+def saveable_head(lineage: Any, *, vegetation: bool = False) -> tuple:
     """Authority of a SAVE: the lineage's accepted head must be a genuine eligible `Boundary` (nothing pending) or a genuine `DailyHold` whose binding names THIS lineage (the old parent Boundary may be long dead -- it is neither
-    required nor retained). Returns `(kind, head)` with kind in {"boundary", "daily_hold"}. Nothing moves; an Occurrence (a running storm, a mid-day trial) is refused."""
+    required nor retained). Returns `(kind, head)` with kind in {"boundary", "daily_hold"}. Nothing moves; an Occurrence (a running storm, a mid-day trial) is refused.
+    `vegetation=False` (every OLD profile): a vegetation-bound head is refused (the old outer/held profiles do not carry the per-cell law and covers). `vegetation=True` (the explicit versioned vegetation profile ONLY): the SAME
+    eligibility, but the head MUST carry a genuine vegetation record and a head without one is refused -- the two profiles never accept each other's heads."""
     if type(lineage) is not FloatingEventLineage:
         raise LifecycleError("lineage must be a FloatingEventLineage")
+    if type(vegetation) is not bool:
+        raise LifecycleError("vegetation must be a bool")
     head = lineage._head
+    bound = (type(head) is Boundary and head in _RECORDS and head.root.vegetation is not None) or (type(head) is DailyHold and head in _RECORDS and head.vegetation is not None)
+    if bound and not vegetation:
+        raise LifecycleError("a vegetation-bound head is not saveable by this file profile (the old outer/held profiles do not carry the per-cell law and covers); use the versioned vegetation profile")
+    if vegetation and not bound and type(head) in (Boundary, DailyHold) and head in _RECORDS:
+        raise LifecycleError("the vegetation profile saves a vegetation-bound head only (this head carries no applied vegetation generation)")
     if type(head) is Boundary and head in _RECORDS:
         if head.role != "boundary" or head.pending_forcing is not None or head.storm_match is not None or (head.cursor is not None and head.cursor.pending is not None):
             raise LifecycleError("only a complete boundary with nothing pending is saveable (a pending recession or a pending storm is not carried by this file)")
@@ -679,7 +713,40 @@ def _balance_check(led: dict, stored_m3: float) -> tuple:
     return resid, bound
 
 
-def stage_restored_head(token: Any, kind: str, head_rec: Any, hold_rec: Any = None, *, cuda_quota: Any = None) -> tuple:
+def require_usable_token(token: Any) -> None:
+    """The OWNING usability check of a one-shot `VerifiedRestore`: a genuine token whose restored vertical has NOT already opened a lineage (a token whose head was installed is consumed). Raises `LifecycleError` before any
+    owning factory allocates, binds or uploads anything; `stage_restored_head` / `install_restored_head` keep their own checks."""
+    _record(token, VerifiedRestore)
+    if token.event.vertical in _RESTORED_VERTICALS:
+        raise LifecycleError("this restored vertical already opened a lineage: the verified-restore token is consumed (one-shot)")
+
+
+def _restored_vegetation(vert: Any, vegetation: Any) -> Any:
+    """The OWNING check of the vegetation record a restored head may carry (`vegetation_lifecycle.restore_vegetation_record`'s product, minted from THIS token's held cached recipe). With no record, the vertical's held context must carry
+    no vegetation recipe (an old profile never restores a vegetation context, a vegetation context never restores without its record); with one, it must be genuine, cached-derived, name the SAME recipe/binding as the held
+    context and share its mask / cell area / counts. A matching JSON hash alone is never enough: the record's own producer fingerprint is verified."""
+    held = getattr(vert, "_held", None)
+    hv = None if held is None else getattr(held, "vegetation", None)
+    if vegetation is None:
+        if hv is not None:
+            raise LifecycleError("the held context carries a vegetation recipe: its restored head needs the vegetation record minted by the owning restore factory")
+        return None
+    if hv is None:
+        raise LifecycleError("a vegetation record cannot be attached to a restore whose held context carries no vegetation recipe")
+    from maple_syrup import vegetation_lifecycle as vl
+
+    try:
+        rec = vl.verify_record(vegetation)
+    except vl.VegetationLifecycleError as exc:
+        raise LifecycleError(f"the vegetation record is not genuine: {exc}") from None
+    from maple_syrup import water_vegetation_binding as wvb
+
+    if rec.binding.origin != wvb.ORIGIN_CACHED or rec.binding.projection is not hv.cached or rec.binding_sha256 != hv.binding_sha256 or (rec.n_cells, rec.n_layers) != (held.column.n_cells, held.column.n_layers):
+        raise LifecycleError("the vegetation record is not the cached-derived record of this restore's held recipe")
+    return rec
+
+
+def stage_restored_head(token: Any, kind: str, head_rec: Any, hold_rec: Any = None, *, cuda_quota: Any = None, vegetation: Any = None) -> tuple:
     """Stage (NOT install) the head of a restored lineage from a verified token: `kind` "boundary" mints a `Boundary` (a fresh lineage, no old parent), "daily_hold" mints the `DailyHold` (record of the hold as it was staged:
     static pieces, ledger, seq, clock, cursor; its surface and bed are the restored state's) bound weakly to a NEW lineage. Returns `(lineage, head, root)`; `install_restored_head` replaces the head LAST.
     CUDA restore (explicit): the SAME staging with resident comparisons/storage (`floating_event_lifecycle_cuda.arrays_equal_cuda` / `stored_m3_cuda`: counted scalar reads, no host water mirror) and the SEALED host
@@ -696,6 +763,7 @@ def stage_restored_head(token: Any, kind: str, head_rec: Any, hold_rec: Any = No
         raise LifecycleError("the head record is malformed (closed key set)")
     if type(head_rec["seq"]) is not int or head_rec["seq"] < 0 or type(head_rec["t_s"]) is not float or not np.isfinite(head_rec["t_s"]):
         raise LifecycleError("the head record seq/clock are malformed")
+    veg = _restored_vegetation(vert, vegetation)
     payload = vert.current_payload(state.hydraulic.soil_water_m)
     held = vert.held_template()
     cuda = vert.backend == "cuda"
@@ -723,7 +791,7 @@ def stage_restored_head(token: Any, kind: str, head_rec: Any, hold_rec: Any = No
     area = float(held.column.cell_area_m2)
     host = (vert._active_host(), vert._edges_host, vert._held.host_depth0_m) if cuda else (None, None, None)  # CUDA: the SEALED host mask / edges / D0 of the held context, by reference
     with _minting():
-        root = BoundaryRoot(held.column, held.matrix_op, held.preferential, held.ks_m_s, held.depth0_m, held.depth0_m, payload.history, payload.state, vert.config, int(held.generation), held.source_witness, bed, *host)
+        root = BoundaryRoot(held.column, held.matrix_op, held.preferential, held.ks_m_s, held.depth0_m, held.depth0_m, payload.history, payload.state, vert.config, int(held.generation), held.source_witness, bed, *host, vegetation=veg)
         lineage = FloatingEventLineage()
         if kind == "boundary":
             if float(head_rec["t_s"]) != float(state.t_s) or float(payload.state.t_s) != float(state.t_s):
@@ -737,7 +805,7 @@ def stage_restored_head(token: Any, kind: str, head_rec: Any, hold_rec: Any = No
             if type(hold_rec) is not dict or set(hold_rec) != {"closed_t_s"} or float(hold_rec["closed_t_s"]) != float(state.t_s):
                 raise LifecycleError("the hold record's closed-day clock differs from the restored state's clock")
             head = DailyHold(held.column, held.matrix_op, held.preferential, held.ks_m_s, held.depth0_m, vert.config, int(held.generation), held.source_witness, bed, hyd.depth_m, hyd.qx_m2_s, hyd.qy_m2_s, routing,
-                             led, prov, int(head_rec["seq"]), float(head_rec["t_s"]), cursor, None, None, host_active=host[0], edges_host=host[1], host_depth=host[2])
+                             led, prov, int(head_rec["seq"]), float(head_rec["t_s"]), cursor, None, None, host_active=host[0], edges_host=host[1], host_depth=host[2], vegetation=veg)
     if kind == "daily_hold":
         class _Gone:  # the original parent Boundary is NOT restored: its weak slot is dead, exactly as after a parent release
             pass

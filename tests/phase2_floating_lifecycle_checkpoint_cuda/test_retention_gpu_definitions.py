@@ -15,12 +15,15 @@ import gc
 import hashlib
 import importlib.util
 import json
+import sys
 import weakref
 from pathlib import Path
 
 import pytest
 
 _HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(_HERE.parent / "phase25_source_profile"))
+import p25_source_profile as p25
 
 
 def _load(name: str, rel: str):
@@ -134,7 +137,7 @@ def test_the_cuda_restore_releases_every_transient_carrier_object_while_the_resu
     print("ROOT_RETENTION_EVIDENCE", {"windowed": windowed, "kind": kind, "weak_handles": sorted(seen), "array_proxy": proxies})
 
 
-def test_the_169_production_source_bytes_are_exactly_the_public_phase2_source_manifest():
+def _historical_public_manifest_guard():
     """HOST (no GPU, no skip): this tree's `src/maple_syrup` is EXACTLY the public actual-source manifest `docs/subsurface_hydrology/phase2_source_manifest.json` -- the SAME existing algorithm (`provenance.source_tree_digest`:
     sha256 over sorted relpath NUL file-sha256 LF, `__pycache__`/bytecode excluded, symlinks/special files refused), over EVERY non-bytecode file, so a stray `.orig`/cache file in a checkout fails here instead of being
     hidden by a `*.py` glob. Digest, file count, total bytes and every (path, sha256) pair must match."""
@@ -150,3 +153,21 @@ def test_the_169_production_source_bytes_are_exactly_the_public_phase2_source_ma
     want = {rel: h for rel, h in manifest["files"] if rel.endswith(".py") and "/" not in rel}
     have = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in src.glob("*.py")}
     assert have == want and len(want) == 169  # every manifest file is a top-level production module (no data/native extra)
+
+
+
+def test_the_169_production_source_bytes_are_exactly_the_public_phase2_source_manifest():
+    """Branch chosen ONLY by the literal-pinned package: the historical base169 package must equal the public Phase 2 manifest exactly (original proof). The Root-locked final package is by design NOT the 169-file Phase 2
+    package: the PUBLIC Phase 2 manifest must then remain exactly the immutable 169-file base (never rewritten), and the actual tree is proven by the whole-source lock instead."""
+    root = _HERE.parents[1]
+    branch = p25.require_branch(root / "src" / "maple_syrup", historical=("base169_02388ad",))
+    if branch.kind == "historical":
+        _historical_public_manifest_guard()
+        return
+    v = branch.verified
+    manifest = json.loads((root / "docs" / "subsurface_hydrology" / "phase2_source_manifest.json").read_text())
+    assert manifest["schema"] == "syrup.phase2.source_manifest.v1" and manifest["scope"] == "src/maple_syrup"
+    assert manifest["file_count"] == len(manifest["files"]) == len(v.base) == 169
+    assert {rel: h for rel, h in manifest["files"]} == dict(v.base)                                   # the public Phase 2 record IS the immutable base listing, unchanged
+    assert manifest["digest_sha256"] == p25.combine_digest(dict(v.base)) and manifest["total_bytes"] > 0
+    assert v.tree_digest != manifest["digest_sha256"] and v.unchanged | v.changed == set(v.base)         # the final tree is a different, locked package

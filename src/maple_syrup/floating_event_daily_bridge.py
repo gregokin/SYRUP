@@ -208,11 +208,26 @@ def _cuda_args(column: Any, host_available_bytes_fn: Any, host_reserve_bytes: An
     return {}
 
 
+def _bound_cover(parent: Any, cover: Any) -> Any:
+    """The day's E-shading cover. Without an applied vegetation generation (`hold.vegetation is None`) `cover` is returned UNCHANGED (the caller-prescribed historical path). With one, the bound live-shading cover is
+    used: `cover=None` (or the bound array itself) selects it; any other caller cover is refused (never silently overrides the accepted profile)."""
+    veg = getattr(parent.ctx.hold, "vegetation", None)
+    if veg is None:
+        return cover
+    from maple_syrup import vegetation_lifecycle as vl
+
+    vl.verify_record(veg)  # genuine, unaltered record (O(1) fingerprint)
+    if cover is None or cover is veg.bound_shade:
+        return veg.bound_shade
+    raise BridgeError("this lineage has an applied vegetation generation: the evaporation-shading cover is bound; pass cover=None (a different caller cover is refused)")
+
+
 def day_action(parent: Any, *, plan: Any, pet_terrain_m_s: Any, cover: Any, available_bytes_fn: Any, reserve_bytes: int = 0, event_factory: Any = None, day_control: Any = None,
                host_available_bytes_fn: Any = None, host_reserve_bytes: Any = 0) -> fd.DailyResult:
     """The day's action from the closed bridge state: a DRY boundary is the accepted soil-only action (`floating_daily_action`); a boundary with standing water is the approved wet-interevent day (`wet_day_action`). The
     CUDA host reader/reserve reach BOTH branches (a CPU lineage refuses them)."""
     _need_bridge_state(parent)
+    cover = _bound_cover(parent, cover)
     cq = _cuda_args(parent.ctx.column, host_available_bytes_fn, host_reserve_bytes)
     if parent.surface is None:
         return fd.floating_daily_action(parent, expected_parent=fd.expect_parent(parent), plan=plan, pet_terrain_m_s=pet_terrain_m_s, cover=cover, available_bytes_fn=available_bytes_fn, reserve_bytes=reserve_bytes, **cq)
@@ -227,6 +242,7 @@ def wet_day_action(parent: Any, *, plan: Any, pet_terrain_m_s: Any, cover: Any, 
     `max_steps`, `max_retries` and the retry floor refuse the WHOLE candidate (never a completion). `plan` must be a P = 0 day: a wet boundary with positive rain requires the FULL native storm from the unchanged parent
     (explicit bounded eligibility, no intensity threshold, no surface erasure). T is NOT applied here (once, at the day's end, through `request_floating_withdrawal`)."""
     _need_bridge_state(parent)
+    cover = _bound_cover(parent, cover)
     if parent.surface is None or parent.role != "boundary":
         raise BridgeError("wet_day_action needs a closed bridge boundary state with standing surface water")
     ctx, hold = parent.ctx, parent.ctx.hold
@@ -373,6 +389,7 @@ def day_after_storm(state: Any, *, plan: Any, pet_terrain_m_s: Any, cover: Any, 
     rain-0 action for a dry boundary, the wet-interevent fragments (`wet_day_action(after_storm=True)`) when standing water remains. The pending occurrence is consumed ONCE at the final close with the ORIGINAL plan. No
     E/T ran during the storm or its recession; the physical clock advances one day on top (nothing is caught up)."""
     _need_bridge_state(state)
+    cover = _bound_cover(state, cover)
     cq = _cuda_args(state.ctx.column, host_available_bytes_fn, host_reserve_bytes)
     if state.surface is not None:
         return wet_day_action(state, plan=plan, pet_terrain_m_s=pet_terrain_m_s, cover=cover, event_factory=event_factory, day_control=day_control, available_bytes_fn=available_bytes_fn,

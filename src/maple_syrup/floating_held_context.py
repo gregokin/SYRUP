@@ -59,10 +59,12 @@ __all__ = [
     "HeldContextError",
     "HeldContextMemory",
     "HeldContextRecord",
+    "HeldVegetation",
     "PreferentialSpec",
     "estimate_held_context_memory",
     "export_held_context",
     "reconstruct_held_context",
+    "reconstruct_vegetation_held_context",
     "record_from_parts",
     "require_held_context",
 ]
@@ -513,6 +515,8 @@ def _snapshot(vertical: Any, pref_spec: Any) -> tuple[dict, dict]:
     col = t.column
     if type(cfg) is not nfs.NativeFloatingConfig or cfg.sha256 != t.config_sha256:
         raise HeldContextError("the vertical's native config does not match its held template identity")
+    if t.matrix_op.layouts["vegetation_factor"] != "scalar":  # /1 and /2 rebuild the matrix operator from the config's SCALAR g: a per-cell (dynamic) g is not representable and must never be exported as one
+        raise HeldContextError("the vertical's matrix operator carries a per-cell vegetation factor; the /1 and /2 held contexts hold the config's scalar g only (use the versioned dynamic-vegetation held context /3 | /4)")
     L, N, K = int(col.n_layers), int(col.n_cells), int(cfg.grain_texture.shape[0])
     texture_ks = cfg.matrix_conductivity_mode == "texture_ks"
     lay = {k: str(v) for k, v in dict(col.layouts).items()}
@@ -637,6 +641,7 @@ class HeldContext:
     host_depth0_m: Any = None  # CUDA only: sealed HOST D0 / mask / Ks references (the record's own arrays: no new mirror)
     host_active: Any = None
     host_ks_m_s: Any = None
+    vegetation: Any = None  # a `HeldVegetation` ONLY for a dynamic-vegetation (/3 | /4) context minted by `reconstruct_vegetation_held_context`; None for every /1 | /2 context
 
     def __post_init__(self) -> None:
         if not getattr(_MINT, "ok", False):
@@ -651,6 +656,23 @@ class HeldContext:
 
     def __reduce_ex__(self, protocol):
         raise HeldContextError("a HeldContext is not serialisable (export a record instead)")
+
+
+@dataclass(frozen=True, eq=False)
+class HeldVegetation:
+    """The explicit, minimal vegetation reference of a dynamic-vegetation HeldContext: the ONE sealed `CachedVegetationInputs` recipe (never per-species N contributions, never a LEAF projection or session) and the
+    identities of the law that was canonically re-prepared from it on the held column. Minted ONLY inside `reconstruct_vegetation_held_context`. It carries no generation (the stable vegetation generation belongs
+    to the later outer profile) and no proof of a live session."""
+
+    cached: Any
+    binding_sha256: str
+    record_sha256: str
+    law_sha256: str
+    g_sha256: str
+
+    def __post_init__(self) -> None:
+        if not getattr(_MINT, "ok", False):
+            raise HeldContextError("a HeldVegetation is minted only by reconstruct_vegetation_held_context")
 
 
 def require_held_context(context: Any) -> None:
@@ -748,3 +770,71 @@ def _mint_cuda_context(parts: Any, meta: dict) -> HeldContext:
     depth0, ks, active, edges, hd, ha, hk = parts["depth0"], parts["ks"], parts["active"], parts["edges"], parts["host_depth0"], parts["host_active"], parts["host_ks"]
     with _minting():  # tight window: every argument precomputed, no callbacks
         return HeldContext(cfg, col, op, pref, depth0, ks, active, area, generation, witness, identities, layouts, "cuda", edges, hd, ha, hk)
+
+
+def reconstruct_vegetation_held_context(record: Any, expected: Any, pins: Any, *, memory_budget_bytes: Any, available_bytes_fn: Callable[[], int] | None = None, reserve_bytes: Any = 0,
+                                        host_memory_budget_bytes: Any = None, host_available_bytes_fn: Callable[[], int] | None = None, host_reserve_bytes: Any = 0) -> HeldContext:
+    """THE owning factory hook of the dynamic-vegetation held context (`/3` CPU, `/4` CUDA; module `floating_held_context_vegetation[_cuda]`). It owns every check BEFORE the tight mint: the record is a genuinely
+    minted intact `VegetationHeldRecord` (exact class + digest; an old `/1` | `/2` record is refused), the caller's EXTERNAL `ExpectedHeldIdentities` equal the recorded identities (the preferential identity is
+    REQUIRED), the caller's EXTERNAL `ExpectedVegetationPins` are the exact type, and the plain parts the preparation returned are re-checked here (exact types, backend, the config / column / matrix / preferential
+    identities, the sealed cached-inputs record is the genuine one the pins name, the law identities). Nothing is minted from unchecked arrays or ids and there is no 'adopt prepared parts' shortcut.
+    The preparation itself uses only the public factories and the sealed cached recipe (`cached_binding` + `prepare_vegetation_law` with the CURRENT expected operator identities)."""
+    from maple_syrup import floating_held_context_vegetation as fhv
+
+    schema = fhv.record_schema(record)  # the MINIMAL peek (exact class + registry + schema string): no hash, no array, no reader
+    cuda = schema == fhv.SCHEMA4
+    if cuda:
+        from maple_syrup import floating_held_context_cuda as fhcuda
+
+        fhcuda._gate()  # the CURRENT device FIRST, before any reader, array hash or preparation (no switching, no fallback)
+    elif host_memory_budget_bytes is not None or host_available_bytes_fn is not None or host_reserve_bytes:
+        raise HeldContextError("host_* arguments apply only to a CUDA (/4) record (a CPU record has one host pool)")
+    reserve = _reserve(reserve_bytes)
+    meta = fhv.verify_record(record)
+    if type(expected) is not ExpectedHeldIdentities:
+        raise HeldContextError("expected must be ExpectedHeldIdentities")
+    if type(pins) is not fhv.ExpectedVegetationPins:
+        raise HeldContextError("pins must be ExpectedVegetationPins (the caller's external record / binding / projection / LEAF package / helper / source pins)")
+    ident = meta["identities"]
+    if (expected.config_sha256, expected.root_column_sha256, expected.matrix_op_sha256, expected.pref_sha256) != (ident["config_sha256"], ident["root_column_sha256"], ident["matrix_op_sha256"], ident["pref_sha256"]):
+        raise HeldContextError("the record's identities differ from the expected identities")
+    if expected.pref_sha256 is None:
+        raise HeldContextError("a dynamic-vegetation context always carries its preferential operator identity")
+    parts = fhv.prepare_parts(record, pins, memory_budget_bytes=memory_budget_bytes, available_bytes_fn=available_bytes_fn, reserve_bytes=reserve, host_memory_budget_bytes=host_memory_budget_bytes,
+                              host_available_bytes_fn=host_available_bytes_fn, host_reserve_bytes=host_reserve_bytes)
+    return _mint_vegetation_context(parts, meta, pins)
+
+
+def _mint_vegetation_context(parts: Any, meta: dict, pins: Any) -> HeldContext:
+    """Checks the plain parts of a dynamic-vegetation preparation and mints the context in a tight window with precomputed arguments (module hook docstring)."""
+    from maple_syrup import water_vegetation_binding as wvb
+    from maple_syrup import water_vegetation_held as wvh
+
+    keys = {"config", "column", "matrix_op", "preferential", "depth0", "ks", "active", "area", "edges", "host_depth0", "host_active", "host_ks", "cached", "law"}
+    if type(parts) is not dict or set(parts) != keys:
+        raise HeldContextError("internal: the vegetation parts are not the closed plain record")
+    cfg, col, op, pref, law, cached = parts["config"], parts["column"], parts["matrix_op"], parts["preferential"], parts["law"], parts["cached"]
+    ident, vm = meta["identities"], meta["vegetation"]
+    backend = "cuda" if meta["schema"].endswith("/4") else meta["backend"]
+    if type(cfg) is not nfs.NativeFloatingConfig or type(col) is not fsl.FloatingSoilColumn or pref is None or col.backend != cfg.backend or (backend == "cuda") != (col.backend == "cuda"):
+        raise HeldContextError("the vegetation parts are not the native config / column / operators of the recorded backend")
+    if (cfg.sha256, col.sha256, op.sha256, pref.sha256) != (ident["config_sha256"], ident["root_column_sha256"], ident["matrix_op_sha256"], ident["pref_sha256"]):
+        raise HeldContextError("the vegetation parts do not reproduce the recorded identities")
+    try:
+        wvh.verify_cached_inputs(cached)
+        wvb.verify_prepared_law(law)
+    except wvb.VegetationBindingError as exc:
+        raise HeldContextError(f"the sealed vegetation recipe / law is not genuine: {exc}") from None
+    if (cached.record_sha256 != pins.record_sha256_hex or cached.binding_sha256 != pins.binding_sha256_hex or cached.record_sha256 != vm["cached"]["record_sha256"]
+            or law.matrix_op is not op or law.preferential_op is not pref or law.law_sha256 != vm["law"]["law_sha256"] or law.g_sha256 != vm["law"]["g_sha256"]
+            or law.matrix_sha256 != op.sha256 or law.preferential_sha256 != pref.sha256 or law.binding_origin != wvb.ORIGIN_CACHED or law.column_sha256 != col.sha256):
+        raise HeldContextError("the cached recipe / law do not reproduce the recorded vegetation identities (external pins, law, operators)")
+    identities = ExpectedHeldIdentities(cfg.sha256, col.sha256, op.sha256, pref.sha256)
+    layouts = MappingProxyType(dict(meta["layouts"]["all"]))
+    generation, witness = int(meta["facts"]["generation"]), meta["facts"]["source_witness"]
+    depth0, ks, active, edges, hd, ha, hk, area = (parts[k] for k in ("depth0", "ks", "active", "edges", "host_depth0", "host_active", "host_ks", "area"))
+    with _minting():  # tight window: every argument precomputed, no callbacks
+        veg = HeldVegetation(cached, cached.binding_sha256, cached.record_sha256, law.law_sha256, law.g_sha256)
+        if backend == "cuda":
+            return HeldContext(cfg, col, op, pref, depth0, ks, active, float(area), generation, witness, identities, layouts, "cuda", edges, hd, ha, hk, veg)
+        return HeldContext(cfg, col, op, pref, depth0, ks, active, float(area), generation, witness, identities, layouts, "numpy", None, None, None, None, veg)

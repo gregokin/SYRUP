@@ -216,7 +216,7 @@ def close_cuda(lineage: Any, occurrence: Any, cap: Any, state: Any, *, available
     d_dev = cand.column._maps["soil_depth"]  # the NEW root's CURRENT canonical depth (device), never the held D0
     with lc._minting():
         root = lc.BoundaryRoot(cand.column, cand.matrix_op, cand.pref_op, cand.ks_m_s, d_dev, d_dev, cand.history, cand.water_state, vert.config, int(held.generation) + 1, held.source_witness, bed,
-                               vert._active_host(), vert._edges_host, cand.depth_m)
+                               vert._active_host(), vert._edges_host, cand.depth_m, vegetation=occurrence.vegetation)
         boundary = lc.Boundary(role, root, bed, h_prime, state.hydraulic.qx_m2_s, state.hydraulic.qy_m2_s, (state.topology, state.held_source_m, state.datum), float(state.t_s), led, prov, occurrence.seq + 1, occurrence.cursor,
                                None if storm_match is not None else occurrence.pending_forcing, storm_match)
     fcm.consume_completion(cap, state, event=event)  # the completion is consumed LAST ...
