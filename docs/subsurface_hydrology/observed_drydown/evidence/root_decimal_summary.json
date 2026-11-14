@@ -1,0 +1,23 @@
+{
+  "precision_decimal_digits": 70,
+  "rows": [
+    {
+      "name": "JORN4_A_training",
+      "scenarios": 56,
+      "max_water_error_m": 3.2836757172724167e-18,
+      "max_error_over_native_bound": 0.030826658203675292
+    },
+    {
+      "name": "JORN4_B_heldout",
+      "scenarios": 3,
+      "max_water_error_m": 5.790992087824161e-19,
+      "max_error_over_native_bound": 0.005741154855540532
+    },
+    {
+      "name": "MOAB2_C_heldout",
+      "scenarios": 3,
+      "max_water_error_m": 1.3621736693713073e-18,
+      "max_error_over_native_bound": 0.014006541834208174
+    }
+  ]
+}

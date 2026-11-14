@@ -1,0 +1,40 @@
+{
+  "scope": "Feasibility screen only, NOT adopted field parameters or a water-model run; OM provisional1.724xestimatedOC after unit conversion",
+  "rows": [
+    {
+      "horizon": "JORN_A",
+      "density_kg_m3": 1419.6,
+      "OM_provisional_percent": 0.3448,
+      "status": "REFUSED_BY_PROVIDER",
+      "error": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+    },
+    {
+      "horizon": "JORN_Bw",
+      "density_kg_m3": 903.5,
+      "OM_provisional_percent": 0.1724,
+      "status": "REFUSED_BY_PROVIDER",
+      "error": "bulk density is outside [1000, 1800] kg/m3 (1 element(s) flagged, first at layer 0, its flags 16; OR of all flags 16); nothing was published"
+    },
+    {
+      "horizon": "MOAB_A",
+      "density_kg_m3": 1519.7,
+      "OM_provisional_percent": 1.0344,
+      "status": "REFUSED_BY_PROVIDER",
+      "error": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+    },
+    {
+      "horizon": "MOAB_Bw",
+      "density_kg_m3": 1481.8,
+      "OM_provisional_percent": 0.5172,
+      "status": "ACCEPTED_BY_PROVIDER",
+      "properties": {
+        "theta_field_capacity_6kpa": 0.39218936166045765,
+        "theta_saturation": 0.4408301886792453,
+        "saturated_conductivity_m_s": 1.5904920866396363e-05,
+        "theta_1500": 0.072616034128,
+        "air_entry_kpa": 0.4343253984061035,
+        "provenance": 0.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "root": "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source",
+  "revision": "80b10e6b6b82ad16e9fd41a31901cc3157d880e9",
+  "files": [
+    {
+      "path": "model/Parameters/soilparameters_tabernas.txt",
+      "sha256": "db02855a9359eed71c1976309ccefeaa3780a2314c2b57cd08b2f9ec4ec77e62",
+      "bytes": 1959
+    },
+    {
+      "path": "model/src/WaterCell.cpp",
+      "sha256": "af476e1aa727ed515d75ed06a4a25b5285470caddebb141c35b8c0cf6201d9e9",
+      "bytes": 20479
+    },
+    {
+      "path": "model/src/Weather.cpp",
+      "sha256": "434f694126ec148243462f4765b7ccf5301dbcecae00b267eb7396f9911b9dc0",
+      "bytes": 9364
+    },
+    {
+      "path": "model/src/WaterLandscape.cpp",
+      "sha256": "8ba6252633a1b142a83cf20da47bd8d3235af9c4fb357b32192a8a5c2a4bb004",
+      "bytes": 82996
+    }
+  ],
+  "scope": "Scientific reference only; not executed as a field-water model or original 2009 release.",
+  "revision_source": "Pinned archive receipt/source manifest; extracted source is not a Git checkout (git -C walks to SYRUP, not the reference revision).",
+  "archive_receipt_sha256": "b5c850b500a163816a66e1af912f1f7a7ece6e7be3607621435181cfc0c4525f",
+  "extraction_manifest_sha256": "d2b110b030a1fce16bebf205560380c18520609b3e03847af1a5afb5a4f4d9fb"
+}

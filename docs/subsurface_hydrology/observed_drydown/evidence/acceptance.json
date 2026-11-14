@@ -1,0 +1,325 @@
+{
+  "schema": "syrup.observed_drydown.acceptance/1",
+  "utc": "2026-11-14T18:42:32.324509+00:00",
+  "accepted_scope": "NumPy/Numba observed-initialized generic-reference-soil daily mechanism diagnostic and cited results/analysis DOCX, not site hydraulic or coupled-model validation.",
+  "baseline": "cd07f46bd3f5e4e51c2932c63b145a67b3cb1a17",
+  "branch": "feature/subsurface-observed-drydown",
+  "sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412,
+      "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+      "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "actual_files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/src",
+      "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+      "files": 180,
+      "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/src/maple_syrup/__init__.py",
+      "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+      "actual_files": 180
+    },
+    {
+      "module": "leaf",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/leaf_candidate",
+      "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+      "files": 28,
+      "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/leaf_candidate/leaf/__init__.py",
+      "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+      "actual_files": 28
+    },
+    {
+      "module": "benchmarks.spatial_mapping",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/leaf_candidate/benchmarks",
+      "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+      "bytes": 47260,
+      "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/leaf_candidate/benchmarks/spatial_mapping.py",
+      "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+      "actual_bytes": 47260
+    }
+  ],
+  "production_src_changes": 0,
+  "root_tests": {
+    "cpu_pass": 68,
+    "gpu_gated_skip": 2,
+    "ruff": "PASS"
+  },
+  "actual_scenarios": {
+    "training": 56,
+    "heldout_JORN": 3,
+    "heldout_MOAB": 3,
+    "backends": [
+      "numba",
+      "numpy"
+    ],
+    "each": "uninterrupted and midpoint column-state reconstruction; all trajectory/flux/budget arrays agree. This is NOT lifecycle checkpoint acceptance."
+  },
+  "controls": {
+    "original_CSV_QA_clock_weather_targets_scores": "PASS",
+    "fraction_initial_integral": "PASS",
+    "decimal_precision_executed_wrapper": 70,
+    "decimal_max_water_error_m": 3.2836757172724167e-18,
+    "numerical_ledger": "Native MAPLE per-step and cumulative bounds enforced; no new empirical floor.",
+    "training_selection_and_persistence": "PASS",
+    "source_and_frozen_inputs_before_after": "PASS"
+  },
+  "scientific_findings": {
+    "training_selected_d": 0.0,
+    "training_selected_effective_evaporation_factor": 0.5,
+    "no_heldout_refit": true,
+    "fit_vs_point_persistence": [
+      "better_training",
+      "worse_JORN_B",
+      "better_MOAB_C"
+    ],
+    "unfitted_reference_best_MOAB": true,
+    "interpretation": "No physical d inference; reference changes both d/E; point-vs-layer initialization affects skill; gravity/bottom boundaries unexercised."
+  },
+  "cuda": {
+    "status": "UNTESTED_OBSERVED_PROFILE_PATH",
+    "reason": "Authorized GPU0 occupied; fresh-idle prelaunch guard refused before child/context. Driver CUDA support host-tested only. Other devices/jobs preserved.",
+    "next": "Actual guarded repeat when GPU0 available; no unattended background run promised."
+  },
+  "review": {
+    "claude": "Stage1 +corrections01/02 implements driver; Stage3 independent Root-script review +report +two bounded report corrections CLOSED0; Root independent review and verification.",
+    "confirmed_issue_disposition": "Wrong precipitation product ID in citations corrected to DP1.00045.001; no forcing or model result change. Earlier importer defects corrected before freeze/runs. Root Decimal constant-label risk documented: actual sealed wrapper uses70 digits.",
+    "docs": "DOCX ZIP/markers/5images/5tables checked; PNGs visually inspected; no page-render engine."
+  },
+  "original_dirty_checkout": "Preserved at feature/subsurface-hydrology c76c603; only isolated candidate new analysis/test/report files adopted.",
+  "artifacts": [
+    {
+      "path": "benchmarks/subsurface_validation/__init__.py",
+      "bytes": 208,
+      "sha256": "4219ada0b7f87e906121a846a1992f6bd4f88dbb981a4f7e05ded53c99e5f5c3"
+    },
+    {
+      "path": "benchmarks/subsurface_validation/drydown_driver.py",
+      "bytes": 38941,
+      "sha256": "22adc6510464ab4aceb9524f71cdd72a595a800e8034eb066cccd7e3594ab88c"
+    },
+    {
+      "path": "benchmarks/subsurface_validation/neon_inputs.py",
+      "bytes": 20575,
+      "sha256": "7492a2e3a46c9028d9a7fcdb16168d56daffb0e13ca909b5cdb4b524e2b2e8e9"
+    },
+    {
+      "path": "benchmarks/subsurface_validation/paths.py",
+      "bytes": 2699,
+      "sha256": "1c60c63b542c273ef2547c649d493590dff2cb8e540930238e47e34b0d95f88d"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/README.md",
+      "bytes": 3333,
+      "sha256": "955a0b037688ffeff159bb450a2f5ce2dd0fa9aadd80847e83ca89489e36e26b"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/SYRUP_observed_drydown_results.docx",
+      "bytes": 591008,
+      "sha256": "c7b21d8a0f35d1d21bbb1e1d1074f050b710008b4433aa8247d55fa390705a35"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/build_report.py",
+      "bytes": 48454,
+      "sha256": "1d7d14f1f815b79f826e578d6a456b804a30543fb833321d1ba044a68cbabd70"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/JORN4_A_training_config.json",
+      "bytes": 11864,
+      "sha256": "e8e69dfc1ee647ce772d41fb486c3c494302ba23952b63a6800098af77dbf6fe"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/JORN4_A_training_result.json",
+      "bytes": 384482,
+      "sha256": "1b47b5e07c8e36030cef8e2be89eee4a632f25158ffcfadf03374be492395982"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/JORN4_B_heldout_config.json",
+      "bytes": 3841,
+      "sha256": "625dfce8e8fc3f73c38a6cdbfc6056dd5fe49ee2c3e85817e324c2daae2979ca"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/JORN4_B_heldout_result.json",
+      "bytes": 20060,
+      "sha256": "1f509ee7ff72e946d9233751139f8c7d200b87826084f4702e74257433e78aa5"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/MOAB2_C_heldout_config.json",
+      "bytes": 3922,
+      "sha256": "a9d13681c2ba6d1f51f510f876370c1c6e9508d76234c58a829ae6f9312a8e9d"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/MOAB2_C_heldout_result.json",
+      "bytes": 23246,
+      "sha256": "75db0c14cc22ba1b944805ad135508be20c2604a7f32ee3258fcfee1c1c02d5e"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/completion.json",
+      "bytes": 1954,
+      "sha256": "8e436743c11292cf2b031543da2083448fd3d988f1fa5c7b3a4513b716a43f53"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/frozen_JORN4_A_training.json",
+      "bytes": 11864,
+      "sha256": "e8e69dfc1ee647ce772d41fb486c3c494302ba23952b63a6800098af77dbf6fe"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/frozen_JORN4_B_heldout_TEMPLATE.json",
+      "bytes": 3649,
+      "sha256": "0d00681abbc9cf6b75be28968edc05d35db97b65b4b93b697d4cc59b2e50a4db"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/frozen_MOAB2_C_heldout_TEMPLATE.json",
+      "bytes": 3584,
+      "sha256": "773893ccecbca6a34c69192092d910ab3c43e6b90f7257b858ab198478e17470"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/frozen_finalize_heldout.py",
+      "bytes": 1680,
+      "sha256": "f48c1ae4895d88e0f0544457e89bd3f5713e2ab1fe61c95dcfba94b038628584"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/data/runtime.json",
+      "bytes": 350,
+      "sha256": "209315abc59f2d0e3f7045f53fa92337af2ed05e84dad95723eb329ac6ff7691"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/claude_root_script_review.md",
+      "bytes": 8040,
+      "sha256": "448e425a2b225c6380b27bcfdf7941abf2b2ca6f4f2c1126fef26b3527f02845"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/cpu_result.json",
+      "bytes": 1624,
+      "sha256": "9f9d240668d8d6d57b31d097bb40caac995f073df2d81e5d499b329cb42076b2"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/cpu_sources_after.json",
+      "bytes": 2213,
+      "sha256": "c22aee7a76c93f4c4fbdf62f1b6a221dce4f5c5b51a65a2f2874217ae22911ad"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/cpu_sources_before.json",
+      "bytes": 2213,
+      "sha256": "c22aee7a76c93f4c4fbdf62f1b6a221dce4f5c5b51a65a2f2874217ae22911ad"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/hydraulic_inputs_assessment_correction01.md",
+      "bytes": 3387,
+      "sha256": "11e51dcd032253f7254f549987b2a7c5d7489a0cefd1557d275729fe06002ccf"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_all_new_data_audit.json",
+      "bytes": 795,
+      "sha256": "afc175b88f0e4cf1fb9e93c4d3f5c5d9fe00c51d3e28a7446ad92b3277e82378"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_citations.json",
+      "bytes": 3394,
+      "sha256": "ddf3e61611c48cf5ebc33c0119564217a0794c199cae79cdc2aad2cd1681188a"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_decimal_summary.json",
+      "bytes": 585,
+      "sha256": "a3e12305d470b1ba45698aa5ed69c5ee8e6622c1b6bc489d8432d0f48efb2944"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_docx_structure_final.json",
+      "bytes": 233,
+      "sha256": "556a5c201b5f0321ce9de9e33d9eab7919c07bb53eea1c3b1415d827aa394be1"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_postreport_integrity.json",
+      "bytes": 133,
+      "sha256": "ce3a0da7cf6ed55d381c65ccfb683a7d5bfb927b62bd76341359dc179cbe5e02"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_property_screen.json",
+      "bytes": 1668,
+      "sha256": "d185bea2fa887101f59cdd506855281d34502e49c65d3ded939339aa2c716950"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_protocol_decisions.md",
+      "bytes": 5534,
+      "sha256": "b6be7077af8cf936c245a2b7f9162a4d9dd39041b424cecdd2c1f9380908f174"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_reference_code_manifest.json",
+      "bytes": 1272,
+      "sha256": "da28056e98fd97843ec6870d64bdeba96c75278f951b2cb07677589ba2b2b431"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_result_audit.json",
+      "bytes": 1086,
+      "sha256": "5a5ad38c6ac51a3ba56b4bd2902f265041e3af697be803e8a9c9af0b67bb85c1"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_run_seal.json",
+      "bytes": 16025,
+      "sha256": "812da64a75988684e21e9b3bd61efd1a985bc345ee054aa7a72963f1a69ba101"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_selection_and_persistence_audit.json",
+      "bytes": 995,
+      "sha256": "0d25c98d5a9bff4a55f8954ea02ff48227b4eb06431be8da4381d46f643ad384"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/evidence/root_verification_summary.json",
+      "bytes": 812,
+      "sha256": "6d00f2cf1b1f818d37172e198e7f13007c56b98c307f8412f6b8b8370726575b"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/figures/fig1_training_heatmap.png",
+      "bytes": 122425,
+      "sha256": "5542235692d238dfc43c008a5c7616b83984b277b7c32f5a1967cfdc608f04c1"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/figures/fig2_profiles_JORN4_A_training.png",
+      "bytes": 135309,
+      "sha256": "747c3b417e260c0d2b45f60cb69b50c324712c3296a50d20a743f3ef83bc2708"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/figures/fig3_profiles_JORN4_B_heldout.png",
+      "bytes": 119676,
+      "sha256": "634af5b181d9fbf6cc5c7d84d046dffbaaee505be1efae89b227ac0d6779f045"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/figures/fig4_profiles_MOAB2_C_heldout.png",
+      "bytes": 122016,
+      "sha256": "e8bf592d3c7f0e3efcabc81b052ca1b8e4ec4fcafde18c13da617ea5ae5e90c8"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/figures/fig5_forcing_and_loss.png",
+      "bytes": 115322,
+      "sha256": "216189aada17763af8637ad65c77d08925b6328ecc6758d9102cf0aae1e09348"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/report.md",
+      "bytes": 27745,
+      "sha256": "0f5ba40c655642727af04691e7b060d18991f8367f1f6c8a978c5bc14ac43eb7"
+    },
+    {
+      "path": "docs/subsurface_hydrology/observed_drydown/report_tables.json",
+      "bytes": 5848,
+      "sha256": "62b3d0abc08de1651b063c6c491cebeb8a4f22f405c186f1884440f746fc4b9b"
+    },
+    {
+      "path": "tests/subsurface_validation/test_drydown_driver.py",
+      "bytes": 29077,
+      "sha256": "8ded53c9f9ebaf7b75cea26fc0cc4b56d6d804ce0e517d0cc0f12d299ad532c8"
+    },
+    {
+      "path": "tests/subsurface_validation/test_neon_inputs_real_data.py",
+      "bytes": 6324,
+      "sha256": "14575497a0917eb9ca20bd176de73ca2a96a10f06b1e91b4dcb3fd1d1065dd53"
+    },
+    {
+      "path": "tests/subsurface_validation/test_neon_inputs_synthetic.py",
+      "bytes": 16337,
+      "sha256": "f90bc22d562fd728af412f7490ee046c87bd645321a312595103d7edca7c29c5"
+    }
+  ]
+}

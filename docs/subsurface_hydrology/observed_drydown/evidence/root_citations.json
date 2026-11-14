@@ -1,0 +1,49 @@
+{
+  "checked_utc_date": "2026-11-14",
+  "references": [
+    {
+      "key": "Tietjen2009",
+      "citation": "Tietjen B, Zehe E, Jeltsch F (2009). Simulating plant water availability in dry lands under climate change: A generic model of two soil layers. Water Resources Research45,W01418.",
+      "url": "https://doi.org/10.1029/2007WR006589",
+      "role": "Scientific basis for the two-layer mechanisms; current SYRUP uses declared multilayer/sequential exact-pair adaptation."
+    },
+    {
+      "key": "Tietjen2010",
+      "citation": "Tietjen B, Jeltsch F, Zehe E, Classen N, Groengroeft A, Schiffers K, Oldeland J (2010). Effects of climate change on the coupled dynamics of water and vegetation in drylands. Ecohydrology3,226\u2013237.",
+      "url": "https://doi.org/10.1002/eco.70",
+      "role": "Coupled-model context; plant transpiration deliberately off in these diagnostic runs."
+    },
+    {
+      "key": "Baldauf2023",
+      "citation": "Baldauf S, Cant\u00f3n Y, Tietjen B (2023). Biocrusts intensify water redistribution and improve water availability to dryland vegetation: insights from a spatially-explicit ecohydrological model. Frontiers in Microbiology14,1179291.",
+      "url": "https://doi.org/10.3389/fmicb.2023.1179291",
+      "source_url": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2023.1179291/full",
+      "role": "Downloaded EcoHyD version with reference soil parameters; not claim original2009 source or site soil."
+    },
+    {
+      "key": "Hargreaves1985",
+      "citation": "Hargreaves GH, Samani ZA (1985). Reference crop evapotranspiration from temperature. Applied Engineering in Agriculture1(2),96\u201399.",
+      "url": "https://doi.org/10.13031/2013.26773",
+      "role": "Temperature/date/latitude PET basis; actual EcoHyD astronomical constants retained in SYRUP, cite weather_pet docs for distinction from FAO56."
+    },
+    {
+      "key": "Saxton2006",
+      "citation": "Saxton KE, Rawls WJ (2006). Soil water characteristic estimates by texture and organic matter for hydrologic solutions. Soil Science Society of America Journal70,1569\u20131578.",
+      "url": "https://doi.org/10.2136/sssaj2005.0117",
+      "role": "Screened provider refused surface estimates; NOT parameters adopted for generic runs."
+    },
+    {
+      "key": "NEON2026",
+      "citation": "National Ecological Observatory Network. RELEASE-2026 soil water content and water salinity (DP1.00094.001), single aspirated air temperature (DP1.00002.001), tipping-bucket precipitation (DP1.00045.001), megapit soil characterization (DP1.00096.001).",
+      "url": "https://data.neonscience.org/data-products/DP1.00094.001/RELEASE-2026",
+      "role": "Actual field observations; exact file hashes and corrected-depth table retained."
+    },
+    {
+      "key": "NEONnotice2026",
+      "citation": "NEON (2026-11-09). Soil water content and water salinity (DP1.00094.001) algorithm updates.",
+      "url": "https://www.neonscience.org/impact/observatory-blog/soil-water-content-and-water-salinity-dp100094001-algorithm-updates",
+      "role": "Depth workaround, factory/soil calibration and QA revisions planned RELEASE2027; frozen2026 data remain separate."
+    }
+  ],
+  "correction": "Root independent Claude review caught precipitation product ID; corrected to actual pinned DP1.00045.001, not DP1.00006.001. No forcing/model output changes."
+}

@@ -1,0 +1,38 @@
+{
+  "scope": "Independent original CSV joins, QA, daily weather/rainless forcing, rational initial integration, scores and numerical ledgers/reconstruction/time.",
+  "rows": [
+    {
+      "name": "JORN4_A_training",
+      "initial_fraction_integral_max_error_m": 2.6020852139652106e-18,
+      "independently_matched_valid_targets": {
+        "501": 8,
+        "502": 10,
+        "503": 10
+      },
+      "complete_weather_days": 10,
+      "all_scored_scenarios_checked": 56
+    },
+    {
+      "name": "JORN4_B_heldout",
+      "initial_fraction_integral_max_error_m": 2.6020852139652106e-18,
+      "independently_matched_valid_targets": {
+        "501": 4,
+        "502": 4,
+        "503": 3
+      },
+      "complete_weather_days": 4,
+      "all_scored_scenarios_checked": 3
+    },
+    {
+      "name": "MOAB2_C_heldout",
+      "initial_fraction_integral_max_error_m": 2.6020852139652106e-18,
+      "independently_matched_valid_targets": {
+        "501": 6,
+        "502": 4,
+        "503": 4
+      },
+      "complete_weather_days": 6,
+      "all_scored_scenarios_checked": 3
+    }
+  ]
+}

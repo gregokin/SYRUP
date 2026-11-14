@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-14T18:28:03.633121+00:00",
+  "cpu_tests": {
+    "passed": 68,
+    "skipped": 2,
+    "reason": "actual GPU tests gated in CPU environment"
+  },
+  "actual_cpu": "62 scenarios (56 training incl2closed,3JORNheldout,3MOABheldout); each NumPy+Numba uninterrupted and midpoint reconstruction; fulltrajectories/nativeledger pass",
+  "independent_controls": "ActualrawCSV QA/join/weather/initialFractionintegrals/scores audited;70digitDecimalall62scenarios maxwatererror3.2836757172724167e-18m withinnativebounds",
+  "cuda": {
+    "status": "pending_authorized_GPU0_busy",
+    "guard": "Prelaunch0MiB/0% guard refused; noGPUchildlaunched; otherjobsuntouched"
+  },
+  "source_guard": "ExactSYRUP18037d89f23... MAPLE412fbc504... LEAF2838009872... andhelper333921 beforeafterpass. Productionzeroedits."
+}
