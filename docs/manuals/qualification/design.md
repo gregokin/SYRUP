@@ -393,3 +393,9 @@ from a synthetic column benchmark.
 
 Recommendations are engineering judgment. Neither these source inspections nor
 LEAF's historical tests constitute new numerical qualification of this design.
+
+## Update 2026-11-14: LEAF vegetation interface as built (accepted at a bounded scope)
+
+The ownership recorded above stands: LEAF owns plants and demand, SYRUP owns all physical water and checks and debits plant withdrawals once, MAPLE owns the bed. The vegetation-to-water interface is now implemented as bounded native components: LEAF produces an immutable per-cell projection (cover with add-and-cap, live-only infiltration and shading,
+live+dead splash, top-layer / lower-layers root split); SYRUP forms the existing Tietjen-type terms once through explicit site controls and species receiving weights (distinct from fixed root fractions, one shared background pathway and one aggregate cap); a generation is applied in zero time to a completed boundary; a compact recipe may be cached
+and restored as data (never as a live generation). Details, identities and limits: [phase25_vegetation.md](phase25_vegetation.md). The "required follow-ups" and "lifecycle and implementation stages" above are historical plans; the physical checkpoint of a vegetated head and the interface above are accepted at a bounded scope (`phase25_qualification.json`; source published, `phase25_publication.json`); merging into main is recorded separately. Non-vegetated wind handoff WH1 of main 953e6fd is a qualified existing interface that carries soil water and wetting history without vegetation; the vegetation-bound boundary is refused by it (no positive vegetation-aware wind carry, GPU wind or Windowed wind).

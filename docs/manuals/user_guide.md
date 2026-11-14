@@ -1001,6 +1001,8 @@ Latitude is not a weather field. The integrated case always takes it from `locat
 
 ### 14.8 LEAF inputs (v2 only)
 
+Naming note (added with Phase 2.5): "v2" here is the scheduled-run schema `masy.native_water_run.v2`. The Phase 2.5 species catalog `schema_version: 2` with receiving weights (Section 15.7) is a different, unrelated version number and is **not** read by the scheduled runner, which uses LEAF variant `8da` and catalog version 1.
+
 The `leaf` block names three LEAF files and the limits for reading them. All are pinned by their bytes when the run starts.
 
 | File | Contents |
@@ -1261,3 +1263,55 @@ Child checkpoints save a state of a running event (CPU `/1`–`/6`, CUDA `/7` De
 ### 15.6 What is not claimed
 
 No published evolving-soil CLI or coordinator schema key, no full scheduled MAPLE-SYRUP-LEAF acceptance, no field validation, no large-domain fit (memory models are declared payload arithmetic; measured peaks exist only where a receipt names them), no wind-with-persistent-soil integrated clock (Phase 0 wind adapters are separate; one bounded engineering control of the native wind and refresh calls is recorded in `phase2_native_wind_check.md` and is not a production adapter), and no pending-storm or pending-recession restart. A small seven-day N=3 example (frames on days 3 and 6) is in `examples/native_phase2_daily_example/`; it is a native-API fixture example, not a scenario or calibration.
+
+### 15.7 Phase 2.5: LEAF vegetation in the water laws and closed-parent restart, native Python API
+
+**Status.** Accepted at a bounded scope by Root's separate receipt (`qualification/phase25_qualification.json`: 714 CPU and 37 actual-GPU tests on the exact source); the source is published. Nothing here is a command, a YAML key, a CSV format or a scheduler schema: it is used from Python. The practical/scientific status page is `qualification/phase25_vegetation.md`.
+
+| Phase 2.5 identity ({{p25_edition_label}}) | Value |
+|---|---|
+| Status | {{p25_status}} |
+| LEAF package | SHA-256 `{{p25_leaf_package_sha256}}`, {{p25_leaf_file_count}} files; external helper `benchmarks/spatial_mapping.py` SHA-256 `{{p25_leaf_external_helper_sha256}}` |
+| LEAF source revision | commit {{p25_leaf_source_commit}}; branch {{p25_leaf_source_branch}} (published: {{p25_leaf_published}}) |
+| Native MAPLE (historical 9f) | commit `{{p25_maple_native_commit}}`; package SHA-256 `{{p25_maple_native_package_sha256}}`, {{p25_maple_native_file_count}} files |
+| Historical component compositions (intermediate development sources, not the current model) | cache `{{p25_cache_component_package_sha256}}`; lifecycle `{{p25_lifecycle_component_package_sha256}}`; held context `{{p25_held_context_component_package_sha256}}`; frames `{{p25_frames_component_package_sha256}}` |
+| Accepted source | commit `{{p25_source_commit}}`, branch {{p25_source_branch}}; package `{{p25_syrup_package_sha256}}`, {{p25_package_file_count}} files; source manifest `{{p25_source_manifest_sha256}}`; whole-milestone acceptance `{{p25_whole_phase_acceptance_sha256}}` (published: {{p25_published}}) |
+
+**Species file.** Use a LEAF catalog with `"schema_version": 2` (exact integer) and, per species, an optional `"hydrology": {"preferential_infiltration_receiver_weights": [...]}` with exactly `root_layers` numbers, each `>= 0` (they need not sum to 1; all zero disables that species' pathway; `[0, 1, 1]` of three layers weights layers 2 and 3 equally). Root fractions stay in `roots.layer_fractions` (sum 1) and are a different thing. The example `examples/native_phase25_example/species_v2.json` has a grass with `[0, 0, 0]` and a shrub with `[0, 1, 1]` (uncalibrated fixture values).
+`python -m leaf validate-species --species species_v2.json` validates the file and prints its schema version and hash. No SYRUP command and no scheduled-run key reads these weights.
+
+**Steps, all explicit.** (1) Validate the catalog. (2) Project the plants (`leaf.water_vegetation.project_from_initial_state` or `project_from_plant_session`) on the actual current surface and mask. The keyword `require_receiver_traits` defaults to `True`: every participating live species then needs an explicit receiving-weight vector and a missing one raises. An explicit `False` supports splash, shading and `R1` only and invents no preferential weights; that is different from an explicit all-zero vector, which disables that species' pathway. (3) Build the site controls (`site_controls`: `a1`, `a2`, `a3`, `max_fraction_per_hour`, `max_intake_rate_m_s`, background weights; every value required, no defaults; the reference pair `0.013 / 0.067` is not a default).
+(4) Bind with `bind_projection`, giving every pin as an external expectation: the full LEAF package digest, the projection content hash, the complete expected source record, the expected external helper list, the exact mask and the exact current surface. (5) Apply the generation to a completed lifecycle boundary with `vegetation_lifecycle.apply_vegetation_generation` (zero time; water, history, bed, routing, clock and counters unchanged; only a complete boundary is eligible).
+(6) Optionally cache the compact recipe (`capture_cached_inputs`, `export_cached_record`, `stage_cached_inputs`): cached data is not a live generation and can never apply a new one. (7) Optionally keep every-N-day diagnostic frames (`VegetationMoistureOutput`, strict positive integer `every_n_days`, no default; no output object means off; a frame is written after a completed nominal day and is never a restart; resume checks manifests only).
+
+**What the rules are.** Cover adds per species and in total and is capped at one; rain splash uses live and dead-standing canopies, infiltration uses live plants only, evaporation shading uses live canopies only; a fully buried canopy has no visible cover; no optical-porosity factor exists; `R1` and the preferential contributions feed the existing Tietjen-inspired terms once with no extra multiplier; the background pathway and all species share one fraction and one cap (formulae in the Model Structure manual, Section 15).
+
+**The helper and the runtime.** LEAF's projection needs the helper module `benchmarks.spatial_mapping`, which is not part of the LEAF package digest and is pinned separately; do not assume an installed wheel provides it. The reproducible runtime used for the examples puts, on `PYTHONPATH`, the pinned native MAPLE `editable` and `source/src` directories, the SYRUP `src` under test (the example pins the accepted 180-file package `{{p25_syrup_package_sha256}}`) and the LEAF root that supplies both `leaf` and `benchmarks`, and uses the existing MAPLE
+environments (nothing is installed). The SYRUP checkout also contains a top-level `benchmarks/` directory without `__init__.py`: the two are merged as one namespace and the LEAF helper resolved correctly in both path orders in the audited runtime; the pin check fails loudly if that ever changes.
+
+**Example (CPU).** `examples/native_phase25_example/phase25_projection_example.py` (with `expected_result_cpu_run.json`) validates the v2 catalog, projects a declared 3×3 fixture, binds with strict pins, captures and cold-stages the cached recipe and prepares the native law on a prescribed floating column (the live and cached bindings give the same law; a column with another cell area is refused). It prints every imported path. It does not apply a generation to a lifecycle boundary, writes no frame and no checkpoint. Its three package digests and the helper hash are checked before and after the run and recorded in the result. To reproduce, clone https://github.com/gregokin/SYRUP.git and check out commit `{{p25_source_commit}}` (branch {{p25_source_branch}}), clone https://github.com/gregokin/LEAF.git and check out commit `{{p25_leaf_source_commit}}` (branch {{p25_leaf_source_branch}}), and verify that the packages digest to the pinned values (a package hash alone is not a Git revision). The example was run on frozen byte-identical copies of those sources.
+
+**Physical checkpoint of a vegetated head (accepted at a bounded scope).** Use it to stop and later continue a head that carries a vegetation generation. Native Python only; no command, YAML or CSV exists for it.
+
+* Profiles: CPU `maple-syrup-floating-lifecycle-checkpoint-vegetation/1` (module `maple_syrup.floating_lifecycle_checkpoint_vegetation`) and CUDA `…/2-cuda` (module `…_vegetation_cuda`, with the suffix `_cuda` on every function and an `expected_device_id` on the load). The older lifecycle profiles are unchanged, strict, and never read or migrated.
+* What can be saved: a complete boundary, or a closed daily state, with one vegetation generation. Not supported: pending storm, recession or in-flight-day files. A head without a generation uses the older profile.
+* What the directory holds: `floating_lifecycle_checkpoint_vegetation.json` (sealed last), `context_arrays.npz` (water-free held-context arrays and the compact recipe) and `child/` (the bed, water, history, surface and routing). No plants, projection, output cadence, scheduler or wind state.
+
+```python
+from maple_syrup import floating_lifecycle_checkpoint_vegetation as vck
+saved = vck.save_floating_lifecycle_vegetation_checkpoint(path, lineage, factory, identity, closed=closed_or_None, original_topology=topology,
+                                                          available_bytes_fn=avail, memory_budget_bytes=budget)
+manifest_sha = saved.manifest_sha256      # keep it outside the directory: the external seal
+# ... later, in a fresh process ...
+need = vck.vegetation_load_need_bytes(path, identity, manifest_sha, available_bytes_fn=avail)   # optional preflight
+restored = vck.load_floating_lifecycle_vegetation_checkpoint(path, factory, identity, manifest_sha, leaf_package_sha256=LEAF_SHA, external_helpers=HELPERS,
+                                                             original_topology=topology, available_bytes_fn=avail, memory_budget_bytes=budget)
+lineage, head = restored.lineage, restored.head
+```
+
+`factory(vertical, carried_topology, vegetation_cover_fraction)` is your static event recipe and must build the native event with exactly the cover it is handed. `LEAF_SHA` and `HELPERS` are the hashes of the LEAF package and helper you actually run, not values read from the file. The restored vegetation record is cached-derived: it keeps the generation counter and recipe id, and a later new generation still needs a live LEAF projection. Errors of the older checkpoint families come back as `VegetationLifecycleCheckpointError` (`…CudaError` for CUDA); memory errors keep their own classes.
+The every-N output directory is separate: bind it to the restored closed state with `VegetationMoistureOutput.resume(...)` (manifests only) and keep its cadence yourself; a frame cannot restart a run. Evidence (Root's receipt): on CPU the checkpoint suite recorded 63 passed and 10 skipped (the GPU definitions), including a fresh-interpreter continuation from closed day 5 of a seven-day run with N = 3 (generation change 1 to 2, real published dry non-growing LEAF days, not a growth experiment); on the physical GPU the checkpoint definitions recorded 10 passed, including Dense and Windowed fresh continuations. The GPU output and lifecycle compositions were checked separately; a single GPU day-5 / N = 3 experiment was not run. Historical `applied` ids are carried sealed and are not re-derived on load.
+
+**Wind.** The non-vegetated Dense NumPy wind handoff WH1 of main `953e6fd` is an existing qualified interface that carries soil water and wetting history without vegetation. A boundary that carries a vegetation generation is refused by it with an explicit error (no reset, no silent drop). A positive vegetation-aware wind carry, GPU wind, Windowed wind and a scheduled three-model run are not qualified. See `qualification/phase25_wind_compatibility.md`.
+
+**Not claimed.** No command, YAML, CSV or scheduler interface; no field validation or catchment-scale fit; no scheduled three-model run; no general repeated-storm recovery; no complete scheduled wind/soil clock; no growth or E/T inside storms; a component test is not a coupled acceptance.

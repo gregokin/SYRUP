@@ -1,0 +1,46 @@
+{
+  "schema": "syrup.phase25.publication.v1",
+  "status": "source_published_bounded_native_vegetation_feedback_and_closed_parent_restart",
+  "note": "Separate publication record. The immutable qualification receipt phase25_qualification.json is unchanged. This file names the published SOURCE commits; it names no commit of the document tree that contains it (no self-reference).",
+  "source": {
+    "repository": "https://github.com/gregokin/SYRUP.git",
+    "commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+    "branch": "feature/subsurface-vegetation",
+    "origin_observed_same_by_root": true,
+    "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "file_count": 180,
+    "source_manifest_sha256": "a63946ddd29a5a1bd109a62de392fdb39ae2e6cad78a7085952838073ab35c63",
+    "base_main_commit": "953e6fdf85b73e3fdf5a1ac7b0d97dea4df7dab1",
+    "historical_phase2_base": "02388adb70b7f1f22b33b6b3d5f1249e223842e5",
+    "source_capsule": "docs/subsurface_hydrology/phase25_source_capsule.zip",
+    "source_capsule_sha256": "d7b34f5399fa8f1ae251fe5b0238dca00635b356567a354db147f9af3b415d10",
+    "manuals_included_in_source_package": false
+  },
+  "leaf": {
+    "repository": "https://github.com/gregokin/LEAF.git",
+    "commit": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "branch": "feature/syrup-hydrology-traits",
+    "origin_observed_same_by_root": true,
+    "package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "file_count": 28,
+    "external_helper": "benchmarks/spatial_mapping.py",
+    "external_helper_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5"
+  },
+  "maple": {
+    "commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "file_count": 412
+  },
+  "qualification": {
+    "receipt": "docs/subsurface_hydrology/phase25_qualification.json",
+    "receipt_sha256": "8fe92ed3f18acb5adb824bfea8bf191a8ef57035e9a5948fb262242d2eb6525b",
+    "human_readable": "docs/subsurface_hydrology/phase25_qualification.md",
+    "human_readable_sha256": "1caa9f01c2e94aaef0748f38960c71d56a7d0ddd3edb55adede626cdd6e5b22f",
+    "cpu_tests_passed": 714,
+    "actual_gpu_tests_passed": 37,
+    "source_guard_preflight_excluded_from_totals": 69
+  },
+  "scope": "Native Python APIs only; independently accepted for the bounded scope in phase25_qualification.md. Not a production CLI, YAML or CSV schema, not a full scheduled MAPLE-SYRUP-LEAF simulation, not field validation, not a large-domain memory fit.",
+  "main_integration": null,
+  "historical_cli_release_C1_unchanged": "e40a1b8fc56a96920db4ffbd182d4068fa5de3e8"
+}
