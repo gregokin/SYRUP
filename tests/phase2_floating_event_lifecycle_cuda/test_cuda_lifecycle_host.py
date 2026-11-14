@@ -6,6 +6,8 @@ from __future__ import annotations
 import ast
 import dataclasses
 import inspect
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -19,6 +21,9 @@ from maple_syrup import floating_pond_cuda as fpc
 from maple_syrup import floating_soil_layers_cuda as fcu
 from maple_syrup import native_floating_soil as nfs
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "phase25_source_profile"))
+import p25_source_profile as p25
+
 
 def test_importing_the_cuda_lifecycle_module_does_not_import_cupy():
     tree = ast.parse(inspect.getsource(flc))
@@ -27,10 +32,22 @@ def test_importing_the_cuda_lifecycle_module_does_not_import_cupy():
 
 
 def test_boundary_root_new_fields_are_trailing_optional_and_default_none():
-    names = [f.name for f in dataclasses.fields(lc.BoundaryRoot)]
-    assert names[-3:] == ["host_active", "edges_host", "host_depth"]
-    for f in dataclasses.fields(lc.BoundaryRoot)[-3:]:
+    """Branch chosen ONLY by the literal-pinned package (the imported package under test): the historical base169 package must end exactly with the three CUDA host fields; the Root-locked final package must keep those three
+    in the SAME order and default None and then carry EXACTLY the one Phase 2.5 `vegetation` tail field, also default None."""
+    branch = p25.require_branch(Path(lc.__file__).resolve().parent, historical=("base169_02388ad",))
+    fields = dataclasses.fields(lc.BoundaryRoot)
+    names = [f.name for f in fields]
+    old_tail = ["host_active", "edges_host", "host_depth"]
+    if branch.kind == "historical":
+        assert names[-3:] == old_tail
+        tail = fields[-3:]
+    else:
+        assert names[-4:] == [*old_tail, "vegetation"] and names.count("vegetation") == 1             # old order preserved, exactly one new trailing field
+        assert names.index("host_active") == len(names) - 4
+        tail = fields[-4:]
+    for f in tail:
         assert f.default is None
+
 
 
 def test_cpu_open_close_begin_refuse_meaningless_cuda_quota_arguments(tmp_path):

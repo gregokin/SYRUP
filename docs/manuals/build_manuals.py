@@ -36,6 +36,18 @@ METADATA_SCHEMA_V3 = 'syrup.manual_release_metadata.v3'
 P2_FIELDS = {'source_commit': _SHA40, 'source_branch': str, 'syrup_package_sha256': _SHA64, 'package_file_count': int, 'source_manifest_sha256': _SHA64,
              'maple_native_commit': _SHA40, 'maple_native_package_sha256': _SHA64, 'whole_phase_acceptance_sha256': _SHA64, 'published': bool}
 P2_NULLABLE = frozenset({'source_commit', 'source_branch', 'syrup_package_sha256', 'package_file_count', 'source_manifest_sha256', 'whole_phase_acceptance_sha256'})
+# Explicitly versioned closed extension (v4) = v3 + ONE closed `native_phase25` block naming the Phase 2.5 (vegetation cover / roots in the water laws) component identities and, once Root supplies
+# them, the final combined source. v3 metadata keeps its exact interpretation (it has no Phase 2.5 block: the p25_* markers then say so). Nullable fields are pending in a draft and refused by --final;
+# `status` is `draft_unaccepted` until Root records the whole-milestone acceptance. Nothing here rebinds a C1, N15 or Phase 2 identity, and the document never names its own commit or hash.
+METADATA_SCHEMA_V4 = 'syrup.manual_release_metadata.v4'
+P25_FIELDS = {'status': ('draft_unaccepted', 'accepted_bounded'), 'leaf_package_sha256': _SHA64, 'leaf_file_count': int, 'leaf_external_helper_sha256': _SHA64,
+              'leaf_source_commit': _SHA40, 'leaf_source_branch': str, 'leaf_published': bool,
+              'maple_native_commit': _SHA40, 'maple_native_package_sha256': _SHA64, 'maple_native_file_count': int,
+              'cache_component_package_sha256': _SHA64, 'lifecycle_component_package_sha256': _SHA64, 'held_context_component_package_sha256': _SHA64, 'frames_component_package_sha256': _SHA64,
+              'source_commit': _SHA40, 'source_branch': str, 'syrup_package_sha256': _SHA64, 'package_file_count': int, 'source_manifest_sha256': _SHA64,
+              'whole_phase_acceptance_sha256': _SHA64, 'published': bool}
+P25_NULLABLE = frozenset({'leaf_source_commit', 'leaf_source_branch', 'cache_component_package_sha256', 'lifecycle_component_package_sha256', 'held_context_component_package_sha256', 'frames_component_package_sha256', 'source_commit',
+                          'source_branch', 'syrup_package_sha256', 'package_file_count', 'source_manifest_sha256', 'whole_phase_acceptance_sha256'})
 RELEASE_FIELDS = {'syrup_commit': _SHA40, 'syrup_branch': None, 'syrup_water_package_sha256': _SHA64, 'leaf_commit': _SHA40, 'leaf_branch': None,
                   'leaf_package_sha256': _SHA64, 'maple_native_commit': _SHA40, 'maple_native_package_sha256': _SHA64,
                   'masy_commit': _SHA40, 'masy_branch': None, 'masy_package_sha256': _SHA64,
@@ -50,11 +62,13 @@ def load_metadata(path=None, require_final=False):
     The metadata names source identities only; it never contains this documentation's own commit or hash."""
     meta = json.loads((path or HERE / 'release_metadata.json').read_text())
     top = {'schema', 'official_name', 'release_status', 'prepared_date', 'qualification_statement', 'surface_reference', 'subsurface_release', 'pending_tokens'}
-    if meta.get('schema') in (METADATA_SCHEMA_V2, METADATA_SCHEMA_V3):
+    if meta.get('schema') in (METADATA_SCHEMA_V2, METADATA_SCHEMA_V3, METADATA_SCHEMA_V4):
         top = top | {'native_phase15'}
-    if meta.get('schema') == METADATA_SCHEMA_V3:
+    if meta.get('schema') in (METADATA_SCHEMA_V3, METADATA_SCHEMA_V4):
         top = top | {'native_phase2'}
-    if set(meta) != top or meta['schema'] not in (METADATA_SCHEMA, METADATA_SCHEMA_V2, METADATA_SCHEMA_V3):
+    if meta.get('schema') == METADATA_SCHEMA_V4:
+        top = top | {'native_phase25'}
+    if set(meta) != top or meta['schema'] not in (METADATA_SCHEMA, METADATA_SCHEMA_V2, METADATA_SCHEMA_V3, METADATA_SCHEMA_V4):
         raise SystemExit('release_metadata.json: unknown or missing top-level keys or wrong schema')
     if 'native_phase15' in meta:
         n15 = meta['native_phase15']
@@ -98,6 +112,31 @@ def load_metadata(path=None, require_final=False):
                 raise SystemExit(f'release_metadata.json: native_phase2.{key} is malformed')
         if (p2['source_commit'] is None) == p2['published']:
             raise SystemExit('release_metadata.json: native_phase2.published must be true exactly when source_commit is set')
+    if 'native_phase25' in meta:
+        p25 = meta['native_phase25']
+        if type(p25) is not dict or set(p25) != set(P25_FIELDS):
+            raise SystemExit('release_metadata.json: unknown or missing native_phase25 fields')
+        for key, rule in P25_FIELDS.items():
+            value = p25[key]
+            if value is None:
+                if key not in P25_NULLABLE:
+                    raise SystemExit(f'release_metadata.json: native_phase25.{key} may not be null')
+            elif isinstance(rule, tuple):
+                if value not in rule:
+                    raise SystemExit(f'release_metadata.json: native_phase25.{key} must be one of {rule}')
+            elif rule is bool or rule is int or rule is str:
+                if type(value) is not rule or (rule is int and value < 1) or (rule is str and not value.strip()):
+                    raise SystemExit(f'release_metadata.json: native_phase25.{key} is malformed')
+            elif not isinstance(value, str) or not rule.match(value):
+                raise SystemExit(f'release_metadata.json: native_phase25.{key} is malformed')
+        if (p25['source_commit'] is None) == p25['published']:
+            raise SystemExit('release_metadata.json: native_phase25.published must be true exactly when source_commit is set')
+        if (p25['leaf_source_commit'] is None) == p25['leaf_published']:
+            raise SystemExit('release_metadata.json: native_phase25.leaf_published must be true exactly when leaf_source_commit is set')
+        if (p25['leaf_source_commit'] is None) != (p25['leaf_source_branch'] is None):
+            raise SystemExit('release_metadata.json: native_phase25.leaf_source_commit and leaf_source_branch are set together or both null')
+        if p25['status'] == 'accepted_bounded' and p25['whole_phase_acceptance_sha256'] is None:
+            raise SystemExit('release_metadata.json: native_phase25.status accepted_bounded requires whole_phase_acceptance_sha256')
     if meta['official_name'] != OFFICIAL_NAME:
         raise SystemExit('release_metadata.json: official_name must be ' + OFFICIAL_NAME)
     if meta['release_status'] not in ('draft', 'final'):
@@ -121,6 +160,11 @@ def load_metadata(path=None, require_final=False):
     if 'native_phase2' in meta:
         pending += ['native_phase2.' + k for k in sorted(P2_NULLABLE) if meta['native_phase2'][k] is None]
         pending += [] if meta['native_phase2']['published'] else ['native_phase2.published']
+    if 'native_phase25' in meta:
+        pending += ['native_phase25.' + k for k in sorted(P25_NULLABLE) if meta['native_phase25'][k] is None]
+        pending += [] if meta['native_phase25']['published'] else ['native_phase25.published']
+        pending += [] if meta['native_phase25']['leaf_published'] else ['native_phase25.leaf_published']
+        pending += [] if meta['native_phase25']['status'] == 'accepted_bounded' else ['native_phase25.status']
     if require_final and (pending or meta['release_status'] != 'final'):
         raise SystemExit('final build refused: release_status must be final and every release field populated and the sources published; pending: ' + ', '.join(pending))
     if meta['release_status'] == 'final' and pending:
@@ -149,6 +193,14 @@ def substitutions(meta):
     for key in P2_FIELDS:  # v1/v2 metadata carries no Phase 2 identity: the markers say so instead of failing or inventing one
         value = None if p2 is None else p2[key]
         out['p2_' + key] = ('not recorded (metadata schema before v3)' if p2 is None else 'yes' if value is True else 'no' if value is False else 'pending' if value is None else value)
+    p25 = meta.get('native_phase25')
+    for key in P25_FIELDS:  # v1..v3 metadata carries no Phase 2.5 identity: the markers say so instead of failing or inventing one
+        value = None if p25 is None else p25[key]
+        out['p25_' + key] = ('not recorded (metadata schema before v4)' if p25 is None else 'yes' if value is True else 'no' if value is False else 'pending' if value is None else value)
+    out['p25_source_short'] = 'pending' if p25 is None or p25['source_commit'] is None else p25['source_commit'][:7]
+    out['p25_package_short'] = 'pending' if p25 is None or p25['syrup_package_sha256'] is None else p25['syrup_package_sha256'][:12]
+    out['p25_leaf_short'] = 'not recorded' if p25 is None else p25['leaf_package_sha256'][:12]
+    out['p25_edition_label'] = 'not recorded' if p25 is None else ('accepted' if p25['status'] == 'accepted_bounded' else 'draft')
     out['p2_source_short'] = 'pending' if p2 is None or p2['source_commit'] is None else p2['source_commit'][:7]
     out['p2_package_short'] = 'pending' if p2 is None or p2['syrup_package_sha256'] is None else p2['syrup_package_sha256'][:12]
     return out
@@ -272,7 +324,8 @@ def styles(doc, subtitle):
     footer = sec.footer.paragraphs[0]
     footer.paragraph_format.space_before = Pt(3)
     if 'native_phase2' in META:  # v3: the new Phase 2 source and the historical CLI release are different identities and are labelled as such
-        footer.add_run(f"{META['release_status'].capitalize()} • Native Phase 2 source {SUBS['p2_source_short']} • historical CLI C1 {SUBS['syrup_short']} • prepared {META['prepared_date']}      ")
+        p25_part = f" • Phase 2.5 {SUBS['p25_status']} ({SUBS['p25_source_short']})" if 'native_phase25' in META else ''
+        footer.add_run(f"{META['release_status'].capitalize()} • Native Phase 2 source {SUBS['p2_source_short']}{p25_part} • historical CLI C1 {SUBS['syrup_short']} • prepared {META['prepared_date']}      ")
     else:
         footer.add_run(f"{META['release_status'].capitalize()} • SYRUP {SUBS['syrup_short']} • prepared {META['prepared_date']}                          ")
     field(footer, ' PAGE ')
@@ -314,6 +367,7 @@ def cover(doc, subtitle, description):
     doc.add_paragraph()
     for label, value in [('Release status', META['release_status']), (('SYRUP subsurface release (historical CLI C1)' if 'native_phase2' in META else 'SYRUP subsurface release'), SUBS['syrup_commit']),
                          *([('Native Phase 2 source (Python API, not in the historical CLI)', SUBS['p2_source_commit'])] if 'native_phase2' in META else []),
+                         *([('Phase 2.5 (native Python API; draft status)', SUBS['p25_status'])] if 'native_phase25' in META else []),
                          ('LEAF', SUBS['leaf_commit']), ('Native MAPLE (pinned, historical)', SUBS['maple_native_commit']),
                          ('Scheduler (MASY)', SUBS['masy_commit']),
                          ('Surface-erosion reference', f"SYRUP {SUBS['surface_syrup_short']}, MAPLE {SUBS['surface_maple_short']}"),

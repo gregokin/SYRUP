@@ -322,3 +322,8 @@ checkpoints are not compatible with this state), LEAF root/demand interface,
 MASY scheduling, lateral flow, per-cell layer stacks, evolving-bed remapping
 of soil water, and end-to-end storm/coupled-model performance qualification.
 The qualified timings apply only to the isolated column.
+
+## Phase 2.5 vegetation feedback and closed-parent restart — accepted at a bounded scope (2026-11-14)
+
+This file's sections above describe the isolated column and, historically, "LEAF root/demand interface" as not implemented. Bounded Phase 2.5 native components (LEAF projection and receiving-weight trait, site-control binding, cached recipe, zero-time vegetation generation, water-free held context `/3` `/4`,
+vegetation-attributed every-N diagnostic frames) are described in [phase25_vegetation.md](phase25_vegetation.md) with their exact component identities. They are native Python APIs (no command, YAML or CSV key). Together with the physical checkpoint of a vegetated head (CPU profile `maple-syrup-floating-lifecycle-checkpoint-vegetation/1`, CUDA `/2-cuda`) they are accepted at a bounded scope by `phase25_qualification.json` (714 CPU and 37 actual-GPU tests on the exact source; publication facts in `phase25_publication.json`). The historical statements above remain the record of the isolated-column milestone.

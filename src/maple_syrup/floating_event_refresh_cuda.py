@@ -260,7 +260,7 @@ def stage_completed_event_refresh_cuda(cap: Any, state: Any, *, event: Any, avai
     new_column = ncuda._device_column(cp, cfg, new_fc, new_sat, depth_dev, mask_dev, area, comp)  # the NEW prepared root: canonical content identity
     new_state = fsl.floating_continued_state(new_column, water, t_s, **comp)
     w_before, w_after, resid, bound = ncuda.inventory_closure_cuda(cp, cfg, payload.column, payload.state, new_column, new_state, water, changed, B, acc, comp, check_unrefreshed=bool(changed.size))
-    new_op = ncuda._device_op(cfg, new_column, new_ks, comp)
+    new_op = ncuda._device_op(cfg, new_column, new_ks, comp, vegetation=fm.held_cell_vegetation_factor(payload.matrix_op))  # AUTHORED, not run: a held device g survives the refresh (None for a scalar law: unchanged)
     rb = fm.rebind_floating_matrix_history(payload.matrix_op, payload.history, new_op, **comp)
     pref = None if payload.pref_op is None else fpi.rebind_preferential_column(payload.pref_op, new_column, **comp)
     receipt = nfs.NativeReconcileReceipt(whole_before_m3=w_before, whole_after_m3=w_after, whole_residual_m3=resid, whole_bound_m3=bound, old_column_sha256=payload.column.sha256, new_column_sha256=new_column.sha256, **acc)

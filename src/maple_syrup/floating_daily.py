@@ -472,6 +472,16 @@ def start_floating_daily_lineage(owner: Any, bed: Any, *, partition: Any, run_di
 
 
 def _validate_inputs(ctx: _Context, pet: Any, cover: Any) -> None:
+    veg = getattr(ctx.hold, "vegetation", None)
+    if veg is not None:  # an applied vegetation generation binds the live E-shading cover: a caller-prescribed cover never silently replaces it
+        from maple_syrup import vegetation_lifecycle as vl
+
+        try:
+            vl.verify_record(veg)
+        except vl.VegetationLifecycleError as exc:
+            raise DailyRefusal("input", f"the lineage's vegetation record is not genuine: {exc}") from None
+        if cover is not veg.bound_shade:
+            raise DailyRefusal("input", "this day's lineage has an applied vegetation generation: its evaporation-shading cover is bound (the bridge passes it; a different caller cover is refused)")
     if ctx.column.backend == "cuda":  # exact namespace (cupy.ndarray), the column's device, FP64, C-contiguity and shape: metadata only, no coercion, no upload
         for name, a in (("pet_terrain_m_s", pet), ("cover", cover)):
             try:
@@ -710,7 +720,11 @@ def close_floating_day(parent: FloatingDailyState, *, expected_parent: ExpectedP
 
     _check_parent(parent, expected_parent, "interevent")
     if output is not None and type(output) is not fo.FloatingMoistureOutput:
-        raise DailyRefusal("input", f"output must be None or a FloatingMoistureOutput, got {type(output).__name__} (no duck-typed substitutes)")
+        # the ONE other recognised writer class (exact type, lazy import): the Phase 2.5 vegetation-aware v2 output; anything else is refused (no duck-typed substitutes, no output callbacks)
+        from maple_syrup import floating_daily_output_vegetation as fov
+
+        if type(output) is not fov.VegetationMoistureOutput:
+            raise DailyRefusal("input", f"output must be None, a FloatingMoistureOutput or a VegetationMoistureOutput, got {type(output).__name__} (no duck-typed substitutes)")
     cuda_close = parent.ctx.column.backend == "cuda"  # CPU: `host_available_bytes_fn` belongs to the OUTPUT only; CUDA: it is also the host pool of the audit
     _audit_final(parent, available_bytes_fn, reserve_bytes, host_available_bytes_fn if cuda_close else None, host_reserve_bytes)  # admission, then the actual window + lifetime water audit, precede the mint and any output I/O
     plan, branch = parent.occurrence

@@ -7,13 +7,15 @@
 | Phase 1 (layered water, scheduled command) | **Committed and published**; its sources and recipes are the ones in the table below and never change. | "Current status and sources" and every section down to "Historical examples" |
 | Phase 1.5 (daily small-rain recharge, source N15) | **Committed and published** (`06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc`, package `82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107`, 114 files). A native Python API; no CLI flag, weather CSV or MASY daily scheduler. | [phase15_qualification.md](phase15_qualification.md), `phase15_acceptance.json` |
 | Phase 2 (evolving soil profile, native floating API) | **Independently qualified at a bounded native-API scope and source-published (`phase2_qualification.json`, `phase2_publication.json`); field validation is NOT claimed; integration into `main` is published at merge `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`.** Explicit opt-in Python API, not the scheduled `masy.native_water_run` command and not a published CLI. | Last section, "Phase 2 native floating-profile API"; [phase2_native_status.md](phase2_native_status.md) |
+| Phase 2.5 (LEAF vegetation in the water laws, native Python API) | **Accepted at a bounded scope (`phase25_qualification.json`); source published.** Explicit opt-in Python; **no** command, YAML key, CSV format or scheduler schema. | [phase25_vegetation.md](phase25_vegetation.md) and the "Phase 2.5 native vegetation API" section below |
 
 The Phase 1 and 1.5 file and command descriptions below keep their historical schemas
 (`masy.native_water_run.v1`/`v2`, `maple-syrup-layered-case/1`): the old command and
 loaders do not read, accept or silently upgrade any Phase 2 object, and no
-Phase 2 option exists as a `run.yaml` or `layered_water.yaml` key. Phase 2.5
-(LEAF canopy to rainfall splash and hydrology cover feedback) is next, before Phase 3
-observation validation; neither is described here as implemented.
+Phase 2 option exists as a `run.yaml` or `layered_water.yaml` key. *History (written before
+Phase 2.5 components existed):* "Phase 2.5 is next, before Phase 3; neither is described here as
+implemented." *Current status (2026-11-14):* Phase 2.5 is accepted at a bounded scope and described in
+[phase25_vegetation.md](phase25_vegetation.md); none of it is a `run.yaml` / `layered_water.yaml` key.
 
 ## Current status and sources
 
@@ -307,6 +309,71 @@ Green and Ampt (1911) and Tietjen et al. (2009, 2010): see the layered-water ref
 ### Former finalization checklist (historical)
 
 The checklist that stood here before publication (whole-phase receipt, GPU daily corrections, closed-file qualification, DOCX/ZIP rebuild) is closed by `phase2_qualification.json` and `phase2_publication.json`. Main integration is published at merge `6f8bab2ab045a3e6299b33ad2a3b0fc170ab4f06`. Still later: Phase 2.5 (LEAF vegetation projection) and Phase 3.
+
+## Phase 2.5 native vegetation API (explicit opt-in Python; accepted at a bounded scope)
+
+Status and identities: [phase25_vegetation.md](phase25_vegetation.md). None of the keys below exists in `run.yaml`, `layered_water.yaml`, a CSV or any console script; the historical scheduled runner
+(`masy.native_water_run.v1/v2`, LEAF variant `8da`, catalog version 1) does not read them. LEAF's own command `python -m leaf` has only `validate-species --species FILE`, `init`, `generate`, `inspect` and `export-canopy`.
+
+### Species trait (LEAF catalog `schema_version: 2`)
+
+| Key | Where | Value / rule |
+|---|---|---|
+| `schema_version` | catalog top level | exact integer `2` (version 1 stays the legacy catalog and refuses the block below) |
+| `root_layers` | catalog top level | `L`, the number of soil layers; must equal the soil layers |
+| `species.<id>.roots.layer_fractions` | per species | `L` nonnegative fixed root fractions summing to 1 (tolerance 1e-9), top layer first; not receiving weights |
+| `species.<id>.hydrology.preferential_infiltration_receiver_weights` | per species, optional (version 2 only) | `L` finite numbers `>= 0`, need not sum to 1; all zero = pathway disabled; `[0, 1, 1]` of three = equal weight to layers 2 and 3; raw values (SYRUP normalises a positive vector) |
+| species id | catalog | `[A-Za-z0-9_.\-]{1,64}` |
+
+**The one projection switch.** `leaf.water_vegetation.project_from_initial_state(...)` and `project_from_plant_session(...)` take `require_receiver_traits` (default `True`): every participating *live* species then needs an explicit receiving-weight vector (a missing one raises; nothing is defaulted). An explicit `False` supports splash, shading and `R1` only and invents no preferential weights; it is not the same as an explicit all-zero vector (pathway disabled). Python argument only; no model CLI option.
+
+### Site controls (`water_vegetation_binding.site_controls`; every value required, none defaulted)
+
+| Argument | Meaning, range |
+|---|---|
+| `a1`, `a2` | `g = (a1 + R1)/(a2 + R1)`; `a1 >= 0`, `a2 > 0`, `a1 <= a2`. The descendant source's pair `(0.013, 0.067)` is only `REFERENCE_A1_A2`; it is never a default |
+| `a3` | fraction of the preferential pathway weight given to the background soil vector; in [0, 1]; scalar or exact `(N,)` array |
+| `max_fraction_per_hour` | the ONE aggregate hourly fraction shared by background and all species; in [0, 1] |
+| `max_intake_rate_m_s` | the ONE aggregate intake cap (m/s), `>= 0`, `inf` legal; scalar or `(N,)` |
+| `background_receiver_weights` | raw nonnegative length-`n_layers` vector, or explicit `None` (no background pathway); separate from the species vectors |
+| `n_layers`, `n_cells` | must equal the column; `n_cells` required when a map is given |
+| `max_bytes`, `reserve_bytes`, `available_bytes_fn` | host admission (reserve counted once) |
+
+### Pins and budgets (all external expectations)
+
+`bind_projection`, `stage_cached_inputs`, the held-context hook and the frame resume take: the full LEAF package digest, the projection content hash, the complete expected source record, the expected external helper list `[{"module", "sha256", "bytes"}]`, the exact active mask and the exact current surface (live binding). A record SHA is integrity only.
+Memory arguments are explicit `max_bytes` / `memory_budget_bytes`, reserves and readers (a CUDA path needs a device pool and a separate host pool). The LEAF helper `benchmarks.spatial_mapping` is outside the 28-file package digest and is pinned separately.
+
+### Lifecycle, held context and frames
+
+| API | Required inputs | Result / limit |
+|---|---|---|
+| `vegetation_lifecycle.apply_vegetation_generation(lineage, expected_head, binding, *, memory_budget_bytes, ...)` | the lineage head `Boundary` and a live binding | new head, zero time, W/J/I/bed/routing/time/cursor unchanged; only a COMPLETE boundary |
+| `floating_held_context.reconstruct_vegetation_held_context(record, expected, pins, *, memory_budget_bytes, ...)` | a `/3` or `/4` record, external expected identities and pins | water-free law context; not a checkpoint or head |
+| `floating_daily_output_vegetation.VegetationMoistureOutput.create(directory, origin_state, *, expected_parent, every_n_days, limits, ...)` | `every_n_days` strict positive integer, **no default**; no output object = off | frame after a completed nominal day N, 2N, ...; a frame is a diagnostic, never a restart; `resume` checks manifests only |
+
+### Physical checkpoint of a vegetated head
+
+Accepted at a bounded scope (details and procedure: [phase25_vegetation.md](phase25_vegetation.md), section 9). Native Python only; no command, YAML key, CSV or scheduler key is added.
+
+| Item | CPU | CUDA |
+|---|---|---|
+| Profile | `maple-syrup-floating-lifecycle-checkpoint-vegetation/1` | `maple-syrup-floating-lifecycle-checkpoint-vegetation/2-cuda` |
+| Manifest name | `floating_lifecycle_checkpoint_vegetation.json` (sealed last) | the same |
+| Held-context schema inside | `maple_syrup.floating_held_context/3` | `maple_syrup.floating_held_context/4` |
+| Save | `floating_lifecycle_checkpoint_vegetation.save_floating_lifecycle_vegetation_checkpoint(path, lineage, factory, identity, *, closed=None, original_topology, available_bytes_fn, memory_budget_bytes, reserve_bytes=0, max_bytes, batch_cells)` | `save_…_cuda` with two memory pools (device and host budgets, reserves and availability callbacks) |
+| Load | `load_floating_lifecycle_vegetation_checkpoint(path, factory, expected_identity, expected_manifest_sha256, *, leaf_package_sha256, external_helpers, original_topology, partition=None, available_bytes_fn, memory_budget_bytes, reserve_bytes=0, max_bytes, batch_cells)` | `load_…_cuda` adds `expected_device_id` (checked first) and the two pools |
+| Preflight | `vegetation_load_need_bytes(path, expected_identity, expected_manifest_sha256, *, available_bytes_fn, reserve_bytes=0, max_bytes, batch_cells)` | `vegetation_load_need_bytes_cuda(..., expected_device_id, ...)` |
+| Own error | `VegetationLifecycleCheckpointError` | `VegetationLifecycleCheckpointCudaError` |
+
+What must come from outside the file: the sealed manifest digest the save returned, the expected identity dictionary, the *actual* runtime LEAF package digest and external-helper list, the static `original_topology` and the caller's event factory `factory(vertical, carried_topology, vegetation_cover_fraction) -> PondEvent`. Eligible: a genuine complete `Boundary` or a closed day of the head `DailyHold` with one vegetation generation. Not supported: pending storm, recession or in-flight-day files.
+Old lifecycle profiles are strict and are never migrated or rebound. A restored record is `cached_derived` with the same generation counter and recipe id; a later new generation needs a live LEAF projection. Refusals of the older checkpoint families are re-typed as the profile's own class; native memory classes pass through by class; a mid-way water-free-context refusal is a generic profile error. The every-N output cadence is not stored here.
+Evidence (Root's receipt `phase25_qualification.json`): CPU 63 passed and 10 skipped (the GPU definitions) in 615.94 s, and on the physical GPU0 10 passed for the checkpoint definitions including the Dense and Windowed fresh-process continuations. The seven-day N = 3 experiment (generation 1 to 2, closed-day-5 save, fresh load) ran on CPU only, with real published dry, non-growing LEAF days; a single GPU day-5 / N = 3 experiment was not run. The historical `applied` ids are carried sealed, not re-derived.
+
+### Scientific references for Phase 2.5
+
+The existing references (Tietjen, Zehe and Jeltsch 2009; Tietjen et al. 2010; Green and Ampt 1911; Smith and Parlange 1978; Saxton and Rawls 2006; the Baldauf, Cantón and Tietjen 2023 / Irob et al. descendant sources) are those listed in the Phase 2 and Model Structure manuals. The add-and-cap vegetation-cover rule is a user-selected project adaptation, declared as such (not the exact published MAHLERAN canopy aggregation); no external primary paper is claimed for it.
+The laws are Tietjen-*inspired* with declared adaptations (phase25_vegetation.md, section 4), not exact reproductions.
 
 ## Historical examples (task snapshots; not release recipes)
 

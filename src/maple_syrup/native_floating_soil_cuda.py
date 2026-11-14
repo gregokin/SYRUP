@@ -131,9 +131,9 @@ def _device_column(cp, config, fc, sat, depth_dev, mask_dev, area, quota) -> Any
                                        bottom_drainage=config.bottom_drainage, soil_depth_m=depth_dev, active_mask=mask_dev, cell_area_m2=area, backend="cuda", **quota)
 
 
-def _device_op(config, column, ks_dev, quota) -> Any:
+def _device_op(config, column, ks_dev, quota, vegetation=None) -> Any:
     cond = ks_dev if config.matrix_conductivity_mode == "texture_ks" else config.matrix_conductivity_m_s
-    return fm.prepare_floating_matrix(column, conductivity_m_s=cond, suction_m=config.matrix_suction_m, vegetation_factor=config.matrix_vegetation_factor, **quota)
+    return fm.prepare_floating_matrix(column, conductivity_m_s=cond, suction_m=config.matrix_suction_m, vegetation_factor=config.matrix_vegetation_factor if vegetation is None else vegetation, **quota)
 
 
 def _scatter_tiles(cp, child, config, indices, fc, sat, depth, ks, *, model, B, update_properties, old=None) -> list:

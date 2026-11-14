@@ -828,9 +828,11 @@ def _build_column(config: NativeFloatingConfig, fc: np.ndarray, sat: np.ndarray,
     return _prepare(config, fc, sat, depth, bed.active_mask.reshape(-1), _area(bed))
 
 
-def _fresh_op(config: NativeFloatingConfig, column: Any, ks: np.ndarray | None = None) -> Any:
+def _fresh_op(config: NativeFloatingConfig, column: Any, ks: np.ndarray | None = None, vegetation: Any = None) -> Any:
+    """The matrix operator of `column` from the configuration. `vegetation` (default None: the configuration scalar, the accepted behaviour byte for byte) is the HELD per-cell g (N,) a vegetation generation carried through a
+    property refresh (`fm.held_cell_vegetation_factor`)."""
     cond = ks if config.matrix_conductivity_mode == "texture_ks" else config.matrix_conductivity_m_s
-    return fm.prepare_floating_matrix(column, conductivity_m_s=cond, suction_m=config.matrix_suction_m, vegetation_factor=config.matrix_vegetation_factor)
+    return fm.prepare_floating_matrix(column, conductivity_m_s=cond, suction_m=config.matrix_suction_m, vegetation_factor=config.matrix_vegetation_factor if vegetation is None else vegetation)
 
 
 def _reconcile_changed(config: NativeFloatingConfig, old_maps: dict, old_depth: np.ndarray, old_water: np.ndarray, new_fc: np.ndarray, new_sat: np.ndarray, new_depth: np.ndarray,

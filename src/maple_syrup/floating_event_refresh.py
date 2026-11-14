@@ -177,7 +177,7 @@ def stage_completed_event_refresh(cap: Any, state: Any, *, event: Any, available
     w_before, w_after, resid, bound = nfs._inventory_closure(water, old_water, mask, changed, B, area, acc, surf, exp_)
     if ks is not None:
         ks.flags.writeable = False
-    new_op = nfs._fresh_op(cfg, new_column, ks)
+    new_op = nfs._fresh_op(cfg, new_column, ks, vegetation=fm.held_cell_vegetation_factor(payload.matrix_op))  # a held per-cell g survives the property refresh; None (a scalar law) is the accepted behaviour
     rb = fm.rebind_floating_matrix_history(payload.matrix_op, payload.history, new_op)
     pref = None if payload.pref_op is None else fpi.rebind_preferential_column(payload.pref_op, new_column)
     receipt = nfs.NativeReconcileReceipt(whole_before_m3=w_before, whole_after_m3=w_after, whole_residual_m3=resid, whole_bound_m3=bound, old_column_sha256=held.column.sha256, new_column_sha256=new_column.sha256, **acc)

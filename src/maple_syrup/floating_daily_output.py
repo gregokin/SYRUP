@@ -70,6 +70,8 @@ def _record(state: Any, n: int, date0: datetime.date | None, ci: dict | None, li
 
 def _need_closed(state: Any, expected: Any, *, origin: bool) -> None:
     fd._check_parent(state, expected, "boundary")
+    if getattr(state.ctx.hold, "vegetation", None) is not None:  # the accepted every-N frame profile has no vegetation attribution: it never silently writes an unattributed frame for a vegetation-bound lineage
+        raise MoistureOutputError("the lineage has an applied vegetation generation: this frame profile does not carry its attribution (a versioned frame profile comes next; `vegetation_lifecycle.vegetation_attribution` exposes it)")
     if state.cursor.pending is not None:
         raise MoistureOutputError("a storm occurrence is pending in the cursor: the day is not complete")
     if not origin and state.cursor.last_branch is None:

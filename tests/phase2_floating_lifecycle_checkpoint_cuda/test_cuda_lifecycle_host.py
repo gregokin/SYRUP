@@ -9,6 +9,7 @@ import hashlib
 import inspect
 import json
 import shutil
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -22,6 +23,9 @@ from maple_syrup import floating_event_daily_bridge_cuda as bc
 from maple_syrup import floating_event_lifecycle as lc
 from maple_syrup import floating_lifecycle_checkpoint as cpul
 from maple_syrup import floating_lifecycle_checkpoint_cuda as lpcc
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "phase25_source_profile"))
+import p25_source_profile as p25
 
 HERE = Path(__file__).resolve()
 SRC = HERE.parents[2] / "src" / "maple_syrup"
@@ -48,7 +52,7 @@ def test_profile_family_is_closed_and_distinct():
     assert [f for f in cpul.RestoredLifecycle.__dataclass_fields__] == ["lineage", "head", "closed", "kind", "manifest_sha256"]
 
 
-def test_cpu_foundation_and_accepted_modules_are_byte_identical_to_the_pre_edit_manifest_and_only_the_declared_files_differ():
+def _historical_byte_guard():
     pre = json.loads(PRE.read_text())["files"]
     rel = {k.split("/")[-1]: v for k, v in pre.items() if k.startswith("src/maple_syrup/") and k.endswith(".py")}
     differing = {n for n, h in rel.items() if hashlib.sha256((SRC / n).read_bytes()).hexdigest() != h}
@@ -62,10 +66,53 @@ def test_cpu_foundation_and_accepted_modules_are_byte_identical_to_the_pre_edit_
         assert hashlib.sha256((SRC / name).read_bytes()).hexdigest() == rel[name], name
 
 
-def test_the_cpu_only_definitions_are_ast_identical_to_the_accepted_cpu_foundation():
+def _historical_ast_guard():
     b, la = _defs(SRC / "floating_event_daily_bridge.py"), _defs(SRC / "floating_event_lifecycle.py")
     assert {k: b[k] for k in CPU_BRIDGE} == CPU_BRIDGE
     assert {k: la[k] for k in CPU_LC} == CPU_LC
+
+# the modules the byte test names as "accepted, byte-identical to the pre-edit baseline"; Phase 2.5 DELIBERATELY changes some of them: those are then proven by the whole-source lock (their locked bytes), never skipped
+ACCEPTED_NAMED = ("floating_lifecycle_checkpoint.py", "floating_daily.py", "floating_daily_cuda.py", "floating_daily_output.py", "floating_continued_checkpoint.py", "floating_continued_checkpoint_cuda.py",
+                  "floating_checkpoint.py", "floating_checkpoint_cuda.py", "floating_context_checkpoint.py", "floating_context_checkpoint_cuda.py", "floating_held_context.py", "floating_held_context_cuda.py",
+                  "floating_pond.py", "pond_event.py", "floating_event_lifecycle_cuda.py", "pond_checkpoint.py", "floating_resume.py", "floating_resume_cuda.py")
+P25_CHANGED_DEFS = {"saveable_head": "floating_event_lifecycle.py"}   # the ONLY CPU-lifecycle definition Phase 2.5 changes (the vegetation tag); proven by the whole-source lock + behavioural regression, not by an AST digest
+
+
+def test_cpu_foundation_and_accepted_modules_are_byte_identical_to_the_pre_edit_manifest_and_only_the_declared_files_differ():
+    """Branch chosen ONLY by the literal-pinned package: the historical base169 package runs the original proof; the Root-locked final package runs the whole-source proof, where the old differing set and added module are
+    preserved and every Phase 2.5 locked change/addition is accounted for explicitly (nothing else may differ)."""
+    branch = p25.require_branch(SRC, historical=("base169_02388ad",))
+    if branch.kind == "historical":
+        _historical_byte_guard()
+        return
+    v = branch.verified
+    pre = json.loads(PRE.read_text())["files"]
+    rel = {k.split("/")[-1]: h for k, h in pre.items() if k.startswith("src/maple_syrup/") and k.endswith(".py")}
+    differing = {n for n, h in rel.items() if v.files[n] != h}
+    assert differing == {"floating_event_daily_bridge.py", "floating_event_lifecycle.py", "floating_event_daily_bridge_cuda.py"} | v.changed
+    assert set(v.files) - set(rel) == {"floating_lifecycle_checkpoint_cuda.py"} | v.added | {v.wh1_path}
+    assert {p.name for p in SRC.glob("*.py")} == set(v.files)                                           # a flat package of top-level production modules
+    for name in ACCEPTED_NAMED:
+        if name in v.changed:
+            assert v.files[name] != rel[name], name           # a locked Phase 2.5 change: its bytes are the locked bytes (proven by the whole-source lock above)
+        else:
+            assert v.files[name] == rel[name], name
+
+
+def test_the_cpu_only_definitions_are_ast_identical_to_the_accepted_cpu_foundation():
+    """Same branch rule. Final branch: every CPU definition NOT declared changed by Phase 2.5 keeps its accepted AST digest; each declared changed definition lives in a module the lock records as changed."""
+    branch = p25.require_branch(SRC, historical=("base169_02388ad",))
+    if branch.kind == "historical":
+        _historical_ast_guard()
+        return
+    v = branch.verified
+    b, la = _defs(SRC / "floating_event_daily_bridge.py"), _defs(SRC / "floating_event_lifecycle.py")
+    assert set(P25_CHANGED_DEFS) <= set(CPU_LC) and not set(P25_CHANGED_DEFS) & set(CPU_BRIDGE)
+    assert all(mod in v.changed for mod in P25_CHANGED_DEFS.values())
+    assert {k: b[k] for k in CPU_BRIDGE} == CPU_BRIDGE
+    untouched = {k: h for k, h in CPU_LC.items() if k not in P25_CHANGED_DEFS}
+    assert {k: la[k] for k in untouched} == untouched and len(untouched) == len(CPU_LC) - len(P25_CHANGED_DEFS)
+
 
 
 def test_both_merge_conflicts_keep_the_cuda_arguments_and_the_cpu_hooks():

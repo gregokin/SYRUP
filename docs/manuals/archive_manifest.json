@@ -1,17 +1,17 @@
 {
-  "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the separate native Phase 1.5 N15 Python example with compact CPU results; the Native Phase 2 qualification record, status pages, source manifest, publication record and exact example script); no model source/third-party environment/deep bed",
+  "scope": "Documentation, exact dependency metadata and public configuration examples (C1 scheduled examples; the native Phase 1.5 N15 and Phase 2 records; the native Phase 2.5 qualification receipt, publication record, source manifest, exact-code source capsule and runnable CPU example); no model source tree, third-party environment or deep bed beyond the exact-code capsule",
   "files": {
     "README.md": {
-      "sha256": "fd81ac9587c60f7bbcde3ee9dd5290ad5551954e0365050211256e3b6aa2b943",
-      "bytes": 7089
+      "sha256": "b8a4e345cd3a297a0808423fce546eef6b798f2bf3cfc2aefcffbe7694c0870c",
+      "bytes": 9731
     },
     "SYRUP_CLI_User_Guide.docx": {
-      "sha256": "9a2c856490b1c9823196363487c76a36ea3480519774e664882f9fa179230a87",
-      "bytes": 246717
+      "sha256": "49a7cc72a2d42cb82b83ef5599f2fc32353686a359b0743d3ff43b69a03a08f5",
+      "bytes": 252427
     },
     "SYRUP_Model_Structure_and_Physics.docx": {
-      "sha256": "3dd6bb5415fd9449381fb488a5455f6318e93684989c0311a4310c91c0856096",
-      "bytes": 184981
+      "sha256": "b35c21e03d154b0f873bdf27e3dfdea4eec3d4dd42ad584cc89bfd1bd7b3833e",
+      "bytes": 190202
     },
     "assets/layered_water_ownership.png": {
       "sha256": "b713a57b0da81547825a19c7d710b8f12e0023ba440237a2fc162297bc3b5c4b",
@@ -25,9 +25,13 @@
       "sha256": "e722d0e9df825581efe2f161c4498f804bf73629e6507ff1e71e70e5bc07098a",
       "bytes": 92552
     },
+    "build_archive_v4.py": {
+      "sha256": "937f42cd218cc20ed60323eaf6e25ce35accda2db0703050edcd42b392824928",
+      "bytes": 5726
+    },
     "build_manuals.py": {
-      "sha256": "2116fceeefe22e10312f5fe5f7e1a91d1d5207e0c2f993cf77a18192a6a4e458",
-      "bytes": 29713
+      "sha256": "8e0b53c354c30c4e0f95c5e03d66c9b182cd6db16b8631e3087421512172cdef",
+      "bytes": 35250
     },
     "cli_reference.json": {
       "sha256": "25cdcddcda31a68f85e216e30a719da620bac25a22105d35bbdb10a7a9e9443e",
@@ -38,12 +42,12 @@
       "bytes": 43763
     },
     "document_build.json": {
-      "sha256": "98f4e0cc3ae7a8474b0d2c551f6b993ab14781422eb2776293c52c82fad163b0",
+      "sha256": "c35d490609b88948de7f5503dec9df2ce6dd728595ff229624f3c7158aa5f088",
       "bytes": 690
     },
     "documentation_verification.json": {
-      "sha256": "b14b44b097a007d240b2e290175b4eb0f67138743ab7f09d07efcb088cb01407",
-      "bytes": 8264
+      "sha256": "5a6241c616268957fd73942b3f388d2d75514008a5b62323c161327756727b82",
+      "bytes": 10136
     },
     "examples/native9f_metadata/README.md": {
       "sha256": "7e426a992a560d9cb171e8707b805bbbd6ef2e2197594bce6bec088f202dcc02",
@@ -209,6 +213,22 @@
       "sha256": "07872afd0d78378c3e67324e51112095014ba4e4cfa51426303db23060454bce",
       "bytes": 1478
     },
+    "examples/native_phase25_example/README.md": {
+      "sha256": "4fb5d27e8c79242936c1d48a30006fa6d2b163d16a3f6f5c0c139e3f9459b4a9",
+      "bytes": 2970
+    },
+    "examples/native_phase25_example/expected_result_cpu_run.json": {
+      "sha256": "092280383b3280ab2fa842c4c98c6f08eb99b49f6491b4628ba5a05dd14130f2",
+      "bytes": 3487
+    },
+    "examples/native_phase25_example/phase25_projection_example.py": {
+      "sha256": "960b1b141b08de4dc7a2b6e7a239828bf8f0b1ec630d6ce000b0fd5a893fc187",
+      "bytes": 12070
+    },
+    "examples/native_phase25_example/species_v2.json": {
+      "sha256": "911a30bf5ff883c0fa8102397f3189c2a8b984426bf9e04cef9b646ead28c058",
+      "bytes": 5095
+    },
     "examples/native_phase2_daily_example/README.md": {
       "sha256": "36190de68a213bbe1bfee0a4fc9fff38223b97765d0e59ac83f0935f5a01632b",
       "bytes": 2101
@@ -226,32 +246,32 @@
       "bytes": 2383
     },
     "model_structure_and_physics.md": {
-      "sha256": "8efbb05416035b48879fae4742cefb816d2ec956e6986900769f68aabf075045",
-      "bytes": 143128
+      "sha256": "8a115013715969893da64644669a8aac7b6eb1356c14c2e6ae459d9ab15bc4fe",
+      "bytes": 154955
     },
     "qualification/design.md": {
-      "sha256": "d97350761746903bbd15dd04eda4708a237c8464b408b397e8218fa6bdc1624d",
-      "bytes": 26986
+      "sha256": "a8ae51e9a2f5bf6a7e1e488aa391523ea9e12b8b3ccd448a53872c4109814bc9",
+      "bytes": 28487
     },
     "qualification/development_phases_20261109.md": {
-      "sha256": "5786cf2a7fc755402b799248e5d37011b63407ceb56bbc21af6b655ab6d04f50",
-      "bytes": 26997
+      "sha256": "ee333a552430c3741cf373d5354ecec19385f27bd4e4d2ec49033fa74f90dc00",
+      "bytes": 29237
     },
     "qualification/ecohyd_reference_sources.md": {
       "sha256": "15d97d48d1e54e732606c92f0c36f118d081d212b873fbea490990ffd3e359df",
       "bytes": 3247
     },
     "qualification/implementation.md": {
-      "sha256": "8bd7f942926ffb403e0db73c5ca3c90792cff649529c65230baf276f30ef0ae3",
-      "bytes": 21421
+      "sha256": "914195a6ac346850c2f793da4481a1559e1dfbed02f609cffd7cb0b8dfc6ed03",
+      "bytes": 22450
     },
     "qualification/leaf_water_contract.md": {
       "sha256": "9359d577b41614790addbc6bc1c2ea692e53313f0c351672b487a30f5b8a9a9c",
       "bytes": 4701
     },
     "qualification/parameter_reference.md": {
-      "sha256": "c161ce014204639d0391870d6f64ad5958a434b33e7e10859f033cbb034d12bb",
-      "bytes": 34529
+      "sha256": "6f52bdb5404037773f7d74f89a8a9a932b6313df9b778854858e83a4f84a2747",
+      "bytes": 43223
     },
     "qualification/phase15_acceptance.json": {
       "sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
@@ -316,6 +336,34 @@
     "qualification/phase1_release_qualification.md": {
       "sha256": "bbcee5337633f378fdade96711890a6c3eb80d467b747d90fae6f305e2d7caf3",
       "bytes": 6801
+    },
+    "qualification/phase25_publication.json": {
+      "sha256": "3f2fc9b74090be7ec02e6433753f61ad0a5bc9396765db5c30f2f75972d4b9e6",
+      "bytes": 2709
+    },
+    "qualification/phase25_qualification.json": {
+      "sha256": "8fe92ed3f18acb5adb824bfea8bf191a8ef57035e9a5948fb262242d2eb6525b",
+      "bytes": 66840
+    },
+    "qualification/phase25_qualification.md": {
+      "sha256": "1caa9f01c2e94aaef0748f38960c71d56a7d0ddd3edb55adede626cdd6e5b22f",
+      "bytes": 4310
+    },
+    "qualification/phase25_source_capsule.zip": {
+      "sha256": "d7b34f5399fa8f1ae251fe5b0238dca00635b356567a354db147f9af3b415d10",
+      "bytes": 2109016
+    },
+    "qualification/phase25_source_manifest.json": {
+      "sha256": "a63946ddd29a5a1bd109a62de392fdb39ae2e6cad78a7085952838073ab35c63",
+      "bytes": 29165
+    },
+    "qualification/phase25_vegetation.md": {
+      "sha256": "41c18469aa263fe92fe61c3925db2be86188f13a309de583a82fcf7ff450ac67",
+      "bytes": 40319
+    },
+    "qualification/phase25_wind_compatibility.md": {
+      "sha256": "b5cc260b446caa5d0a7946fb87de5bcee66bd8c94750b6ac2b8f6cefe3d36eb5",
+      "bytes": 2887
     },
     "qualification/phase2_continued_checkpoint.md": {
       "sha256": "27ff024957d9c399e6630a6b08725ddadf51c8c3a31035517cd0b51672eec995",
@@ -398,16 +446,20 @@
       "bytes": 22449
     },
     "release_metadata.json": {
-      "sha256": "dc58525d94ab6c976356f373a1f58562ead0c3d90c3c58ae6736c71c33cdf30d",
-      "bytes": 4153
+      "sha256": "b0f43510b48d15ead5a44a91f56363aa9a5503b2173038319d10e03ac2c1ef02",
+      "bytes": 6381
     },
     "render_outputs.py": {
       "sha256": "b47baba3875a4132e9afe62df9e6f6248a5fddd1c3ac7137d4216da978d4ec87",
       "bytes": 8433
     },
     "user_guide.md": {
-      "sha256": "ab4d503a193c15908465f7768b2adb7f1385541372dc8ec0d1b7f317adaec9dd",
-      "bytes": 126921
+      "sha256": "8e9fdd569a8f70302ee097f4e8a5819498bd3bd86e13cbebe1527b10d1c2e7ca",
+      "bytes": 138004
+    },
+    "verify_archive_v4.py": {
+      "sha256": "52a8642160e18f1d2496c6848eef333ec42579dc889e744916445842b543493c",
+      "bytes": 25983
     }
   },
   "native_phase15": {
@@ -445,6 +497,42 @@
       "qualification/phase2_publication.json",
       "qualification/phase2_source_manifest.json",
       "qualification/phase2_native_status.md"
+    ],
+    "main_integration": null,
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "native_phase25": {
+    "status": "accepted_bounded",
+    "leaf_package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "leaf_file_count": 28,
+    "leaf_external_helper_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+    "leaf_source_commit": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "leaf_source_branch": "feature/syrup-hydrology-traits",
+    "leaf_published": true,
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "maple_native_file_count": 412,
+    "cache_component_package_sha256": "692482499cb8d405bb1508fecea5d6570c6295a9dc842366566ef5a03001df53",
+    "lifecycle_component_package_sha256": "809cf3e98c553b0f7835ace1130dbed9e489e7df6c0debafda0832ab8c04151b",
+    "held_context_component_package_sha256": "a38d4d929fb9b5b237dcdce010c72f2c2700573fa2c497473add034b12f59c53",
+    "frames_component_package_sha256": "d5f285c8018a1c2a1fb1c945cd7a9bd525af79909deb796b628e366e9f1e9f29",
+    "source_commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+    "source_branch": "feature/subsurface-vegetation",
+    "syrup_package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "package_file_count": 180,
+    "source_manifest_sha256": "a63946ddd29a5a1bd109a62de392fdb39ae2e6cad78a7085952838073ab35c63",
+    "whole_phase_acceptance_sha256": "8fe92ed3f18acb5adb824bfea8bf191a8ef57035e9a5948fb262242d2eb6525b",
+    "published": true,
+    "note": "accepted at a bounded scope by qualification/phase25_qualification.json; the four component package hashes are historical intermediate compositions, not the current model",
+    "shipped_portable_evidence": [
+      "qualification/phase25_qualification.json",
+      "qualification/phase25_qualification.md",
+      "qualification/phase25_publication.json",
+      "qualification/phase25_source_manifest.json",
+      "qualification/phase25_source_capsule.zip",
+      "qualification/phase25_wind_compatibility.md",
+      "qualification/phase25_vegetation.md"
     ],
     "main_integration": null
   }

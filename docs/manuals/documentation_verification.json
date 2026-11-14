@@ -1,14 +1,16 @@
 {
-  "utc": "2026-11-13T23:16:47.383577+00:00",
   "release_status": "final",
+  "schema": "syrup.manual_release_metadata.v4",
+  "prepared_date": "2026-11-14",
   "documents": [
     {
       "file": "SYRUP_CLI_User_Guide.docx",
-      "sha256": "9a2c856490b1c9823196363487c76a36ea3480519774e664882f9fa179230a87",
-      "bytes": 246717,
+      "sha256": "49a7cc72a2d42cb82b83ef5599f2fc32353686a359b0743d3ff43b69a03a08f5",
+      "bytes": 252427,
       "zip_crc_ok": true,
       "xml_and_relationship_parts_parse": true,
       "relationship_parts": 3,
+      "internal_relationship_targets_exist": true,
       "media_count": 1,
       "unresolved_source_tokens": false,
       "identities_present": {
@@ -21,18 +23,41 @@
         "p2_source_commit": true,
         "p2_package": true,
         "p2_manifest": true,
-        "p2_acceptance": true
+        "p2_acceptance": true,
+        "p25_leaf_package_sha256": true,
+        "p25_leaf_external_helper_sha256": true,
+        "p25_maple_native_package_sha256": true,
+        "p25_maple_native_commit": true,
+        "p25_leaf_source_commit": true,
+        "p25_source_commit": true,
+        "p25_syrup_package_sha256": true,
+        "p25_source_manifest_sha256": true,
+        "p25_whole_phase_acceptance_sha256": true,
+        "p25_cache_component_package_sha256": true,
+        "p25_lifecycle_component_package_sha256": true,
+        "p25_held_context_component_package_sha256": true,
+        "p25_frames_component_package_sha256": true
       },
-      "phase2_section_present": true,
-      "footer": "Final \u2022 Native Phase 2 source 71bb8fe \u2022 historical CLI C1 e40a1b8 \u2022 prepared 2026-11-13       PAGE  /  NUMPAGES"
+      "sections_visible": {
+        "phase2_section": true,
+        "phase25_section_heading": true,
+        "identity_table_title": true,
+        "status_accepted_visible": true,
+        "no_provisional_wording": true,
+        "physical_checkpoint_text_present": true,
+        "limits_present": true
+      },
+      "footer": "Final \u2022 Native Phase 2 source 71bb8fe \u2022 Phase 2.5 accepted_bounded (bb28af6) \u2022 historical CLI C1 e40a1b8 \u2022 prepared 2026-11-14       PAGE  /",
+      "status_word": "Final"
     },
     {
       "file": "SYRUP_Model_Structure_and_Physics.docx",
-      "sha256": "3dd6bb5415fd9449381fb488a5455f6318e93684989c0311a4310c91c0856096",
-      "bytes": 184981,
+      "sha256": "b35c21e03d154b0f873bdf27e3dfdea4eec3d4dd42ad584cc89bfd1bd7b3833e",
+      "bytes": 190202,
       "zip_crc_ok": true,
       "xml_and_relationship_parts_parse": true,
       "relationship_parts": 3,
+      "internal_relationship_targets_exist": true,
       "media_count": 1,
       "unresolved_source_tokens": false,
       "identities_present": {
@@ -45,206 +70,96 @@
         "p2_source_commit": true,
         "p2_package": true,
         "p2_manifest": true,
-        "p2_acceptance": true
+        "p2_acceptance": true,
+        "p25_leaf_package_sha256": true,
+        "p25_leaf_external_helper_sha256": true,
+        "p25_maple_native_package_sha256": true,
+        "p25_maple_native_commit": true,
+        "p25_leaf_source_commit": true,
+        "p25_source_commit": true,
+        "p25_syrup_package_sha256": true,
+        "p25_source_manifest_sha256": true,
+        "p25_whole_phase_acceptance_sha256": true,
+        "p25_cache_component_package_sha256": true,
+        "p25_lifecycle_component_package_sha256": true,
+        "p25_held_context_component_package_sha256": true,
+        "p25_frames_component_package_sha256": true
       },
-      "phase2_section_present": true,
-      "footer": "Final \u2022 Native Phase 2 source 71bb8fe \u2022 historical CLI C1 e40a1b8 \u2022 prepared 2026-11-13       PAGE  /  NUMPAGES"
+      "sections_visible": {
+        "phase2_section": true,
+        "phase25_section_heading": true,
+        "identity_table_title": true,
+        "add_and_cap_declared_adaptation": true,
+        "status_accepted_visible": true,
+        "no_provisional_wording": true,
+        "physical_checkpoint_text_present": true,
+        "limits_present": true
+      },
+      "footer": "Final \u2022 Native Phase 2 source 71bb8fe \u2022 Phase 2.5 accepted_bounded (bb28af6) \u2022 historical CLI C1 e40a1b8 \u2022 prepared 2026-11-14       PAGE  /",
+      "status_word": "Final"
     }
   ],
-  "shell_python_fenced_blocks_syntax_checked": [
-    {
-      "source": "user_guide.md",
-      "block": 0,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 1,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 2,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 3,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 4,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 5,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 6,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 7,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 8,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 9,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 10,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 11,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 12,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 13,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 14,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 15,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 16,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 17,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 18,
-      "language": "python",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 19,
-      "language": "python",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 20,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 21,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 22,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 23,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 24,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 25,
-      "language": "bash",
-      "syntax": "pass"
-    },
-    {
-      "source": "user_guide.md",
-      "block": 26,
-      "language": "bash",
-      "syntax": "pass"
-    }
-  ],
-  "shell_python_fenced_blocks_failed": 0,
+  "fenced_blocks_checked": 28,
+  "fenced_blocks_failed": 0,
   "example_python_scripts_syntax_checked": [
     "examples/native_daily_moisture_output/run_example.py",
     "examples/native_daily_recharge/check_preservation.py",
     "examples/native_daily_recharge/check_results.py",
     "examples/native_daily_recharge/daily_recharge_example.py",
     "examples/native_leaf_calendar_cli/fill_config.py",
+    "examples/native_phase25_example/phase25_projection_example.py",
     "examples/native_phase2_daily_example/phase2_floating_daily_example.py"
   ],
-  "limitations": [
-    "No LibreOffice/paginated Office rendering available; no such claim made",
-    "Source setup commands syntax-checked but not executed as newly created environments",
-    "Actual C1 runtimes tested separately with existing MAPLE environments",
-    "Phase 1.5 (N15) examples were run on CPU only in their own release; the CUDA branch of that example is not run by the author; Root hardware controls are in phase15_qualification.md",
-    "Native Phase 2 example script and Phase 1.5 daily_moisture_output example are shipped as script text; they were NOT executed for this documentation build (the qualification record ran the seven-day N=3 example separately); the Phase 2 example uses a PRESCRIBED withdrawal (no LEAF model)",
-    "Static DOCX XML/relationship/CRC/identity checks only; Phase 2 Native API claims are those of qualification/phase2_qualification.json (bounded; no field validation)"
-  ],
-  "exact_metadata_fixture": "genuine native9f distribution metadata files byte-identical to the committed git HEAD bytes; unchanged by this build",
-  "exact_metadata_files_identical_to_committed_HEAD": {
-    "examples/native9f_metadata/README.md": true,
-    "examples/native9f_metadata/distribution/METADATA": true,
-    "examples/native9f_metadata/distribution/WHEEL": true,
-    "examples/native9f_metadata/distribution/entry_points.txt": true,
-    "examples/native9f_metadata/distribution/top_level.txt": true,
-    "examples/native9f_metadata/provenance_manifest.json": true
+  "historical_guards": {
+    "metadata_blocks_equal_base": [
+      "surface_reference",
+      "subsurface_release",
+      "native_phase15",
+      "native_phase2",
+      "pending_tokens",
+      "official_name"
+    ],
+    "native9f_fixture_files": 6,
+    "historical_files_checked_byte_equal_to_base": 223,
+    "allowed_changed_files": [
+      "docs/manuals/README.md",
+      "docs/manuals/SYRUP_CLI_User_Guide.docx",
+      "docs/manuals/SYRUP_Manuals_and_Examples.zip",
+      "docs/manuals/SYRUP_Model_Structure_and_Physics.docx",
+      "docs/manuals/archive_manifest.json",
+      "docs/manuals/assets/model_flow.png",
+      "docs/manuals/build_manuals.py",
+      "docs/manuals/document_build.json",
+      "docs/manuals/documentation_verification.json",
+      "docs/manuals/model_structure_and_physics.md",
+      "docs/manuals/qualification/design.md",
+      "docs/manuals/qualification/development_phases_20261109.md",
+      "docs/manuals/qualification/implementation.md",
+      "docs/manuals/qualification/parameter_reference.md",
+      "docs/manuals/release_metadata.json",
+      "docs/manuals/user_guide.md",
+      "docs/subsurface_hydrology/design.md",
+      "docs/subsurface_hydrology/development_phases_20261109.md",
+      "docs/subsurface_hydrology/implementation.md",
+      "docs/subsurface_hydrology/parameter_reference.md"
+    ],
+    "qualification_copies_equal_authoritative": 42
+  },
+  "cross_checks": {
+    "phase25_manifest_sha256": "a63946ddd29a5a1bd109a62de392fdb39ae2e6cad78a7085952838073ab35c63",
+    "phase25_acceptance_sha256": "8fe92ed3f18acb5adb824bfea8bf191a8ef57035e9a5948fb262242d2eb6525b",
+    "phase25_publication_sha256": "3f2fc9b74090be7ec02e6433753f61ad0a5bc9396765db5c30f2f75972d4b9e6",
+    "phase25_source_capsule_sha256": "d7b34f5399fa8f1ae251fe5b0238dca00635b356567a354db147f9af3b415d10",
+    "capsule_files_equal_manifest": 180
   },
   "native_phase15_identity": {
     "syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
     "package_file_count": 114,
     "source_manifest_sha256": "5cb1b01a7c76b3bb07a8bdc13cb698a65abf96f17f2d12260b6cbddadf8a4986",
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_cpu_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "root_s4_acceptance_sha256": "5d1b991b1ba244e053e4409664dce9c19d50d373d54eef37f0e7fae505c1da08",
+    "root_s4_acceptance_status": "ACCEPTED_BOUNDED_NATIVE_DAILY_PHYSICAL_RESTART",
     "whole_phase_receipt_status": "recorded",
     "whole_phase_receipt_sha256": "4ce37b57f4e009caeb8eb99d30df52ce197bb1c3b4a0947f257b21f9db90deb3",
     "source_commit": "06952dbc2f984af8fb75dbf09a9c9f7fdbba23fc",
@@ -261,5 +176,33 @@
     "whole_phase_acceptance_sha256": "36b9a9992f6978238ba6e11620086c76ae5a578979b317e3774576a4c059f05c",
     "published": true
   },
-  "publication_refresh": "Documentation refresh after the verified source publication of the Native Phase 2 source; no model source or command changes; the documents name the source commit, not themselves."
+  "native_phase25_identity": {
+    "status": "accepted_bounded",
+    "leaf_package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "leaf_file_count": 28,
+    "leaf_external_helper_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+    "leaf_source_commit": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "leaf_source_branch": "feature/syrup-hydrology-traits",
+    "leaf_published": true,
+    "maple_native_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_native_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "maple_native_file_count": 412,
+    "cache_component_package_sha256": "692482499cb8d405bb1508fecea5d6570c6295a9dc842366566ef5a03001df53",
+    "lifecycle_component_package_sha256": "809cf3e98c553b0f7835ace1130dbed9e489e7df6c0debafda0832ab8c04151b",
+    "held_context_component_package_sha256": "a38d4d929fb9b5b237dcdce010c72f2c2700573fa2c497473add034b12f59c53",
+    "frames_component_package_sha256": "d5f285c8018a1c2a1fb1c945cd7a9bd525af79909deb796b628e366e9f1e9f29",
+    "source_commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+    "source_branch": "feature/subsurface-vegetation",
+    "syrup_package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "package_file_count": 180,
+    "source_manifest_sha256": "a63946ddd29a5a1bd109a62de392fdb39ae2e6cad78a7085952838073ab35c63",
+    "whole_phase_acceptance_sha256": "8fe92ed3f18acb5adb824bfea8bf191a8ef57035e9a5948fb262242d2eb6525b",
+    "published": true
+  },
+  "limitations": [
+    "Static DOCX ZIP/XML/relationship/token/section/identity checks only; no paginated Office rendering was available and none is claimed",
+    "Example commands in the shell blocks are syntax-checked, not executed; the native Phase 2.5 example script was run on CPU on the exact accepted sources (expected_result_cpu_run.json); the earlier editions' examples keep their own records",
+    "Phase 2.5 claims are those of qualification/phase25_qualification.json (bounded; no field validation, catchment-scale fit, scheduled three-model run or general repeated-storm recovery)"
+  ],
+  "exact_metadata_fixture": "genuine native9f distribution metadata files byte-identical to the base commit bytes; unchanged by this build"
 }

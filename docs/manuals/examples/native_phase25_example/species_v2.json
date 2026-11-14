@@ -1,0 +1,194 @@
+{
+ "schema": "leaf.species_catalog",
+ "schema_version": 2,
+ "catalog_id": "phase0-example-fixture-phase25-fixture",
+ "units": {
+  "biomass": "kg",
+  "length": "m",
+  "time": "days"
+ },
+ "root_layers": 3,
+ "notes": "FIXTURE catalog for the LEAF Phase 0 examples and tests. Every number is an illustrative placeholder chosen for a bounded, readable example; nothing here is a literature calibration. Copy and edit.",
+ "species": {
+  "grass": {
+   "functional_type": "perennial_bunchgrass",
+   "name": "fixture bunchgrass",
+   "allometry": {
+    "model": "power_law_v1",
+    "diameter": {
+     "a": 0.9,
+     "b": 0.45
+    },
+    "height": {
+     "a": 0.6,
+     "b": 0.3
+    },
+    "units": {
+     "a_d": "m kg^-0.45",
+     "a_h": "m kg^-0.3",
+     "b": "dimensionless",
+     "B": "kg dry aboveground mass"
+    },
+    "notes": "diameter_m = a_d * B^b_d ; height_m = a_h * B^b_h ; inverse B = (d / a_d)^(1/b_d). Fixture coefficients."
+   },
+   "roots": {
+    "lateral_radius_multiplier": 2.0,
+    "layer_fractions": [
+     0.8,
+     0.1,
+     0.1
+    ],
+    "notes": "UNCALIBRATED fixture root fractions (top layer first); not a calibration"
+   },
+   "porosity": {
+    "value": 0.2,
+    "status": "uncalibrated constant matching the current MAPLE default; used by native MAPLE wind, unused by LEAF ecology"
+   },
+   "growth": {
+    "law": "unimplemented",
+    "status": "Phase 0 does not grow plants; a later law may be selected here",
+    "fixture_parameters": {
+     "relative_growth_rate_per_year": 0.5,
+     "max_agb_dry_kg": 0.6
+    }
+   },
+   "water_use": {
+    "law": "unimplemented",
+    "fixture_parameters": {
+     "potential_transpiration_m_per_day": 0.003,
+     "live_fraction": 0.6
+    }
+   },
+   "reproduction": {
+    "law": "unimplemented",
+    "fixture_parameters": {
+     "seed_dispersal_radius_m": 1.5,
+     "reproductive_age_days": 365,
+     "seeds_per_kg_agb": 500
+    }
+   },
+   "life_expectancy": {
+    "mean": 8,
+    "unit": "years",
+    "notes": "metadata only; mean life expectancy, NOT a hard maximum age; no automatic death"
+   },
+   "mortality": {
+    "law": "unimplemented",
+    "age_dependent": null,
+    "notes": "no default mortality law; reaching life_expectancy never kills a plant in Phase 0"
+   },
+   "disturbance": {
+    "law": "unimplemented",
+    "fixture_sensitivities": {
+     "burial_sensitivity_per_m": 0.5,
+     "erosion_sensitivity_per_m": 0.5,
+     "abrasion_sensitivity_per_dose": 0.0
+    },
+    "units": {
+     "burial": "fraction of height buried per m",
+     "erosion": "fraction per m exposure",
+     "abrasion": "per declared dose unit"
+    },
+    "notes": "placeholders for later response laws; unused by Phase 0 event diagnostics"
+   },
+   "hydrology": {
+    "preferential_infiltration_receiver_weights": [
+     0,
+     0,
+     0
+    ],
+    "notes": "fixture: grass pathway disabled (all zero); shrub sends equal weight to layers 2 and 3"
+   }
+  },
+  "shrub": {
+   "functional_type": "shrub",
+   "name": "fixture shrub",
+   "allometry": {
+    "model": "power_law_v1",
+    "diameter": {
+     "a": 1.6,
+     "b": 0.4
+    },
+    "height": {
+     "a": 1.0,
+     "b": 0.35
+    },
+    "units": {
+     "a_d": "m kg^-0.4",
+     "a_h": "m kg^-0.35",
+     "b": "dimensionless",
+     "B": "kg dry aboveground mass"
+    },
+    "notes": "fixture coefficients"
+   },
+   "roots": {
+    "lateral_radius_multiplier": 3.0,
+    "layer_fractions": [
+     0.25,
+     0.35,
+     0.4
+    ],
+    "notes": "UNCALIBRATED fixture root fractions (top layer first); not a calibration"
+   },
+   "porosity": {
+    "value": 0.2,
+    "status": "uncalibrated constant matching the current MAPLE default; used by native MAPLE wind, unused by LEAF ecology"
+   },
+   "growth": {
+    "law": "unimplemented",
+    "status": "Phase 0 does not grow plants",
+    "fixture_parameters": {
+     "relative_growth_rate_per_year": 0.2,
+     "max_agb_dry_kg": 12.0
+    }
+   },
+   "water_use": {
+    "law": "unimplemented",
+    "fixture_parameters": {
+     "potential_transpiration_m_per_day": 0.002,
+     "live_fraction": 0.4
+    }
+   },
+   "reproduction": {
+    "law": "unimplemented",
+    "fixture_parameters": {
+     "seed_dispersal_radius_m": 5.0,
+     "reproductive_age_days": 1095,
+     "seeds_per_kg_agb": 50
+    }
+   },
+   "life_expectancy": {
+    "mean": 40,
+    "unit": "years",
+    "notes": "metadata only; mean, not a maximum"
+   },
+   "mortality": {
+    "law": "unimplemented",
+    "age_dependent": null,
+    "notes": "no default mortality law"
+   },
+   "disturbance": {
+    "law": "unimplemented",
+    "fixture_sensitivities": {
+     "burial_sensitivity_per_m": 0.2,
+     "erosion_sensitivity_per_m": 0.3,
+     "abrasion_sensitivity_per_dose": 0.0
+    },
+    "units": {
+     "burial": "fraction of height buried per m",
+     "erosion": "fraction per m exposure",
+     "abrasion": "per declared dose unit"
+    },
+    "notes": "placeholders; unused by Phase 0"
+   },
+   "hydrology": {
+    "preferential_infiltration_receiver_weights": [
+     0,
+     1,
+     1
+    ],
+    "notes": "fixture: grass pathway disabled (all zero); shrub sends equal weight to layers 2 and 3"
+   }
+  }
+ }
+}

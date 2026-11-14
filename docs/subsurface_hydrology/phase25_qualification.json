@@ -1,0 +1,1126 @@
+{
+  "schema": "syrup.phase25.qualification.v1",
+  "status": "ACCEPTED_BOUNDED_NATIVE_VEGETATION_FEEDBACK_AND_CLOSED_PARENT_RESTART",
+  "accepted_utc": "2026-11-14T07:16:36.912567+00:00",
+  "source_manifest_sha256": "a63946ddd29a5a1bd109a62de392fdb39ae2e6cad78a7085952838073ab35c63",
+  "source_package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+  "source_file_count": 180,
+  "source_lock_sha256": "2bd3c422b56724a7bf78689038541bee4b21612227c41fc73b9783a0a48a092c",
+  "source_lock_meaning": "identity-only lock issued for verification; its whole_phase_accepted=false is not an acceptance claim; THIS separate receipt records bounded acceptance after tests",
+  "dependencies": {
+    "MAPLE_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "MAPLE_package": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "MAPLE_files": 412,
+    "LEAF_revision": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "LEAF_branch": "feature/syrup-hydrology-traits",
+    "LEAF_package": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "LEAF_files": 28,
+    "external_helper_module": "benchmarks.spatial_mapping",
+    "external_helper_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+    "external_helper_bytes": 47260
+  },
+  "independent_verification": [
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_checkpoint"
+      ],
+      "passed": 63,
+      "skipped": 10,
+      "pytest_summary": "63 passed, 10 skipped in 615.94s (0:10:15)",
+      "elapsed_wall_s": 619.0969051741995,
+      "config_sha256": "dd5605430f54d0442089f5d0453e80c40df3894bb3066b3346e8cd95d91be18d",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "65b4fb7899fbd7471f00f087d387f73c5d1582ba57e7195e290c4113903f8949"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "tests/phase25_vegetation_checkpoint/test_gpu_worker_import.py"
+      ],
+      "passed": 1,
+      "skipped": 0,
+      "pytest_summary": "1 passed in 1.12s",
+      "elapsed_wall_s": 2.437977301888168,
+      "config_sha256": "46fa8f634d4af882eed4e6c6caf56129476b7615a1f327061434657fa55db709",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "6db3ee2d1c1b533ba02c5038b02e631efbb45150e93171d9224b2fec1d57bac1"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_source_profile"
+      ],
+      "passed": 51,
+      "skipped": 0,
+      "pytest_summary": "51 passed in 0.68s",
+      "elapsed_wall_s": 2.0798274502158165,
+      "config_sha256": "1862bd69a7942d6915a6289cf6fa68ab4741d0959fd5dc0651a7face958762a1",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "b5437d1185f4cde71493543d9084bf3b41c30d1115972411e746de940fae7b6c"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_binding"
+      ],
+      "passed": 125,
+      "skipped": 5,
+      "pytest_summary": "125 passed, 5 skipped in 15.14s",
+      "elapsed_wall_s": 17.172954590059817,
+      "config_sha256": "25a24a1da4dd6112d0ba39f5c8c6b0fa8ebcc07302daf4d6db35484b0d99237a",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "0b69b1b1c1839a91e943ad46ea4350cf3217ee32078e77fedf0be0ebae063b22"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_cached_inputs"
+      ],
+      "passed": 172,
+      "skipped": 1,
+      "pytest_summary": "172 passed, 1 skipped in 41.86s",
+      "elapsed_wall_s": 43.97552595473826,
+      "config_sha256": "4e9e7f9fcc2963b244f2b1123182f9a0f682eaa5d5dabcdeefac17a62da66d58",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "981138081e1875ce4d053e0d646f88323c625ffce909679aa4aa1689e57d5d6b"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_held_context"
+      ],
+      "passed": 31,
+      "skipped": 6,
+      "pytest_summary": "31 passed, 6 skipped in 51.47s",
+      "elapsed_wall_s": 53.55625440273434,
+      "config_sha256": "d7ede7ccfe318910e42151aa20b79a6d6067d0e551a90f87fd43fcbe1bd8b8ed",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "055bb88252ef47857034c5b42e56dfba65e6614bd477cbcbfec3d1b795c61fc5"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_frames"
+      ],
+      "passed": 38,
+      "skipped": 3,
+      "pytest_summary": "38 passed, 3 skipped in 170.71s (0:02:50)",
+      "elapsed_wall_s": 172.93126306682825,
+      "config_sha256": "fa937163fa4df83f446dc1a403825c3b1a0cc4e21e340ce1b81228378ab0fdc5",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "c571574dc5216fe8cbadfa10864cd120e39ea88b6a3bfa9e2c4253f691730666"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_wind_compatibility"
+      ],
+      "passed": 8,
+      "skipped": 0,
+      "pytest_summary": "8 passed in 2.92s",
+      "elapsed_wall_s": 4.726002630777657,
+      "config_sha256": "fe1c03d2192acc426903dad4353c5343a53e82b5606b8c26e708b47f39e49838",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "e8e1b402911da4cad8ac83ed24d42f0db722138caced1cfda9e2b2cca22e6560"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase2_wind_handoff"
+      ],
+      "passed": 68,
+      "skipped": 0,
+      "pytest_summary": "68 passed in 9.17s",
+      "elapsed_wall_s": 11.010371208190918,
+      "config_sha256": "4ba1e508ef83e8c270988f6fe3616810096bd5eaeea285a341e3a362e22f215b",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "638dd969bcd39a101874a068c94a45c09d7444afbfdd77f524e47beee459b88c"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_lifecycle"
+      ],
+      "passed": 34,
+      "skipped": 15,
+      "pytest_summary": "34 passed, 15 skipped in 236.46s (0:03:56)",
+      "elapsed_wall_s": 238.55058019515127,
+      "config_sha256": "dcd4b11fdf408a1425d2af77fdbf24142c298ffb2deb0e5091b6902e35f11e11",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "573ea499df4ac827fc2914a5e470deac47b34c1cb2b31754a4807a8c3badb936"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase2_floating_event_lifecycle"
+      ],
+      "passed": 19,
+      "skipped": 0,
+      "pytest_summary": "19 passed in 23.20s",
+      "elapsed_wall_s": 25.37767602968961,
+      "config_sha256": "783af8fd9c33666166d76bf003357bfa2206bc8307d4724bb48f715c22072a1a",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "bc525e541363c0ce4edf9aa7ce6311081b572ca9e8a8a48b37c3577b9cb07fca"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase2_floating_event_daily_bridge"
+      ],
+      "passed": 34,
+      "skipped": 0,
+      "pytest_summary": "34 passed in 461.47s (0:07:41)",
+      "elapsed_wall_s": 463.62106362497434,
+      "config_sha256": "b64bb260096f7d241d56d8fd8a889fe6a27299ce7b3497f9004bdb486de57a80",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "71c6ede3a1da51c8c049f095fa9c83acc500a9fece5b01a324e3f22639b91288"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase2_floating_lifecycle_checkpoint"
+      ],
+      "passed": 36,
+      "skipped": 0,
+      "pytest_summary": "36 passed in 322.87s (0:05:22)",
+      "elapsed_wall_s": 324.78410239331424,
+      "config_sha256": "176a7251c3469daf6be698dd248a7bd5eeb2ad0b6b2b474d8cbc4a58c3009446",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "31cd72db9607dfd366e6798d9cef5d8556e2f935652c5b93e0e500d4d84dbeb6"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase2_floating_lifecycle_checkpoint_cuda"
+      ],
+      "passed": 20,
+      "skipped": 23,
+      "pytest_summary": "20 passed, 23 skipped in 40.59s",
+      "elapsed_wall_s": 42.417078473139554,
+      "config_sha256": "39cfdca893f498d331fb26db81592fa3415b8ee54ecf09f98efdd9d185688ac2",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "61d0b685459dfbb49be94d2afdff8cd7682352139e7c1467f56a116a7c5d7733"
+    },
+    {
+      "backend_lane": "CPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase2_floating_event_lifecycle_cuda"
+      ],
+      "passed": 14,
+      "skipped": 13,
+      "pytest_summary": "14 passed, 13 skipped in 3.22s",
+      "elapsed_wall_s": 4.601832674816251,
+      "config_sha256": "0d232e2c4d0b619b79cf9263dc74fe286cc1537b96a75820441574ec575603dd",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "2ecac086614626cdf118391292415889c266c9f7fb8835e9f4e4b93da2756145"
+    },
+    {
+      "backend_lane": "GPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_checkpoint/test_gpu_definitions.py"
+      ],
+      "passed": 10,
+      "skipped": 0,
+      "pytest_summary": "10 passed in 61.43s (0:01:01)",
+      "elapsed_wall_s": 63.79499287903309,
+      "config_sha256": "39de32548a3edc1240d9536b40d1b6b9801d8d918d1000b604d90990eafe9bea",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "fcdd1e21fce88c61c3bbd771ec757be2927588f83ff44af8afa45a0a46d9f081"
+    },
+    {
+      "backend_lane": "GPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_binding/test_cuda_hardware.py",
+        "tests/phase25_cached_inputs/test_cached_cuda_hardware.py"
+      ],
+      "passed": 5,
+      "skipped": 1,
+      "pytest_summary": "5 passed, 1 skipped in 1.30s",
+      "elapsed_wall_s": 3.411240083165467,
+      "config_sha256": "c48ff909605aa202a87ccd694fbb1b998d08efc23ef1a8bb71ffc0ca2e946a82",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "aa3368deb1f4fa18d0aa608aefab52109a2d58583d3bb18987455880a5c8e3c6"
+    },
+    {
+      "backend_lane": "GPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_held_context/test_gpu_definitions.py"
+      ],
+      "passed": 5,
+      "skipped": 1,
+      "pytest_summary": "5 passed, 1 skipped in 17.31s",
+      "elapsed_wall_s": 19.600648265797645,
+      "config_sha256": "489600b0a66148b91045a993ce9b776fe70ea00a94599f22c61efb95e2618527",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "b5c6361c46ef2c30407dfb7e99edcde36e3876f0360468f5db5889a462f5b29c"
+    },
+    {
+      "backend_lane": "GPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_frames/test_cuda_hardware.py"
+      ],
+      "passed": 3,
+      "skipped": 0,
+      "pytest_summary": "3 passed in 15.18s",
+      "elapsed_wall_s": 17.527913591824472,
+      "config_sha256": "0851f49ffda75f8fedddd02fd6b0c8abb010c4c780de24d8c4cd6ee56aaa5081",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "9b5737e91829239287524250072e28a465f431588c43e5eb6c62eb4cac6d4416"
+    },
+    {
+      "backend_lane": "GPU",
+      "suite": [
+        "--import-mode=importlib",
+        "-q",
+        "-x",
+        "tests/phase25_vegetation_lifecycle/test_cuda_hardware.py"
+      ],
+      "passed": 14,
+      "skipped": 1,
+      "pytest_summary": "14 passed, 1 skipped in 30.23s",
+      "elapsed_wall_s": 32.49005480669439,
+      "config_sha256": "0b3c8e04a95597b85cac1800b48df2086ad7b6f072c0143b8c7ce3795412c588",
+      "sources_verified_before_and_after": [
+        {
+          "module": "maple",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+          "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "files": 412,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py",
+          "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+          "actual_files": 412
+        },
+        {
+          "module": "maple_syrup",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src",
+          "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "files": 180,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_cuda_testfix_snapshot/src/maple_syrup/__init__.py",
+          "actual_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "actual_files": 180
+        },
+        {
+          "module": "leaf",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot",
+          "sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "files": 28,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+          "actual_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+          "actual_files": 28
+        },
+        {
+          "module": "benchmarks.spatial_mapping",
+          "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks",
+          "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "bytes": 47260,
+          "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+          "actual_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+          "actual_bytes": 47260
+        }
+      ],
+      "raw_result_sha256": "6426a869b83d21302911dd9cd9e7209b8b59790235fcf276ed3f6497d58f7467"
+    }
+  ],
+  "totals": {
+    "CPU": 714,
+    "GPU": 37
+  },
+  "additional_source_guard_preflight": "69PASS7.79s; overlaps later suites and excluded totals",
+  "independent_review": {
+    "report_sha256": "a05e2f4a87c6b94a97b243f1859272441a88d758c039c49f1467ed538df265ae",
+    "production_findings": "No new confirmed production defect in finalreview; only GPUworker test-module collision, corrected test-only and independently10actualGPU tests passed including Dense/Windowed fresh continuation.",
+    "Root_own_review": "Reviewed complete composed source/callers, transaction and source/clock/record boundaries; independently verified all rows on frozen exact source plus external helper before/after."
+  },
+  "qualified_scope": [
+    "Native Python APIs; explicit opt-in, all historical CLI/defaults/source locks unmodified",
+    "LEAF catalogv2 receivingweights + live projection and immutable compact cache; native canonical matrix/preferential laws once; splash live+dead-standing, infiltration/E live only",
+    "Zero-time genuine-complete-boundary generation apply with unchanged W/J/I/bed/clock/ledgers and current operator attribution through refresh",
+    "NumPy/Numba/CUDA; actual MAPLE Dense/nativeWindowed; new water-free H0 schemas3/4, physical CPU1/CUDA2 profiles and diagnostic everyN profiles distinct",
+    "Physical complete-boundary and closedday external-seal/source/helper-bound save/load, genuine fresh process continuation without original bed/plant reconstruction",
+    "Separate-process 7 nominaldays N3, generation1to2, closedday5 save/load, days6/7 exact continuation and frames3/6, CPU NumPyNumbaDenseWindowed",
+    "GPU same-device fresh physical continuation DenseWindowed + GPU frames/lifecycle separately qualified",
+    "WH1 existing nonvegetated DenseNumPy behavior preserved; vegetation-bound entrypoints explicitly refuse before mutation"
+  ],
+  "limits": [
+    "NOT field calibration/validation or catchment/large-grid memory fit",
+    "NOT complete weather scheduler or full scheduled three-model simulation; native APIs only, no new CLI/YAML/CSV keys",
+    "NO positive vegetation-aware WH1 handoff, GPUwind or Windowedwind; explicit refusal prevents silent record loss",
+    "NO general Green-Ampt drying/repeated-storm recovery qualification or implicit old restart/source migration",
+    "GPU N3 day5 separate-interpreter integration not run as a single scenario; CPU composed scenario and GPU physical/frame components separately qualified",
+    "LEAF session advancement in the N3 fixture uses published no-transpiration/no-growth days; not a coupled plant-growth experiment",
+    "Memory models describe bounded declared payloads; component moderateN measurements are historical bounded evidence, not whole-process/catchment guarantee",
+    "Frames are diagnostic, not physical restarts; output resume validates manifests, fullreader checks arraybytes",
+    "Historical apply-time provenance labels carried under trusted outerseal, not independently rederived after propertyrefresh",
+    "Source digest excludes bytecode/emptydirectories under unchanged historical policy; qualification snapshots cache-free and runs use -B/externalnumba caches"
+  ],
+  "lint": {
+    "explicit_python_files_checked": 87,
+    "new_diagnostics": 0,
+    "preexisting_reproduced_on_953_base": [
+      "RUF100 old WH1 unused noqa E731",
+      "RUF059 old native_source_witness unused N"
+    ],
+    "raw": "root_release_c1_ruff_baseline_reproduction.json"
+  },
+  "formatting_limit": "git diff --check reports one trailing blank line at EOF in each of two qualified new source modules (floating_daily_output_vegetation.py, water_vegetation_held.py). Harmless whitespace retained to preserve the exact independently qualified source identity; no model/data/control change."
+}

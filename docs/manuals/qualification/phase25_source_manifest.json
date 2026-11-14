@@ -1,0 +1,911 @@
+{
+  "schema": "syrup.phase25.source_manifest.v1",
+  "digest_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+  "file_count": 180,
+  "total_bytes": 7261186,
+  "files": [
+    {
+      "path": "__init__.py",
+      "sha256": "039be50eaa7bd7e21c5cb5a88a604dc2041c9fe60f723af4b63f7dca1366adbc",
+      "bytes": 524
+    },
+    {
+      "path": "backend_correspondence.py",
+      "sha256": "62399babb731014a512f75e9ec4fc25c3ce32724a76e5ce3f32d727c4cd764ef",
+      "bytes": 30397
+    },
+    {
+      "path": "benchmark_experiment.py",
+      "sha256": "37c9bce3e47fe4b82b505d6c337163d466317f748c1dcf073b80024242848020",
+      "bytes": 62970
+    },
+    {
+      "path": "case_import.py",
+      "sha256": "21a87b9380296bd88b122a2ecb59f12d307bc43f39b279b2e25d0cdcaeaec056",
+      "bytes": 95930
+    },
+    {
+      "path": "characteristic_cuda_csr.py",
+      "sha256": "ffa1f88b0c8f6a585ef288f223f3a603a9b45b35d88d16bad9c71c0b6178f734",
+      "bytes": 91361
+    },
+    {
+      "path": "characteristic_numba.py",
+      "sha256": "07eaac65ec4d8f01737ffcee36ef4deeaa6a064dd7f77dd7445009553ade4852",
+      "bytes": 9412
+    },
+    {
+      "path": "characteristic_numba_csr.py",
+      "sha256": "030ae1b3d1096a16de54723c11e70d687579b26450def15488d1555c2f1069de",
+      "bytes": 21005
+    },
+    {
+      "path": "characteristic_sparse.py",
+      "sha256": "5c331e589bfe5646deafca56847ec7e7f4748d656fce55cf22de7d3a3f0bcc17",
+      "bytes": 73368
+    },
+    {
+      "path": "characteristic_transport.py",
+      "sha256": "9767d797c4fe792b907a66c4a17c34aae82d98f862ee2de2b7bd450bd4847416",
+      "bytes": 36031
+    },
+    {
+      "path": "chastre_case.py",
+      "sha256": "d85af5685927e24cff6a1e55fd21568224b4340313d47f81a36af9818e23bcbd",
+      "bytes": 75069
+    },
+    {
+      "path": "checkpoint.py",
+      "sha256": "0db811cc2d59c5719240b3f3ffecd1092f21156c581d17e48905663814fa705c",
+      "bytes": 116245
+    },
+    {
+      "path": "checkpoint_capability.py",
+      "sha256": "36dc5d6a07245fca4badbadd0d754f2a250e688c2cc8b0b30d3a8c37c55ccbd6",
+      "bytes": 9328
+    },
+    {
+      "path": "column_experiment.py",
+      "sha256": "a533573442f5e8beb7451b11265e05b7823160fa3063aa670fcd9fef59e50dd9",
+      "bytes": 27584
+    },
+    {
+      "path": "compact_soil_profile.py",
+      "sha256": "cbc6d91424a62127e39e930fdb6d3767a85775ff5b3114495fab61cf0c548712",
+      "bytes": 34112
+    },
+    {
+      "path": "complete_event.py",
+      "sha256": "a9c8c65df031e22e175cd6a7ba501ddb96308914ee458396e3a55ca9b73aa727",
+      "bytes": 32106
+    },
+    {
+      "path": "conservation.py",
+      "sha256": "1072cdade368a76290c8a41162dfeb7a5b60ffaf970a7ede4707635bb3cf1bb1",
+      "bytes": 1904
+    },
+    {
+      "path": "daily_moisture_output.py",
+      "sha256": "aa8a2c69162c18211d325926d7df986ef6b37b1e9de2046f5c5fc3b05533b33b",
+      "bytes": 7845
+    },
+    {
+      "path": "daily_water.py",
+      "sha256": "a9de2fde094968f43c9875a61c354eda10b0fe3ff44e261aefed87b8697b7b37",
+      "bytes": 35452
+    },
+    {
+      "path": "dense_cuda_source.py",
+      "sha256": "06b79a771e4c70031e933b7c2c045650ba147427ef185e9bbd19a1fb9359c658",
+      "bytes": 17465
+    },
+    {
+      "path": "dependency.py",
+      "sha256": "6a4ed5d5c484c135589b75cb15a3504d832d3ef788d92e21d1e0195c64e5d518",
+      "bytes": 14515
+    },
+    {
+      "path": "dependency_bundle.py",
+      "sha256": "ae013c930697aa07251d008563d56f7795506f4b68a3b7df2ec6221d7f9f731c",
+      "bytes": 56158
+    },
+    {
+      "path": "event_backend.py",
+      "sha256": "481bed15181c576bc958cf06a43343fa9494099b2080e6e6735b746dee291a68",
+      "bytes": 11784
+    },
+    {
+      "path": "event_experiment.py",
+      "sha256": "eb859aa48b6cc8ddfa90f42f6d9f44c9639a282fafa136c18d8741d43e42274c",
+      "bytes": 43127
+    },
+    {
+      "path": "experimental_cuda.py",
+      "sha256": "7cb3c0824ee39bced8054876b65bf90b4598d032bcfee1fa8d94baad589d1eb2",
+      "bytes": 82398
+    },
+    {
+      "path": "experimental_experiment.py",
+      "sha256": "1bf10543fda47032e7554bea3a90c3d077027363bd17973ac19255da5b81bae4",
+      "bytes": 37646
+    },
+    {
+      "path": "experimental_hydrology.py",
+      "sha256": "43a771696f32fb3e98531ecbf0ec323bae4a20670a51162d2cbb86bbad44ef0d",
+      "bytes": 72210
+    },
+    {
+      "path": "experimental_numba.py",
+      "sha256": "a4bb5065192f852e441cf5f79d707b6196934165d90c9fb44fe74ed29231e599",
+      "bytes": 51829
+    },
+    {
+      "path": "experimental_storm.py",
+      "sha256": "b278e83cd4264cb2b5ddd146e4c132145b3316c669568f55ec2b064ea9f87b92",
+      "bytes": 19277
+    },
+    {
+      "path": "floating_checkpoint.py",
+      "sha256": "a72b969fff013e63b3b13a542f9330d87d587f8a9dab06d7390ff65e0b07d09f",
+      "bytes": 73213
+    },
+    {
+      "path": "floating_checkpoint_cuda.py",
+      "sha256": "aeb51aeecc0c6a3d074b73f16c193302b0a139a331333973905d1dc1186d709e",
+      "bytes": 64847
+    },
+    {
+      "path": "floating_completion.py",
+      "sha256": "ad913fcd5c7020891a5d6f2f012373cc990a60cc3c09a3c6d45eee588a88cb8d",
+      "bytes": 8530
+    },
+    {
+      "path": "floating_context_checkpoint.py",
+      "sha256": "6df07c9aa04a156ffaa47d6bd7c11ba7a3c44a34f210c47cba335cb932185916",
+      "bytes": 26243
+    },
+    {
+      "path": "floating_context_checkpoint_cuda.py",
+      "sha256": "0ce855b56f93c7c3e5373263e251976939a186e2d8062e3fd4978e52cdd8bbdd",
+      "bytes": 38884
+    },
+    {
+      "path": "floating_continued_checkpoint.py",
+      "sha256": "b00e8b2240dca0ced3dc6791ced0c41b767d8bedf532ee8fb25936089c3cc475",
+      "bytes": 29621
+    },
+    {
+      "path": "floating_continued_checkpoint_cuda.py",
+      "sha256": "c12261ab4731a1b3b82ca757e133d4d997bfe08aa7aea4e662f8fda5626aa9cc",
+      "bytes": 5745
+    },
+    {
+      "path": "floating_daily.py",
+      "sha256": "2f412eaf68f9cfd3a8f3328457f2d164cb49448b890390a9a4772f01683d9dd4",
+      "bytes": 60624
+    },
+    {
+      "path": "floating_daily_cuda.py",
+      "sha256": "748cad795dddebeacd96e5b2fb745f157518ec25f3d80774d902d673a7251bc9",
+      "bytes": 6159
+    },
+    {
+      "path": "floating_daily_output.py",
+      "sha256": "519277ca9df3817f19161cab3acb78f83cec2417cf6dfaeee2e6b9c4701db839",
+      "bytes": 17272
+    },
+    {
+      "path": "floating_daily_output_vegetation.py",
+      "sha256": "d59cd097e2f3be87c7ec67706f14c9c1031ed60bdb8053409b8da0062059295c",
+      "bytes": 21182
+    },
+    {
+      "path": "floating_evaporation.py",
+      "sha256": "c879415f2b1913cc5da16b414fc2ffc8b661720e19e97d923c5823f5aeca2bd6",
+      "bytes": 12611
+    },
+    {
+      "path": "floating_event_daily_bridge.py",
+      "sha256": "86c344b5e8661a5a69fbd121ff6fdb0cf752c9ed4880a92457669d67d7e93c0d",
+      "bytes": 32522
+    },
+    {
+      "path": "floating_event_daily_bridge_cuda.py",
+      "sha256": "148d60ba933851f1d3ff7956382681341eb1732208057115249d850f3590f9c2",
+      "bytes": 17169
+    },
+    {
+      "path": "floating_event_lifecycle.py",
+      "sha256": "1922941c60ce3ad7da99a83a94ca1502f50176495b5408fef518998d9aea731a",
+      "bytes": 62702
+    },
+    {
+      "path": "floating_event_lifecycle_cuda.py",
+      "sha256": "5df3fac4c55038fc04e6bcdf8ca15ac3642a448d7c284039a454c812f81edfb8",
+      "bytes": 17704
+    },
+    {
+      "path": "floating_event_refresh.py",
+      "sha256": "654dda5973269140a4fb3def2ad8066e59c7818d363659683030b852b2762f6e",
+      "bytes": 12999
+    },
+    {
+      "path": "floating_event_refresh_cuda.py",
+      "sha256": "26e00bd30798e2ec5204c8059441d379b9dfba2e586f4e2283f605fbe4132efc",
+      "bytes": 21524
+    },
+    {
+      "path": "floating_held_context.py",
+      "sha256": "b129fa173ecb919c250c5b22f392ced3995588e1408d42e8d440ffdd69b7db63",
+      "bytes": 61227
+    },
+    {
+      "path": "floating_held_context_cuda.py",
+      "sha256": "e233dee0243908769980875f909a67088ad8693adfdcdefc93fcd54c41f01c5e",
+      "bytes": 20266
+    },
+    {
+      "path": "floating_held_context_vegetation.py",
+      "sha256": "9a79deb581c0b3957cf2965de54cc72db10ef31d75ff1e3893473f65bce43dc9",
+      "bytes": 40586
+    },
+    {
+      "path": "floating_held_context_vegetation_cuda.py",
+      "sha256": "22de93e7d7353cf7df0226323234e3fe16d1488dcb9c71d302898a5e51b558a4",
+      "bytes": 17231
+    },
+    {
+      "path": "floating_lifecycle_checkpoint.py",
+      "sha256": "398d82cf8caeb45de8881db3fb7e4691a438070d6bcf01fa3f6e9ba595356256",
+      "bytes": 34350
+    },
+    {
+      "path": "floating_lifecycle_checkpoint_cuda.py",
+      "sha256": "dc093464c994e7a0d2d0416f24a26ab1799bec19b99cf2229867adeef10c8d98",
+      "bytes": 38812
+    },
+    {
+      "path": "floating_lifecycle_checkpoint_vegetation.py",
+      "sha256": "e1266859f6c069dc76b49441851217aebee344db0ed3677eeb5c484c8ebfed26",
+      "bytes": 42491
+    },
+    {
+      "path": "floating_lifecycle_checkpoint_vegetation_cuda.py",
+      "sha256": "f3f14b490318acb7632b949a0cb0c9247115620fd68fc6041743af344fdcd641",
+      "bytes": 43075
+    },
+    {
+      "path": "floating_matrix_infiltration.py",
+      "sha256": "7c0b45c18fc4b99181778be90044d6ea6269e4bde8cc3c540e78aa9cc73f8536",
+      "bytes": 39106
+    },
+    {
+      "path": "floating_matrix_infiltration_cuda.py",
+      "sha256": "97e62e6c108b1e4e058eb7bbeb43835abdb31d2caa4227b1bb869e565a69f215",
+      "bytes": 12548
+    },
+    {
+      "path": "floating_moisture_frame.py",
+      "sha256": "ba1ef652c37571da4bfc3a323f32dbed97b848b096fbf9dd7c5a9dc42b2f32b9",
+      "bytes": 39467
+    },
+    {
+      "path": "floating_moisture_frame_vegetation.py",
+      "sha256": "be7f600f6b4c51499b62afcbe23d8effcfa581e05e495bfaf2f6d4cc9ec40a0e",
+      "bytes": 28725
+    },
+    {
+      "path": "floating_pond.py",
+      "sha256": "bdb4576c14a908e5fea88f7112a85a88cfdd6b78c1d445bf920a020cd8248036",
+      "bytes": 55525
+    },
+    {
+      "path": "floating_pond_cuda.py",
+      "sha256": "42cb22e7c5d1af4f297260c68e2dcc8747936a4d3bf63657be016109b37cf9fc",
+      "bytes": 22856
+    },
+    {
+      "path": "floating_preferential_infiltration.py",
+      "sha256": "21d2bedaf15ff69d5a84a3b1968292a8f2b5d50653cf920616a38e5823ec7448",
+      "bytes": 32312
+    },
+    {
+      "path": "floating_preferential_infiltration_cuda.py",
+      "sha256": "4d4b0c5fa2963da5bbb0c2ef1fd99ec34cd51fd99cc0fef36e5051f4e7d79fbe",
+      "bytes": 12268
+    },
+    {
+      "path": "floating_resume.py",
+      "sha256": "0be0986ffb843aa1a5af7245a322d074fda08a03b8843f9c116ed8caecc67af0",
+      "bytes": 34581
+    },
+    {
+      "path": "floating_resume_cuda.py",
+      "sha256": "a4674a1dbe744693782b042415b7c4c4ad716c99f621cbadc99f62ef2b454523",
+      "bytes": 14457
+    },
+    {
+      "path": "floating_soil_layers.py",
+      "sha256": "e44af57738d8acaba77848b489766f56dfc7df5d583c7abe1e6e7afd4f69450a",
+      "bytes": 88827
+    },
+    {
+      "path": "floating_soil_layers_cuda.py",
+      "sha256": "4108c3da73c82209f07c73f04e5a3606748a72c467492b244e54dc995df0fd49",
+      "bytes": 25241
+    },
+    {
+      "path": "floating_soil_layers_numba.py",
+      "sha256": "a4b7cde6ffc70242d4d52c8259b1ba2f37ecba387997fe26a33f290b0471b593",
+      "bytes": 4028
+    },
+    {
+      "path": "floating_transpiration.py",
+      "sha256": "6ca2fb23103d31dbac22b49eed18d551043672f0f7c348919aca6660baa8ec3c",
+      "bytes": 22635
+    },
+    {
+      "path": "floating_transpiration_cuda.py",
+      "sha256": "7cc3f6a0bde5c102acdf365d943ca65a9499640df0a9d4de44c8f1748e65ff7f",
+      "bytes": 10714
+    },
+    {
+      "path": "floating_wind_handoff.py",
+      "sha256": "15194445f89919f3706f361980a56aac31f2ba1c460d5caaa2c557fa97c09c33",
+      "bytes": 71759
+    },
+    {
+      "path": "hydrology_cuda.py",
+      "sha256": "d91dba00b1ee8d5cbcbe789086b91ecd4ab648c1f2d8d75eedefe91cb3f7ff50",
+      "bytes": 76765
+    },
+    {
+      "path": "hydrology_numba.py",
+      "sha256": "9a1fe59c4096942a5668aa028a9752fd2ee13dd9e04fdf896bb6c16d96e216cd",
+      "bytes": 51983
+    },
+    {
+      "path": "infiltration.py",
+      "sha256": "c935b119e17d30cc176bcd339686b4f454ae8d742fa3946c2ae26f198efae570",
+      "bytes": 17662
+    },
+    {
+      "path": "initial_reimport.py",
+      "sha256": "85de4302d20efaf1ead12383d615493fb898eb234358fc992185c76c8054f380",
+      "bytes": 32621
+    },
+    {
+      "path": "interevent_entry.py",
+      "sha256": "c217f9c9389e4f1cf1d319f66efcc2483ac861ffc4b03474b5e83b3b5d10ed33",
+      "bytes": 4802
+    },
+    {
+      "path": "interevent_interval.py",
+      "sha256": "4e044b100a6322f0dc08b00c95cc8a9f4811f7050620b7e42b24cdd88b53a8a1",
+      "bytes": 30671
+    },
+    {
+      "path": "interevent_transpiration.py",
+      "sha256": "dcee259e6c53ed312981c6286e97d1e7bd2db773492397ca5991c4ab67158b03",
+      "bytes": 107820
+    },
+    {
+      "path": "interevent_water.py",
+      "sha256": "b95248b8a1e98ac70efd857c617cee7d19e4b536b1a5fbe41b17843f9a6d6a95",
+      "bytes": 112433
+    },
+    {
+      "path": "layered_case.py",
+      "sha256": "47581bb6b4e332f20cecf8918aef1d42f138970b5d151a70bb7addd35e34efd3",
+      "bytes": 69556
+    },
+    {
+      "path": "layered_case_cuda.py",
+      "sha256": "46d56e2ef7168f26bd8547f39db4b58af6d3cbd77cd0e7bdad0d6fdcdad5a67e",
+      "bytes": 39512
+    },
+    {
+      "path": "layered_checkpoint.py",
+      "sha256": "4f4336d98f40febb56e15bcdb5a4c06e2e1dc1187c330d08b79849c4c0d72d51",
+      "bytes": 148675
+    },
+    {
+      "path": "layered_event.py",
+      "sha256": "4b69ed237156634352dadb53229b2742364312b710a807aee984ce105a2a2d0c",
+      "bytes": 27422
+    },
+    {
+      "path": "layered_storm.py",
+      "sha256": "bd125b743e58c588619a86ee952934deccea360ef3af215ae2b230af60d73c78",
+      "bytes": 79090
+    },
+    {
+      "path": "legacy_case.py",
+      "sha256": "93983153ae9d147ab7315d1c334835b80780d4db9b1ec1c1950e2ba3d78872c5",
+      "bytes": 18521
+    },
+    {
+      "path": "legacy_driver.py",
+      "sha256": "e81ec8c7e8ffaad6e19a853ccd56ac11e3720305f6db319b5d7442d15d42006b",
+      "bytes": 41890
+    },
+    {
+      "path": "legacy_experiment.py",
+      "sha256": "d914ad3f9c9c824b781e320e9c964d973286628d6b1219a2e4e999bb817babf1",
+      "bytes": 24585
+    },
+    {
+      "path": "legacy_gpu_driver.py",
+      "sha256": "a1b589f5cfcd10bf5e13d522dfb3466912368e79887c3213c06394dfbcf6d58f",
+      "bytes": 35142
+    },
+    {
+      "path": "legacy_native.py",
+      "sha256": "837a3224ffb718a16fddb6deabc19494794256a9d50187ad2839be58d5f2c1c6",
+      "bytes": 20097
+    },
+    {
+      "path": "legacy_native_cuda.py",
+      "sha256": "584db1b7e4c8cf10b808433dc793a37dc7e3083d4e4ae06d2bc011bc7a12bbe9",
+      "bytes": 74615
+    },
+    {
+      "path": "legacy_native_numba.py",
+      "sha256": "918dd85d14e2572c4960c97116effbe52f511f7d2000324dc2b130e753abf548",
+      "bytes": 18031
+    },
+    {
+      "path": "legacy_physics_numba.py",
+      "sha256": "abf0c4e5044352830a8d2cbe0750afdb126abe78b849f029023a5a09149e13da",
+      "bytes": 36978
+    },
+    {
+      "path": "legacy_transport.py",
+      "sha256": "69f2fef5ce2a6562b48edfb3f732998b390f3a942788664bbcdc3fe775db2172",
+      "bytes": 17475
+    },
+    {
+      "path": "legacy_water_cuda.py",
+      "sha256": "a5d30c78f17ae576d1fe9ca2a2d7c2c6ae157ab1b08bac66e22876e70343126e",
+      "bytes": 16635
+    },
+    {
+      "path": "lifecycle_availability.py",
+      "sha256": "38a31d59bf4483eff8a72b8587320bfab877ed66abdf35807023f8ac2f9f91f9",
+      "bytes": 12930
+    },
+    {
+      "path": "lifecycle_checkpoint.py",
+      "sha256": "14a673937a4685f8b5c1dc4b42d5b1dca23a7c37a70c2f578119e48dd8883bc3",
+      "bytes": 100047
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda.py",
+      "sha256": "195ab5353d081e083774e49c4537188c7a070e4472ffac79302c1fbbd1ea8dea",
+      "bytes": 43663
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_calendar.py",
+      "sha256": "ff3c28646a51221cc76f310fd00c078ab3f9410e3b955a548884e904b5e31e16",
+      "bytes": 7513
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_load.py",
+      "sha256": "c5716a8df776e6a90a0327490551e4af99aa70009b61e4355b1610913be94cc0",
+      "bytes": 51273
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_load_plan.py",
+      "sha256": "6ec1d5077becd028524c15741e25fefb6cb6733e42ff0ed19463858f38a3f581",
+      "bytes": 12632
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_plan.py",
+      "sha256": "2ca5f429f30563bf792151f48ed2ebd8b791b903c89ca31f87ea99364cd1cb57",
+      "bytes": 19435
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_policy.py",
+      "sha256": "4a693839ff83a379af844421b62e5f47fa9978038eb0bbd7304bc7191a159299",
+      "bytes": 7795
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_v2.py",
+      "sha256": "665776473fd3e4bc65e0c9d4264d661fcf33a7818890addbfeec4a17e2729724",
+      "bytes": 11748
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_v2_plan.py",
+      "sha256": "dcbfbce4e81b16e475238f9f0d1ca9aba177cd833cef9094ef9ae7b45afbec4b",
+      "bytes": 13347
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_v3.py",
+      "sha256": "929de2015fc73beccdef46f4b5af664fbb7d41b4edb4027bd520a0ce11247303",
+      "bytes": 6889
+    },
+    {
+      "path": "lifecycle_checkpoint_cuda_v3_plan.py",
+      "sha256": "740b3d02dd70874ad925afc88443b473e8ad80a1114db4c9c5de051c3dec85ec",
+      "bytes": 5623
+    },
+    {
+      "path": "lifecycle_checkpoint_v2.py",
+      "sha256": "9d586e946b5793bf73ed99f0a80c65f81f53a0ab8d14216c8cc917cb8367d4e7",
+      "bytes": 8463
+    },
+    {
+      "path": "lifecycle_checkpoint_v3.py",
+      "sha256": "28a9d756e2e4c6ccdaf8c128aa290f4dc6e85222e1c1e588f0e4d0084b14e6a5",
+      "bytes": 9040
+    },
+    {
+      "path": "matrix_infiltration.py",
+      "sha256": "d550f72713f3f0897c7e767678620f49b222ab5007017191eaade7a133abb43c",
+      "bytes": 71929
+    },
+    {
+      "path": "matrix_infiltration_cuda.py",
+      "sha256": "7347662cd1f1000a274ddb798e54057e3ba76c88ab5ee3d0be145f773e68b6e0",
+      "bytes": 22439
+    },
+    {
+      "path": "matrix_infiltration_numba.py",
+      "sha256": "07ee395263cb9dfd91a3ba9e5ee85169033cb311348e755d83806e1b787ddcfd",
+      "bytes": 27207
+    },
+    {
+      "path": "native_case_profile.py",
+      "sha256": "2b20a96d10f424213e1afd1c30e4952e4d35f2466f90b4ce2b025bc0556a18ce",
+      "bytes": 37689
+    },
+    {
+      "path": "native_dense_cuda_profile.py",
+      "sha256": "41aac854bce00f0d3279978e3a6e6317324dca3c1ae630bc57fb53c9cfe9c70b",
+      "bytes": 34912
+    },
+    {
+      "path": "native_dense_profile.py",
+      "sha256": "3d5bbb70bd06fe2c9e97c631526faba440b0dbc18954d3c7033cec89fb891cdd",
+      "bytes": 33489
+    },
+    {
+      "path": "native_floating_soil.py",
+      "sha256": "d0080a1c0652ae776239939d9dbaaf00c1c1eb8741b5ea34315987f1dc7c6b28",
+      "bytes": 82160
+    },
+    {
+      "path": "native_floating_soil_cuda.py",
+      "sha256": "70c16e44b7bd377f1fa64f1a9808a1cd8d6581f894c2df96488b547575a6a376",
+      "bytes": 28995
+    },
+    {
+      "path": "pond_bed.py",
+      "sha256": "02a672a08398651175d4960f38b7d6390d4a6583946827a90dd4072569f9b4a4",
+      "bytes": 19651
+    },
+    {
+      "path": "pond_checkpoint.py",
+      "sha256": "94cd2339566646ba44f2015dad13a67194c26a8dd3cc85b56916f62d2b4a704f",
+      "bytes": 117120
+    },
+    {
+      "path": "pond_event.py",
+      "sha256": "c2b65c1fab6824219db8ba5a299a6271db350aad02b8ca807c7e068a024cded9",
+      "bytes": 135105
+    },
+    {
+      "path": "pond_hydraulics.py",
+      "sha256": "8602dbd939812ed3a237a71677679e39dea3c7069e8919480060f441a64860ae",
+      "bytes": 31670
+    },
+    {
+      "path": "pond_network.py",
+      "sha256": "b3aabb8103544271c4aa0cc0cd21408e4e6dd40bf9d7e290c7e46ecc3a599708",
+      "bytes": 23554
+    },
+    {
+      "path": "pond_transport.py",
+      "sha256": "9da31537beb12cc8e83dc3ca707bd7c49b0f8c520511b5e5a9962afa104ce2b1",
+      "bytes": 43326
+    },
+    {
+      "path": "preferential_infiltration.py",
+      "sha256": "ef8f2dcc1a862f2aab485580de4b26d8aaeb4286003187894438d090883ccf8e",
+      "bytes": 75989
+    },
+    {
+      "path": "preferential_infiltration_cuda.py",
+      "sha256": "82ad347e51ad0f5be16eb22cae8d962bbbbbcc61444becdfad1adaf9703c86f1",
+      "bytes": 15334
+    },
+    {
+      "path": "preferential_infiltration_numba.py",
+      "sha256": "73904dd89358c0230e103d1197d272037f5a81a7baba75f59f354a165d56343a",
+      "bytes": 19287
+    },
+    {
+      "path": "probe.py",
+      "sha256": "af859fd93960d88f0ce205834b74dc906b0f5513d1a29d98c65649ee53750ef1",
+      "bytes": 19367
+    },
+    {
+      "path": "provenance.py",
+      "sha256": "30945a037ded51402471a2f59192144b3b44f69cf7df7088472684d60bdfcaaa",
+      "bytes": 18091
+    },
+    {
+      "path": "rainfall.py",
+      "sha256": "9680256608b2ca372bb88115ff5135f3bca6e350e7067968ebebb4f0b42c04b5",
+      "bytes": 19058
+    },
+    {
+      "path": "recharge.py",
+      "sha256": "4b2606b0da58b5b12991012d7a9965ecbeadc33298224e0df1592d115c763de0",
+      "bytes": 27961
+    },
+    {
+      "path": "rfid_case.py",
+      "sha256": "e7c7a60f8451941c1601f69389ebfcf324320516a9a3c985aa329802b83677bd",
+      "bytes": 62592
+    },
+    {
+      "path": "routing.py",
+      "sha256": "7e0952db62cc2af0c8af41bdadaff58f76061843deacdcb585eb4934b3234938",
+      "bytes": 55390
+    },
+    {
+      "path": "routing_cuda.py",
+      "sha256": "3dcd436abd8181482516fa6b4713d7e33fea6fbbf900216177e41d88b508350a",
+      "bytes": 35250
+    },
+    {
+      "path": "routing_newton.py",
+      "sha256": "5b7a8dfde8ed30637de6745f704a20631a78719902e5e7de24209567c188f297",
+      "bytes": 15591
+    },
+    {
+      "path": "routing_newton_cuda.py",
+      "sha256": "dc68f0667d8121203b05b412c0b9fa846355c944f7b0107eb4aab45c2855d29d",
+      "bytes": 20587
+    },
+    {
+      "path": "routing_numba.py",
+      "sha256": "d48ad53c766a5363ce17ff231f0bd8a0ee29aab622b788e7c76c93a61e5a26b5",
+      "bytes": 9616
+    },
+    {
+      "path": "sediment_bed.py",
+      "sha256": "c4cd7998c107f0df985c21bf51e5adb45d2d715109ee42b879a694ec1b218e07",
+      "bytes": 54619
+    },
+    {
+      "path": "sediment_event.py",
+      "sha256": "f96e195230c6db5fe6cc5150e04c7b10eae304e32b598f5aae59377b9b52ac29",
+      "bytes": 178527
+    },
+    {
+      "path": "sediment_experiment.py",
+      "sha256": "90a3379bfcda271c73a624ad608fd323915dd5236956f759a0d5ca9e3643d62e",
+      "bytes": 84993
+    },
+    {
+      "path": "sediment_physics.py",
+      "sha256": "b83ca42c0675acca72f00ad44a386ab4e8ea98f457e6a386913f667e630a85df",
+      "bytes": 54611
+    },
+    {
+      "path": "sediment_transport.py",
+      "sha256": "c67b3875d7f66dba4725bcd072be3fd697cb0031c85887859b23cc39b0d8b1cc",
+      "bytes": 34013
+    },
+    {
+      "path": "soil_evaporation.py",
+      "sha256": "c1450a07c61c093d65da7e0f483f1861f53b7e02b2ee28449af09322d3bc4fdd",
+      "bytes": 40950
+    },
+    {
+      "path": "soil_moisture_output.py",
+      "sha256": "48919d4346ad9c248d7569059e22e10cbe5a6db3a2c8c3c5eb7e6ee9d9273610",
+      "bytes": 71587
+    },
+    {
+      "path": "soil_profile_texture.py",
+      "sha256": "9fcb81ae1caa51366de83852c20db4434a357051ead6a124972402caa3da4c0f",
+      "bytes": 71640
+    },
+    {
+      "path": "soil_profile_texture_cuda.py",
+      "sha256": "4472c3b5507aada51b3776953a0d0bc0c4c669c0d5b6c1f7d39d1e40cbfafcb6",
+      "bytes": 9369
+    },
+    {
+      "path": "soil_profile_texture_numba.py",
+      "sha256": "21f09a3ef507835cd096f96041abeb3052aab28ba5027a9ae02c29160689118d",
+      "bytes": 6426
+    },
+    {
+      "path": "soil_texture_properties.py",
+      "sha256": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+      "bytes": 46435
+    },
+    {
+      "path": "soil_texture_properties_cuda.py",
+      "sha256": "c6f50ddefbc9393e049a08bc4788bd637b72e456cdc8b88c518f4558a9e4225e",
+      "bytes": 12384
+    },
+    {
+      "path": "soil_texture_properties_numba.py",
+      "sha256": "a6a7add411858328d42d08b95aa3219a0d818e6459505ba7c7766eb337c2da60",
+      "bytes": 10112
+    },
+    {
+      "path": "soil_water_remap.py",
+      "sha256": "d9a269c4e139a757aa2e60d8c6e276cfcce3b7aafdf33c8ca444a94674cb2df5",
+      "bytes": 40607
+    },
+    {
+      "path": "soil_water_remap_cuda.py",
+      "sha256": "bacf1534e6378af43dc7588f29c94c721b4a92c0a74f65a8ec8f0d4d67602a06",
+      "bytes": 17117
+    },
+    {
+      "path": "soil_water_remap_numba.py",
+      "sha256": "fb9ed563b6398fe137bfc660038a2e9ab2df7aaed7d53f70973912aa05ea1f38",
+      "bytes": 8031
+    },
+    {
+      "path": "spatial_matrix_infiltration.py",
+      "sha256": "3b5929e0e4de26ff878794ce00d3408720c871aea343222ff5a42db8f3e6ad6c",
+      "bytes": 44626
+    },
+    {
+      "path": "spatial_matrix_infiltration_cuda.py",
+      "sha256": "781b86083003e098e83255f917d2336cfcde965eb67b833b54e688a5a03b6ba3",
+      "bytes": 20610
+    },
+    {
+      "path": "spatial_preferential_infiltration.py",
+      "sha256": "448eb8d5e69d66684e9eac656563e409da35391da5d1875b34b782487a69b7c3",
+      "bytes": 41639
+    },
+    {
+      "path": "spatial_preferential_infiltration_cuda.py",
+      "sha256": "8950fddc28f662ea93692eaf85f0c36eb7682b6a3b1fa72028e26ca0f829561c",
+      "bytes": 24797
+    },
+    {
+      "path": "spatial_soil_layers.py",
+      "sha256": "8ba0243a1112cf27fea35281608707f66790f769d340683ba7c9fd447741d5e0",
+      "bytes": 113349
+    },
+    {
+      "path": "spatial_transpiration.py",
+      "sha256": "7dc89a1529efad994ec405dd41e0de5e8137f3a855bbcca33eed2215b35e68d1",
+      "bytes": 36770
+    },
+    {
+      "path": "spatial_transpiration_cuda.py",
+      "sha256": "1babc2baea4602ed04e72470ef0f0765b5a9c0126d7d24604b28567f1406e7de",
+      "bytes": 16054
+    },
+    {
+      "path": "splash.py",
+      "sha256": "3a3b5697b7e28497c9f650f237e4bbe2e9f7d80bf3b2a5cdfe66fcb934e3ec33",
+      "bytes": 45611
+    },
+    {
+      "path": "splash_cuda.py",
+      "sha256": "6616060a3da333c1cb87bf509716b512b4ce03b312fe61a80e8f727db9288457",
+      "bytes": 10152
+    },
+    {
+      "path": "storage_admission.py",
+      "sha256": "092c11b9941479a525892f98434d58ea2d3d59c4b52f27b5f927dcbe1d303333",
+      "bytes": 17841
+    },
+    {
+      "path": "storm.py",
+      "sha256": "7f0dfb03d0176e053d83c3f52a83f711c6f6729c554b45ad23ebb0e87b756d19",
+      "bytes": 33079
+    },
+    {
+      "path": "storm_experiment.py",
+      "sha256": "c4d70d92f239abe5c262b5f9af8a5160d28479acd8805484cd291ba0a1b8f5f9",
+      "bytes": 34058
+    },
+    {
+      "path": "subsurface.py",
+      "sha256": "bd50377ed2eea80e29bbb96fe290f33af8a78427b1c0de38134f049a2cb80dfa",
+      "bytes": 95532
+    },
+    {
+      "path": "subsurface_cuda.py",
+      "sha256": "8c80986468e046984aacd9a768391034e5aae65b654fe543d99f90ccf2712b76",
+      "bytes": 32797
+    },
+    {
+      "path": "subsurface_cuda_floating.py",
+      "sha256": "fc2dbd380acd131fb2662901189b5967e3e55f0f19bfd6e79bbac0c1691d07c3",
+      "bytes": 28798
+    },
+    {
+      "path": "subsurface_cuda_spatial.py",
+      "sha256": "2662eb3f8e05faca2c7815b2ef669ff9969ac8c3e6ae9d92fb2cf6b8ffc33ec3",
+      "bytes": 24981
+    },
+    {
+      "path": "subsurface_numba.py",
+      "sha256": "d3d39ddfb71e563adb6513496ffcac6fa75d459de56632cbcb2e858fe1c85226",
+      "bytes": 45054
+    },
+    {
+      "path": "subsurface_transpiration.py",
+      "sha256": "7b2a53dacb3b245ff3b821337f91c385b43b46ce974bf753e7dcb950a0431e8b",
+      "bytes": 33715
+    },
+    {
+      "path": "surface_routing.py",
+      "sha256": "630e2901c6ab7cc260f3c7a35de80ce97605df67e94478a9651aa504e6e0983f",
+      "bytes": 36946
+    },
+    {
+      "path": "vegetation_lifecycle.py",
+      "sha256": "99ab27872e6ccb5eb2b026f4284ed188482ebcdabae5329468f02dcac297d61b",
+      "bytes": 48378
+    },
+    {
+      "path": "vegetation_lifecycle_cuda.py",
+      "sha256": "ae8dce58f0fcb04966946524b89eb809b2f376da15134a3c5dc92637b48a4177",
+      "bytes": 12981
+    },
+    {
+      "path": "water_lifecycle.py",
+      "sha256": "33ae320b623bb0404979655bfa0073d992988ca8309842ae4a8e7c081d8dc162",
+      "bytes": 167268
+    },
+    {
+      "path": "water_lifecycle_cuda.py",
+      "sha256": "07359e587a6d5ce09e578b18529ded7aa2c3efc1b134c7a707e6116e2855e15e",
+      "bytes": 18306
+    },
+    {
+      "path": "water_vegetation_binding.py",
+      "sha256": "79a5214f249ce2dab4ebdd2e44235fadba00d215f7e0059e40beb1837a3f46d3",
+      "bytes": 71853
+    },
+    {
+      "path": "water_vegetation_held.py",
+      "sha256": "f4b51ba0b308a736a6d0bf9ace711fb6fa9bb205ea228714d11446822c0340d1",
+      "bytes": 54945
+    },
+    {
+      "path": "weather_pet.py",
+      "sha256": "06605532eda482ad231711eaaedf185b77b72ff20b00816fbee5c50a636ec7cf",
+      "bytes": 73494
+    },
+    {
+      "path": "windowed_case.py",
+      "sha256": "389d6705276eadd150364b22c967a24110afb7765830cd63baef4cecc018c5dc",
+      "bytes": 28379
+    },
+    {
+      "path": "windowed_experiment.py",
+      "sha256": "07bdc04faf868c7a5da403ad42f78a213b0c505ea84ebb66559972a6a52c00e6",
+      "bytes": 38153
+    },
+    {
+      "path": "windowed_shared_bed.py",
+      "sha256": "63d64dd5c0c1cd5591a335c71b84c519a068242e93bf58303aa5c480ad3d6560",
+      "bytes": 114263
+    },
+    {
+      "path": "windowed_shared_bed_device.py",
+      "sha256": "83833fb97e853fcdb77f29a52f0a31092ebbea19620ffde45d0f655632438c27",
+      "bytes": 128908
+    }
+  ],
+  "git_base": "953e6fdf85b73e3fdf5a1ac7b0d97dea4df7dab1",
+  "historical_phase2_base": "02388adb70b7f1f22b33b6b3d5f1249e223842e5",
+  "identity_scope": "exact reviewed production source; acceptance in separate phase25_qualification.json"
+}

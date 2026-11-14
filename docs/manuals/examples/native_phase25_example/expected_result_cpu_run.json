@@ -1,0 +1,133 @@
+{
+ "runtime": {
+  "maple": {
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py",
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412
+  },
+  "leaf": {
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/leaf/__init__.py",
+   "package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+   "files": 28
+  },
+  "syrup": {
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_release_c1_snapshot/src/maple_syrup/__init__.py",
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180
+  },
+  "helper": {
+   "module": "benchmarks.spatial_mapping",
+   "origin": "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks/spatial_mapping.py",
+   "sha256": "sha256:333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5",
+   "bytes": 47260
+  },
+  "benchmarks_namespace_path": [
+   "/home/okin/SYRUP/agent_handoffs/tasks/phase25_vegetation_projection_20261113/root_compact_helpers_h3_snapshot/benchmarks"
+  ],
+  "after": {
+   "maple": {
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "files": 412
+   },
+   "leaf": {
+    "package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "files": 28
+   },
+   "syrup": {
+    "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "files": 180
+   },
+   "helper_sha256": "sha256:333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5"
+  }
+ },
+ "trait": {
+  "schema_version": 2,
+  "root_layers": 3,
+  "receiving_weights": {
+   "grass": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "shrub": [
+    0.0,
+    1.0,
+    1.0
+   ]
+  },
+  "root_fractions": {
+   "grass": [
+    0.8,
+    0.1,
+    0.1
+   ],
+   "shrub": [
+    0.25,
+    0.35,
+    0.4
+   ]
+  },
+  "catalog_hash": "sha256:6fa56609cc283920bb16fa27c9ee81158f40befe221ef0f12b4c5dccfd9536b3"
+ },
+ "projection": {
+  "splash": [
+   0.502655,
+   0.0,
+   0.0,
+   0.0,
+   0.384845,
+   0.0,
+   0.0,
+   0.0,
+   0.282743
+  ],
+  "shading_live_only": [
+   0.502655,
+   0.0,
+   0.0,
+   0.0,
+   0.384845,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "R1": [
+   0.402124,
+   0.0,
+   0.0,
+   0.0,
+   0.096211,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "g_expected": [
+   0.884892,
+   0.19403,
+   0.19403,
+   0.19403,
+   0.669141,
+   0.19403,
+   0.19403,
+   0.19403,
+   0.19403
+  ],
+  "species_enabled_for_preferential": [
+   "shrub"
+  ],
+  "content_sha256": "sha256:bb47a04f38d8c156647a472ad34ea88f855b78dc0b9033b9703be7955c34ea34",
+  "omitted_ids": []
+ },
+ "binding_sha256": "6d0135c3adbfe9a4620fd1b980308be4ac34da9339ccbd7fb7af3c22a6bb53e6",
+ "record_sha256": "efc3bbb85431a098cf459632330689f8d18e9d15880a217a57c793ef328b9ccb",
+ "cached_origin": "cached_derived",
+ "law_sha256": "6a235f91ffdc0358cfdff3b2989d8332698a2830523156ae90ad813861365ae3",
+ "g_sha256": "cea6adbce9bb0c096b0421b7e78fae66187e2e17d87801f0b036a41e1b48dbd4",
+ "g_min_max": [
+  0.19402985074626863,
+  0.8848918065280349
+ ],
+ "wrong_area_column_refused": "the native column's cell_area_m2 0.01 is not the binding's 1.0: the LEAF cover fractions are fractions of THAT"
+}
