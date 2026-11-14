@@ -1,0 +1,34 @@
+{
+  "mode": "cpu",
+  "rows": [
+    {
+      "name": "JORN4_A_training",
+      "scenario_count": 56,
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/frozen_configs/JORN4_A_training.json",
+      "config_sha256": "e8e69dfc1ee647ce772d41fb486c3c494302ba23952b63a6800098af77dbf6fe",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/actual_cpu/JORN4_A_training_result.json",
+      "result_sha256": "1b47b5e07c8e36030cef8e2be89eee4a632f25158ffcfadf03374be492395982",
+      "seconds_including_first_compilation": 3.5313946292735636
+    },
+    {
+      "name": "JORN4_B_heldout",
+      "scenario_count": 3,
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/actual_cpu/JORN4_B_heldout_config.json",
+      "config_sha256": "625dfce8e8fc3f73c38a6cdbfc6056dd5fe49ee2c3e85817e324c2daae2979ca",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/actual_cpu/JORN4_B_heldout_result.json",
+      "result_sha256": "1f509ee7ff72e946d9233751139f8c7d200b87826084f4702e74257433e78aa5",
+      "seconds_including_first_compilation": 0.22239687712863088
+    },
+    {
+      "name": "MOAB2_C_heldout",
+      "scenario_count": 3,
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/actual_cpu/MOAB2_C_heldout_config.json",
+      "config_sha256": "a9d13681c2ba6d1f51f510f876370c1c6e9508d76234c58a829ae6f9312a8e9d",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/actual_cpu/MOAB2_C_heldout_result.json",
+      "result_sha256": "75db0c14cc22ba1b944805ad135508be20c2604a7f32ee3258fcfee1c1c02d5e",
+      "seconds_including_first_compilation": 0.21673891274258494
+    }
+  ],
+  "all_frozen_files_rechecked": true,
+  "scope": "Single profile daily diagnostic; not large-domain performance or native lifecycle checkpoint qualification."
+}

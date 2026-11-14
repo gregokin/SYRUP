@@ -1,0 +1,269 @@
+{
+  "utc": "2026-11-14T18:23:36.891799+00:00",
+  "status": "FROZEN BEFORE any observed-profile water run",
+  "files": [
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/nevada_zero_flux_20261101/neon_metadata/swc_depthsV3",
+      "bytes": 112501,
+      "sha256": "876fd5bdcfb8b93352399dab20a3b41e01b2ca3f74bb140e3216feb80812827f"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/benchmarks/subsurface_validation/__init__.py",
+      "bytes": 208,
+      "sha256": "4219ada0b7f87e906121a846a1992f6bd4f88dbb981a4f7e05ded53c99e5f5c3"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/benchmarks/subsurface_validation/drydown_driver.py",
+      "bytes": 38941,
+      "sha256": "22adc6510464ab4aceb9524f71cdd72a595a800e8034eb066cccd7e3594ab88c"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/benchmarks/subsurface_validation/neon_inputs.py",
+      "bytes": 20575,
+      "sha256": "7492a2e3a46c9028d9a7fcdb16168d56daffb0e13ca909b5cdb4b524e2b2e8e9"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/benchmarks/subsurface_validation/paths.py",
+      "bytes": 2699,
+      "sha256": "1c60c63b542c273ef2547c649d493590dff2cb8e540930238e47e34b0d95f88d"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/docs/subsurface_hydrology/phase3_observation_inventory.json",
+      "bytes": 41093,
+      "sha256": "fc8b74ace7c32d24dd471baa9a316c3c4d46dcc63c56ea353fee99bbb0010ea8"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/tests/subsurface_validation/test_drydown_driver.py",
+      "bytes": 29077,
+      "sha256": "8ded53c9f9ebaf7b75cea26fc0cc4b56d6d804ce0e517d0cc0f12d299ad532c8"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/tests/subsurface_validation/test_neon_inputs_real_data.py",
+      "bytes": 6324,
+      "sha256": "14575497a0917eb9ca20bd176de73ca2a96a10f06b1e91b4dcb3fd1d1065dd53"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/tests/subsurface_validation/test_neon_inputs_synthetic.py",
+      "bytes": 16337,
+      "sha256": "f90bc22d562fd728af412f7490ee046c87bd645321a312595103d7edca7c29c5"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.000.010.030.SAAT_30min.2025-04.expanded.20250505T223951Z.csv",
+      "bytes": 438683,
+      "sha256": "aea36b97ded7f8db5a789ea6f64ca56825eab7e2f5c69afe68da7d5ebab53333"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.000.020.030.SAAT_30min.2025-04.expanded.20250505T223951Z.csv",
+      "bytes": 438739,
+      "sha256": "6cb341ce580c0afd19e50038afdd5c26d2672ae04d9e954cce7a6e551266dd09"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.000.030.030.SAAT_30min.2025-04.expanded.20250505T223951Z.csv",
+      "bytes": 438840,
+      "sha256": "a40a4d9f830e56e6589cb1e8171bb8ebc6486b9c81df1eca71b5c3933b8f2c6f"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.EML.20250401-20250501.20260123T000749Z.xml",
+      "bytes": 214743,
+      "sha256": "3dc8360f028b4b3a12e2636c37922ddc46b4ff2881ccb436af9d68279053ba2d"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.readme.20260123T000749Z.txt",
+      "bytes": 14906,
+      "sha256": "2723f7689dd186072ade9d2107b52a9abd521f9ffbfdd785ad7ad33060d1cb62"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.sensor_positions.20250505T223951Z.csv",
+      "bytes": 1065,
+      "sha256": "aa22103337484d1755a0d7279ea7097b2e788605983a77b396d354c761556e38"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00002.001/2025-04/NEON.D14.JORN.DP1.00002.001.variables.20250505T223951Z.csv",
+      "bytes": 18664,
+      "sha256": "44d39b46cc6078e04317992f437e1dfd32e2c1d3167df3def0267d98eb44563f"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00003.001/2025-04/NEON.D14.JORN.DP1.00003.001.000.040.030.TAAT_30min.2025-04.expanded.20250505T230445Z.csv",
+      "bytes": 521965,
+      "sha256": "39d9fe2db443f4eae8cd1d7ef4747b841130e22e7ae92488c0caa7d5874bd187"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00003.001/2025-04/NEON.D14.JORN.DP1.00003.001.EML.20250401-20250501.20260123T000749Z.xml",
+      "bytes": 102496,
+      "sha256": "64360f27af2a83fe3d7bf2070e9edfb72e21a990d4adde15ca5b0e1187a7c264"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00003.001/2025-04/NEON.D14.JORN.DP1.00003.001.readme.20260123T000749Z.txt",
+      "bytes": 12332,
+      "sha256": "e06a16d30899a7892d4f4c605c4c17232609c1d48f63a882026a3287b998ca4a"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00003.001/2025-04/NEON.D14.JORN.DP1.00003.001.sensor_positions.20250505T230445Z.csv",
+      "bytes": 602,
+      "sha256": "f556bd7dfd61eeaab2e56b5b1fc687ff8ac704981ba1e0149e8bb835d2c7780a"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/DP1.00003.001/2025-04/NEON.D14.JORN.DP1.00003.001.variables.20250505T230445Z.csv",
+      "bytes": 21888,
+      "sha256": "93a412344b004f8c080f5d4ba49011ac6c903d947f3f9a406ec8ed188ef8447c"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_JORN/manifest.json",
+      "bytes": 6704,
+      "sha256": "1db84000caeb862b1571334940a464c4a20d47b474f109bb8d663cd567e99dac"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.000.010.030.SAAT_30min.2025-05.expanded.20250715T231902Z.csv",
+      "bytes": 452840,
+      "sha256": "5ade7111e60c483d8380942228817419c96555cf64dba3ac1a512249ba243d2a"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.000.020.030.SAAT_30min.2025-05.expanded.20250715T231902Z.csv",
+      "bytes": 453008,
+      "sha256": "0336d8bec6c654145b9ac38dd856f46b6f5459103c1a41838f9c0ca42a8e9984"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.000.030.030.SAAT_30min.2025-05.expanded.20250715T231902Z.csv",
+      "bytes": 452990,
+      "sha256": "6c36ab966a4ec8d2cf88c4237d579e5df0f91b128940ccf6a0ddd9ec4691df81"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.EML.20250501-20250601.20260123T000749Z.xml",
+      "bytes": 214741,
+      "sha256": "aa74722db985fa877080905eac2b755bdb14dd6218cbfcdfea929e7da4b47130"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.readme.20260123T000749Z.txt",
+      "bytes": 14906,
+      "sha256": "0fa01bcc0cb36920153dbaedf01aa76c6d66a8539c6174d64679d86e36d43bf6"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.sensor_positions.20250715T231902Z.csv",
+      "bytes": 1047,
+      "sha256": "b55f926f98fdb49fd4ac356ff4bcb823fbe4c0e3d718de0ed4f9fadad3b0c673"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00002.001/2025-05/NEON.D13.MOAB.DP1.00002.001.variables.20250715T231902Z.csv",
+      "bytes": 18664,
+      "sha256": "44d39b46cc6078e04317992f437e1dfd32e2c1d3167df3def0267d98eb44563f"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00003.001/2025-05/NEON.D13.MOAB.DP1.00003.001.000.040.030.TAAT_30min.2025-05.expanded.20250715T231804Z.csv",
+      "bytes": 538791,
+      "sha256": "e73b09996dcfbfc6d5674379a9f8ed8dc26807b3d024c5214b3c6c596b4e69b3"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00003.001/2025-05/NEON.D13.MOAB.DP1.00003.001.EML.20250501-20250601.20260123T000749Z.xml",
+      "bytes": 102494,
+      "sha256": "70bf4f7f9be5d4e0c13abcf045ed49dc0483afa5a87cbe7258f2b596ee565096"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00003.001/2025-05/NEON.D13.MOAB.DP1.00003.001.readme.20260123T000749Z.txt",
+      "bytes": 12332,
+      "sha256": "96c1a8c8037fd6e61691fc4b80d8b7c98ad3a6b6ff347f819eae8842465f412c"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00003.001/2025-05/NEON.D13.MOAB.DP1.00003.001.sensor_positions.20250715T231804Z.csv",
+      "bytes": 597,
+      "sha256": "7e3a913ba583e6c64bc413a8810e943832fe2bfd5777dc3529c38419692529b0"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/DP1.00003.001/2025-05/NEON.D13.MOAB.DP1.00003.001.variables.20250715T231804Z.csv",
+      "bytes": 21888,
+      "sha256": "93a412344b004f8c080f5d4ba49011ac6c903d947f3f9a406ec8ed188ef8447c"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_air_MOAB/manifest.json",
+      "bytes": 6704,
+      "sha256": "e3567fedbf61141a59469490a5629dc98c0b5cfcada2d759cb4e6415b2216900"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP0.00096.001.validation.20251204T213630Z.csv",
+      "bytes": 25537,
+      "sha256": "98e4994663cc32ba725b6e688fbad11f44c8952b34d7e6850b543d901215c612"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.EML.20140224-20140224.20260123T000749Z.xml",
+      "bytes": 144129,
+      "sha256": "92c411fd703058acc75272b2ec60303543103baf6c6ee31c9d0e091be90213f1"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.mgp_perarchivesample.2014-02.basic.20251204T213630Z.csv",
+      "bytes": 1822,
+      "sha256": "8ce19cef3af5e70ea8da82ddf36d9f1084342736028fefef9fcee9ebb66e16df"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.mgp_perbiogeosample.2014-02.basic.20251204T213630Z.csv",
+      "bytes": 5361,
+      "sha256": "f3f418c6cf0be96d328a99b2446ec95c7358409c520b85d07f8382457335a360"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.mgp_perbulksample.2014-02.basic.20251204T213630Z.csv",
+      "bytes": 2769,
+      "sha256": "0972242d8b6bee1a7095d25fd5f4468b036256b8987b6927ac62263d73e9ceb2"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.mgp_perhorizon.2014-02.basic.20251204T213630Z.csv",
+      "bytes": 1710,
+      "sha256": "12ac5c367f61de2ab50cdf4490576b0a2a967860ef0faa4e321e54bc56d1684c"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.mgp_permegapit.2014-02.basic.20251204T213630Z.csv",
+      "bytes": 944,
+      "sha256": "8086b1012cdd972acc9f44598977b55a55796ce1ec2ee254572f574f3940c573"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.readme.20260123T000749Z.txt",
+      "bytes": 12716,
+      "sha256": "8a4571a492da53f9261e226174c09e0dbcae689422fdde6c77dad8a5cf75582f"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/DP1.00096.001/2014-02/NEON.D13.MOAB.DP1.00096.001.variables.20251204T213630Z.csv",
+      "bytes": 20096,
+      "sha256": "48066c0321026f79b37aa51c06cc5c8bd91c975295e8a27e2b25abd111dc76cb"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/downloads_megapit_MOAB/manifest.json",
+      "bytes": 5049,
+      "sha256": "cf78a39c1e668f24a8cf0341849c93ea8c42803d53a325962432d9b564f9f4fe"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/frozen_configs/JORN4_A_training.json",
+      "bytes": 11864,
+      "sha256": "e8e69dfc1ee647ce772d41fb486c3c494302ba23952b63a6800098af77dbf6fe"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/frozen_configs/JORN4_B_heldout_TEMPLATE.json",
+      "bytes": 3649,
+      "sha256": "0d00681abbc9cf6b75be28968edc05d35db97b65b4b93b697d4cc59b2e50a4db"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/frozen_configs/MOAB2_C_heldout_TEMPLATE.json",
+      "bytes": 3584,
+      "sha256": "773893ccecbca6a34c69192092d910ab3c43e6b90f7257b858ab198478e17470"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/frozen_configs/finalize_heldout.py",
+      "bytes": 1680,
+      "sha256": "f48c1ae4895d88e0f0544457e89bd3f5713e2ab1fe61c95dcfba94b038628584"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/root_decimal_control.py",
+      "bytes": 3483,
+      "sha256": "e2d4cc98dc64f0bc6495cccbbf41d69772e02b99e1fd7ad330c8cfc0dbc3e4a9"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/root_experiment_run.py",
+      "bytes": 3065,
+      "sha256": "fe32345a857656cb6e9e9f2d76c05d25aee004b954969796dbe14fbbe3b2c129"
+    },
+    {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/root_protocol_decisions.md",
+      "bytes": 5534,
+      "sha256": "b6be7077af8cf936c245a2b7f9162a4d9dd39041b424cecdd2c1f9380908f174"
+    }
+  ],
+  "user_reference_soil_approved": true,
+  "training_rule": "Primary equal-layer RMSE; minimum, ties lower E then lower d; JORN4A ONLY. GPU heldouts use CPU chosen pair.",
+  "source_scope": "180 production SYRUP modules remain untouched; exact packages guarded separately before/after; only new analysis files."
+}

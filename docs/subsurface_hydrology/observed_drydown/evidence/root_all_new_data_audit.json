@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-14T18:10:00.329438+00:00",
+  "rows": [
+    {
+      "root": "downloads_air_JORN",
+      "manifest_sha256": "1db84000caeb862b1571334940a464c4a20d47b474f109bb8d663cd567e99dac",
+      "raw_files_verified": 12,
+      "raw_bytes_verified": 2224923,
+      "release": "RELEASE-2026"
+    },
+    {
+      "root": "downloads_air_MOAB",
+      "manifest_sha256": "e3567fedbf61141a59469490a5629dc98c0b5cfcada2d759cb4e6415b2216900",
+      "raw_files_verified": 12,
+      "raw_bytes_verified": 2284298,
+      "release": "RELEASE-2026"
+    },
+    {
+      "root": "downloads_megapit_MOAB",
+      "manifest_sha256": "cf78a39c1e668f24a8cf0341849c93ea8c42803d53a325962432d9b564f9f4fe",
+      "raw_files_verified": 9,
+      "raw_bytes_verified": 215084,
+      "release": "RELEASE-2026"
+    }
+  ]
+}

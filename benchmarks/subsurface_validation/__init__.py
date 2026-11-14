@@ -1,0 +1,1 @@
+"""Stage-1 importer and explicit-config driver for the observed shallow-profile dry-down experiments (Phase 3). Host-only data preparation; the physics is the existing SYRUP column, PET and property APIs."""

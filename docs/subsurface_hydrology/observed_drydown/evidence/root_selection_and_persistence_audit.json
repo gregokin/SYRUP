@@ -1,0 +1,35 @@
+{
+  "independent_training_grid_size": 54,
+  "selected_d": 0.0,
+  "selected_effective_E_factor": 0.5,
+  "heldout_not_refitted": true,
+  "rows": [
+    {
+      "name": "JORN4_A_training",
+      "independent_persistence_rmse": {
+        "initial_point_values_held": 0.004944264353773978,
+        "initial_layer_means_held": 0.0068218353393985276
+      },
+      "closed_d0E0_equal": true,
+      "closed_reference_equal": true
+    },
+    {
+      "name": "JORN4_B_heldout",
+      "independent_persistence_rmse": {
+        "initial_point_values_held": 0.0026229754097208025,
+        "initial_layer_means_held": 0.004548776730301595
+      },
+      "closed_d0E0_equal": null,
+      "closed_reference_equal": null
+    },
+    {
+      "name": "MOAB2_C_heldout",
+      "independent_persistence_rmse": {
+        "initial_point_values_held": 0.013906573186007319,
+        "initial_layer_means_held": 0.01358801955755613
+      },
+      "closed_d0E0_equal": null,
+      "closed_reference_equal": null
+    }
+  ]
+}
