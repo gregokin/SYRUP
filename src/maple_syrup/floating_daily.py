@@ -44,7 +44,7 @@ from maple_syrup import subsurface as ss
 from maple_syrup.conservation import volume_roundoff_bound_m3
 
 __all__ = ["DailyCloseResult", "DailyLedger", "DailyRefusal", "DailyResult", "ExpectedParent", "FloatingDailyError", "FloatingDailyState", "WithdrawalOutcome", "aggregate_sparse_demand",
-           "close_floating_day", "expect_parent", "floating_daily_action", "request_floating_withdrawal", "start_floating_daily_lineage"]
+           "close_floating_day", "expect_parent", "floating_daily_action", "request_floating_withdrawal", "start_floating_daily_lineage", "verify_floating_withdrawal"]
 
 SCHEMA = "maple_syrup.floating_daily/1"
 PROFILE = "native_floating_daily_initialized_soil/1"
@@ -68,6 +68,7 @@ _MINT = threading.local()
 _MINTED: weakref.WeakSet = weakref.WeakSet()
 _CAPS: weakref.WeakSet = weakref.WeakSet()
 _PRODUCER: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()  # live state -> (previous execution digest, canonical receipt JSON): O(1) scalars only (no arrays, no history); minted with the state, never caller-supplied
+_WITHDRAWALS: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()  # outcome -> (WEAK exact parent, returned field references/scalars); no historical parent ownership
 
 
 @contextlib.contextmanager
@@ -257,6 +258,29 @@ class WithdrawalOutcome:
     actual_m3: float
     unmet_m3: float
     sequence: int
+
+
+def verify_floating_withdrawal(parent: Any, *, expected_parent: Any, outcome: Any) -> WithdrawalOutcome:
+    """Verify an actual returned withdrawal from THIS exact interevent parent.
+
+    The producer-only weak registry distinguishes equal-valued branches and
+    rejects direct, copied or replaced outcomes. This is metadata provenance:
+    it reads/copies no array, changes no state and returns the same outcome.
+    A fresh genuine ExpectedParent for the same instance is permitted.
+    """
+    _check_parent(parent, expected_parent, "interevent")
+    if type(outcome) is not WithdrawalOutcome:
+        raise DailyRefusal("parent", "outcome must be the genuine returned WithdrawalOutcome")
+    proof = _WITHDRAWALS.get(outcome)
+    if proof is None or proof[0]() is not parent:
+        raise DailyRefusal("parent", "withdrawal was not produced from this exact parent instance")
+    fields = (outcome.state, outcome.actual_m, outcome.unmet_m, outcome.scale)
+    if any(value is not saved for value, saved in zip(fields, proof[1])):
+        raise DailyRefusal("parent", "the producer's withdrawal field references changed")
+    scalars = (outcome.requested_m3, outcome.actual_m3, outcome.unmet_m3, outcome.sequence)
+    if any(type(value) is not type(saved) or value != saved for value, saved in zip(scalars, proof[2])):
+        raise DailyRefusal("parent", "the producer's withdrawal scalar fields changed")
+    return outcome
 
 
 @dataclass(frozen=True, eq=False)
@@ -637,7 +661,9 @@ def request_floating_withdrawal(parent: FloatingDailyState, *, expected_parent: 
                                   led.day_storage_before_m3, led.day_bound_m3 + float(b.bound_m3), led.day_n_terms + int(b.n_terms)), surface_m3=led.surface_m3, outlet_m3=led.outlet_m3, last_day_outlet_m3=led.last_day_outlet_m3)
     child = _mint_state(ctx, "interevent", res.state, parent.history, parent.cursor, parent.occurrence, parent.origin_digest, parent.revision + 1, parent.request_sequence + 1, new_led, parent.execution_digest,
                         parent.digest, {"kind": "withdrawal", "seq": parent.request_sequence, "requested": req.hex(), "actual": act.hex()}, parent.surface)
-    return WithdrawalOutcome(child, res.actual_m, res.unmet_m, res.scale, req, act, unm, parent.request_sequence)
+    outcome = WithdrawalOutcome(child, res.actual_m, res.unmet_m, res.scale, req, act, unm, parent.request_sequence)
+    _WITHDRAWALS[outcome] = (weakref.ref(parent), (child, res.actual_m, res.unmet_m, res.scale), (req, act, unm, parent.request_sequence))
+    return outcome
 
 
 AUDIT_DOUBLES_PER_CELL = 10  # declared host float rows the audit may hold per cell: the per-layer porous thickness / saturation / tolerance rows of `_check_water_values` and the boolean-indexed copy of `floating_storage_m3`

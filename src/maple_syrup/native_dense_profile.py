@@ -1,7 +1,7 @@
-"""Opt-in CPU native MAPLE 9f466d2c ORDINARY DENSE bed preparation (CANDIDATE, new file; nothing existing is edited).
+"""Opt-in exact CPU native MAPLE ORDINARY DENSE bed preparation.
 
-SCOPE. One narrow cold setup capability, profile ``native_maple_9f_dense_cpu_v1``: from a genuine `NativeCaseAdmission`
-(`native_case_profile`, same process, same verified 9f bundle) derive the actual `(BedState, BedContext)` through the UNCHANGED
+SCOPE. Separate narrow cold setup profiles ``native_maple_9f_dense_cpu_v1`` and ``native_maple_1dca_dense_cpu_v1``: from a genuine `NativeCaseAdmission`
+(`native_case_profile`, same process, same exact selected CPU bundle) derive the actual `(BedState, BedContext)` through the UNCHANGED
 `sediment_bed.bed_from_case`, after refusing every unsupported source/case/storage/feature/backend request from cheap
 metadata, and after the native PUBLIC full validators accept the result. It then seals scalar provenance with REFERENCES to the
 genuine returned objects. It does NOT:
@@ -50,10 +50,11 @@ from maple_syrup import conservation as _conservation  # noqa: F401
 from maple_syrup import sediment_bed as _sediment_bed  # noqa: F401
 from maple_syrup import subsurface as _subsurface  # noqa: F401
 
-__all__ = ["PROFILE_NAME", "DenseLimits", "NativeDensePreparation", "NativeDenseProfileError", "dense_terms", "required_bytes",
+__all__ = ["PROFILE_NAME", "CURRENT_PROFILE_NAME", "DenseLimits", "NativeDensePreparation", "NativeDenseProfileError", "dense_terms", "required_bytes",
            "source_audit_terms", "plan_preparation", "prepare_native_dense_case"]
 
 PROFILE_NAME = "native_maple_9f_dense_cpu_v1"
+CURRENT_PROFILE_NAME = "native_maple_1dca_dense_cpu_v1"
 #: Allocation-count constants of the MODEL (each justified where it is used, in `dense_terms` / `source_audit_terms`).
 _READ_CHUNK = 1 << 20  # dependency_bundle._CHUNK and provenance._READ_CHUNK_BYTES (os.read buffer, both 1 MiB)
 _JSON_OBJECT_BYTES_PER_TEXT_BYTE = 16  # source-specific MODEL coefficient for the CLOSED real manifests (see source_audit_terms); not a universal JSON bound
@@ -316,8 +317,8 @@ def _scope(admission, backend, limits, reserve, available_bytes_fn):
         payload = admission._payload("admission")  # read-only mapping view of the sealed scalars
     except ncp.NativeCaseProfileError as exc:
         raise NativeDenseProfileError(f"unauthenticated admission: {exc}") from exc
-    if payload["profile_name"] != ncp.PROFILE_NAME:  # a device-runtime source admission is not a CPU Dense preparation input
-        raise NativeDenseProfileError(f"this CPU Dense preparation requires a {ncp.PROFILE_NAME} admission, got {payload['profile_name']!r}")
+    if payload["profile_name"] not in (ncp.PROFILE_NAME, ncp.CURRENT_PROFILE_NAME):  # no device-runtime admission
+        raise NativeDenseProfileError(f"this CPU Dense preparation requires an explicit qualified CPU admission, got {payload['profile_name']!r}")
     t = _types()
     if type(compiled) is not t.compiled:
         raise NativeDenseProfileError("admission does not carry the genuine native CompiledCase")
@@ -345,6 +346,8 @@ def _scope(admission, backend, limits, reserve, available_bytes_fn):
 
 def _scope_metadata(admission, compiled, t, limits, payload):
     _require_dense(compiled.voxel_column)
+    if payload["profile_name"] == ncp.CURRENT_PROFILE_NAME and compiled.leaf_vegetation is not None:
+        raise NativeDenseProfileError("initial case must be bare; LEAF vegetation is supplied by the owning runtime adapter")
     if compiled.fixed_base_spec.present or compiled.fixed_base is not None or compiled.regional_slope.enabled \
             or compiled.regional_slope_result is not None or compiled.initial_mobile_state is not None:
         raise NativeDenseProfileError("fixed base / regional slope / initial mobile seed are outside this capability")
@@ -479,7 +482,7 @@ def plan_preparation(admission, *, caller_reserve_bytes: int = 0, available_byte
 
 def prepare_native_dense_case(admission, *, caller_reserve_bytes: int, backend: str = "numpy", limits: DenseLimits | None = None,
                               available_bytes_fn: Callable[[], int] | None = None) -> NativeDensePreparation:
-    """Genuine admitted native9f case -> sealed Dense `(BedState, BedContext)` preparation (see module notes).
+    """Genuine admitted CPU (9f or 1dca) case -> sealed Dense `(BedState, BedContext)` preparation (see module notes).
 
     Order: argument/scope/geometry/class/backend refusals and the WHOLE-CALL memory admission (source audit + dense stage) from
     METADATA -> fresh cold `admission.recheck()` -> unchanged `bed_from_case` (NumPy) -> the full native validation suite -> seal.
@@ -504,7 +507,8 @@ def prepare_native_dense_case(admission, *, caller_reserve_bytes: int, backend: 
     _validate_bed(state, context, compiled, meta)
     obj = object.__new__(NativeDensePreparation)
     _SEALED[obj] = types.MappingProxyType(dict(
-        profile_name=PROFILE_NAME, bundle_id=meta["bundle_id"], package_digest=admission.package_digest,
+        profile_name=CURRENT_PROFILE_NAME if admission.profile_name == ncp.CURRENT_PROFILE_NAME else PROFILE_NAME,
+        bundle_id=meta["bundle_id"], package_digest=admission.package_digest,
         syrup_package_digest=admission.syrup_package_digest, case_identity_sha256=admission.case_identity_sha256,
         latitude_deg=admission.latitude_deg, route=admission.route, shape=meta["shape"], n_voxels=meta["n_voxels"],
         n_classes=meta["n_classes"], class_ids=meta["class_ids"], ledger_kind=meta["ledger_kind"], backend="numpy",
