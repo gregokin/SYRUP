@@ -1,0 +1,38 @@
+{
+  "schema": "syrup.phase25.main_integration.v1",
+  "recorded_utc": "2026-11-14T07:37:40.249192+00:00",
+  "status": "MERGED_PUSHED_EXACT_ACCEPTED_PRODUCTION_SOURCE",
+  "main_merge_commit": "86da29eb34ac62533be4b47d86b7cb22f5a24038",
+  "origin_main_observed": "86da29eb34ac62533be4b47d86b7cb22f5a24038",
+  "previous_main": "953e6fdf85b73e3fdf5a1ac7b0d97dea4df7dab1",
+  "source_commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+  "documentation_commit": "e7758d95f101c9c254b769e73aa91ce8febea366",
+  "experimental_branch": "feature/subsurface-vegetation",
+  "production_file_count": 180,
+  "production_package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+  "qualification_receipt_sha256": "8fe92ed3f18acb5adb824bfea8bf191a8ef57035e9a5948fb262242d2eb6525b",
+  "qualification_tests": {
+    "cpu": 714,
+    "actual_gpu": 37
+  },
+  "post_merge_checks": {
+    "production_source_and_external_helper_before_after": "Exact MAPLE412/fbc504bb, SYRUP180/37d89f23, LEAF28/38009872 and external helper333921bb, imported from the qualified source prefixes",
+    "source_guard_tests_passed": 51,
+    "manual_final_verifier_passed": true,
+    "all_production_manifest_bytes_preserved": true,
+    "additional_model_tests_needed_for_merge": false
+  },
+  "manuals": {
+    "archive_sha256": "65a17dacf7d3bdebba4c18ef6d97ba6ab44f74bf8db94b8707e0947abcb4dba8",
+    "static_checks_only": true,
+    "paginated_office_rendering": false,
+    "negative_and_positive_document_controls": 84
+  },
+  "leaf_dependency": {
+    "commit": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "branch": "feature/syrup-hydrology-traits",
+    "pushed": true
+  },
+  "scope": "Bounded native vegetation feedback and complete-boundary/closed-day physical restart; no field validation, catchment-scale fit, positive vegetation-aware wind carry or complete scheduled three-model acceptance.",
+  "record_relationship": "This is a later publication record. The source-publication record and companion archive deliberately keep main_integration:null as recorded before the merge; all acceptance receipts, source locks and their sealed copies remain unchanged. This record names no commit containing itself."
+}
