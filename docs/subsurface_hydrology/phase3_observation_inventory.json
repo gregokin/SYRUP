@@ -1,0 +1,1043 @@
+{
+  "schema": "syrup.phase3.observation_inventory/1",
+  "created": "2026-11-14",
+  "status": "PLAN-STAGE DATA INVENTORY; data-integrity and QA evidence only; NOT scientific validation; no model run, no fit",
+  "units": {
+    "vswc": "m3/m3",
+    "depth": "m below surface (positive)",
+    "precip": "mm per 30 min interval",
+    "time": "UTC half-hour start unless stated",
+    "temperature": "degC"
+  },
+  "data_root_convention": "selected_files `path` values are relative to the JORN raw retrieval root `jorn_three_layer_20261102` (one directory per retrieval); the corrected-depth table is the one exception and is given relative to the task archive in `corrected_depth_table.relative_to_task_archive`; a product is identified by NEON site + product id + month + release + file name, not by a local path",
+  "release": {
+    "product": "DP1.00094.001 soil water content and water salinity",
+    "release": "RELEASE-2026",
+    "url": "https://data.neonscience.org/data-products/DP1.00094.001/RELEASE-2026",
+    "frozen": "RELEASE-2026 files, raw hashes and the corrected-depth table below are frozen for this plan; the announced reprocessed RELEASE-2027 (expected January 2027) is a separate dataset that would need its own qualification; no mixed-release replacement",
+    "notice": "https://www.neonscience.org/impact/observatory-blog/soil-water-content-and-water-salinity-dp100094001-algorithm-updates",
+    "notice_published": "2026-11-09",
+    "notice_checked_by_root": "2026-11-14",
+    "air_temperature_reference": "https://data.neonscience.org/api/v0/documents/quick-start-guides/NEON.QSG.DP1.00002.001v1?fallback=html&inline=true"
+  },
+  "corrected_depth_table": {
+    "name": "swc_depthsV3",
+    "sha256": "876fd5bdcfb8b93352399dab20a3b41e01b2ca3f74bb140e3216feb80812827f",
+    "bytes": 112501,
+    "data_rows": 2217,
+    "retrieved_utc": "2026-11-01T10:36:10.998555+00:00",
+    "source_url": "https://data.neonscience.org/api/v0/documents/swc_depthsV3",
+    "relative_to_task_archive": "nevada_zero_flux_20261101/neon_metadata/swc_depthsV3",
+    "task_archive_root_note": "`agent_handoffs/tasks/`; sibling task directory `nevada_zero_flux_20261101`",
+    "readme_sha256": "cd5f0f5bf84ae7a6cc477f0e3c11f27703a1b625ae3158d823630c41365f5b72",
+    "sign": "file stores negative depths (below surface); this inventory reports positive metres",
+    "note": "the moisture sensor_positions file of this release is shifted one level relative to this table and is not used for depth"
+  },
+  "integrity_evidence": {
+    "entries_total": 795,
+    "raw_md5_accepted": 746,
+    "quarantined_md5_metadata": 49,
+    "per_manifest": {
+      "downloads": {
+        "entries": 333,
+        "raw_md5_pass": 318,
+        "quarantined_md5": 15
+      },
+      "downloads_CPER_202505": {
+        "entries": 35,
+        "raw_md5_pass": 33,
+        "quarantined_md5": 2
+      },
+      "downloads_MOAB_202505": {
+        "entries": 39,
+        "raw_md5_pass": 37,
+        "quarantined_md5": 2
+      },
+      "downloads_ONAQ_202505": {
+        "entries": 31,
+        "raw_md5_pass": 29,
+        "quarantined_md5": 2
+      },
+      "downloads_SRER_2018": {
+        "entries": 90,
+        "raw_md5_pass": 80,
+        "quarantined_md5": 10
+      },
+      "downloads_SRER_202505": {
+        "entries": 44,
+        "raw_md5_pass": 40,
+        "quarantined_md5": 4
+      },
+      "downloads_scout": {
+        "entries": 173,
+        "raw_md5_pass": 159,
+        "quarantined_md5": 14
+      },
+      "downloads_temp2025": {
+        "entries": 50,
+        "raw_md5_pass": 50,
+        "quarantined_md5": 0
+      }
+    },
+    "root_audit_status": "PASS_INDEPENDENT_RAW_PROVENANCE_AND_CORE_QA_COUNTS",
+    "root_audit_file_sha256": "3ee4f151893fb33331d94a61767f4673fb885a415ec8b3aeff8dcad8339dbf89",
+    "note": "746 accepted raw entries + 49 quarantined MD5 metadata entries = 795; the 49 quarantined entries are preserved and are NOT rehabilitated by LF-normalized MD5 diagnostics; integrity is not scientific admission",
+    "preflight_pointers": {
+      "validation_inventory.json": "807af2e97ea01b4248481dc4fdfad21636473418c0cc96b5e6a286d59b724021",
+      "validation_inventory.md": "fe679f2ccb737faefa1e4157107e14129c3ec4ed42f5b4a7a46b318573d15bc1",
+      "decision_list.md": "b9ae507b2ceedd54376a17c90c66468c79844772a9a1a78fcca5e86e7cde42d8",
+      "inventory_probe_result.json": "dab42fe6dfc55ce6f11465e89a9e3eadf957ea8a65a2edd2b4899bb45a5bb3ad",
+      "inventory_probe2_result.json": "fd4dde33b0d7e8f2fa41e4cfb6797936230a65fab1dc456a019818bd380b2cbe",
+      "inventory_probe3_result.json": "c75653ed8a2dad6f6194a3b8797cea11a49e73834eee095de412cb17e3fdf51a"
+    }
+  },
+  "manifests_selected": [
+    {
+      "manifest": "downloads/manifest.json",
+      "manifest_sha256": "26bd9fea431355288f5b4143c517ae34ca69d27370e5bb4fd6cb4d55f56d434c",
+      "retrieved_utc": "2026-11-02T22:41:40.236347+00:00",
+      "release": "RELEASE-2026"
+    },
+    {
+      "manifest": "downloads_MOAB_202505/manifest.json",
+      "manifest_sha256": "e064cec0c84f19094c924fe5d9450c23ecf19be66dd0c1f581f0e3d64ec74057",
+      "retrieved_utc": "2026-11-02T22:52:48.917902+00:00",
+      "release": "RELEASE-2026"
+    },
+    {
+      "manifest": "downloads_scout/manifest.json",
+      "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be",
+      "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+      "release": "RELEASE-2026"
+    },
+    {
+      "manifest": "downloads_temp2025/manifest.json",
+      "manifest_sha256": "af97a14ebca3f1de3eafd4a12f7e0a27f79388bd96ab8fcdb463cca053461118",
+      "retrieved_utc": "2026-11-02T22:47:05.632601+00:00",
+      "release": "RELEASE-2026"
+    }
+  ],
+  "selected_files": {
+    "MOAB": [
+      {
+        "role": "soil_moisture_plot2_vertical501",
+        "path": "downloads_MOAB_202505/DP1.00094.001/2025-05/NEON.D13.MOAB.DP1.00094.001.002.501.030.SWS_30_minute.2025-05.expanded.20250715T224108Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-05",
+        "release": "RELEASE-2026",
+        "bytes": 612849,
+        "sha256": "1f165f9a38911b48cfde47d4271ce9c0cd6548f20bb75507f7e3e955eb81af96",
+        "listed_md5": "d9d97a8e040067aa18847dacd78248e0",
+        "retrieved_utc": "2026-11-02T22:52:48.917902+00:00",
+        "manifest": "downloads_MOAB_202505/manifest.json",
+        "manifest_sha256": "e064cec0c84f19094c924fe5d9450c23ecf19be66dd0c1f581f0e3d64ec74057"
+      },
+      {
+        "role": "soil_moisture_plot2_vertical502",
+        "path": "downloads_MOAB_202505/DP1.00094.001/2025-05/NEON.D13.MOAB.DP1.00094.001.002.502.030.SWS_30_minute.2025-05.expanded.20250715T224108Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-05",
+        "release": "RELEASE-2026",
+        "bytes": 612838,
+        "sha256": "31774a7fbec6bd1f13436c13c1c9f647ae6c78b64e801266ae76e0b6649a67ad",
+        "listed_md5": "53f5a933fc6d64723af064511938f97c",
+        "retrieved_utc": "2026-11-02T22:52:48.917902+00:00",
+        "manifest": "downloads_MOAB_202505/manifest.json",
+        "manifest_sha256": "e064cec0c84f19094c924fe5d9450c23ecf19be66dd0c1f581f0e3d64ec74057"
+      },
+      {
+        "role": "soil_moisture_plot2_vertical503",
+        "path": "downloads_MOAB_202505/DP1.00094.001/2025-05/NEON.D13.MOAB.DP1.00094.001.002.503.030.SWS_30_minute.2025-05.expanded.20250715T224108Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-05",
+        "release": "RELEASE-2026",
+        "bytes": 613457,
+        "sha256": "02bbaa08a1be8bb2a0922ec39d47c10f8dfcc76bb7242a92cbf484d2f32f5369",
+        "listed_md5": "561e6df9bca115af6402c6a74a5b3842",
+        "retrieved_utc": "2026-11-02T22:52:48.917902+00:00",
+        "manifest": "downloads_MOAB_202505/manifest.json",
+        "manifest_sha256": "e064cec0c84f19094c924fe5d9450c23ecf19be66dd0c1f581f0e3d64ec74057"
+      },
+      {
+        "role": "tipping_bucket_precip",
+        "path": "downloads_MOAB_202505/DP1.00045.001/2025-05/NEON.D13.MOAB.DP1.00045.001.000.040.030.TIPPRE_30min.2025-05.expanded.20251214T074412Z.csv",
+        "product": "DP1.00045.001",
+        "month": "2025-05",
+        "release": "RELEASE-2026",
+        "bytes": 132592,
+        "sha256": "8d858254e545c08f8dd5cfa3c5987a481a665f309b2fd08f1ae8481f0fe11ba1",
+        "listed_md5": "bfe3c3cbe0b6c84934c0d5bd19344439",
+        "retrieved_utc": "2026-11-02T22:52:48.917902+00:00",
+        "manifest": "downloads_MOAB_202505/manifest.json",
+        "manifest_sha256": "e064cec0c84f19094c924fe5d9450c23ecf19be66dd0c1f581f0e3d64ec74057"
+      },
+      {
+        "role": "moisture_sensor_positions_SHIFTED_not_used_for_depth",
+        "path": "downloads_MOAB_202505/DP1.00094.001/2025-05/NEON.D13.MOAB.DP1.00094.001.sensor_positions.20250715T224108Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-05",
+        "release": "RELEASE-2026",
+        "bytes": 9599,
+        "sha256": "ad69e4b5eb25677c3e70fd7781767c575bde5deebb307dc8c0097d6b7dba30d2",
+        "listed_md5": "aa0ab9ed8e50c31cc3183909d9ea1a91",
+        "retrieved_utc": "2026-11-02T22:52:48.917902+00:00",
+        "manifest": "downloads_MOAB_202505/manifest.json",
+        "manifest_sha256": "e064cec0c84f19094c924fe5d9450c23ecf19be66dd0c1f581f0e3d64ec74057"
+      }
+    ],
+    "JORN": [
+      {
+        "role": "soil_moisture_plot4_vertical501",
+        "path": "downloads_scout/DP1.00094.001/2025-04/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2025-04.expanded.20250505T233246Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 593657,
+        "sha256": "10d100523b92640191bc9a083a9540a81031aed86c774b9d9b88e9d0dcce530a",
+        "listed_md5": "f17218b4e7b505580f37473654ba9a98",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "soil_moisture_plot4_vertical502",
+        "path": "downloads_scout/DP1.00094.001/2025-04/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2025-04.expanded.20250505T233246Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 593829,
+        "sha256": "45498be4dd2e321126dad23d48696962d173a8815f41630f7ce05cfb0f9840e3",
+        "listed_md5": "77431f0fbb89641752ad7d96b722691f",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "soil_moisture_plot4_vertical503",
+        "path": "downloads_scout/DP1.00094.001/2025-04/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2025-04.expanded.20250505T233246Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 593977,
+        "sha256": "d6c14eab643d0633ecd640a4210c4522aeb8abb150b09c6639b59b2b8277a889",
+        "listed_md5": "70b0ef47ffda031230e1e3b9f2500395",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "tipping_bucket_precip",
+        "path": "downloads_scout/DP1.00045.001/2025-04/NEON.D14.JORN.DP1.00045.001.000.040.030.TIPPRE_30min.2025-04.expanded.20251214T074301Z.csv",
+        "product": "DP1.00045.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 128325,
+        "sha256": "f3e948867ba26080270df88cd96eebd88e61944151f1518974e09ba373299be1",
+        "listed_md5": "e2943feb98d7cc2809ab75745889239d",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "throughfall_plot001",
+        "path": "downloads_scout/DP1.00046.001/2025-04/NEON.D14.JORN.DP1.00046.001.001.000.030.THRPRE_30min.2025-04.expanded.20251214T092250Z.csv",
+        "product": "DP1.00046.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 93693,
+        "sha256": "b08cb9f484c02b5c7b1b05b5f58a672f98cae7918659da5826a82e4a1811cb6c",
+        "listed_md5": "a77b59a29146c9bae89991a54de3c8ff",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "throughfall_plot002",
+        "path": "downloads_scout/DP1.00046.001/2025-04/NEON.D14.JORN.DP1.00046.001.002.000.030.THRPRE_30min.2025-04.expanded.20251214T092250Z.csv",
+        "product": "DP1.00046.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 93693,
+        "sha256": "2fa155b880c0eb034dd7b5ac5dc5d691c457e0695f29d4a444f176a2cb93a0e3",
+        "listed_md5": "32da4ed47ba0887f314dc29393e9b3f0",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "throughfall_plot004",
+        "path": "downloads_scout/DP1.00046.001/2025-04/NEON.D14.JORN.DP1.00046.001.004.000.030.THRPRE_30min.2025-04.expanded.20251214T092250Z.csv",
+        "product": "DP1.00046.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 93691,
+        "sha256": "23d2200c73ae37fc4bc0db039ffdb5fce2a1462c21515c3931b7dacc8583b28f",
+        "listed_md5": "33512fedf746bab01622c280fdbd1009",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "throughfall_plot005",
+        "path": "downloads_scout/DP1.00046.001/2025-04/NEON.D14.JORN.DP1.00046.001.005.000.030.THRPRE_30min.2025-04.expanded.20251214T092250Z.csv",
+        "product": "DP1.00046.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 93693,
+        "sha256": "d4a92f9001c7d04209295809d1fa040738c4c9d8c5006a349244e39050beab83",
+        "listed_md5": "9bc4fd6ade215eb9739fdfc944d7e241",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      },
+      {
+        "role": "soil_temperature_plot4_ST502(depth-equivalent_of_SWC501)",
+        "path": "downloads_temp2025/DP1.00041.001/2025-04/NEON.D14.JORN.DP1.00041.001.004.502.030.ST_30_minute.2025-04.expanded.20260112T214714Z.csv",
+        "product": "DP1.00041.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 305758,
+        "sha256": "a3c37bdb92343da91c61160dc0e547115b062797c3151904ceecc2dd6c91ade8",
+        "listed_md5": "7f96613c3aee15bbd0fe8c09bb635154",
+        "retrieved_utc": "2026-11-02T22:47:05.632601+00:00",
+        "manifest": "downloads_temp2025/manifest.json",
+        "manifest_sha256": "af97a14ebca3f1de3eafd4a12f7e0a27f79388bd96ab8fcdb463cca053461118"
+      },
+      {
+        "role": "soil_temperature_plot4_ST503(depth-equivalent_of_SWC502)",
+        "path": "downloads_temp2025/DP1.00041.001/2025-04/NEON.D14.JORN.DP1.00041.001.004.503.030.ST_30_minute.2025-04.expanded.20260112T214714Z.csv",
+        "product": "DP1.00041.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 308209,
+        "sha256": "2afdb37b852cfe0ec258cac2c8307cfb005d01f0ff4549cfb0fb652e85f06415",
+        "listed_md5": "ab2a1fffb7fa54fa7cd201bcd78f5d37",
+        "retrieved_utc": "2026-11-02T22:47:05.632601+00:00",
+        "manifest": "downloads_temp2025/manifest.json",
+        "manifest_sha256": "af97a14ebca3f1de3eafd4a12f7e0a27f79388bd96ab8fcdb463cca053461118"
+      },
+      {
+        "role": "soil_temperature_plot4_ST504(depth-equivalent_of_SWC503)",
+        "path": "downloads_temp2025/DP1.00041.001/2025-04/NEON.D14.JORN.DP1.00041.001.004.504.030.ST_30_minute.2025-04.expanded.20260112T214714Z.csv",
+        "product": "DP1.00041.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 309309,
+        "sha256": "e3c89ebcb9c48f87ce1f55bd2212f8ac7e3d07e578a2c406aaa061b6953ab421",
+        "listed_md5": "e23aa71b1eeca1afcea08c9e338732aa",
+        "retrieved_utc": "2026-11-02T22:47:05.632601+00:00",
+        "manifest": "downloads_temp2025/manifest.json",
+        "manifest_sha256": "af97a14ebca3f1de3eafd4a12f7e0a27f79388bd96ab8fcdb463cca053461118"
+      },
+      {
+        "role": "moisture_sensor_positions_SHIFTED_not_used_for_depth",
+        "path": "downloads_scout/DP1.00094.001/2025-04/NEON.D14.JORN.DP1.00094.001.sensor_positions.20250505T233246Z.csv",
+        "product": "DP1.00094.001",
+        "month": "2025-04",
+        "release": "RELEASE-2026",
+        "bytes": 9844,
+        "sha256": "d2b851827a43eeec529d9f9a3fe7648ea6942e7eb36dd6fcb7accb4276dc771b",
+        "listed_md5": "de531c9e1a335e36285169c35e460f27",
+        "retrieved_utc": "2026-11-02T22:44:37.201997+00:00",
+        "manifest": "downloads_scout/manifest.json",
+        "manifest_sha256": "cecea58fcc630dbf44c9138e35343c8b802c4d4415165aa027894ac36815f1be"
+      }
+    ],
+    "JORN_megapit_2013-03": [
+      {
+        "role": "megapit_mgp_perhorizon",
+        "path": "downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perhorizon.2013-03.basic.20251204T185046Z.csv",
+        "product": "DP1.00096.001",
+        "month": "2013-03",
+        "release": "RELEASE-2026",
+        "bytes": 1158,
+        "sha256": "ed508bd032a2b1d50ed81d3219bfe5bd3926a8c04bc06610b9902c03bfc40085",
+        "listed_md5": "f512987d1e518c866c4fea4cad89e636",
+        "retrieved_utc": "2026-11-02T22:41:40.236347+00:00",
+        "manifest": "downloads/manifest.json",
+        "manifest_sha256": "26bd9fea431355288f5b4143c517ae34ca69d27370e5bb4fd6cb4d55f56d434c"
+      },
+      {
+        "role": "megapit_mgp_perbiogeosample",
+        "path": "downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perbiogeosample.2013-03.basic.20251204T185046Z.csv",
+        "product": "DP1.00096.001",
+        "month": "2013-03",
+        "release": "RELEASE-2026",
+        "bytes": 4117,
+        "sha256": "1fb305181e6dc2be882cfdcbaf1ffaba6c2a947f4f41be5dd7f0fff445240b80",
+        "listed_md5": "2475bf6fbb8e772fe0b345eaa1e5031e",
+        "retrieved_utc": "2026-11-02T22:41:40.236347+00:00",
+        "manifest": "downloads/manifest.json",
+        "manifest_sha256": "26bd9fea431355288f5b4143c517ae34ca69d27370e5bb4fd6cb4d55f56d434c"
+      },
+      {
+        "role": "megapit_mgp_perbulksample",
+        "path": "downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perbulksample.2013-03.basic.20251204T185046Z.csv",
+        "product": "DP1.00096.001",
+        "month": "2013-03",
+        "release": "RELEASE-2026",
+        "bytes": 2066,
+        "sha256": "648a9b63a14bb8183a5e27dc341b0781396ac800e75a0fdb56299c74d01b1b74",
+        "listed_md5": "938673b4726a23652e896b74726fe785",
+        "retrieved_utc": "2026-11-02T22:41:40.236347+00:00",
+        "manifest": "downloads/manifest.json",
+        "manifest_sha256": "26bd9fea431355288f5b4143c517ae34ca69d27370e5bb4fd6cb4d55f56d434c"
+      },
+      {
+        "role": "megapit_mgp_permegapit",
+        "path": "downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_permegapit.2013-03.basic.20251204T185046Z.csv",
+        "product": "DP1.00096.001",
+        "month": "2013-03",
+        "release": "RELEASE-2026",
+        "bytes": 944,
+        "sha256": "bc9bea7afceef12f9f8241537a6eb45c8891153f378ea219a89c2ab67ecb86fd",
+        "listed_md5": "947383e99dab95e11aed64f78e8f4d58",
+        "retrieved_utc": "2026-11-02T22:41:40.236347+00:00",
+        "manifest": "downloads/manifest.json",
+        "manifest_sha256": "26bd9fea431355288f5b4143c517ae34ca69d27370e5bb4fd6cb4d55f56d434c"
+      }
+    ]
+  },
+  "candidates": {
+    "MOAB_plot2_2025-05": {
+      "site": "MOAB",
+      "plot": "2",
+      "month": "2025-05",
+      "rows": 1488,
+      "first_start_utc": "2025-05-01T00:00:00Z",
+      "last_start_utc": "2025-05-31T23:30:00Z",
+      "corrected_depths_m_below_surface": {
+        "501": 0.055,
+        "502": 0.155,
+        "503": 0.255
+      },
+      "per_level": {
+        "501": {
+          "rows": 1488,
+          "passing": 1284,
+          "finalQF1": 204,
+          "sciReview_nonblank": 0,
+          "vswc_min": 0.0281,
+          "vswc_max": 0.094,
+          "uncertainty_values_m3m3": {
+            "0.2135": 1483,
+            "null": 5
+          },
+          "calDefaultQM_values": {
+            "100.00": 1408,
+            "99.00": 61,
+            "0.00": 5
+          }
+        },
+        "502": {
+          "rows": 1488,
+          "passing": 1197,
+          "finalQF1": 291,
+          "sciReview_nonblank": 0,
+          "vswc_min": 0.0485,
+          "vswc_max": 0.0656,
+          "uncertainty_values_m3m3": {
+            "0.2135": 1483,
+            "null": 5
+          },
+          "calDefaultQM_values": {
+            "100.00": 1328,
+            "99.00": 71,
+            "98.00": 8
+          }
+        },
+        "503": {
+          "rows": 1488,
+          "passing": 1330,
+          "finalQF1": 158,
+          "sciReview_nonblank": 0,
+          "vswc_min": 0.0472,
+          "vswc_max": 0.0578,
+          "uncertainty_values_m3m3": {
+            "0.2135": 1483,
+            "null": 5
+          },
+          "calDefaultQM_values": {
+            "100.00": 1408,
+            "99.00": 61,
+            "0.00": 5
+          }
+        }
+      },
+      "joint_simultaneous_three_level_passing": 939,
+      "rain": {
+        "primary_tipping": {
+          "rows": 1488,
+          "passing": 1488,
+          "nonzero_passing_intervals": 18,
+          "total_passing_mm": 24.093
+        }
+      },
+      "candidate_dry_runs_declared_rule_primary_gauge": [
+        {
+          "run_start_utc": "2025-05-01T00:00:00Z",
+          "run_last_start_utc": "2025-05-06T23:30:00Z",
+          "run_hours": 144.0,
+          "evaluable_start_utc": "2025-05-04T00:00:00Z",
+          "evaluable_hours": 72.0,
+          "simultaneous_passing_half_hours": 51,
+          "simultaneous_fraction": 0.3542,
+          "longest_simultaneous_gap_half_hours": 17,
+          "per_level_passing": {
+            "501": 97,
+            "502": 74,
+            "503": 144
+          },
+          "censored_at_month_start": true,
+          "censored_at_month_end": false,
+          "label": "A",
+          "interval_id": "MOAB-2-A",
+          "descriptive_statistics_available": false
+        },
+        {
+          "run_start_utc": "2025-05-08T00:30:00Z",
+          "run_last_start_utc": "2025-05-14T17:00:00Z",
+          "run_hours": 161.0,
+          "evaluable_start_utc": "2025-05-11T00:30:00Z",
+          "evaluable_hours": 89.0,
+          "simultaneous_passing_half_hours": 110,
+          "simultaneous_fraction": 0.618,
+          "longest_simultaneous_gap_half_hours": 12,
+          "per_level_passing": {
+            "501": 153,
+            "502": 143,
+            "503": 142
+          },
+          "censored_at_month_start": false,
+          "censored_at_month_end": false,
+          "label": "B",
+          "interval_id": "MOAB-2-B",
+          "descriptive_statistics_available": true
+        },
+        {
+          "run_start_utc": "2025-05-19T03:00:00Z",
+          "run_last_start_utc": "2025-05-31T23:30:00Z",
+          "run_hours": 309.0,
+          "evaluable_start_utc": "2025-05-22T03:00:00Z",
+          "evaluable_hours": 237.0,
+          "simultaneous_passing_half_hours": 324,
+          "simultaneous_fraction": 0.6835,
+          "longest_simultaneous_gap_half_hours": 9,
+          "per_level_passing": {
+            "501": 434,
+            "502": 411,
+            "503": 415
+          },
+          "censored_at_month_start": false,
+          "censored_at_month_end": true,
+          "label": "C",
+          "interval_id": "MOAB-2-C",
+          "descriptive_statistics_available": true
+        }
+      ],
+      "candidate_rule": "PROPOSED analytical rule (not accepted science): contiguous rain-free passing half-hours, run >= 120 h, evaluable = run minus first 72 h; UTC half-hour starts"
+    },
+    "JORN_plot4_2025-04": {
+      "site": "JORN",
+      "plot": "4",
+      "month": "2025-04",
+      "rows": 1440,
+      "first_start_utc": "2025-04-01T00:00:00Z",
+      "last_start_utc": "2025-04-30T23:30:00Z",
+      "corrected_depths_m_below_surface": {
+        "501": 0.058,
+        "502": 0.158,
+        "503": 0.258
+      },
+      "per_level": {
+        "501": {
+          "rows": 1440,
+          "passing": 1217,
+          "finalQF1": 223,
+          "sciReview_nonblank": 0,
+          "vswc_min": 0.0243,
+          "vswc_max": 0.281,
+          "uncertainty_values_m3m3": {
+            "0.2135": 1347,
+            "0.2136": 35,
+            "0.2137": 9
+          },
+          "calDefaultQM_values": {
+            "100.00": 1327,
+            "99.00": 16,
+            "98.00": 7
+          }
+        },
+        "502": {
+          "rows": 1440,
+          "passing": 1379,
+          "finalQF1": 61,
+          "sciReview_nonblank": 0,
+          "vswc_min": 0.0575,
+          "vswc_max": 0.0744,
+          "uncertainty_values_m3m3": {
+            "0.2135": 1439,
+            "null": 1
+          },
+          "calDefaultQM_values": {
+            "100.00": 1430,
+            "96.00": 1,
+            "81.00": 1
+          }
+        },
+        "503": {
+          "rows": 1440,
+          "passing": 975,
+          "finalQF1": 465,
+          "sciReview_nonblank": 0,
+          "vswc_min": 0.0524,
+          "vswc_max": 0.0618,
+          "uncertainty_values_m3m3": {
+            "0.2135": 1439,
+            "null": 1
+          },
+          "calDefaultQM_values": {
+            "100.00": 1430,
+            "96.00": 1,
+            "81.00": 1
+          }
+        }
+      },
+      "joint_simultaneous_three_level_passing": 785,
+      "rain": {
+        "primary_tipping": {
+          "rows": 1440,
+          "passing": 1440,
+          "nonzero_passing_intervals": 9,
+          "total_passing_mm": 5.487
+        },
+        "throughfall_plot001": {
+          "rows": 1440,
+          "passing": 1440,
+          "nonzero_passing_intervals": 13,
+          "total_passing_mm": 5.606
+        },
+        "throughfall_plot002": {
+          "rows": 1440,
+          "passing": 1440,
+          "nonzero_passing_intervals": 13,
+          "total_passing_mm": 5.679
+        },
+        "throughfall_plot004": {
+          "rows": 1440,
+          "passing": 1440,
+          "nonzero_passing_intervals": 14,
+          "total_passing_mm": 6.726
+        },
+        "throughfall_plot005": {
+          "rows": 1440,
+          "passing": 1440,
+          "nonzero_passing_intervals": 13,
+          "total_passing_mm": 6.938
+        }
+      },
+      "candidate_dry_runs_declared_rule_primary_gauge": [
+        {
+          "run_start_utc": "2025-04-05T21:00:00Z",
+          "run_last_start_utc": "2025-04-22T16:00:00Z",
+          "run_hours": 403.5,
+          "evaluable_start_utc": "2025-04-08T21:00:00Z",
+          "evaluable_hours": 331.5,
+          "simultaneous_passing_half_hours": 431,
+          "simultaneous_fraction": 0.6501,
+          "longest_simultaneous_gap_half_hours": 13,
+          "per_level_passing": {
+            "501": 634,
+            "502": 628,
+            "503": 475
+          },
+          "censored_at_month_start": false,
+          "censored_at_month_end": false,
+          "label": "A",
+          "interval_id": "JORN-4-A",
+          "descriptive_statistics_available": true
+        },
+        {
+          "run_start_utc": "2025-04-22T17:00:00Z",
+          "run_last_start_utc": "2025-04-30T23:30:00Z",
+          "run_hours": 199.0,
+          "evaluable_start_utc": "2025-04-25T17:00:00Z",
+          "evaluable_hours": 127.0,
+          "simultaneous_passing_half_hours": 128,
+          "simultaneous_fraction": 0.5039,
+          "longest_simultaneous_gap_half_hours": 26,
+          "per_level_passing": {
+            "501": 159,
+            "502": 245,
+            "503": 225
+          },
+          "censored_at_month_start": false,
+          "censored_at_month_end": true,
+          "label": "B",
+          "interval_id": "JORN-4-B",
+          "descriptive_statistics_available": true
+        }
+      ],
+      "candidate_rule": "PROPOSED analytical rule (not accepted science): contiguous rain-free passing half-hours, run >= 120 h, evaluable = run minus first 72 h; UTC half-hour starts"
+    }
+  },
+  "point_probe_vs_layer": "the three shallow values are point measurements at the corrected depths, not layer averages or horizon values",
+  "sensor_depths_cm": {
+    "JORN_plot4": [
+      5.8,
+      15.8,
+      25.8
+    ],
+    "MOAB_plot2": [
+      5.5,
+      15.5,
+      25.5
+    ]
+  },
+  "soil_temperature_JORN_plot4_2025-04": {
+    "rows_per_level": 1440,
+    "passing": {
+      "004.502": 1435,
+      "004.503": 1434,
+      "004.504": 1435
+    },
+    "vertical_code_note": "ST 502/503/504 (-0.06/-0.16/-0.26 m) are depth-equivalents of SWC 501/502/503; ST codes are not SWC codes",
+    "MOAB": "none retrieved"
+  },
+  "descriptive_dry_interval_statistics_not_corrected_for_temperature": {
+    "MOAB-2-C": {
+      "SWC_501": {
+        "pass_half_hours": 434,
+        "local_days_with_ge40_passing": 9,
+        "mean_daily_range_m3m3": 0.00683,
+        "first_full_day_median": 0.0595,
+        "last_full_day_median": 0.03055
+      },
+      "SWC_502": {
+        "pass_half_hours": 411,
+        "local_days_with_ge40_passing": 5,
+        "mean_daily_range_m3m3": 0.00468,
+        "first_full_day_median": 0.0566,
+        "last_full_day_median": 0.0537
+      },
+      "SWC_503": {
+        "pass_half_hours": 415,
+        "local_days_with_ge40_passing": 5,
+        "mean_daily_range_m3m3": 0.00334,
+        "first_full_day_median": 0.052,
+        "last_full_day_median": 0.0505
+      }
+    },
+    "MOAB-2-B": {
+      "SWC_501": {
+        "pass_half_hours": 153,
+        "local_days_with_ge40_passing": 2,
+        "mean_daily_range_m3m3": 0.00915,
+        "first_full_day_median": 0.06785,
+        "last_full_day_median": 0.0491
+      },
+      "SWC_502": {
+        "pass_half_hours": 143,
+        "local_days_with_ge40_passing": 1,
+        "mean_daily_range_m3m3": 0.0033,
+        "first_full_day_median": 0.0604,
+        "last_full_day_median": 0.0604
+      },
+      "SWC_503": {
+        "pass_half_hours": 142,
+        "local_days_with_ge40_passing": 1,
+        "mean_daily_range_m3m3": 0.0038,
+        "first_full_day_median": 0.05465,
+        "last_full_day_median": 0.05465
+      }
+    },
+    "JORN-4-A": {
+      "SWC_501": {
+        "pass_half_hours": 634,
+        "local_days_with_ge40_passing": 12,
+        "mean_daily_range_m3m3": 0.00789,
+        "first_full_day_median": 0.0398,
+        "last_full_day_median": 0.0292
+      },
+      "SWC_502": {
+        "pass_half_hours": 628,
+        "local_days_with_ge40_passing": 12,
+        "mean_daily_range_m3m3": 0.00615,
+        "first_full_day_median": 0.0677,
+        "last_full_day_median": 0.0648
+      },
+      "SWC_503": {
+        "pass_half_hours": 475,
+        "local_days_with_ge40_passing": 4,
+        "mean_daily_range_m3m3": 0.00372,
+        "first_full_day_median": 0.05835,
+        "last_full_day_median": 0.0554
+      },
+      "ST_502": {
+        "pass_half_hours": 663,
+        "mean_daily_range_C": 15.43
+      },
+      "ST_503": {
+        "pass_half_hours": 663,
+        "mean_daily_range_C": 5.47
+      },
+      "ST_504": {
+        "pass_half_hours": 663,
+        "mean_daily_range_C": 2.57
+      }
+    },
+    "JORN-4-B": {
+      "SWC_501": {
+        "pass_half_hours": 159,
+        "local_days_with_ge40_passing": 2,
+        "mean_daily_range_m3m3": 0.00735,
+        "first_full_day_median": 0.0274,
+        "last_full_day_median": 0.0278
+      },
+      "SWC_502": {
+        "pass_half_hours": 245,
+        "local_days_with_ge40_passing": 4,
+        "mean_daily_range_m3m3": 0.00492,
+        "first_full_day_median": 0.0636,
+        "last_full_day_median": 0.0608
+      },
+      "SWC_503": {
+        "pass_half_hours": 225,
+        "local_days_with_ge40_passing": 4,
+        "mean_daily_range_m3m3": 0.00367,
+        "first_full_day_median": 0.0573,
+        "last_full_day_median": 0.0553
+      },
+      "ST_502": {
+        "pass_half_hours": 254,
+        "mean_daily_range_C": 15.58
+      },
+      "ST_503": {
+        "pass_half_hours": 254,
+        "mean_daily_range_C": 5.13
+      },
+      "ST_504": {
+        "pass_half_hours": 254,
+        "mean_daily_range_C": 2.14
+      }
+    }
+  },
+  "megapit_JORN_2013-03": {
+    "horizons_cm": [
+      {
+        "horizonName": "A",
+        "horizonTopDepth": "0.0",
+        "horizonBottomDepth": "18.0"
+      },
+      {
+        "horizonName": "Bw",
+        "horizonTopDepth": "18.0",
+        "horizonBottomDepth": "46.0"
+      },
+      {
+        "horizonName": "2Bk",
+        "horizonTopDepth": "46.0",
+        "horizonBottomDepth": "78.0"
+      },
+      {
+        "horizonName": "2Bkkm",
+        "horizonTopDepth": "78.0",
+        "horizonBottomDepth": "110.0"
+      },
+      {
+        "horizonName": "2Bkk1",
+        "horizonTopDepth": "110.0",
+        "horizonBottomDepth": "173.0"
+      },
+      {
+        "horizonName": "2Bkk2",
+        "horizonTopDepth": "173.0",
+        "horizonBottomDepth": "200.0"
+      }
+    ],
+    "texture_percent": [
+      {
+        "horizonName": "Bw",
+        "biogeoSampleType": "Regular",
+        "biogeoHorizonProportion": "1.0",
+        "coarseFrag2To5": "11",
+        "coarseFrag5To20": "2",
+        "sandTotal": "83.7",
+        "siltTotal": "7.9",
+        "clayTotal": "8.4",
+        "carbonateClay": "0.0"
+      },
+      {
+        "horizonName": "2Bk",
+        "biogeoSampleType": "Regular",
+        "biogeoHorizonProportion": "1.0",
+        "coarseFrag2To5": "25",
+        "coarseFrag5To20": "14",
+        "sandTotal": "78.8",
+        "siltTotal": "8.6",
+        "clayTotal": "12.6",
+        "carbonateClay": "1.8"
+      },
+      {
+        "horizonName": "2Bkkm",
+        "biogeoSampleType": "Regular",
+        "biogeoHorizonProportion": "1.0",
+        "coarseFrag2To5": "83",
+        "coarseFrag5To20": "505",
+        "sandTotal": "72.7",
+        "siltTotal": "12.6",
+        "clayTotal": "14.7",
+        "carbonateClay": "10.0"
+      },
+      {
+        "horizonName": "A",
+        "biogeoSampleType": "Regular",
+        "biogeoHorizonProportion": "1.0",
+        "coarseFrag2To5": "4",
+        "coarseFrag5To20": "13",
+        "sandTotal": "86.7",
+        "siltTotal": "6.2",
+        "clayTotal": "7.1",
+        "carbonateClay": ""
+      },
+      {
+        "horizonName": "2Bkk2",
+        "biogeoSampleType": "Regular",
+        "biogeoHorizonProportion": "1.0",
+        "coarseFrag2To5": "96",
+        "coarseFrag5To20": "412",
+        "sandTotal": "85.1",
+        "siltTotal": "10.4",
+        "clayTotal": "4.5",
+        "carbonateClay": "1.7"
+      },
+      {
+        "horizonName": "2Bkk1",
+        "biogeoSampleType": "Regular",
+        "biogeoHorizonProportion": "1.0",
+        "coarseFrag2To5": "77",
+        "coarseFrag5To20": "393",
+        "sandTotal": "68.2",
+        "siltTotal": "15.0",
+        "clayTotal": "16.8",
+        "carbonateClay": "11.6"
+      }
+    ],
+    "bulk_density": [
+      {
+        "horizonName": "Bw",
+        "bulkDensSampleType": "Regular",
+        "bulkDensTopDepth": "23.0",
+        "bulkDensBottomDepth": "33.0",
+        "bulkDensExclCoarseFrag": "0.9035",
+        "bulkDensHorizonProportion": "1.0"
+      },
+      {
+        "horizonName": "2Bkk2",
+        "bulkDensSampleType": "Regular",
+        "bulkDensTopDepth": "192.0",
+        "bulkDensBottomDepth": "197.0",
+        "bulkDensExclCoarseFrag": "1.6396",
+        "bulkDensHorizonProportion": "1.0"
+      },
+      {
+        "horizonName": "A",
+        "bulkDensSampleType": "Regular",
+        "bulkDensTopDepth": "0.0",
+        "bulkDensBottomDepth": "110.0",
+        "bulkDensExclCoarseFrag": "1.4196",
+        "bulkDensHorizonProportion": "1.0"
+      },
+      {
+        "horizonName": "2Bk",
+        "bulkDensSampleType": "Regular",
+        "bulkDensTopDepth": "50.0",
+        "bulkDensBottomDepth": "60.0",
+        "bulkDensExclCoarseFrag": "1.6451",
+        "bulkDensHorizonProportion": "1.0"
+      },
+      {
+        "horizonName": "2Bkkm",
+        "bulkDensSampleType": "Regular",
+        "bulkDensTopDepth": "96.0",
+        "bulkDensBottomDepth": "99.5",
+        "bulkDensExclCoarseFrag": "0.8985",
+        "bulkDensHorizonProportion": "1.0"
+      },
+      {
+        "horizonName": "2Bkk1",
+        "bulkDensSampleType": "Regular",
+        "bulkDensTopDepth": "150.0",
+        "bulkDensBottomDepth": "153.5",
+        "bulkDensExclCoarseFrag": "0.4485",
+        "bulkDensHorizonProportion": "1.0"
+      }
+    ],
+    "pit": {
+      "pitDepth": "",
+      "soilSeries": "Nations",
+      "soilOrder": "Aridisol",
+      "soilSubgroup": "Typic Petrocalcids",
+      "collectDate": "2013-03-05",
+      "elevation": "1327.0"
+    },
+    "known_inconsistency_reported_verbatim": "horizon A bulk-density sample lists top 0.0 and bottom 110.0 cm; not corrected",
+    "limits": "ONE pit (2013-03); not hydraulic properties (no retention curves, Ks or diffusivity); horizon depth boundaries are pit descriptions, not model layers; MOAB megapit not downloaded"
+  },
+  "uncertainty_and_calibration": {
+    "VSWCExpUncert_m3m3": 0.2135,
+    "note": "the supplied expanded uncertainty is preserved and reported as is (original bytes untouched); it is large relative to the changes discussed here, does not by itself characterize the precision of relative changes and does not justify ignoring calibration or temperature drift; its magnitude is not a reason to discard it. Factory vs soil-specific calibration uncertainty and temperature artifacts are announced in the NEON 2026-11-09 notice; no thermal correction is invented and revised factory calibration is not absolute water truth"
+  },
+  "missing_forcings_and_properties": [
+    "air temperature (Tmin/Tmax) for both sites",
+    "humidity, radiation, wind (not required by the Hargreaves PET but absent)",
+    "adjacent months (MOAB Apr/Jun 2025; JORN Mar/May 2025) to uncensor run edges",
+    "MOAB soil texture / organic matter / density (no MOAB megapit retrieved)",
+    "MOAB soil temperature",
+    "measured hydraulic properties at either site",
+    "plant demand",
+    "measured lower-boundary flux"
+  ],
+  "pending_user_decisions_status": {
+    "D1_layer_geometry": {
+      "status": "PENDING",
+      "recommended_not_adopted": "three 10 cm layers 0-10/10-20/20-30 cm",
+      "alternatives": "bottom 50 cm or 100 cm"
+    },
+    "D2_evaporation_transpiration": {
+      "status": "PENDING",
+      "recommended_not_adopted": "zero E/T mechanism control + weather-driven soil-E sensitivity with plant T off (explicitly partial budget)",
+      "alternatives": "zero E/T only; wait for plant demand"
+    },
+    "D3_initialization": {
+      "status": "PENDING",
+      "recommended_not_adopted": "integrate the piecewise-linear first simultaneous passing probe profile with constant extension above/below",
+      "alternatives": "one probe value per layer"
+    },
+    "note": "no answers have arrived; no field-model run has been started"
+  },
+  "pins": {
+    "production_package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "production_files": 180,
+    "main": "b9a86ebd6eaa5c605562f232657e35922b9d40e7",
+    "source_commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+    "manuals_commit": "e7758d95f101c9c254b769e73aa91ce8febea366",
+    "merge": "86da29eb34ac62533be4b47d86b7cb22f5a24038",
+    "maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "maple_files": 412,
+    "leaf_commit": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "leaf_package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "leaf_files": 28,
+    "external_helper_benchmarks_spatial_mapping_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5"
+  },
+  "limits": [
+    "no result claim beyond local observations and provenance",
+    "integrity evidence is not scientific validation",
+    "30-minute values are autocorrelated, not independent replicates",
+    "candidate dry-run rules are proposals, not accepted science",
+    "two single-month candidates cannot validate fitted soil physical properties",
+    "no credential or token was read"
+  ],
+  "interval_label_convention": "interval_id = site-plot-letter; letters A/B/C follow chronological candidate order in that site/month. Statistics use these same IDs. MOAB-2-A has no descriptive-statistics block; no missing statistics are invented."
+}

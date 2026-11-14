@@ -1,0 +1,109 @@
+{
+  "schema": "syrup.phase3.plan_review/1",
+  "recorded_utc": "2026-11-14T07:52:09.398917+00:00",
+  "status": "ACCEPTED_PLAN_AND_DATA_AUDIT_PHYSICS_DECISIONS_PENDING",
+  "scope": "Observational validation design and audited input inventory; not a model run, fit, inferred physical diffusivity or field validation.",
+  "baseline_main": "b9a86ebd6eaa5c605562f232657e35922b9d40e7",
+  "sources": {
+    "production_package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "production_files": 180,
+    "main": "b9a86ebd6eaa5c605562f232657e35922b9d40e7",
+    "source_commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+    "manuals_commit": "e7758d95f101c9c254b769e73aa91ce8febea366",
+    "merge": "86da29eb34ac62533be4b47d86b7cb22f5a24038",
+    "maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "maple_files": 412,
+    "leaf_commit": "ff127d29bd1d40f17a1800ffeef87bf080343f67",
+    "leaf_package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+    "leaf_files": 28,
+    "external_helper_benchmarks_spatial_mapping_sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5"
+  },
+  "files": {
+    "AGENTS.md": {
+      "sha256": "e7c2c8b777be4275826d74519eb2c089aec4c873276089315c390d616bef7073",
+      "bytes": 44363
+    },
+    "claude.md": {
+      "sha256": "c5fa162c1f56efc6170e8cc2d128029e599f221161977a5ef819ffd984e10843",
+      "bytes": 41874
+    },
+    "docs/subsurface_hydrology/phase3_validation_plan.md": {
+      "sha256": "bce2fb667fe4351c37e9ead9d108c979895be5d684d52e1fc2bd7efc443f1f31",
+      "bytes": 16654
+    },
+    "docs/subsurface_hydrology/phase3_observation_inventory.md": {
+      "sha256": "40fc664d11cb6f96557d1fd06443d8ed32bc2f27fa5257ed9e85cc413699c7ae",
+      "bytes": 8414
+    },
+    "docs/subsurface_hydrology/phase3_observation_inventory.json": {
+      "sha256": "fc8b74ace7c32d24dd471baa9a316c3c4d46dcc63c56ea353fee99bbb0010ea8",
+      "bytes": 41093
+    }
+  },
+  "verification": {
+    "write_scope": [
+      "AGENTS.md",
+      "claude.md",
+      "docs/subsurface_hydrology/phase3_observation_inventory.json",
+      "docs/subsurface_hydrology/phase3_observation_inventory.md",
+      "docs/subsurface_hydrology/phase3_validation_plan.md"
+    ],
+    "production_files_unchanged": 180,
+    "selected_raw_files_and_manifest_hashes": 21,
+    "MOAB_plot2_2025-05": {
+      "levels": 3,
+      "joint_passing": 939,
+      "dry_intervals_recomputed": 3,
+      "depth_join": "PASS"
+    },
+    "JORN_plot4_2025-04": {
+      "levels": 3,
+      "joint_passing": 785,
+      "dry_intervals_recomputed": 2,
+      "depth_join": "PASS"
+    }
+  },
+  "raw_archive_integrity": {
+    "audited_manifest_entries": 795,
+    "raw_md5_pass": 746,
+    "quarantined_metadata_preserved": 49,
+    "scientific_admission_not_implied": true
+  },
+  "independent_workflow": {
+    "implementation_session": "2a8adbf7-da6b-4aa6-81c2-c8d30ce0e22a",
+    "independent_root_review_and_data_recomputation": "PASS",
+    "correction01": "Addressed persistence vs exchange skill, production d vs diagnostic D, observation-time matching, inventory-based initialization validation, field vs numerical closure, uncertainty and portable identities.",
+    "final_independent_claude_review_session": "32819cf0-dda7-4d74-836f-e607d3c8893f",
+    "final_review_report_sha256": "2085f4f6281d1357c62be711cd139962649f75eb4e7284022ffff5a7065dcd49",
+    "final_review_outcome": "No blocking confirmed defect; recommended explicit interval IDs applied by Root, statistics preserved. Fixed-offset clock clarified."
+  },
+  "model_tests_run_this_phase": 0,
+  "gpu_jobs_this_phase": 0,
+  "historical_manuals_receipts_source_locks_unchanged": true,
+  "decisions": {
+    "D1_layer_geometry": {
+      "status": "PENDING",
+      "recommended_not_adopted": "three 10 cm layers 0-10/10-20/20-30 cm",
+      "alternatives": "bottom 50 cm or 100 cm"
+    },
+    "D2_evaporation_transpiration": {
+      "status": "PENDING",
+      "recommended_not_adopted": "zero E/T mechanism control + weather-driven soil-E sensitivity with plant T off (explicitly partial budget)",
+      "alternatives": "zero E/T only; wait for plant demand"
+    },
+    "D3_initialization": {
+      "status": "PENDING",
+      "recommended_not_adopted": "integrate the piecewise-linear first simultaneous passing probe profile with constant extension above/below",
+      "alternatives": "one probe value per layer"
+    },
+    "note": "no answers have arrived; no field-model run has been started"
+  },
+  "limits": [
+    "Field-dependent experiments await the three requested physics choices and explicit forcing/properties.",
+    "Air temperature and missing site properties are retrieval follow-ups, not measured values invented by the plan.",
+    "RELEASE-2026 remains pinned; the announced RELEASE-2027 needs separate data qualification.",
+    "Only numerical model water closure is directly required/verified by the native solver; these observations alone cannot close the complete field budget."
+  ],
+  "publication_note": "This receipt names the prior baseline and accepted production sources; it makes no circular reference to a commit containing itself."
+}
