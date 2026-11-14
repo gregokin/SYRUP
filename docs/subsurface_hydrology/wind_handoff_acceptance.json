@@ -1,0 +1,158 @@
+{
+  "schema": "masy_syrup.wind_handoff.acceptance.v1",
+  "accepted_utc": "2026-11-14T04:06:46.413007+00:00",
+  "status": "accepted",
+  "scope": "Dense NumPy CPU public native wind/live-water interface and MASY cursor connection; not complete combined CLI",
+  "baseline_masy_commit": "91eb9277dcda7758288aa97e7d06a5142308b86b",
+  "baseline_syrup_commit": "02388adb70b7f1f22b33b6b3d5f1249e223842e5",
+  "native_package_sha256": "0bc7dc17c7eaa0e7445896759654bb3fff0649a14bcf43e79115b0cee2afed76",
+  "native_package_file_count": 170,
+  "baseline_native_package_files_unchanged": 169,
+  "maple_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "maple_package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "dependency_selection": "explicit prior immutable qualified MAPLE9f, not latest live main",
+  "reviews": [
+    {
+      "session_id": "b4d9690d-dca7-4058-8567-2e2ea9cb2a36",
+      "scope": "review_01",
+      "exit_code": 0,
+      "reaped": true,
+      "pid": 1095901,
+      "start_ticks": "209916234",
+      "wall_s": 874.3295314949937,
+      "submitted_sources_sha256": "18d7b2d2351329e1daae36505c508e8bff825f86b9b911090e4b5a9e9a5b0095",
+      "raw_stdout_sha256": "7c3b9f873f67cc0f490dbd7ceffc6a1d65d5a893ea456d5e64d75f484874277b",
+      "allowed_tools": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "saved_simulation_payloads_submitted": false
+    },
+    {
+      "session_id": "22e3e675-ecef-4eba-8507-d749db358176",
+      "scope": "review_delta_02",
+      "exit_code": 0,
+      "reaped": true,
+      "pid": 1110226,
+      "start_ticks": "209987384",
+      "wall_s": 193.81207794882357,
+      "submitted_sources_sha256": "035a6d4f9256ea29fc74f0c053fb3873eb9daaafeb98e4ee5df53e9ab8c6e87c",
+      "raw_stdout_sha256": "5ea45ec757ff5ac04d98e86a519db1f50d27ac423860bd655b138df4b85eabde",
+      "allowed_tools": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "saved_simulation_payloads_submitted": false
+    },
+    {
+      "session_id": "5b621ad8-66f8-4c61-85e7-46102f7784d4",
+      "scope": "review_delta_03",
+      "exit_code": 0,
+      "reaped": true,
+      "pid": 1277782,
+      "start_ticks": "210031285",
+      "wall_s": 150.00192191498354,
+      "submitted_sources_sha256": "2c6d0e0dc67c07bbb7076fd8394d49719729df2de02a14ff985ac17f8a59f1ec",
+      "raw_stdout_sha256": "bae5c45f4441d78a47f8b407ec4a4e455a7f4905fc0386f095c9c33b80175038",
+      "allowed_tools": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "saved_simulation_payloads_submitted": false
+    }
+  ],
+  "unresolved_high_or_medium_findings": 0,
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "low",
+      "finding": "handoff cohort cap accepted only after wind",
+      "disposition": "fixed; preflight compares actual configured pool; regression passes"
+    },
+    {
+      "id": "R2",
+      "severity": "low",
+      "finding": "nested export receipt fields have different scopes",
+      "disposition": "documented: wind total once; handoff finalizer value already included"
+    },
+    {
+      "id": "R3",
+      "severity": "low",
+      "finding": "pending native head error unwrapped",
+      "disposition": "fixed typed not_ready in execute/checkpoint_record; regression passes"
+    },
+    {
+      "id": "R4",
+      "severity": "low",
+      "finding": "stale retirement could publish a second head",
+      "disposition": "fixed actual authority plus NativeStaleError guard; actual supersession/release regressions pass"
+    },
+    {
+      "id": "C1",
+      "severity": "resource accounting",
+      "finding": "strided hash scratch underreserved",
+      "disposition": "fixed modeled chunk and all affected admissions; actual copy regression passes; independently reviewed"
+    }
+  ],
+  "checks": [
+    {
+      "tested_syrup_package_sha256": "0bc7dc17c7eaa0e7445896759654bb3fff0649a14bcf43e79115b0cee2afed76",
+      "label": "native_handoff_root_03",
+      "passed": 68,
+      "deselected_or_explicit_source_skips": 0,
+      "exit_code": 0,
+      "reaped": true,
+      "wall_s": 10.549791672732681,
+      "result_sha256": "d75d62fb79b1444e88079148bf4160bc4b28abb2ce2cb256190c0a186d3380b6",
+      "stdout_sha256": "8a704077d2623689c10ff06c79a872c2a32c389eec62949b44e934bcc348d389",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "tested_syrup_package_sha256": "0bc7dc17c7eaa0e7445896759654bb3fff0649a14bcf43e79115b0cee2afed76",
+      "label": "masy_handoff_04",
+      "passed": 15,
+      "deselected_or_explicit_source_skips": 0,
+      "exit_code": 0,
+      "reaped": true,
+      "wall_s": 153.08256866317242,
+      "result_sha256": "883e06916d0e306fe64819b5e7b811fd1ee6d5562c53f89dafb144bb6ce91d15",
+      "stdout_sha256": "eec7c0138d67a992590435972d65aa01c9e3c3403a3c752ed3dfed343b4652e0",
+      "stderr_sha256": "0901a79997b08f2986529e216be2c57948a2e9c7d7ca90dda6d3ed95e067f2d3"
+    },
+    {
+      "tested_syrup_package_sha256": "4f14e88464511ecfe57b830ccd1fbb27e79a0fe1d5e3730135c62d7ce486b83c",
+      "label": "native_regressions_01",
+      "passed": 28,
+      "deselected_or_explicit_source_skips": 8,
+      "exit_code": 0,
+      "reaped": true,
+      "wall_s": 196.90010062931105,
+      "result_sha256": "6848a0c1392adcf12171ef4168864964aa6b148b3e33d4b8f2adb7fc2750bbb3",
+      "stdout_sha256": "2bfeaf7f99421d9dbc6c253b52148db7094a8c8e22b052da0f0b7219f3e815f2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "tested_syrup_package_sha256": "82e9c0111b9d883f857fd2f28a21f1d8bd8f13e22d473796e736ca4204f30107",
+      "label": "legacy_daily_02",
+      "passed": 97,
+      "deselected_or_explicit_source_skips": 11,
+      "exit_code": 0,
+      "reaped": true,
+      "wall_s": 116.45751989306882,
+      "result_sha256": "42782143f8a1de7d8e7dc86f57188f60ab4a86374324e84e4504150b60a57fc3",
+      "stdout_sha256": "b7a09f5402a8e77ff2257f583a63ac083c7ca4718959149cb95e57d2e5246825",
+      "stderr_sha256": "74414372f68f728e14415586150289db5749bc1d68e708025a6289eea37dd93d"
+    }
+  ],
+  "runtime_environment_receipt_sha256": "ce0963c8517068ca0f03731145eac7e0178fc37858d4bacdca6bffede4ec2ae0",
+  "local_archive": "agent_handoffs/tasks/daily_wind_handoff_20261113",
+  "limits": [
+    "CPU Dense NumPy only; no GPU/Numba/windowed seam qualification",
+    "native-file/cursor binding requires caller atomic publication and static runtime preparation",
+    "fresh-process native restart/day verified separately from complete combined runtime provisioning",
+    "no LEAF bridge, active-event restart, field calibration or scale claim"
+  ]
+}
