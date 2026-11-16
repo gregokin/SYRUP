@@ -43,7 +43,7 @@ from maple_syrup import dependency_bundle
 from maple_syrup.provenance import source_tree_digest
 
 __all__ = [
-    "CUDA_SOURCE_PROFILE_NAME", "CURRENT_PROFILE_NAME", "REFERENCE_BUNDLE_ID", "COMPILED_CASE_FIELDS", "NATIVE_COMMIT", "PACKAGE_DIGEST", "PROFILE_NAME", "RESOLVED_PACKAGE_FIELDS",
+    "CUDA_SOURCE_PROFILE_NAME", "CURRENT_PROFILE_NAME", "CURRENT_CUDA_PROFILE_NAME", "REFERENCE_BUNDLE_ID", "COMPILED_CASE_FIELDS", "NATIVE_COMMIT", "PACKAGE_DIGEST", "PROFILE_NAME", "RESOLVED_PACKAGE_FIELDS",
     "CaseLimits", "NativeCaseAdmission", "NativeCaseProfileError", "NativeSourceProfile", "admit_package_case",
     "admit_single_file_case", "inspect_headers", "load_admitted_case", "verify_source_profile",
 ]
@@ -53,7 +53,8 @@ PROFILE_NAME = "native_maple_9f_case_latitude_cpu_v1"
 #: assert CuPy is installed/authentic or that any device exists, and it prepares no device arrays.
 CUDA_SOURCE_PROFILE_NAME = "native_maple_9f_case_latitude_cuda_v1"
 CURRENT_PROFILE_NAME = "native_maple_1dca_case_latitude_cpu_v1"
-_SOURCE_PROFILES = {PROFILE_NAME: False, CUDA_SOURCE_PROFILE_NAME: True, CURRENT_PROFILE_NAME: False}  # literal name -> device-runtime capability
+CURRENT_CUDA_PROFILE_NAME = "native_maple_1dca_case_latitude_cuda_v1"
+_SOURCE_PROFILES = {PROFILE_NAME: False, CUDA_SOURCE_PROFILE_NAME: True, CURRENT_PROFILE_NAME: False, CURRENT_CUDA_PROFILE_NAME: True}  # literal name -> device-runtime capability
 NATIVE_COMMIT = "9f466d2cfcd52991b24496cf67f4562d6268afa9"
 PACKAGE_DIGEST = "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
 PROJECT_DIGEST = "90fa69cf32afbec3bf5fb5a3cf682de44a80ea286322547e3c1cebb791241d25"
@@ -294,7 +295,7 @@ def _profile_pins(profile: str):
     """Exact descriptor selected by the sealed profile name; old defaults stay9f."""
     if type(profile) is not str or profile not in _SOURCE_PROFILES:
         raise NativeCaseProfileError(f"unknown native source profile {profile!r}")
-    if profile == CURRENT_PROFILE_NAME:
+    if profile in (CURRENT_PROFILE_NAME, CURRENT_CUDA_PROFILE_NAME):
         from maple_syrup import native_maple_1dca as current
         return current.PINS
     return dict(commit=NATIVE_COMMIT, package_digest=PACKAGE_DIGEST, project_digest=PROJECT_DIGEST,
@@ -310,8 +311,8 @@ def verify_source_profile(target: str | os.PathLike, *, expected_syrup_digest: s
     Refuses (before any case work): not materialized/mutated bundle, wrong bundle/origin/revision/distribution/recipe,
     a different package or pyproject digest, any imported ``maple.*`` module that is not the bundle's own byte-identical
     file (or a verified namespace package), a ``cupy`` import (CPU-only profile), or a SYRUP tree that differs from
-    `expected_syrup_digest` when given. `profile` is one of three literal names (default 9f CPU, unchanged); both CPU profiles
-    refuse a process that imported cupy. The 9f CUDA name is a source capability, not a claim that CuPy or a device is usable."""
+    `expected_syrup_digest` when given. `profile` is one of four literal names (default 9f CPU, unchanged); both CPU profiles
+    refuse a process that imported cupy. Each CUDA name is a source capability, not a claim that CuPy or a device is usable."""
     if type(profile) is not str or profile not in _SOURCE_PROFILES:
         raise NativeCaseProfileError(f"profile must be exactly one of {tuple(_SOURCE_PROFILES)}, got {profile!r}")
     pins = _profile_pins(profile)
@@ -564,7 +565,7 @@ def _resolve_single(nat, headers: _Headers, lat) -> str:
 
 
 def _check_compiled(nat, c, lat, label: str, profile_name: str = PROFILE_NAME) -> None:
-    if profile_name == CURRENT_PROFILE_NAME and c.leaf_vegetation is not None:
+    if profile_name in (CURRENT_PROFILE_NAME, CURRENT_CUDA_PROFILE_NAME) and c.leaf_vegetation is not None:
         raise NativeCaseProfileError(f"{label}: initial case must be bare; live LEAF is applied through the owning runtime adapter")
     if c.fixed_base_spec.present or c.fixed_base is not None or c.fixed_base_source is not None \
             or c.fixed_base_admission is not None or c.fixed_base_load_admission is not None:

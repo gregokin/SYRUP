@@ -1,11 +1,11 @@
 """Narrow, genuine DENSE-CUDA source association (candidate A1; nothing existing is edited or routed through this module).
 
-It answers ONE question for a later CUDA owner: is the imported `maple` package exactly one of two named, immutable native
-packages (the merged MAPLE39 package or the native9f package), and which genuine module/class objects does this process bind to
+It answers ONE question for a later CUDA owner: is the imported `maple` package exactly one of three named, immutable native
+packages (the merged MAPLE39, native9f or current native1dca package), and which genuine module/class objects does this process bind to
 that package? The answer is a sealed, factory-minted association record. It is EVIDENCE OF ASSOCIATION, not CPU/GPU physics
 acceptance and not a device-capability claim; it does not touch a device, an array or CuPy.
 
-* Registry: two module-private literal package digests under two distinct profile names. There is no caller-supplied digest, no
+* Registry: three module-private literal package digests under distinct profile names. There is no caller-supplied digest, no
   generic whitelist, no extension API and no fallback; an unknown profile or a digest of the other family is a typed refusal.
 * Cold verification (`verify_dense_cuda_source`) runs only after its streamed-hash stage was ADMITTED against the caller's
   `available_bytes_fn` + reserve; class/binding checks that need no hash precede the hash. The hash is the process-cached
@@ -46,6 +46,7 @@ __all__ = [
     "DenseCudaSourceProfileError",
     "PROFILE_NATIVE39",
     "PROFILE_NATIVE9F",
+    "PROFILE_NATIVE1DCA",
     "MAX_RECORD_PATH_CHARS",
     "RECORD_RETAINED_BYTES",
     "check_dense_cuda_source_hot",
@@ -58,10 +59,13 @@ __all__ = [
 
 PROFILE_NATIVE39 = "native39_dense_cuda"
 PROFILE_NATIVE9F = "native9f_dense_cuda"
+PROFILE_NATIVE1DCA = "native1dca_dense_cuda"
 #: module-private, immutable; deliberately not derived from or added to any other source list
 _REGISTRY = types.MappingProxyType({
     PROFILE_NATIVE39: types.MappingProxyType(
         {"family": "native39", "package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec"}),
+    PROFILE_NATIVE1DCA: types.MappingProxyType(
+        {"family": "native1dca", "package_sha256": "191416153d3eca03e0b5e0817720d1365055de5b0b37391ac95454321aee7d68"}),
     PROFILE_NATIVE9F: types.MappingProxyType(
         {"family": "native9f", "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"}),
 })

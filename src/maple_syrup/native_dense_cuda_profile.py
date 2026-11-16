@@ -47,10 +47,19 @@ from maple_syrup import native_dense_profile as ndp
 from maple_syrup import sediment_bed as sb
 from maple_syrup import subsurface as ss
 
-__all__ = ["PROFILE_NAME", "H_AUTHORITY", "NativeDenseCudaPlan", "NativeDenseCudaPreparation", "NativeDenseCudaProfileError",
+__all__ = ["PROFILE_NAME", "CURRENT_PROFILE_NAME", "H_AUTHORITY", "NativeDenseCudaPlan", "NativeDenseCudaPreparation", "NativeDenseCudaProfileError",
            "NativeDenseCudaMemoryError", "plan_native_dense_cuda", "prepare_native_dense_cuda_case"]
 
 PROFILE_NAME = "native_maple_9f_dense_cuda_v1"
+CURRENT_PROFILE_NAME = "native_maple_1dca_dense_cuda_v1"
+
+def _profiles(source_name):
+    if source_name == ncp.CUDA_SOURCE_PROFILE_NAME:
+        return PROFILE_NAME, dcs.PROFILE_NATIVE9F
+    if source_name == ncp.CURRENT_CUDA_PROFILE_NAME:
+        return CURRENT_PROFILE_NAME, dcs.PROFILE_NATIVE1DCA
+    raise NativeDenseCudaProfileError("an explicit qualified CUDA source admission is required")
+
 H_AUTHORITY = "device_bed.water.depth_m"
 OWN_RECORD_RETAINED_BYTES = 8192  # sealed payload mapping (~24 entries), counters mapping and tuples; independent of N, K, V, L
 CUPY_PINNED_STAGING = "largest_transferred_leaf"  # conservative host staging allowance (unverified; Root measures)
@@ -97,7 +106,7 @@ def _check_args(admission, device_id, host_reserve, device_reserve, backend, lim
         payload = admission._payload("admission")
     except ncp.NativeCaseProfileError as exc:
         raise NativeDenseCudaProfileError(f"unauthenticated admission: {exc}") from exc
-    if payload["profile_name"] != ncp.CUDA_SOURCE_PROFILE_NAME:
+    if payload["profile_name"] not in (ncp.CUDA_SOURCE_PROFILE_NAME, ncp.CURRENT_CUDA_PROFILE_NAME):
         raise NativeDenseCudaProfileError(
             f"the device bed preparation requires a {ncp.CUDA_SOURCE_PROFILE_NAME} admission, got {payload['profile_name']!r} "
             f"(a {ncp.PROFILE_NAME} CPU admission is never accepted here)")
@@ -198,7 +207,7 @@ def _plan(compiled, payload, meta, dev, hr, dr) -> NativeDenseCudaPlan:
     n_occ = int(inv["n_leaves"]) + 1
     largest = max(x[3] for x in leaves)
     dense = meta["dense"]
-    src = dcs.plan_source_verification(dcs.PROFILE_NATIVE9F)
+    src = dcs.plan_source_verification(_profiles(payload["profile_name"])[1])
     chunk = min(_ls.HASH_CHUNK_BYTES, max(largest, 8))
     host_stages = {
         "stage_source_audit": meta["audit"]["total"],
@@ -218,7 +227,7 @@ def _plan(compiled, payload, meta, dev, hr, dr) -> NativeDenseCudaPlan:
                     ("allocator_rounding", ALLOCATOR_ROUNDING_BYTES * n_occ), *(("validation_" + k, v) for k, v in scratch.items()),
                     ("validation_scratch", sum(scratch.values())))
     device_required = transfer_bytes + ALLOCATOR_ROUNDING_BYTES * n_occ + sum(scratch.values())
-    return NativeDenseCudaPlan(PROFILE_NAME, (ny, nx), V, K, dev, n_occ, int(inv["n_aliased_leaves"]), transfer_bytes, frac_bytes,
+    return NativeDenseCudaPlan(_profiles(payload["profile_name"])[0], (ny, nx), V, K, dev, n_occ, int(inv["n_aliased_leaves"]), transfer_bytes, frac_bytes,
                                host_terms, device_terms, host_required, device_required, hr, dr, meta["resident"], src.cold,
                                frac_bytes, tuple(leaves))
 
@@ -483,7 +492,7 @@ def _cold_checks(admission, plan, compiled, meta, host_fn, hr):
     except ncp.NativeCaseProfileError as exc:
         raise NativeDenseCudaProfileError(f"cold source/case recheck refused: {exc}") from exc
     try:
-        src = dcs.verify_dense_cuda_source(dcs.PROFILE_NATIVE9F, available_bytes_fn=host_fn,
+        src = dcs.verify_dense_cuda_source(_profiles(admission.profile_name)[1], available_bytes_fn=host_fn,
                                            reserve_bytes=hr + dcs.RECORD_RETAINED_BYTES + OWN_RECORD_RETAINED_BYTES)
     except dcs.DenseCudaSourceError as exc:
         raise NativeDenseCudaProfileError(f"dense-CUDA source verification refused: {exc}") from exc
@@ -537,7 +546,7 @@ def prepare_native_dense_cuda_case(admission, *, device_id: int, caller_host_res
               *(("host_" + k, v) for k, v in plan.host_terms), *(("device_" + k, v) for k, v in plan.device_terms))
     obj = object.__new__(NativeDenseCudaPreparation)
     _SEALED[obj] = types.MappingProxyType(dict(
-        profile_name=PROFILE_NAME, source_profile=ncp.CUDA_SOURCE_PROFILE_NAME, bundle_id=meta["bundle_id"],
+        profile_name=plan.profile_name, source_profile=admission.profile_name, bundle_id=meta["bundle_id"],
         package_digest=admission.package_digest, syrup_package_digest=admission.syrup_package_digest,
         case_identity_sha256=admission.case_identity_sha256, latitude_deg=admission.latitude_deg, route=admission.route,
         shape=meta["shape"], n_voxels=meta["n_voxels"], n_classes=meta["n_classes"], class_ids=meta["class_ids"],
@@ -556,7 +565,7 @@ def _recheck(p, host_reserve, device_reserve, host_fn, device_fn) -> None:
     scratch = dict(plan.device_terms)["validation_scratch"]
     _admit(plan, host_fn, device_fn, device_required=scratch, stage="recheck")
     src, host_digest = _cold_checks(admission, plan, compiled, meta, host_fn, plan.caller_host_reserve_bytes)
-    dcs.check_dense_cuda_source_hot(p["source"], dcs.PROFILE_NATIVE9F)
+    dcs.check_dense_cuda_source_hot(p["source"], _profiles(p["source_profile"])[1])
     if p["source"].package_sha256 != src.package_sha256:
         raise NativeDenseCudaProfileError("recheck: the source association changed since preparation")
     state, ctx = p["bed"], p["context"]

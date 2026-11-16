@@ -346,7 +346,7 @@ def _scope(admission, backend, limits, reserve, available_bytes_fn):
 
 def _scope_metadata(admission, compiled, t, limits, payload):
     _require_dense(compiled.voxel_column)
-    if payload["profile_name"] == ncp.CURRENT_PROFILE_NAME and compiled.leaf_vegetation is not None:
+    if payload["profile_name"] in (ncp.CURRENT_PROFILE_NAME, ncp.CURRENT_CUDA_PROFILE_NAME) and compiled.leaf_vegetation is not None:
         raise NativeDenseProfileError("initial case must be bare; LEAF vegetation is supplied by the owning runtime adapter")
     if compiled.fixed_base_spec.present or compiled.fixed_base is not None or compiled.regional_slope.enabled \
             or compiled.regional_slope_result is not None or compiled.initial_mobile_state is not None:
