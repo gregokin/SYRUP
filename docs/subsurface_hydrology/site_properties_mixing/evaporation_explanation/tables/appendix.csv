@@ -1,0 +1,7 @@
+Source,Used for
+Tietjen et al. 2009 (publisher text); Tietjen et al. 2010 PDF Table I,"Origins of d, the site factor and the stress moisture"
+"EcoHyD WaterCell.cpp lines 28–112, 475–495; WaterCell.h line 76; soilparameters_tabernas.txt; two Irob soilparameters_EH.txt",Later-code evaporation and exchange laws; case inputs
+Saxton and Rawls 2006 PDF,"Retention prediction at 1,500 kPa"
+"SYRUP subsurface.py (step stages 4–5), soil_evaporation.py, drydown_driver.py (candidate worktree)",Law as implemented; bare diagnostic settings
+Saved results: data/actual_cpu/*_result.json and property_effect.json; ../observed_drydown/data/*_result.json,All numbers in tables and examples
+"Root checks: root_numeric_checks.json, root_d_example_check.json, root_source_evidence.json, primary_2009_update.md",Independent checks and 2009 evidence record

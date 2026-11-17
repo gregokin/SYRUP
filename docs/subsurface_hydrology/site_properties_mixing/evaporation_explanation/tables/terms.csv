@@ -1,0 +1,6 @@
+Name,What it is,Units,What it does NOT mean
+PET (potential evapotranspiration),"Weather-driven demand for water, from date, air temperatures and latitude",mm per day,Actual water lost
+E (evaporation multiplier),Scales the PET given to the soil before any soil limit,none (dimensionless),Millimetres of evaporation; a measured quantity
+d (exchange coefficient),Scales how fast neighbouring layers trade water,none (dimensionless),"Physical diffusivity (m² per s), drainage rate, water amount, sediment parameter"
+Evaporation-stress scale,Top-layer moisture at and above which the moisture multiplier is 1,volume fraction (0.18 = 18 %),A cut-off where evaporation stops; the residual
+Residual moisture,Lowest moisture the model lets the layer reach,volume fraction,The stress scale

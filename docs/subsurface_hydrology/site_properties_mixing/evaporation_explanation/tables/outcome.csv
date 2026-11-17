@@ -1,0 +1,7 @@
+Window,Setting,Evaporation old (mm),Evaporation new (mm),Score old (×10⁻³),Score new (×10⁻³)
+JORN A,"d 0, E 0.5",1.582,3.759,4.23,17.24
+JORN A,"d 0.05, E 1.2",2.933,11.107,7.63,29.21
+JORN B,"d 0, E 0.5",0.413,2.360,3.44,10.73
+JORN B,"d 0.05, E 1.2",0.927,5.963,3.77,14.50
+MOAB C,"d 0, E 0.5",1.841,5.341,6.43,13.88
+MOAB C,"d 0.05, E 1.2",3.338,8.851,1.52,18.67

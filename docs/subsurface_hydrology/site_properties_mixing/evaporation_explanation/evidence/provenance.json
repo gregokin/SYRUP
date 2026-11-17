@@ -1,0 +1,277 @@
+{
+ "build_command": "cd <candidate>/docs/subsurface_hydrology/site_properties_mixing/evaporation_explanation && PYTHONPATH=/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/report_tools MPLCONFIGDIR=/tmp/syrup-evap-mpl PYTHONDONTWRITEBYTECODE=1 /home/okin/MAPLE/.venv/bin/python -B build_explanation.py",
+ "controls": {
+  "JORN A": {
+   "d0.05_E1.2_open": {
+    "drain": 0.0,
+    "new_evap_mm": 11.107313927557998,
+    "new_rmse": 0.029212972731194463,
+    "old_evap_mm": 2.9327701607794108,
+    "old_rmse": 0.007627667743290156,
+    "perc": 0.0,
+    "ret": 0.0
+   },
+   "d0_E0.5_open": {
+    "drain": 0.0,
+    "new_evap_mm": 3.7593319999999997,
+    "new_rmse": 0.017239578201579422,
+    "old_evap_mm": 1.5824183857851983,
+    "old_rmse": 0.004225800797081979,
+    "perc": 0.0,
+    "ret": 0.0
+   },
+   "days": 10,
+   "pet_mean": 6.511570246180456
+  },
+  "JORN B": {
+   "d0.05_E1.2_open": {
+    "drain": 0.0,
+    "new_evap_mm": 5.962705186508234,
+    "new_rmse": 0.014503381613169518,
+    "old_evap_mm": 0.9271369466634481,
+    "old_rmse": 0.003768348014952847,
+    "perc": 0.0,
+    "ret": 0.0
+   },
+   "d0_E0.5_open": {
+    "drain": 0.0,
+    "new_evap_mm": 2.3595819999999996,
+    "new_rmse": 0.010728817576260052,
+    "old_evap_mm": 0.4131385228566277,
+    "old_rmse": 0.0034373276381321084,
+    "perc": 0.0,
+    "ret": 0.0
+   },
+   "days": 4,
+   "pet_mean": 6.541514986585284
+  },
+  "MOAB C": {
+   "d0.05_E1.2_open": {
+    "drain": 0.0,
+    "new_evap_mm": 8.850812981221935,
+    "new_rmse": 0.0186711225280056,
+    "old_evap_mm": 3.3377139287789768,
+    "old_rmse": 0.0015199719741465932,
+    "perc": 0.0,
+    "ret": 0.0
+   },
+   "d0_E0.5_open": {
+    "drain": 0.0,
+    "new_evap_mm": 5.340909149706581,
+    "new_rmse": 0.013877735500645237,
+    "old_evap_mm": 1.8411914254220925,
+    "old_rmse": 0.006427227128883208,
+    "perc": 0.0,
+    "ret": 0.0
+   },
+   "days": 6,
+   "pet_mean": 6.148022742054703
+  }
+ },
+ "docx": {
+  "bytes": 128688,
+  "caret_or_exp_formula_text": false,
+  "empty_table_cells": 0,
+  "header_rows_repeat": 6,
+  "latex_or_equation_markup": false,
+  "media": [
+   "word/media/image1.png"
+  ],
+  "page_field_in_footer": true,
+  "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/SYRUP_evaporation_and_d_E_explained_20261117.docx",
+  "sha256": "43b85a238882c1b054ecc53c521b739b55fec26fe284d8be11d61013344c3853",
+  "styles_part": true,
+  "tables": 6,
+  "tables_expected": 6,
+  "words": 4056,
+  "zip_ok": true
+ },
+ "figure_sha256": "21d9c1a657736cc551648534a85ff86d061ea017ca1b6495596ede54cec86dcb",
+ "inputs": {
+  "Irob soilparameters_EH.txt (4j0zpc8gn)": {
+   "path": "/home/okin/SYRUP/reference_models/ecohyd/dryad_4j0zpc8gn/extracted/Irob_et_al_drought_resilience/Model/Parameters/soilparameters_EH.txt",
+   "role": "EP 0.16, WP 0.088, rw 0.075, diffConst 0",
+   "sha256": "67a16438580978a9e2613cad20b584d6941d36a4594c6115f363512b533edddb"
+  },
+  "Irob soilparameters_EH.txt (ngf1vhj1t)": {
+   "path": "/home/okin/SYRUP/reference_models/ecohyd/dryad_ngf1vhj1t/extracted/Navigating_Uncertainty_Irob_et_al_23/Source/Parameters/soilparameters_EH.txt",
+   "role": "same values as above",
+   "sha256": "67a16438580978a9e2613cad20b584d6941d36a4594c6115f363512b533edddb"
+  },
+  "JORN4_A_property_effect.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/data/actual_cpu/JORN4_A_property_effect.json",
+   "role": "old/new scores",
+   "sha256": "d788d66006c54465027fd77e494b51e3037fc796e2bf90571f67ec3e75a06d43"
+  },
+  "JORN4_A_training_harmonic_result.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/data/actual_cpu/JORN4_A_training_harmonic_result.json",
+   "role": "new-soil trajectories, first-day moisture and PET",
+   "sha256": "8bbf5e5b597995f3f1a7325b3468e031057a4c0caa1a73bd7f975d6d8febeac3"
+  },
+  "JORN4_B_heldout_harmonic_result.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/data/actual_cpu/JORN4_B_heldout_harmonic_result.json",
+   "role": "new-soil trajectories",
+   "sha256": "8386e02821e4d12ceebea0f83d7f4bcf51472fce6ec7bad7561a6b4d9ea400d8"
+  },
+  "JORN4_B_property_effect.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/data/actual_cpu/JORN4_B_property_effect.json",
+   "role": "old/new scores",
+   "sha256": "ea9996b1cb7435007b308f2e03aa0e70a39ca49620f0a5cccc63759c13749614"
+  },
+  "MOAB2_C_heldout_harmonic_result.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/data/actual_cpu/MOAB2_C_heldout_harmonic_result.json",
+   "role": "new-soil trajectories",
+   "sha256": "bf8f8573412021c7ee661614bed53e958dfb3ac8d7a784f3b5b4ae1bdb04af9a"
+  },
+  "MOAB2_C_property_effect.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/site_properties_mixing/data/actual_cpu/MOAB2_C_property_effect.json",
+   "role": "old/new scores",
+   "sha256": "4345f4ff52ffd6b4301bd8e9c57f68b59926fd0bf82e09781c95b246c1618693"
+  },
+  "Tietjen_2010.pdf": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/diffusivity_literature_sweep_20261101/sources/Tietjen_2010.pdf",
+   "role": "Table I (d 0.05, soil values)",
+   "sha256": "31f16ba4d4ad6f504f6d9bc540cc89cde07e2f88ae09ee478e721e88e74d67b9"
+  },
+  "benchmarks/subsurface_validation/drydown_driver.py": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/benchmarks/subsurface_validation/drydown_driver.py",
+   "role": "bare driver: E, d, stress scale set directly",
+   "sha256": "22adc6510464ab4aceb9524f71cdd72a595a800e8034eb066cccd7e3594ab88c"
+  },
+  "diffusivity_literature_and_fit.md": {
+   "path": "/home/okin/SYRUP/docs/subsurface_hydrology/diffusivity_literature_and_fit.md",
+   "role": "Tietjen 2009 eq. 9, d provenance",
+   "sha256": "9f305a1afabf6721dac07c6f54d80928759846180addf9f6f06268128fb38ef9"
+  },
+  "ecohyd WaterCell.cpp": {
+   "path": "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/src/WaterCell.cpp",
+   "role": "lines 28-112 ET, 34-35 vegetation factor, 84-92 moisture ratio and cap, 475-495 layerDiffusion",
+   "sha256": "af476e1aa727ed515d75ed06a4a25b5285470caddebb141c35b8c0cf6201d9e9"
+  },
+  "ecohyd WaterCell.h": {
+   "path": "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/src/WaterCell.h",
+   "role": "line 76 EPfactor description",
+   "sha256": "3d12ac41a7e234469e100d5187d26d25f719ce48955f9559f0e2c3e2ee2cc3b3"
+  },
+  "old JORN4_A_training_result.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/observed_drydown/data/JORN4_A_training_result.json",
+   "role": "earlier generic trajectories",
+   "sha256": "1b47b5e07c8e36030cef8e2be89eee4a632f25158ffcfadf03374be492395982"
+  },
+  "old JORN4_B_heldout_result.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/observed_drydown/data/JORN4_B_heldout_result.json",
+   "role": "earlier generic trajectories",
+   "sha256": "1f509ee7ff72e946d9233751139f8c7d200b87826084f4702e74257433e78aa5"
+  },
+  "old MOAB2_C_heldout_result.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/docs/subsurface_hydrology/observed_drydown/data/MOAB2_C_heldout_result.json",
+   "role": "earlier generic trajectories",
+   "sha256": "75db0c14cc22ba1b944805ad135508be20c2604a7f32ee3258fcfee1c1c02d5e"
+  },
+  "primary_2009_update.md": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/primary_2009_update.md",
+   "role": "Root record of the recovered original-2009 publisher text (Sections 2.3, 3.1, Table 2)",
+   "sha256": "16f1768e5735cfe4736246389a5b27f8188f14be9954f8d689ba8b113fbba12c"
+  },
+  "root_d_example_check.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/root_d_example_check.json",
+   "role": "independent redistribution example arithmetic",
+   "sha256": "f6dcefa5defb6efc9983381fcf512b2c41b60dde4fe0406a986226b1dd9e38af"
+  },
+  "root_numeric_checks.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/root_numeric_checks.json",
+   "role": "independent first-day and control arithmetic",
+   "sha256": "e55b866960ad67c6b43f3a784336ddd92e333b9e18fca0135995092c2325c60b"
+  },
+  "root_source_evidence.json": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/root_source_evidence.json",
+   "role": "hashes of the read-only sources",
+   "sha256": "d56aabb99682f80d34866880021cc19509c8f4c765ed911052ba175d5eb1a354"
+  },
+  "saxton_rawls_2006.pdf": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/neon_texture_failure_audit_20261117/saxton_rawls_2006.pdf",
+   "role": "primary SR2006 paper",
+   "sha256": "24038366b95d508de140786b5b71fb634164dc9f89d1de158944c445c77186e5"
+  },
+  "soilparameters_tabernas.txt": {
+   "path": "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/Parameters/soilparameters_tabernas.txt",
+   "role": "EP 1, WP 0.18, rw 0.01, diffConst 0.05, VegregETL1 1.2",
+   "sha256": "db02855a9359eed71c1976309ccefeaa3780a2314c2b57cd08b2f9ec4ec77e62"
+  },
+  "src/maple_syrup/soil_evaporation.py": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/soil_evaporation.py",
+   "role": "vegetation-aware E-only helper; evaporation_factor must be 1",
+   "sha256": "c1450a07c61c093d65da7e0f483f1861f53b7e02b2ee28449af09322d3bc4fdd"
+  },
+  "src/maple_syrup/subsurface.py": {
+   "path": "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/subsurface.py",
+   "role": "SYRUP column step stages (evaporation stage 4, exchange stage 5), docstring lines 20-75",
+   "sha256": "bd50377ed2eea80e29bbb96fe290f33af8a78427b1c0de38134f049a2cb80dfa"
+  }
+ },
+ "not_verified": [
+  "Office pagination/rendering",
+  "original 2009 PDF/code and optimiser details"
+ ],
+ "original_2009_evidence": {
+  "2009_attributed_blocks": [
+   "T09_PARA",
+   "T09_MATRIX",
+   "T09_OTHER (E-link sentence, bibliography)"
+  ],
+  "2009_attributed_words_total_all_blocks": 168,
+  "facts_used": "Sections 2.3 and 3.1, Table 2: a_ET 1 at Ein Yaaqov/Matta/Lahav, 0.4 calibrated at Sde Boqer; d 0.01 at all four sites adjusted to Bai 2007 scale and moisture series; wsc from similar nearby sites, listed in percent",
+  "not_claimed": "original PDF, original 2009 code, 2009 optimiser, 2009 Equation 9 donor-layer choice, any 2023/Irob value for 2009",
+  "record": "primary_2009_update.md",
+  "source": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2007WR006589 (publisher full text indexed via Root web search, recovered 2026-11-17 UTC; direct open still refused)"
+ },
+ "task": "soil_evaporation_explanation_20261117",
+ "worked_numbers": {
+  "actual_first_day": {
+   "available_mm": 3.7593319999999992,
+   "new_final_top": 0.01,
+   "new_fraction": 1.0,
+   "new_mm": 3.069594607922484,
+   "new_total_mm": 3.7593319999999997,
+   "old_fraction": 0.06991123792044444,
+   "old_mm": 0.21459915895378215,
+   "pet1": 6.139189215844968,
+   "pre_mm": 3.069594607922484,
+   "theta0": 0.047593319999999995
+  },
+  "example": {
+   "E": 0.5,
+   "available_mm": 4.0,
+   "e12_demand_mm": 7.199999999999999,
+   "e12_generic_actual_mm": 0.5555555555555556,
+   "e12_jorn_actual_mm": 4.0,
+   "generic_actual_mm": 0.2314814814814815,
+   "generic_fraction": 0.0771604938271605,
+   "generic_ratio": 0.2777777777777778,
+   "half_scale": 0.25,
+   "jorn_actual_mm": 3.0,
+   "jorn_fraction": 1.0,
+   "pet": 6.0,
+   "pre_moisture_mm": 3.0,
+   "quarter_scale": 0.0625,
+   "residual": 0.01,
+   "theta": 0.05,
+   "thickness_mm": 100.0
+  },
+  "pair": {
+   "d": 0.05,
+   "dry": 0.04,
+   "dt_h": 24.0,
+   "equalising": 0.9999999999999998,
+   "h": 100.0,
+   "k_new": 38.0403,
+   "k_old": 2.182866,
+   "new_kdt": 0.9129672,
+   "new_transfer": 0.5986683756280605,
+   "old_kdt": 0.05238878400000001,
+   "old_transfer": 0.05104014529362176,
+   "ratio": 11.729362684687992,
+   "wet": 0.06
+  }
+ }
+}

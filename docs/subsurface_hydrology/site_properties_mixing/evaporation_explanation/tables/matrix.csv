@@ -1,0 +1,8 @@
+Source / case,d,Site factor (a_ET or EP),Combined bare E equivalent,Stress / wilting scale,Residual,How obtained
+"Tietjen 2009, Table 2",0.01,a_ET 1; 0.4 at one site (calibrated),Not given,Moisture at about -1500 kPa,See section 7,See section 7
+"Tietjen 2010, Table I",0.05,No multiplier listed,Not given,About 0.079 (start of stomatal closure),0.06,d estimated according to Bai 2007; soil values unpublished measurements
+EcoHyD Tabernas input (later code),0.05,EP 1,1 × cover intercept 1.2 = 1.2 (flat bare),0.18 (wilting point),0.01,Case input; calibration history not established
+"Irob data archives (later, other sites)",0,EP 0.16,0.16 × 1.2 = 0.192 (flat bare),0.088,0.075,"Dissertation labels EP calibrated, wilting point calculated; objective unverified"
+Saxton–Rawls 2006,none,none,none,"Predicts water at 1,500 kPa",none,Texture regression; no evaporation or d law
+SYRUP earlier generic soil,grid; best 0,not separate,grid; best 0.5,0.18,0.01,"Coarse grid, JORN A training; not measured"
+SYRUP new JORN / MOAB,grid; best 0,not separate,grid; best 0,"0.0395 / 0.0590 (predicted 1,500 kPa water)",0.01,"Experiment choice, consistent with Tietjen's concept; not calibrated for E"
