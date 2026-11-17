@@ -1,0 +1,277 @@
+"""Frozen protocol of the site-derived hydraulic property / interface-mixing comparison: configs for the accepted dry-down driver, the train-only selection rule and the common held-out scenario union.
+
+The properties are PRESCRIBED, bounded sensitivity inputs read from Root's canonical receipt `root_relative_density_probe.json` (sha256 pinned below): they are derived surrogates (Saxton-Rawls 2006 regression with
+an explicit density floor and air-entry floor), NOT measured hydraulic values, and not the native provider's default recipe. The air entry is NOT passed to the column (it only entered FC6 in the receipt); no derived zero
+is fed as a measured override. Nothing here duplicates column physics: the helper builds configs for `benchmarks.subsurface_validation.drydown_driver`, which runs the actual column, and compares results.
+
+    python -m benchmarks.subsurface_site_comparison.study generate --out DIR
+    python -m benchmarks.subsurface_site_comparison.study finalize --train-harmonic R --train-geometric R --out DIR
+    python -m benchmarks.subsurface_site_comparison.study compare-train --harmonic R --geometric R [--out FILE]
+    python -m benchmarks.subsurface_site_comparison.study compare-heldout --selection SEL.json --window NAME --harmonic R --geometric R [--out FILE]
+"""
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import json
+import math
+import re
+import sys
+from pathlib import Path
+from typing import Any
+
+from . import interfaces as I
+
+REPO = Path(__file__).resolve().parents[2]
+DATA = REPO / "docs" / "subsurface_hydrology" / "site_properties_mixing" / "data"
+OLD = REPO / "docs" / "subsurface_hydrology" / "observed_drydown" / "data"
+PROTOCOL_ID = "syrup.site_hydraulics_interface_comparison/1"
+RECEIPT = DATA / "root_relative_density_probe.json"
+RECEIPT_SHA = "9ad303384f26116f37088aa6609d3519c7396d22d46d8d0ac42919358165675f"
+TEMPLATE_SHA = {"frozen_JORN4_A_training.json": "e8e69dfc1ee647ce772d41fb486c3c494302ba23952b63a6800098af77dbf6fe",
+                "frozen_JORN4_B_heldout_TEMPLATE.json": "0d00681abbc9cf6b75be28968edc05d35db97b65b4b93b697d4cc59b2e50a4db",
+                "frozen_MOAB2_C_heldout_TEMPLATE.json": "773893ccecbca6a34c69192092d910ab3c43e6b90f7257b858ab198478e17470"}
+HISTORICAL_RESULT_SHA = {"JORN4_A_training_result.json": "1b47b5e07c8e36030cef8e2be89eee4a632f25158ffcfadf03374be492395982",
+                         "JORN4_B_heldout_result.json": "1f509ee7ff72e946d9233751139f8c7d200b87826084f4702e74257433e78aa5",
+                         "MOAB2_C_heldout_result.json": "75db0c14cc22ba1b944805ad135508be20c2604a7f32ee3258fcfee1c1c02d5e"}
+WINDOWS = {"JORN4_A": {"role": "train", "site": "JORN", "template": "frozen_JORN4_A_training.json"},
+           "JORN4_B": {"role": "heldout", "site": "JORN", "template": "frozen_JORN4_B_heldout_TEMPLATE.json"},
+           "MOAB2_C": {"role": "heldout", "site": "MOAB", "template": "frozen_MOAB2_C_heldout_TEMPLATE.json"}}
+LAYER_RECORDS = {"JORN": ["JORN_A", "JORN_10_20_dry_mass", "JORN_Bw"], "MOAB": ["MOAB_0_10_dry_mass", "MOAB_Bw", "MOAB_Bw"]}
+EDGES_M = [0.0, 0.1, 0.2, 0.3]
+THETA_RESIDUAL = 0.01
+D_GRID = [0.0, 0.001, 0.003, 0.01, 0.03, 0.05, 0.1, 0.3, 1.0]
+E_GRID = [0.0, 0.1, 0.25, 0.5, 1.0, 1.2]
+REFERENCE_PAIR = (0.05, 1.2)                      # the earlier unfitted reference
+GENERIC_BEST_PAIR = (0.0, 0.5)                    # the earlier generic-soil training optimum
+CLOSED_CONTROLS = [(0.0, 0.0), (0.05, 1.2)]
+KS_UNIT = 3_600_000.0                             # mm h-1 -> m s-1 divisor
+NAME_RE = re.compile(r"d([0-9.eE+-]+)_E([0-9.eE+-]+)_open")
+SERIES = ("water_m", "percolation_m", "diffusion_m", "evaporation_m", "evaporation_unmet_m", "drainage_m", "surface_return_m")
+
+
+class ProtocolError(ValueError):
+    pass
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _checked(path: Path, expected: str) -> bytes:
+    data = path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != expected:
+        raise ProtocolError(f"{path.name}: sha256 differs from the pinned {expected}")
+    return data
+
+
+def load_receipt(path: Path = RECEIPT, expected_sha: str = RECEIPT_SHA) -> dict:
+    receipt = json.loads(_checked(path, expected_sha))
+    receipt["_file_sha256"] = expected_sha
+    return receipt
+
+
+def load_template(window: str, directory: Path = OLD) -> dict:
+    if window not in WINDOWS:
+        raise ProtocolError(f"unknown window {window!r}")
+    name = WINDOWS[window]["template"]
+    return json.loads(_checked(directory / name, TEMPLATE_SHA[name]))
+
+
+def scenario_name(d: float, e: float, bottom: str = "open") -> str:
+    return f"d{d:g}_E{e:g}_{bottom}"
+
+
+def make_scenario(d: float, e: float, bottom: str = "open") -> dict:
+    return {"name": scenario_name(d, e, bottom), "diffusion_coefficient": d, "evaporation_factor": e, "potential_et": "weather", "bottom": bottom}
+
+
+def training_scenarios() -> list:
+    out = [make_scenario(d, e) for d in D_GRID for e in E_GRID]
+    return out + [make_scenario(d, e, "closed") for d, e in CLOSED_CONTROLS]
+
+
+def site_properties(receipt: dict, site: str) -> dict:
+    """Per-layer RAW/EFFECTIVE labelled values from the receipt for one site, plus the evaporation-stress threshold (top layer predicted theta1500). Refuses missing or non-physical values."""
+    if site not in LAYER_RECORDS:
+        raise ProtocolError(f"unknown site {site!r}")
+    recs = {r["name"]: r for r in receipt["records"]}
+    layers = []
+    for name in LAYER_RECORDS[site]:
+        if name not in recs:
+            raise ProtocolError(f"receipt lacks record {name}")
+        r = recs[name]
+        for key in ("theta_saturation", "FC6_with_zero_air_floor", "Ks_mm_h", "theta1500", "raw_density_g_cm3", "effective_density_g_cm3", "raw_air_entry_kpa", "effective_air_entry_kpa", "density_factor"):
+            v = r.get(key)
+            if isinstance(v, bool) or not isinstance(v, (int, float)) or v != v or abs(v) == float("inf"):
+                raise ProtocolError(f"{name}.{key} must be a finite number, got {v!r}")
+        if not (0.0 < r["theta1500"] < r["FC6_with_zero_air_floor"] < r["theta_saturation"] < 1.0) or r["Ks_mm_h"] <= 0.0:
+            raise ProtocolError(f"{name}: need 0 < theta1500 < FC < saturation < 1 and Ks > 0")
+        layers.append({"record": name, "raw_density_g_cm3": r["raw_density_g_cm3"], "effective_density_g_cm3": r["effective_density_g_cm3"], "density_factor": r["density_factor"],
+                       "raw_air_entry_kpa": r["raw_air_entry_kpa"], "effective_air_entry_kpa": r["effective_air_entry_kpa"], "theta_saturation": r["theta_saturation"],
+                       "theta_field_capacity": r["FC6_with_zero_air_floor"], "theta1500": r["theta1500"], "Ks_mm_h": r["Ks_mm_h"], "Ks_m_s": r["Ks_mm_h"] / KS_UNIT})
+    return {"site": site, "layers": layers, "theta_evaporation_stress": layers[0]["theta1500"]}
+
+
+def interface_record(props: dict, method: str) -> dict:
+    return I.interface_coefficients([la["Ks_m_s"] for la in props["layers"]], EDGES_M, method)
+
+
+def make_config(window: str, method: str, scenarios: list, receipt: dict | None = None, template_dir: Path = OLD) -> dict:
+    """One driver config (schema 2): the frozen window blocks of the earlier experiment, the site-derived layer properties and the interface coefficients of `method`. Only `layers.interface_conductivity_m_s` and the
+    provenance differ between the two methods."""
+    receipt = load_receipt() if receipt is None else receipt
+    tmpl = load_template(window, template_dir)
+    spec = WINDOWS[window]
+    props = site_properties(receipt, spec["site"])
+    rec = interface_record(props, method)
+    cfg = copy.deepcopy(tmpl)
+    cfg["name"] = f"{window} {spec['role']} site-derived hydraulics, {method} interface mixing (prescribed bounded sensitivity inputs)"
+    cfg["layers"] = {"edges_m": list(EDGES_M), "theta_residual": [THETA_RESIDUAL] * 3, "theta_field_capacity": [la["theta_field_capacity"] for la in props["layers"]],
+                     "theta_saturation": [la["theta_saturation"] for la in props["layers"]], "theta_evaporation_stress": props["theta_evaporation_stress"],
+                     "interface_conductivity_m_s": rec["interface_conductivity_m_s"]}
+    cfg["provenance"] = {"protocol": PROTOCOL_ID, "role": spec["role"], "method": method,
+                         "properties": "DERIVED SURROGATES, not measured hydraulic values: Saxton-Rawls 2006 regression outputs from NEON megapit texture/density with the declared floors; prescribed bounded sensitivity inputs of the existing soil_layers; "
+                                       "the native provider default recipe is not adopted and no derived air entry is fed as a measured override",
+                         "receipt": {"file": "docs/subsurface_hydrology/site_properties_mixing/data/root_relative_density_probe.json", "sha256": receipt_sha(receipt), "effective_density_rule": receipt.get("effective_density_rule")},
+                         "organic_matter_rule": "OM = 1.724 * estimatedOC(g/kg) / 10 percent (provisional conversion)", "residual": THETA_RESIDUAL,
+                         "evaporation_stress": "top-layer predicted theta1500, fixed within a run", "labels": {"raw": "measured/provider inputs retained in the receipt", "effective": "floored values used here"},
+                         "layers": props["layers"], "interface": rec, "ecohyd_factor": I.ECOHYD_FACTOR, "scope": "dry-down window diagnostic only: T=0, gravity on, no storm/rain/LEAF/wind/bed, no field ET closure claim"}
+    cfg["scenarios"] = copy.deepcopy(scenarios)
+    return cfg
+
+
+def receipt_sha(receipt: dict) -> str:
+    """The verified file hash recorded by `load_receipt`; a receipt that did not come through it is refused."""
+    sha = receipt.get("_file_sha256")
+    if not isinstance(sha, str) or len(sha) != 64:
+        raise ProtocolError("receipt was not loaded through load_receipt (no verified file sha256)")
+    return sha
+
+
+# ---------------------------------------------------------------------------------------------------------------- selection
+
+def select_best(scores: dict) -> dict:
+    """TRAIN-ONLY selection over the `d{d}_E{E}_open` scenarios: minimise the primary overall RMSE (sqrt of the mean per-layer MSE); ties go to the smaller E, then the smaller d; an undefined RMSE is ineligible."""
+    for name, sc in scores.items():                       # malformed values are refused BEFORE any selection (None remains the legitimate "undefined")
+        v = sc.get("overall_rmse") if isinstance(sc, dict) else "malformed score"
+        if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0.0):
+            raise ProtocolError(f"{name}: overall_rmse must be a finite number >= 0 or null, got {v!r}")
+    cands = []
+    for name, sc in scores.items():
+        m = NAME_RE.fullmatch(name)
+        if m and sc.get("overall_rmse") is not None:
+            cands.append((sc["overall_rmse"], float(m[2]), float(m[1])))
+    if not cands:
+        raise ProtocolError("no eligible training scenario (every overall RMSE is undefined)")
+    rmse, e, d = min(cands)
+    return {"d": d, "E": e, "overall_rmse": rmse, "name": scenario_name(d, e)}
+
+
+def heldout_scenarios(best_h: dict, best_g: dict) -> list:
+    """The common matched held-out union (de-duplicated, stable order): H pair, G pair, unfitted reference, previous generic best, zero exchange at each selected E, zero E at each selected d, d0 E0."""
+    pairs = [(best_h["d"], best_h["E"]), (best_g["d"], best_g["E"]), REFERENCE_PAIR, GENERIC_BEST_PAIR]
+    for b in (best_h, best_g):
+        pairs += [(0.0, b["E"]), (b["d"], 0.0)]
+    pairs.append((0.0, 0.0))
+    out, seen = [], set()
+    for d, e in pairs:
+        s = make_scenario(d, e)
+        if s["name"] not in seen:
+            seen.add(s["name"])
+            out.append(s)
+    return out
+
+
+def generate(out: Path) -> dict:
+    """Write the frozen training configs (both methods), held-out TEMPLATES (reference + d0E0 placeholders, completed by `finalize`) and the coefficient summary. Refuses to overwrite."""
+    out = Path(out)
+    if out.exists() and any(out.iterdir()):
+        raise ProtocolError(f"{out} is not empty; nothing is overwritten")
+    receipt = load_receipt()
+    docs = {}
+    for method in I.METHODS:
+        docs[f"JORN4_A_training_{method}.json"] = make_config("JORN4_A", method, training_scenarios(), receipt)
+        for window in ("JORN4_B", "MOAB2_C"):
+            docs[f"{window}_heldout_{method}_TEMPLATE.json"] = make_config(window, method, [make_scenario(*REFERENCE_PAIR), make_scenario(0.0, 0.0)], receipt)
+    coeff = {site: {m: interface_record(site_properties(receipt, site), m) for m in I.METHODS} for site in LAYER_RECORDS}
+    docs["interface_coefficients.json"] = {"protocol": PROTOCOL_ID, "receipt_sha256": RECEIPT_SHA, "sites": coeff}
+    out.mkdir(parents=True, exist_ok=True)
+    shas = {}
+    for name, doc in docs.items():
+        text = json.dumps(doc, indent=1, allow_nan=False) + "\n"
+        (out / name).write_text(text)
+        shas[name] = hashlib.sha256(text.encode()).hexdigest()
+    return shas
+
+
+def finalize(train_h: dict, train_g: dict, out: Path, expected_config_sha256: dict | None = None) -> dict:
+    """Complete the four held-out configs (two windows x two methods) from the two TRAIN results; the scenario list is identical for both methods. No refit afterwards."""
+    from . import compare as C
+
+    out = Path(out)
+    if out.exists() and any(out.iterdir()):
+        raise ProtocolError(f"{out} is not empty; nothing is overwritten")
+    for tag, res in (("harmonic", train_h), ("geometric", train_g)):          # only genuine TRAIN results of the right method may select; a held-out or mislabelled result is refused
+        ident = C.result_identity(res)
+        if ident != {"window": "JORN4_A", "role": "train", "method": tag}:
+            raise ProtocolError(f"the {tag} input is not the JORN4_A training result of the {tag} method (found {ident})")
+        if list(res.get("runs", {})) != [s["name"] for s in training_scenarios()]:
+            raise ProtocolError(f"the {tag} training result does not contain exactly the frozen 56-scenario grid in order")
+    C.check_pair(train_h, train_g, window="JORN4_A", role="train")
+    if expected_config_sha256 is not None:
+        C._check_config_shas(train_h, train_g, expected_config_sha256)
+    best_h, best_g = select_best(train_h["scores"]), select_best(train_g["scores"])
+    scen = heldout_scenarios(best_h, best_g)
+    receipt = load_receipt()
+    out.mkdir(parents=True, exist_ok=True)
+    shas = {}
+    for method in I.METHODS:
+        for window in ("JORN4_B", "MOAB2_C"):
+            cfg = make_config(window, method, scen, receipt)
+            cfg["provenance"]["selection"] = {"rule": "train-only primary overall RMSE; ties smaller E then smaller d", "harmonic_best": best_h, "geometric_best": best_g, "train_config_sha256": {"harmonic": train_h["config_sha256"], "geometric": train_g["config_sha256"]}}
+            text = json.dumps(cfg, indent=1, allow_nan=False) + "\n"
+            (out / f"{window}_heldout_{method}.json").write_text(text)
+            shas[f"{window}_heldout_{method}.json"] = hashlib.sha256(text.encode()).hexdigest()
+    sel = {"protocol": PROTOCOL_ID, "harmonic_best": best_h, "geometric_best": best_g, "common_primary_pair": best_h["name"], "heldout_scenarios": [s["name"] for s in scen], "config_sha256": shas}
+    (out / "selection.json").write_text(json.dumps(sel, indent=1) + "\n")
+    return sel
+
+
+def _frozen_train_shas(directory: Path) -> dict:
+    return {m: _sha256(directory / f"JORN4_A_training_{m}.json") for m in I.METHODS}
+
+
+def main(argv: list | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    g = sub.add_parser("generate"); g.add_argument("--out", required=True)
+    f = sub.add_parser("finalize"); f.add_argument("--train-harmonic", required=True); f.add_argument("--train-geometric", required=True); f.add_argument("--out", required=True)
+    f.add_argument("--configs", required=True, help="the `generate` directory: the result config hashes are bound to its frozen training configs")
+    t = sub.add_parser("compare-train"); t.add_argument("--harmonic", required=True); t.add_argument("--geometric", required=True); t.add_argument("--configs"); t.add_argument("--out")
+    h = sub.add_parser("compare-heldout"); h.add_argument("--selection", required=True); h.add_argument("--window", required=True, choices=["JORN4_B", "MOAB2_C"])
+    h.add_argument("--harmonic", required=True); h.add_argument("--geometric", required=True); h.add_argument("--out")
+    a = ap.parse_args(argv)
+    try:
+        if a.cmd == "generate":
+            print(json.dumps(generate(Path(a.out)), indent=1))
+        elif a.cmd == "finalize":
+            print(json.dumps(finalize(json.loads(Path(a.train_harmonic).read_text()), json.loads(Path(a.train_geometric).read_text()), Path(a.out), _frozen_train_shas(Path(a.configs))), indent=1))
+        else:
+            from . import compare as C
+            rh, rg = json.loads(Path(a.harmonic).read_text()), json.loads(Path(a.geometric).read_text())
+            res = (C.compare_train(rh, rg, expected_config_sha256=_frozen_train_shas(Path(a.configs)) if a.configs else None) if a.cmd == "compare-train"
+                   else C.compare_heldout(rh, rg, json.loads(Path(a.selection).read_text()), window=a.window))
+            text = json.dumps(res, indent=1, allow_nan=False)
+            if a.out:
+                Path(a.out).write_text(text + "\n")
+            print(text)
+    except (ProtocolError, ValueError, OSError) as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,40 @@
+# Site-derived hydraulics: harmonic vs geometric interface mixing — frozen protocol (stage 1, before any site water result)
+
+Status: helper, tests and protocol only. No site water experiment has been run by the author; Root reviews, freezes and executes (CPU, then GPU 0 only if freshly idle). The DOCX report is a later stage.
+
+## Scope and labels
+* Three 10 cm layers (edges 0, 0.1, 0.2, 0.3 m). The properties are **derived surrogates**, not measured hydraulic values: Saxton–Rawls (2006) regression outputs from NEON megapit texture/density with declared floors, taken from Root's canonical receipt `data/root_relative_density_probe.json` (sha256 `9ad30338…165675f`, bound in `study.py`). They are prescribed, bounded sensitivity inputs of the existing `soil_layers`; the native provider default recipe is **not** adopted and no derived air entry is passed as a measured override (the air entry only entered FC6 inside the receipt).
+* Effective density = max(raw, 1000 kg m⁻³, 0.901·ρ_normal), applied after raw-density mass-weighted texture/OM layer assembly; air entry = max(raw, 0); OM = 1.724·estimatedOC(g/kg)/10 %. JORN layers: A (1.4196), 10–20 cm mixture (1.4172961608), Bw (1.43462760066 g cm⁻³; raw 0.9035 retained and labelled). MOAB: 6 cm A + 4 cm Bw top mixture, lower two Bw layers, all unmodified. Each config records raw and effective values per layer.
+* FC = receipt FC6 (ψ_e floored at 0), saturation = receipt θS, residual 0.01, evaporation stress = predicted top-layer θ1500 (JORN 0.039508152304, MOAB 0.05900343186546672), fixed within a run. Gravity on, T = 0, open primary scenarios, closed controls. The gravity/FC cascade is not changed by the interface choice.
+* Initial profile: unchanged agreed piecewise-linear integration with constant ends. Same Hargreaves/weather/date/latitude/QA/END clock and the same three windows as the earlier report: JORN4_A (10 d, TRAIN), JORN4_B (4 d, temporal hold-out), MOAB2_C (6 d, site hold-out). Window/pin/control blocks are read from the earlier frozen templates (sha256-pinned in `study.py`). No storm, rain, LEAF, wind, bed or field ET-closure claim.
+
+## Interface mixing (declared before outcomes)
+Local fixed redistribution conductivity K_i = f·Ks_i with the retained EcoHyD factor f = (1 + 30/26)^−1.5 = 0.31635738822500753 (not a moisture-dependent conductivity, not wetting-front suction). Between layer centres: w_i = h_i/(h_i+h_j), w_j = h_j/(h_i+h_j) from the actual edges.
+* HARMONIC: 1/(w_i/K_i + w_j/K_j); GEOMETRIC: exp(w_i ln K_i + w_j ln K_j). Identical neighbours return K exactly. For the nominal equal layers these equal 2K_iK_j/(K_i+K_j) and √(K_iK_j) to floating-point rounding.
+* Zero/negative/non-finite/boolean/malformed conductivities or geometry are refused. No epsilon floors. Full-precision Ks, K, weights, units and method are written to each config's `provenance.interface`.
+* Resulting interface conductivities (mm h⁻¹; `config_templates/interface_coefficients.json`): JORN harmonic 38.0403, 35.2715; geometric 38.0407, 35.3548; MOAB harmonic 19.1145, 18.1139; geometric 19.1437, 18.1139 (lower MOAB pair identical, so exact). The difference is 0–0.24 % because adjacent Ks are close — a small expected H/G contrast.
+* The donor-depth diffusion form d·K_if·h_donor is retained. At d = 0 the interface conductivity cannot act, so every d = 0 scenario must be **identical** between H and G (checked by `compare.d0_identity`, which raises otherwise).
+
+## Experiment (identical forcing, state and all other parameters for H and G)
+1. TRAIN (JORN4_A, both methods): the same 9 × 6 grid d = [0, 0.001, 0.003, 0.01, 0.03, 0.05, 0.1, 0.3, 1], E = [0, 0.1, 0.25, 0.5, 1, 1.2] (open) plus two closed controls (d0 E0; d0.05 E1.2) = 56 scenarios. The earlier reference (0.05, 1.2) and the earlier generic optimum (0, 0.5) are in the grid. All native ledger, whole-trajectory backend-agreement (rtol 2e-12 / atol 1e-14; d = 0 bitwise) and midpoint-restart controls and the before/after source identities of the driver remain; no bed copies, no unbounded history.
+2. SELECTION (TRAIN only, separately per method): primary overall RMSE = √(mean of per-layer MSE); ties → smaller E, then smaller d; undefined RMSE ineligible (`study.select_best`). No held-out refit.
+3. HELD-OUT (JORN4_B, MOAB2_C): one common de-duplicated union run under BOTH methods and BOTH windows: H-selected pair, G-selected pair, unfitted reference (0.05, 1.2), previous generic best (0, 0.5), zero exchange (d = 0) at each selected E, zero E at each selected d, d0 E0 (`study.heldout_scenarios`; `finalize` writes the four configs and `selection.json`). The primary direct H-vs-G comparison uses the COMMON H-selected pair; the G-selected pair is secondary.
+4. METRICS: the driver's point and layer persistence nulls, per-layer N/RMSE/bias, primary equal-layer RMSE and skill. `compare` adds G − H differences (max/RMS absolute, relative where the reference is non-zero, and a count of non-zero differences against a zero reference) for layer water, θ, percolation and diffusion fluxes, evaporation, drainage and total storage, plus the score differences, and the full paired training-grid comparison on the matching (d, E) tuple (not only the two separately tuned minima). The earlier generic-soil results remain unchanged copies (hashes pinned in `study.HISTORICAL_RESULT_SHA`) and are compared on the matched same pair only (`compare.property_effect`), never relabelled as new runs. The fixed (0.05, 1.2) controls quantify the property effect even if the selected d is 0.
+5. No tuning of properties, window, clock or grid after seeing outcomes; no significance claims from three short windows (3–8 joint days).
+
+## Comparison validity checks (correction01)
+Every difference is **geometric minus harmonic (G − H)**. Before any H/G comparison `compare.check_pair` requires: identical result plans apart from the config name (prepared weather/PET, observations, initial point/layer data and inventories, UTC day clock, probe layers, scored-target counts), identical persistence nulls, identical source PACKAGE identities (sha256 and file counts of `maple_syrup` and `maple`, before and after; filesystem paths are ignored), equal initial storage and `t_s`, equal per-layer N, and — in the CLI — the plan name identifying harmonic/geometric, one common window and role, with the requested `--window` verified against that window's pinned start/anchor. `finalize` accepts only the genuine JORN4_A training results of the right methods with exactly the frozen 56-scenario grid, bound to the `generate` config hashes (`--configs`); `compare-heldout` binds each result to the `selection.json` config hash. `select_best` refuses NaN/inf/negative/non-numeric RMSE (null still means undefined). Derived local conductivities that underflow/overflow are refused.
+
+## Commands (Root)
+```
+python -m benchmarks.subsurface_site_comparison.study generate --out DIR              # frozen training configs + held-out templates + coefficient summary
+python -m benchmarks.subsurface_validation.drydown_driver --config DIR/JORN4_A_training_{harmonic,geometric}.json --out OUT --execute
+python -m benchmarks.subsurface_site_comparison.study finalize --train-harmonic R_H --train-geometric R_G --configs DIR --out DIR2
+python -m benchmarks.subsurface_validation.drydown_driver --config DIR2/{JORN4_B,MOAB2_C}_heldout_{harmonic,geometric}.json --out OUT --execute
+python -m benchmarks.subsurface_site_comparison.study compare-train --harmonic R_H --geometric R_G
+python -m benchmarks.subsurface_site_comparison.study compare-heldout --selection DIR2/selection.json --window JORN4_B --harmonic R_H --geometric R_G
+```
+Isolated checkouts must set the `SYRUP_PHASE3_*` path variables of `benchmarks/subsurface_validation/paths.py` and the sealed runtime prefixes of Root's CPU config; there is no live-MAPLE fallback.
+
+## Not claimed
+Field validation, catchment/dynamic-bed/checkpoint/coupled acceptance, hydraulic measurement of JORN/MOAB, or that the derived values adopt a provider recipe. The three windows are short; any difference is a sensitivity statement for these windows only.

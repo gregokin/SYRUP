@@ -1,0 +1,10 @@
+# Report correction02 author report — site_hydraulics_interface_comparison_20261117
+
+Docs-only; no data/model/helper/test/GPU/Git changes. Rewrote only the allowed generated files in `site_properties_mixing/` (build_report.py, report.md, README.md, verification.md, DOCX, figures/, tables/) plus this file. Earlier author reports preserved.
+
+Build: `PYTHONPATH=<task>/report_tools MPLCONFIGDIR=/tmp/syrup-site-mixing-mpl PYTHONDONTWRITEBYTECODE=1 /home/okin/MAPLE/.venv/bin/python -B build_report.py` → all builder assertions pass; DOCX static check: ZIP OK, 6 media, 11 tables with repeating headers, PAGE footer, no placeholders. `ruff check build_report.py`: all checks passed. No Office paginated render available (still unchecked).
+
+1. Appendix A.2 now gives the full identities from `data/qualified_source_identities.json`: SYRUP commit bb28af6c58c2892cb3c065d73d33b88285c498f0 (analysis base 9adab66e…), MAPLE 9f466d2cfcd52991b24496cf67f4562d6268afa9, full LEAF package hash, external helper `benchmarks.spatial_mapping` (47 260 bytes, sha256 333921bb…), EcoHyD commit. The "I did not find the full commit hashes" sentence and the separate helper-identity wording are removed.
+2. Table 11 caption now says single-column whole validation loops incl. startup/compilation; CPU loop = 2 backends + reconstruction, GPU loop = 3 backends + reconstruction; different workloads, not a CPU/GPU benchmark; last column labelled as the largest mixed trajectory field (ledger residual in m³), not a unitless physical error. Timing numbers unchanged. A.1 text now also gives the physical CPU/CUDA maxima read from `data/root_additional_metrics.json` (water 8.674e-19 m, θ 1.388e-17 m³ m⁻³); no new table.
+3. Added the representativeness sentence (NEON megapit measurements used as site proxies for the sensor plots; estimated hydraulic values are not co-located hydraulic measurements) and expanded JORN (Jornada Experimental Range) / MOAB (Moab site) at first mention in the summary.
+4. fig3 heatmap labels now switch to white only on dark cells (normalized colour > 0.6); 0.24/0.35 etc. are black on light cells. Numbers and data unchanged; figure re-inspected.

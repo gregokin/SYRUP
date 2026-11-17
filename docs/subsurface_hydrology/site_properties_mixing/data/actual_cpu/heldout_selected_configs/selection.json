@@ -1,0 +1,27 @@
+{
+ "protocol": "syrup.site_hydraulics_interface_comparison/1",
+ "harmonic_best": {
+  "d": 0.0,
+  "E": 0.0,
+  "overall_rmse": 0.0068218353393985276,
+  "name": "d0_E0_open"
+ },
+ "geometric_best": {
+  "d": 0.0,
+  "E": 0.0,
+  "overall_rmse": 0.0068218353393985276,
+  "name": "d0_E0_open"
+ },
+ "common_primary_pair": "d0_E0_open",
+ "heldout_scenarios": [
+  "d0_E0_open",
+  "d0.05_E1.2_open",
+  "d0_E0.5_open"
+ ],
+ "config_sha256": {
+  "JORN4_B_heldout_harmonic.json": "929d991105a7d7d3e644ce39dbf99075de5be22e0be52667cf63e1f741cae948",
+  "MOAB2_C_heldout_harmonic.json": "0621a4fb7b81c0ebe0a74fa676985bdb444f32d3e86bb04bd822eb7868f841e2",
+  "JORN4_B_heldout_geometric.json": "02d7747a27f12545b02e5322f41180c87d7d392df58dccbbc3e6aba410161fe3",
+  "MOAB2_C_heldout_geometric.json": "5791e9261c9388a5a8abde36ea98156f8011372ad37e44d5e5d42484cd78e704"
+ }
+}

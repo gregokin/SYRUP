@@ -1,0 +1,9 @@
+{
+  "status": "accepted bounded experiment helper; not model/field acceptance",
+  "utc": "2026-11-17T21:12:44.455988+00:00",
+  "tests": "125 passed, 2 GPU-only skipped",
+  "evidence": "root_corrected_cpu_runs",
+  "frozen_manifest": "frozen_helper_manifest.json",
+  "scope": "existing native driver, unchanged production 180 modules; new helpers only",
+  "limitations": "Actual site simulations and report pending"
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-17T21:00:52.727676+00:00",
+  "scope": "Task-local unpacked public wheels for DOCX only; no environment installation or new venv.",
+  "directory": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/report_tools",
+  "wheels": [
+    {
+      "wheel": "lxml-6.0.2-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl",
+      "bytes": 5253958,
+      "sha256": "90a345bbeaf9d0587a3aaffb7006aa39ccb6ff0e96a57286c0cb2fd1520ea192"
+    },
+    {
+      "wheel": "python_docx-1.2.0-py3-none-any.whl",
+      "bytes": 252987,
+      "sha256": "3fd478f3250fbbbfd3b94fe1e985955737c145627498896a8a6bf81f4baf66c7"
+    },
+    {
+      "wheel": "typing_extensions-4.15.0-py3-none-any.whl",
+      "bytes": 44614,
+      "sha256": "f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"
+    }
+  ]
+}

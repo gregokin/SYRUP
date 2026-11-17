@@ -1,0 +1,92 @@
+{
+  "status": "accepted",
+  "utc": "2026-11-17T21:36:42.279317+00:00",
+  "scope": "Bounded diagnostic JORN/MOAB site-property and harmonic/geometric mixing comparison; new DOCX, helpers/tests, preserved inputs/results. No production physics/default changes or field validation.",
+  "baseline": "9adab66e190887a60627dae8a07d58022b32446f",
+  "production_sources": {
+    "scope": "Exact qualified sources used for these bounded dry-column comparisons; no live source migration or default change.",
+    "SYRUP": {
+      "source_commit": "bb28af6c58c2892cb3c065d73d33b88285c498f0",
+      "analysis_git_base": "9adab66e190887a60627dae8a07d58022b32446f",
+      "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+      "files": 180
+    },
+    "MAPLE": {
+      "source_commit": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+      "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    "LEAF": {
+      "package_sha256": "38009872f8969f86b56c720adc1b5d9ffefc554fb9cacf90855d999db604530f",
+      "files": 28,
+      "role": "Source-guarded dependency; no plant/transpiration execution in these tests"
+    },
+    "external_helper": {
+      "module": "benchmarks.spatial_mapping",
+      "origin": "qualified LEAF candidate benchmarks/spatial_mapping.py",
+      "bytes": 47260,
+      "sha256": "333921bb645d984fa8e7449619d03114262ee333c7fea61a22493a878fd9ccc5"
+    },
+    "EcoHyD": {
+      "source_commit": "80b10e6b6b82ad16e9fd41a31901cc3157d880e9",
+      "role": "Downloaded reference code; not executed in new diagnostic"
+    },
+    "executed_helper_manifest": "frozen_helper_manifest.json",
+    "published_helper_note": "Style-only corrections after water runs; original executed helpers retained under executed_helper_before_lint. Post-lint configs/selection/comparisons/property-effects proven identical."
+  },
+  "verification": {
+    "CPU_tests": 125,
+    "GPU_only_tests_skipped_in_CPU_suite": 2,
+    "actual_CPU_scenarios": 124,
+    "actual_CUDA_scenarios": 124,
+    "generic_reference_CUDA_scenarios": 62,
+    "actual_backends": [
+      "numpy",
+      "numba",
+      "cuda"
+    ],
+    "state_reconstruction": "Each backend at midpoint; not native lifecycle checkpoint qualification",
+    "source_guards": "Full MAPLE/SYRUP/LEAF packages and external helper before/after",
+    "postlint": "All configs, selection, paired comparisons and property effects identical to executed version",
+    "ruff": "New helper/test/report-builder paths clean",
+    "document": {
+      "status": "pass",
+      "docx_sha256": "6ad1376b0a3aa084057e777c376b6cacf7649f97ab6420b958d600742f549ab9",
+      "bytes": 781337,
+      "docx_tables_and_all_cells_match_machine_readable_tables": 11,
+      "embedded_PNGs_byte_identical_to_sources": 6,
+      "source_identities_and_scientific_citation_DOIs_present": true,
+      "GFM_table_column_counts_valid": true,
+      "limits": "Static XML/ZIP/figure identity check, not an Office paginated render or field validation."
+    },
+    "independent_equation_and_accounting": {
+      "backend_scenario_count": 248,
+      "max_native_cumulative_residual_over_bound": 0.002326539193660974,
+      "max_backend_trajectory_field_abs": 3.469446951953614e-18,
+      "maximum_decimal_water_error_m": 2.1542145003691e-18,
+      "all_daily_states_below_FC_no_gravity_surface_return_or_bottom_drainage": true
+    }
+  },
+  "independent_review": {
+    "helper_author": "Claude 32819cf0, Root independent review/correction/tests",
+    "root_run_harness_review": "Claude 32819cf0 read-only independent review plus binding_review_report.md",
+    "report_author": "Claude e04ebcae; two Root independent review/correction rounds and independent rebuild/XML/data/PNG checks",
+    "D1_disposition": "Confirmed vacuous expected hash guard in first Root harness fixed; independent reconstruction of all 12 actual descriptors proves exact frozen-parent/backend-only correspondence. Immutable results preserved.",
+    "review_R5_correction": "Original all-bitwise claim corrected by independent raw-field comparison; d0 bitwise, all within contracts."
+  },
+  "findings": {
+    "both_TRAIN_selected_pair": "d0_E0_open",
+    "maximum_harmonic_geometric_theta_difference_m3_m3": 1.838908954773788e-05,
+    "fixed_reference_new_properties": "Larger evaporation and worse RMSE than generic reference on all 3 windows",
+    "gravity": "Inactive; no bottom drainage qualification"
+  },
+  "limits": [
+    "Three short rain-free single-column windows; no large-domain GPU performance conclusion",
+    "Derived soil hydraulic surrogates with declared floors; not measured site hydraulic properties",
+    "No storm/rain/LEAF/T/bed experiment or native lifecycle checkpoint qualification",
+    "No Office paginated render; static DOCX and source PNG inspection only",
+    "No production method/default adoption; no tuning after held-out results"
+  ],
+  "preservation": "Original dirty c76 worktree status unchanged, production180/old driver/old reports/rawinputs/source locks/env/other jobs preserved",
+  "publication": "Codex publication proceeds only after this scoped acceptance under standing user authorization; Git history records commits."
+}

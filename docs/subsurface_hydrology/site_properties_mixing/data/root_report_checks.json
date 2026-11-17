@@ -1,0 +1,10 @@
+{
+  "status": "pass",
+  "docx_sha256": "6ad1376b0a3aa084057e777c376b6cacf7649f97ab6420b958d600742f549ab9",
+  "bytes": 781337,
+  "docx_tables_and_all_cells_match_machine_readable_tables": 11,
+  "embedded_PNGs_byte_identical_to_sources": 6,
+  "source_identities_and_scientific_citation_DOIs_present": true,
+  "GFM_table_column_counts_valid": true,
+  "limits": "Static XML/ZIP/figure identity check, not an Office paginated render or field validation."
+}

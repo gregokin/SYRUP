@@ -1,0 +1,18 @@
+# Report correction01 author report — site_hydraulics_interface_comparison_20261117
+
+Docs-only; no models/GPU/Git/installs. Only the allowed new paths in `site_properties_mixing/` were rewritten (build_report.py, report.md, README.md, verification.md, DOCX, figures/, tables/) plus this file. `report_author_report.md` preserved. No numerical result changed.
+
+Build: `PYTHONPATH=<task>/report_tools MPLCONFIGDIR=/tmp/syrup-site-mixing-mpl PYTHONDONTWRITEBYTECODE=1 /home/okin/MAPLE/.venv/bin/python -B build_report.py` → built; DOCX static check: ZIP OK, 6 media = 6 figures, 11 tables with repeating headers, PAGE footer, no placeholders. Ruff run only on build_report.py: "All checks passed!". No Office paginated render exists; page count/layout unchecked. All 6 PNGs re-inspected (no clipping; fig1 axis label and fig6 legend fixed).
+
+Corrections by assignment item:
+1. Summary now separates JORN A training max 1.60e-5 (56 scenarios) from held-out 1.49e-5 (JORN B) and 1.84e-5 (MOAB C); point persistence given in ×10⁻³ m³ m⁻³; the ambiguous "0–13 %" Ks gap replaced by the actual Ks ranges (≈104–121 JORN, 57–64 MOAB).
+2. Clock rewritten (anchor + k×86 400 s at anchor clock time; 48 consecutive half-hours per anchor-aligned window; PET date = window-midpoint date at UTC−7, with the JORN A day-1 example; target = 30-min mean ending at day end). Table 1 caption updated.
+3. "No capacity bound" replaced by "no exchange, gravity or saturation limit; residual-availability cap still limits E". Exact E formula added; θ1500 described as a declared stress scale, not a hard cutoff; "near-potential until residual" replaced by full-above/quadratic-below/none-below-residual. Initial multipliers are now computed from the initial θ and asserted against 0.069911/1, 0.034836/0.723098, 0.131537/1.
+4. FC/saturation never act; K_if does act on d>0 exchange (summary, §5.5).
+5. Markdown pipes escaped in headers and cells (checked: consistent column counts in all 11 tables); mm formatter shows 4 significant figures (e.g. 0.0002786, 0.0004944), exact zero shown as "0 (exact)"; Table 7 caption states train vs held-out; Fig 5 caption orientation already correct ((d 0, E 0) cell).
+6. USGS title "…Pima County, Arizona" (2002, WRI 01-4257); Baldauf/EcoHyD entry now the full commit 80b10e6b…880e9; appendix points to the data files holding full source/package/helper IDs and gives full LEAF and helper hashes found in the data; I did NOT find full commit hashes for bb28af6/9f466d2 in the data, so they stay short and say so. Floors described as project-approved bounded assumptions; JORN raw density not shown wrong; provider strict/unchanged.
+7. General claims scoped: worse-than-old only for the fixed reference and old-best (0,0.5) controls; d0E0 is best of a coarse grid, not excluding E in (0,0.1); new hold-outs needed for tuning; old generic soil not validated truth.
+8. Publication wording neutral; DOCX author "SYRUP project"; verification.md no longer implies acceptance/publication, cites Root post-lint 125 pass/2 skip and the post-lint equivalence run as inherited records, keeps the no-Office-render limit, and states exactly what the builder asserts (now includes per-layer N/bias/RMSE for every scenario/method and per-layer persistence against saved results).
+9. Ruff: removed unused noqa/imports/variable, lambdas → defs, pairwise, parenthesis/concat fix; integration replaced by the exact piecewise-linear trapezoid at layer edges and sensor-depth knots (asserted vs native layer means at rel 1e-9).
+
+Caveat for Root: "helper identity 333921bb…" in the appendix is the hash string that appears in the sealed source_guard files; I did not confirm which exact helper artifact it names.

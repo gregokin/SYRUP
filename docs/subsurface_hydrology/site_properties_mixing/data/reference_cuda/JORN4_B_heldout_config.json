@@ -1,0 +1,143 @@
+{
+ "schema": "syrup.observed_drydown.config/2",
+ "name": "JORN-4 B HELD-OUT TEMPLATE (reference-soil diagnostic)",
+ "provenance": {
+  "properties": "GENERIC reference soil from the actual EcoHyD soilparameters_tabernas.txt (GitHub snapshot 80b10e6b6b82ad16e9fd41a31901cc3157d880e9; file sha256 db02855a9359eed71c1976309ccefeaa3780a2314c2b57cd08b2f9ec4ec77e62): rw 0.01, WP/evaporation stress 0.18, FC = sat = 0.26, Ks 6.9 mm/h (loamy sand, Tabernas); layers = the user's 3 x 10 cm (the file's 60/80 mm are NOT used)",
+  "interface_conductivity": {
+   "rule": "WaterCell.cpp:549-551 Ku = Ks/(1+30/26)^3; K_geom = sqrt(Ks*Ku); interface K = K_geom",
+   "Ks_m_s": 1.916666666666667e-06,
+   "Ku_m_s": 1.9182382774538393e-07,
+   "K_geom_m_s": 6.063516607645978e-07
+  },
+  "scope": "generic reference-soil MECHANISM diagnostic with observed initialisation and forcing; NEVER site hydraulic validation; no plant T, flat terrain factor 1, partial soil-E budget",
+  "user_approval": "user approved this diagnostic (correction01 assignment)",
+  "frozen_grid": {
+   "d": [
+    0.0,
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.05,
+    0.1,
+    0.3,
+    1.0
+   ],
+   "E_multiplier": [
+    0.0,
+    0.1,
+    0.25,
+    0.5,
+    1.0,
+    1.2
+   ],
+   "unfitted_reference_pair": {
+    "d": 0.05,
+    "E": 1.2,
+    "note": "explicit nominal exposed bare ground; actual canopy/cover unmeasured"
+   }
+  },
+  "role": "held-out (temporal), no refit",
+  "heldout_status": "completed from training result /home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/actual_cpu/JORN4_A_training_result.json: best pair d=0, E=0.5 (training overall RMSE 0.004225800797081979)"
+ },
+ "site": {
+  "key": "JORN_plot4_2025-04",
+  "raw_section": "JORN",
+  "site": "JORN",
+  "hor": "004",
+  "plot": 4,
+  "latitude_deg": 32.59052,
+  "latitude_source": "NEON JORN megapit DP1.00096.001 permegapit decimalLatitude 32.590520 (measured pit location, not a plot GPS)"
+ },
+ "air": {
+  "root": "AIR_JORN",
+  "month": "2025-04",
+  "level": "000.020"
+ },
+ "window": {
+  "run_start_utc": "2025-04-22T17:00:00Z",
+  "min_dry_hours": 120,
+  "exclusion_hours": 72,
+  "anchor": "first_joint",
+  "boundary_second_of_day": 25200,
+  "max_days": 4,
+  "calendar_utc_offset_hours": -7
+ },
+ "layers": {
+  "edges_m": [
+   0.0,
+   0.1,
+   0.2,
+   0.3
+  ],
+  "theta_residual": [
+   0.01,
+   0.01,
+   0.01
+  ],
+  "theta_field_capacity": [
+   0.26,
+   0.26,
+   0.26
+  ],
+  "theta_saturation": [
+   0.26,
+   0.26,
+   0.26
+  ],
+  "theta_evaporation_stress": 0.18,
+  "interface_conductivity_m_s": [
+   6.063516607645978e-07,
+   6.063516607645978e-07
+  ]
+ },
+ "scenarios": [
+  {
+   "name": "d0_E0.5_open",
+   "diffusion_coefficient": 0.0,
+   "evaporation_factor": 0.5,
+   "potential_et": "weather",
+   "bottom": "open"
+  },
+  {
+   "name": "d0_E0_open",
+   "diffusion_coefficient": 0.0,
+   "evaporation_factor": 0.0,
+   "potential_et": "weather",
+   "bottom": "open"
+  },
+  {
+   "name": "d0.05_E1.2_open",
+   "diffusion_coefficient": 0.05,
+   "evaporation_factor": 1.2,
+   "potential_et": "weather",
+   "bottom": "open"
+  }
+ ],
+ "controls": {
+  "backends": [
+   "cuda",
+   "numpy",
+   "numba"
+  ],
+  "numba_rtol": 2e-12,
+  "numba_atol": 1e-14,
+  "restart_after_day": 2
+ },
+ "pins": {
+  "depth_table_sha256": "876fd5bdcfb8b93352399dab20a3b41e01b2ca3f74bb140e3216feb80812827f",
+  "inventory_sha256": "fc8b74ace7c32d24dd471baa9a316c3c4d46dcc63c56ea353fee99bbb0010ea8",
+  "inventory_candidate_key": "JORN_plot4_2025-04",
+  "air_manifest_sha256": "1db84000caeb862b1571334940a464c4a20d47b474f109bb8d663cd567e99dac",
+  "expected_sources": {
+   "maple_syrup": {
+    "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "files": 180
+   },
+   "maple": {
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "files": 412
+   }
+  }
+ }
+}

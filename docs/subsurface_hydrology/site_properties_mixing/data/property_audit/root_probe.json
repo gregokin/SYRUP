@@ -1,0 +1,665 @@
+{
+  "scope": "Parameter diagnostics ONLY; no water simulation, source/default edits, applied overrides, new fits or changed historical runs.",
+  "precision_decimal_digits": 60,
+  "cases": [
+    {
+      "input": {
+        "name": "JORN_A",
+        "S": 0.867,
+        "Si": 0.062,
+        "C": 0.071,
+        "OM": 0.3448,
+        "rho": 1419.6
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.039508152304,
+        "theta_33_normal": 0.08612694179301988,
+        "gap_normal": 0.3625882482976,
+        "theta_sat_normal": 0.4076161900906199,
+        "rho_normal_kg_m3": 1569.8170962598574,
+        "density_factor": 0.9043091729490303,
+        "air_entry_regression_first": 0.10358143591945788,
+        "air_entry_kpa": -0.6079086840620981,
+        "theta_sat_density_adjusted": 0.4643018867924528,
+        "theta_33_density_adjusted": 0.09746408113338648
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "JORN_Bw",
+        "S": 0.837,
+        "Si": 0.079,
+        "C": 0.084,
+        "OM": 0.1724,
+        "rho": 903.5
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.046312178008,
+        "theta_33_normal": 0.0972388184033134,
+        "gap_normal": 0.3400967899104,
+        "theta_sat_normal": 0.3991466083137134,
+        "rho_normal_kg_m3": 1592.2614879686596,
+        "density_factor": 0.5674319242329019,
+        "air_entry_regression_first": 0.26810458725045955,
+        "air_entry_kpa": -0.46075362971474765,
+        "theta_sat_density_adjusted": 0.6590566037735849,
+        "theta_33_density_adjusted": 0.1492208174952877
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 16,
+          "first_layer": 0,
+          "message": "bulk density is outside [1000, 1800] kg/m3 (1 element(s) flagged, first at layer 0, its flags 16; OR of all flags 16); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 16,
+          "first_layer": 0,
+          "message": "bulk density is outside [1000, 1800] kg/m3 (1 element(s) flagged, first at layer 0, its flags 16; OR of all flags 16); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "MOAB_A",
+        "S": 0.73,
+        "Si": 0.197,
+        "C": 0.073,
+        "OM": 1.0344,
+        "rho": 1519.7
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.050286739216,
+        "theta_33_normal": 0.1263395940326848,
+        "gap_normal": 0.3174219529376,
+        "theta_sat_normal": 0.4159515469702848,
+        "rho_normal_kg_m3": 1547.7284005287452,
+        "density_factor": 0.9818906207838727,
+        "air_entry_regression_first": 0.7035372447973172,
+        "air_entry_kpa": -0.06606317076843968,
+        "theta_sat_density_adjusted": 0.42652830188679247,
+        "theta_33_density_adjusted": 0.12845494501598634
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "MOAB_Bw",
+        "S": 0.712,
+        "Si": 0.17,
+        "C": 0.118,
+        "OM": 0.5172,
+        "rho": 1481.8
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.072616034128,
+        "theta_33_normal": 0.147507163608172,
+        "gap_normal": 0.2757991681376,
+        "theta_sat_normal": 0.397242331745772,
+        "rho_normal_kg_m3": 1597.3078208737043,
+        "density_factor": 0.9276859354444762,
+        "air_entry_regression_first": 1.2439430786341228,
+        "air_entry_kpa": 0.43432539840610174,
+        "theta_sat_density_adjusted": 0.4408301886792453,
+        "theta_33_density_adjusted": 0.15622473499486667
+      },
+      "backends": {
+        "numpy": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.39218936166045765,
+            "theta_saturation": 0.4408301886792453,
+            "saturated_conductivity_m_s": 1.5904920866396363e-05,
+            "theta_1500": 0.072616034128,
+            "air_entry_kpa": 0.4343253984061035,
+            "provenance": 0.0
+          }
+        },
+        "numba": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.39218936166045765,
+            "theta_saturation": 0.4408301886792453,
+            "saturated_conductivity_m_s": 1.5904920866396363e-05,
+            "theta_1500": 0.072616034128,
+            "air_entry_kpa": 0.4343253984061035,
+            "provenance": 0.0
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "JORN_10_20_dry_mass",
+        "S": 0.8628818882085719,
+        "Si": 0.06433359668180921,
+        "C": 0.0727845151096188,
+        "OM": 0.3211345842385937,
+        "rho": 1316.38,
+        "weighting": "dry_mass",
+        "depth_fraction_A": 0.8,
+        "mass_fraction_A": 0.8627296069523998
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.04043829918009047,
+        "theta_33_normal": 0.08764191511356587,
+        "gap_normal": 0.3594630221319837,
+        "theta_sat_normal": 0.4064053940893181,
+        "rho_normal_kg_m3": 1573.025705663307,
+        "density_factor": 0.8368458285587357,
+        "air_entry_regression_first": 0.12217475072125357,
+        "air_entry_kpa": -0.5913324627159721,
+        "theta_sat_density_adjusted": 0.5032528301886793,
+        "theta_33_density_adjusted": 0.1070114023334381
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 320,
+          "first_layer": 0,
+          "message": "the computed density factor rho/rho_normal is outside [0.9, 1.3] (1 element(s) flagged, first at layer 0, its flags 320; OR of all flags 320); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 320,
+          "first_layer": 0,
+          "message": "the computed density factor rho/rho_normal is outside [0.9, 1.3] (1 element(s) flagged, first at layer 0, its flags 320; OR of all flags 320); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "JORN_10_20_depth",
+        "S": 0.861,
+        "Si": 0.0654,
+        "C": 0.0736,
+        "OM": 0.31032000000000004,
+        "rho": 1316.38,
+        "weighting": "depth",
+        "depth_fraction_A": 0.8,
+        "mass_fraction_A": 0.8627296069523998
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.04086376349536,
+        "theta_33_normal": 0.08833534764854706,
+        "gap_normal": 0.358038867245696,
+        "theta_sat_normal": 0.40585721489424303,
+        "rho_normal_kg_m3": 1574.478380530256,
+        "density_factor": 0.8360737221152995,
+        "air_entry_regression_first": 0.1311007678475243,
+        "air_entry_kpa": -0.5833698706926418,
+        "theta_sat_density_adjusted": 0.5032528301886793,
+        "theta_33_density_adjusted": 0.1078144707074343
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 320,
+          "first_layer": 0,
+          "message": "the computed density factor rho/rho_normal is outside [0.9, 1.3] (1 element(s) flagged, first at layer 0, its flags 320; OR of all flags 320); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 320,
+          "first_layer": 0,
+          "message": "the computed density factor rho/rho_normal is outside [0.9, 1.3] (1 element(s) flagged, first at layer 0, its flags 320; OR of all flags 320); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "MOAB_0_10_dry_mass",
+        "S": 0.7229088226301726,
+        "Si": 0.18636323394525903,
+        "C": 0.0907279434245683,
+        "OM": 0.8306468369069616,
+        "rho": 1504.54,
+        "weighting": "dry_mass",
+        "depth_fraction_A": 0.6,
+        "mass_fraction_A": 0.6060457016762599
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.05900343186546672,
+        "theta_33_normal": 0.13447965148008517,
+        "gap_normal": 0.3006597082960985,
+        "theta_sat_normal": 0.4080172039810569,
+        "rho_normal_kg_m3": 1568.754409450199,
+        "density_factor": 0.9590666269599813,
+        "air_entry_regression_first": 0.9210068856702365,
+        "air_entry_kpa": 0.13389818125853947,
+        "theta_sat_density_adjusted": 0.4322490566037736,
+        "theta_33_density_adjusted": 0.1393260220046285
+      },
+      "backends": {
+        "numpy": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.37996672767136985,
+            "theta_saturation": 0.43224905660377355,
+            "saturated_conductivity_m_s": 1.7764795051910417e-05,
+            "theta_1500": 0.05900343186546671,
+            "air_entry_kpa": 0.13389818125854414,
+            "provenance": 0.0
+          }
+        },
+        "numba": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.37996672767136985,
+            "theta_saturation": 0.43224905660377355,
+            "saturated_conductivity_m_s": 1.7764795051910417e-05,
+            "theta_1500": 0.05900343186546671,
+            "air_entry_kpa": 0.13389818125854414,
+            "provenance": 0.0
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "MOAB_0_10_depth",
+        "S": 0.7228,
+        "Si": 0.1862,
+        "C": 0.091,
+        "OM": 0.82752,
+        "rho": 1504.54,
+        "weighting": "depth",
+        "depth_fraction_A": 0.6,
+        "mass_fraction_A": 0.6060457016762599
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.0591380105728,
+        "theta_33_normal": 0.1346065628976084,
+        "gap_normal": 0.300406166185472,
+        "theta_sat_normal": 0.4079011290830804,
+        "rho_normal_kg_m3": 1569.062007929837,
+        "density_factor": 0.9588786118051734,
+        "air_entry_regression_first": 0.9242998959547819,
+        "air_entry_kpa": 0.13694061366513202,
+        "theta_sat_density_adjusted": 0.4322490566037736,
+        "theta_33_density_adjusted": 0.13947614840174705
+      },
+      "backends": {
+        "numpy": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.38001578984309503,
+            "theta_saturation": 0.43224905660377355,
+            "saturated_conductivity_m_s": 1.7732684878870903e-05,
+            "theta_1500": 0.05913801057279999,
+            "air_entry_kpa": 0.13694061366512877,
+            "provenance": 0.0
+          }
+        },
+        "numba": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.38001578984309503,
+            "theta_saturation": 0.43224905660377355,
+            "saturated_conductivity_m_s": 1.7732684878870903e-05,
+            "theta_1500": 0.05913801057279999,
+            "air_entry_kpa": 0.13694061366512877,
+            "provenance": 0.0
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "JORN_A_normal_density_control",
+        "S": 0.867,
+        "Si": 0.062,
+        "C": 0.071,
+        "OM": 0.3448,
+        "rho": 1569.8170962598574,
+        "density_source": "reference regression, diagnostic only"
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.039508152304,
+        "theta_33_normal": 0.08612694179301988,
+        "gap_normal": 0.3625882482976,
+        "theta_sat_normal": 0.4076161900906199,
+        "rho_normal_kg_m3": 1569.8170962598574,
+        "density_factor": 1.0,
+        "air_entry_regression_first": 0.10358143591945788,
+        "air_entry_kpa": -0.6079086840620981,
+        "theta_sat_density_adjusted": 0.40761619009061983,
+        "theta_33_density_adjusted": 0.08612694179301987
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "JORN_Bw_normal_density_control",
+        "S": 0.837,
+        "Si": 0.079,
+        "C": 0.084,
+        "OM": 0.1724,
+        "rho": 1592.2614879686596,
+        "density_source": "reference regression, diagnostic only"
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.046312178008,
+        "theta_33_normal": 0.0972388184033134,
+        "gap_normal": 0.3400967899104,
+        "theta_sat_normal": 0.3991466083137134,
+        "rho_normal_kg_m3": 1592.2614879686596,
+        "density_factor": 1.0,
+        "air_entry_regression_first": 0.26810458725045955,
+        "air_entry_kpa": -0.46075362971474765,
+        "theta_sat_density_adjusted": 0.39914660831371335,
+        "theta_33_density_adjusted": 0.09723881840331339
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "MOAB_A_normal_density_control",
+        "S": 0.73,
+        "Si": 0.197,
+        "C": 0.073,
+        "OM": 1.0344,
+        "rho": 1547.7284005287452,
+        "density_source": "reference regression, diagnostic only"
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.050286739216,
+        "theta_33_normal": 0.1263395940326848,
+        "gap_normal": 0.3174219529376,
+        "theta_sat_normal": 0.4159515469702848,
+        "rho_normal_kg_m3": 1547.7284005287452,
+        "density_factor": 1.0,
+        "air_entry_regression_first": 0.7035372447973172,
+        "air_entry_kpa": -0.06606317076843968,
+        "theta_sat_density_adjusted": 0.41595154697028486,
+        "theta_33_density_adjusted": 0.12633959403268483
+      },
+      "backends": {
+        "numpy": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        },
+        "numba": {
+          "status": "refused",
+          "flags": 256,
+          "first_layer": 0,
+          "message": "the final air entry is not in [0, 33) kPa (unsupported prediction; supply a valid measured air entry) (1 element(s) flagged, first at layer 0, its flags 256; OR of all flags 256); nothing was published"
+        }
+      }
+    },
+    {
+      "input": {
+        "name": "MOAB_Bw_normal_density_control",
+        "S": 0.712,
+        "Si": 0.17,
+        "C": 0.118,
+        "OM": 0.5172,
+        "rho": 1597.3078208737043,
+        "density_source": "reference regression, diagnostic only"
+      },
+      "independent_paper_60_digit": {
+        "theta_1500": 0.072616034128,
+        "theta_33_normal": 0.147507163608172,
+        "gap_normal": 0.2757991681376,
+        "theta_sat_normal": 0.397242331745772,
+        "rho_normal_kg_m3": 1597.3078208737043,
+        "density_factor": 1.0,
+        "air_entry_regression_first": 1.2439430786341228,
+        "air_entry_kpa": 0.43432539840610174,
+        "theta_sat_density_adjusted": 0.39724233174577195,
+        "theta_33_density_adjusted": 0.147507163608172
+      },
+      "backends": {
+        "numpy": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.354561051550207,
+            "theta_saturation": 0.39724233174577195,
+            "saturated_conductivity_m_s": 1.0803649425404602e-05,
+            "theta_1500": 0.072616034128,
+            "air_entry_kpa": 0.4343253984061035,
+            "provenance": 0.0
+          }
+        },
+        "numba": {
+          "status": "accepted",
+          "properties": {
+            "theta_field_capacity_6kpa": 0.354561051550207,
+            "theta_saturation": 0.39724233174577195,
+            "saturated_conductivity_m_s": 1.0803649425404602e-05,
+            "theta_1500": 0.072616034128,
+            "air_entry_kpa": 0.4343253984061035,
+            "provenance": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "OM_regression_sensitivity_not_adopted": [
+    {
+      "name": "JORN_A",
+      "values": [
+        {
+          "OM_percent": 0,
+          "air_entry_kpa": -0.5634777558359203
+        },
+        {
+          "OM_percent": 0.1,
+          "air_entry_kpa": -0.5763739702886681
+        },
+        {
+          "OM_percent": 0.1724,
+          "air_entry_kpa": -0.5857056214834638
+        },
+        {
+          "OM_percent": 0.3448,
+          "air_entry_kpa": -0.6079086840620981
+        },
+        {
+          "OM_percent": 0.5172,
+          "air_entry_kpa": -0.6300869435718232
+        },
+        {
+          "OM_percent": 1.0344,
+          "air_entry_kpa": -0.6964729036875423
+        },
+        {
+          "OM_percent": 2,
+          "air_entry_kpa": -0.8198164782579572
+        },
+        {
+          "OM_percent": 4,
+          "air_entry_kpa": -1.0728171656633205
+        },
+        {
+          "OM_percent": 8,
+          "air_entry_kpa": -1.568804435424027
+        }
+      ]
+    },
+    {
+      "name": "JORN_Bw",
+      "values": [
+        {
+          "OM_percent": 0,
+          "air_entry_kpa": -0.43504562281631093
+        },
+        {
+          "OM_percent": 0.1,
+          "air_entry_kpa": -0.44996144993423354
+        },
+        {
+          "OM_percent": 0.1724,
+          "air_entry_kpa": -0.46075362971474765
+        },
+        {
+          "OM_percent": 0.3448,
+          "air_entry_kpa": -0.4864288755990024
+        },
+        {
+          "OM_percent": 0.5172,
+          "air_entry_kpa": -0.5120713604690752
+        },
+        {
+          "OM_percent": 1.0344,
+          "air_entry_kpa": -0.5888022489942021
+        },
+        {
+          "OM_percent": 2,
+          "air_entry_kpa": -0.7312678771196248
+        },
+        {
+          "OM_percent": 4,
+          "air_entry_kpa": -1.0230811039384375
+        },
+        {
+          "OM_percent": 8,
+          "air_entry_kpa": -1.5934804751225597
+        }
+      ]
+    },
+    {
+      "name": "MOAB_A",
+      "values": [
+        {
+          "OM_percent": 0,
+          "air_entry_kpa": 0.25046100261712995
+        },
+        {
+          "OM_percent": 0.1,
+          "air_entry_kpa": 0.2196553774389744
+        },
+        {
+          "OM_percent": 0.1724,
+          "air_entry_kpa": 0.1973796010739571
+        },
+        {
+          "OM_percent": 0.3448,
+          "air_entry_kpa": 0.14442914858901543
+        },
+        {
+          "OM_percent": 0.5172,
+          "air_entry_kpa": 0.09160964516230491
+        },
+        {
+          "OM_percent": 1.0344,
+          "air_entry_kpa": -0.06606317076843968
+        },
+        {
+          "OM_percent": 2,
+          "air_entry_kpa": -0.3572804216209611
+        },
+        {
+          "OM_percent": 4,
+          "air_entry_kpa": -0.9473985209642728
+        },
+        {
+          "OM_percent": 8,
+          "air_entry_kpa": -2.0747647449665583
+        }
+      ]
+    },
+    {
+      "name": "MOAB_Bw",
+      "values": [
+        {
+          "OM_percent": 0,
+          "air_entry_kpa": 0.5791100183017168
+        },
+        {
+          "OM_percent": 0.1,
+          "air_entry_kpa": 0.5510420577113663
+        },
+        {
+          "OM_percent": 0.1724,
+          "air_entry_kpa": 0.5307430018573305
+        },
+        {
+          "OM_percent": 0.3448,
+          "air_entry_kpa": 0.4824814618921255
+        },
+        {
+          "OM_percent": 0.5172,
+          "air_entry_kpa": 0.43432539840610174
+        },
+        {
+          "OM_percent": 1.0344,
+          "air_entry_kpa": 0.29049006682311823
+        },
+        {
+          "OM_percent": 2,
+          "air_entry_kpa": 0.024493519929053815
+        },
+        {
+          "OM_percent": 4,
+          "air_entry_kpa": -0.5159277922660359
+        },
+        {
+          "OM_percent": 8,
+          "air_entry_kpa": -1.5541848581234958
+        }
+      ]
+    }
+  ],
+  "source_files": {
+    "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/src/maple_syrup/soil_texture_properties.py": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+    "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/src/maple_syrup/soil_texture_properties_numba.py": "a6a7add411858328d42d08b95aa3219a0d818e6459505ba7c7766eb337c2da60",
+    "/home/okin/SYRUP/agent_handoffs/tasks/subsurface_observed_drydown_20261114/analysis_candidate/src/maple_syrup/soil_texture_properties_cuda.py": "c6f50ddefbc9393e049a08bc4788bd637b72e456cdc8b88c518f4558a9e4225e"
+  }
+}

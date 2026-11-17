@@ -1,0 +1,109 @@
+{
+  "utc": "2026-11-17T21:19:56.671555+00:00",
+  "review_finding": "D1 genuine vacuous Root expected-hash check, no output difference. Reconciled all 12 configs against independently frozen parents; original outputs untouched. Future orchestrator fixed BEFORE execute; no rerun scientifically needed.",
+  "rows": [
+    {
+      "mode": "cpu",
+      "config": "JORN4_A_training_geometric.json",
+      "frozen_parent_sha256": "2713431b7fdd0725ae6f8cd0dcd8469b6b71f9f65a64d0c4d8f1bb650b5b87a3",
+      "independently_expected_backend_config_sha256": "2713431b7fdd0725ae6f8cd0dcd8469b6b71f9f65a64d0c4d8f1bb650b5b87a3",
+      "actual_result_sha256": "ea4e6f3ff7e6e7759079c21c97e3139594b361b87f83e5ef75b0b55738d7aabe",
+      "passed": true
+    },
+    {
+      "mode": "cpu",
+      "config": "JORN4_A_training_harmonic.json",
+      "frozen_parent_sha256": "9ff2d58d55bef21eb705d2042b1624ab758965230e32b5341b0486f82f50f739",
+      "independently_expected_backend_config_sha256": "9ff2d58d55bef21eb705d2042b1624ab758965230e32b5341b0486f82f50f739",
+      "actual_result_sha256": "8bbf5e5b597995f3f1a7325b3468e031057a4c0caa1a73bd7f975d6d8febeac3",
+      "passed": true
+    },
+    {
+      "mode": "cpu",
+      "config": "JORN4_B_heldout_geometric.json",
+      "frozen_parent_sha256": "02d7747a27f12545b02e5322f41180c87d7d392df58dccbbc3e6aba410161fe3",
+      "independently_expected_backend_config_sha256": "02d7747a27f12545b02e5322f41180c87d7d392df58dccbbc3e6aba410161fe3",
+      "actual_result_sha256": "3f7f1cc55c5292658fee3e9bec7057b0d889147e54700e9caff1491bcc85641e",
+      "passed": true
+    },
+    {
+      "mode": "cpu",
+      "config": "JORN4_B_heldout_harmonic.json",
+      "frozen_parent_sha256": "929d991105a7d7d3e644ce39dbf99075de5be22e0be52667cf63e1f741cae948",
+      "independently_expected_backend_config_sha256": "929d991105a7d7d3e644ce39dbf99075de5be22e0be52667cf63e1f741cae948",
+      "actual_result_sha256": "8386e02821e4d12ceebea0f83d7f4bcf51472fce6ec7bad7561a6b4d9ea400d8",
+      "passed": true
+    },
+    {
+      "mode": "cpu",
+      "config": "MOAB2_C_heldout_geometric.json",
+      "frozen_parent_sha256": "5791e9261c9388a5a8abde36ea98156f8011372ad37e44d5e5d42484cd78e704",
+      "independently_expected_backend_config_sha256": "5791e9261c9388a5a8abde36ea98156f8011372ad37e44d5e5d42484cd78e704",
+      "actual_result_sha256": "f9ed08269d9cc39b283b4e13fa3860761f9480f367682156da1e294147f1e7dc",
+      "passed": true
+    },
+    {
+      "mode": "cpu",
+      "config": "MOAB2_C_heldout_harmonic.json",
+      "frozen_parent_sha256": "0621a4fb7b81c0ebe0a74fa676985bdb444f32d3e86bb04bd822eb7868f841e2",
+      "independently_expected_backend_config_sha256": "0621a4fb7b81c0ebe0a74fa676985bdb444f32d3e86bb04bd822eb7868f841e2",
+      "actual_result_sha256": "bf8f8573412021c7ee661614bed53e958dfb3ac8d7a784f3b5b4ae1bdb04af9a",
+      "passed": true
+    },
+    {
+      "mode": "cuda",
+      "config": "JORN4_A_training_geometric.json",
+      "frozen_parent_sha256": "2713431b7fdd0725ae6f8cd0dcd8469b6b71f9f65a64d0c4d8f1bb650b5b87a3",
+      "independently_expected_backend_config_sha256": "9b4e04c68dcfad335eff288b58bd13fcb5f7cc681ee8513b39e47a4810e88eee",
+      "actual_result_sha256": "a4bca6db0cd54cc6de79df15a74fa87d18b3deac2f19d60331c6711e028ffe04",
+      "passed": true
+    },
+    {
+      "mode": "cuda",
+      "config": "JORN4_A_training_harmonic.json",
+      "frozen_parent_sha256": "9ff2d58d55bef21eb705d2042b1624ab758965230e32b5341b0486f82f50f739",
+      "independently_expected_backend_config_sha256": "0c4a770a41dd313a01c50ccc53e7197531226605002ec4fa9c27f2665a332dbf",
+      "actual_result_sha256": "68f06dee98818ade9a67b92cc5a0ea9e65839be3a63d215cc809f888b6486053",
+      "passed": true
+    },
+    {
+      "mode": "cuda",
+      "config": "JORN4_B_heldout_geometric.json",
+      "frozen_parent_sha256": "02d7747a27f12545b02e5322f41180c87d7d392df58dccbbc3e6aba410161fe3",
+      "independently_expected_backend_config_sha256": "300e20f6cbbd2cad44064f45b7cc5e986ea023e01335314e4ecf974f42201f48",
+      "actual_result_sha256": "5e60ffb963af1bbe2b56780ef5bcd8f1fe71840e5287a6d601e24f1216e22e3b",
+      "passed": true
+    },
+    {
+      "mode": "cuda",
+      "config": "JORN4_B_heldout_harmonic.json",
+      "frozen_parent_sha256": "929d991105a7d7d3e644ce39dbf99075de5be22e0be52667cf63e1f741cae948",
+      "independently_expected_backend_config_sha256": "ac0c83efb71d407ca60dca71474749e8ecf4185dd187bc89f5cb238e8a82fa8c",
+      "actual_result_sha256": "93c4653a429326f330daa55ccbea465d2cc7c101acf302918d7a971e4f900fc0",
+      "passed": true
+    },
+    {
+      "mode": "cuda",
+      "config": "MOAB2_C_heldout_geometric.json",
+      "frozen_parent_sha256": "5791e9261c9388a5a8abde36ea98156f8011372ad37e44d5e5d42484cd78e704",
+      "independently_expected_backend_config_sha256": "884448ca9325836c0107e62e916d099b6b31712eb3ebc31bdf1f6919701657a9",
+      "actual_result_sha256": "393eccdde2449409c68cb3603adb4db4082f4b3f73d87c9e19c0db35b20433c0",
+      "passed": true
+    },
+    {
+      "mode": "cuda",
+      "config": "MOAB2_C_heldout_harmonic.json",
+      "frozen_parent_sha256": "0621a4fb7b81c0ebe0a74fa676985bdb444f32d3e86bb04bd822eb7868f841e2",
+      "independently_expected_backend_config_sha256": "67fa08fcdf6f49608b2de49e68fda35277ae5942b47a596a690c8a94c8e05191",
+      "actual_result_sha256": "b01b9c21ad49bc6349fcbe1d2a14c3fc69735e84e218196d619eb6351044f01e",
+      "passed": true
+    }
+  ],
+  "native_driver_module_hashes": {
+    "benchmarks/subsurface_validation/__init__.py": "4219ada0b7f87e906121a846a1992f6bd4f88dbb981a4f7e05ded53c99e5f5c3",
+    "benchmarks/subsurface_validation/drydown_driver.py": "22adc6510464ab4aceb9524f71cdd72a595a800e8034eb066cccd7e3594ab88c",
+    "benchmarks/subsurface_validation/neon_inputs.py": "7492a2e3a46c9028d9a7fcdb16168d56daffb0e13ca909b5cdb4b524e2b2e8e9",
+    "benchmarks/subsurface_validation/paths.py": "1c60c63b542c273ef2547c649d493590dff2cb8e540930238e47e34b0d95f88d"
+  },
+  "review_correction": "Claude R5 bitwise claim overstated: actual max backend/CPU-CUDA difference 3.469446951953614e-18, d0 bitwise. Read actual root_independent_summary, not review prose."
+}

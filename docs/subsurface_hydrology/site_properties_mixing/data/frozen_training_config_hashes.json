@@ -1,0 +1,9 @@
+{
+ "JORN4_A_training_harmonic.json": "9ff2d58d55bef21eb705d2042b1624ab758965230e32b5341b0486f82f50f739",
+ "JORN4_B_heldout_harmonic_TEMPLATE.json": "1ae357a4a2014345be987feb63e23c417cc1d8dcb33418bef09f52623cf39e3e",
+ "MOAB2_C_heldout_harmonic_TEMPLATE.json": "94442cf0c9efd5bb240b2c27b1352445737184b612d075e97fe7d7182d192e7b",
+ "JORN4_A_training_geometric.json": "2713431b7fdd0725ae6f8cd0dcd8469b6b71f9f65a64d0c4d8f1bb650b5b87a3",
+ "JORN4_B_heldout_geometric_TEMPLATE.json": "c4dc6bfb081f63d4fbccf337df98a72250e07573ed4c5fc85e6289244da2bef5",
+ "MOAB2_C_heldout_geometric_TEMPLATE.json": "e2254b740f6821a86d79548ffc97abe8a681c4917598fb4ce3bac0f0a7213956",
+ "interface_coefficients.json": "8523f24cf1a71dcc99c8054621b804cf84aeb8f088c231dfc85dbbbef6e8f31a"
+}

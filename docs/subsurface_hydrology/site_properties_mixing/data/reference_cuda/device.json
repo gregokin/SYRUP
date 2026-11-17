@@ -1,0 +1,9 @@
+{
+  "name": "NVIDIA GeForce GTX 1080 Ti",
+  "cupy": "14.2.0",
+  "driver": 13000,
+  "cuda_runtime": 12090,
+  "logical_device": 0,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+}

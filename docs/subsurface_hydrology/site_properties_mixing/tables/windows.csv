@@ -1,0 +1,4 @@
+Window,Role,Model days,Anchor (UTC),Joint targets,Valid targets per layer (1/2/3),Latitude (°N)
+JORN A,training,10,2025-04-08 22:00:00,8,8/10/10,32.591
+JORN B,temporal hold-out,4,2025-04-26 06:30:00,3,4/4/3,32.591
+MOAB C,site hold-out,6,2025-05-22 03:30:00,3,6/4/4,38.251

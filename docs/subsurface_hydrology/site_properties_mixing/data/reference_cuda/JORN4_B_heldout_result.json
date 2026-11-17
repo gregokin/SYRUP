@@ -1,0 +1,1003 @@
+{
+ "config_sha256": "1f60617c10991e5f34ca69827fe6cc6fffa62100c5aa58b94c583b13da6c1f54",
+ "sources_before": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/analysis_candidate/src/maple_syrup/__init__.py"
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py"
+  }
+ },
+ "sources_after": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/analysis_candidate/src/maple_syrup/__init__.py"
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py"
+  }
+ },
+ "plan": {
+  "name": "JORN-4 B HELD-OUT TEMPLATE (reference-soil diagnostic)",
+  "inventory_files_rehashed": 21,
+  "air_manifest_files_rehashed": 12,
+  "inventory_cross_checks": {
+   "site": true,
+   "raw_section": true,
+   "plot": true,
+   "hor": true,
+   "month": true,
+   "air_root": true,
+   "key": true,
+   "site_key": true,
+   "run_start": true
+  },
+  "run_start_utc": "2025-04-22T17:00:00Z",
+  "run_hours": 199.0,
+  "exclusion_end_utc": "2025-04-25T17:00:00Z",
+  "anchor_utc": "2025-04-26T06:30:00Z",
+  "anchor_rule": "first_joint",
+  "anchor_candidates_utc": {
+   "first_joint_at_or_after_exclusion_end_s": "2025-04-26T06:30:00Z",
+   "first_boundary_coincident_joint_s": "2025-04-28T07:00:00Z"
+  },
+  "max_rainfree_days": 4,
+  "complete_forcing_days": 4,
+  "first_incomplete_forcing_day": null,
+  "model_days": 4,
+  "day_end_utc": [
+   "2025-04-26T06:30:00Z",
+   "2025-04-27T06:30:00Z",
+   "2025-04-28T06:30:00Z",
+   "2025-04-29T06:30:00Z",
+   "2025-04-30T06:30:00Z"
+  ],
+  "sensor_depths_m": [
+   0.058,
+   0.158,
+   0.258
+  ],
+  "probe_layer_index": [
+   0,
+   1,
+   2
+  ],
+  "initial_point_theta": [
+   0.0305,
+   0.0656,
+   0.0588
+  ],
+  "initial_layer_theta": [
+   0.03359582,
+   0.05909642000000001,
+   0.059943759999999985
+  ],
+  "initial_layer_water_m": [
+   0.003359582,
+   0.005909642000000001,
+   0.0059943759999999974
+  ],
+  "initial_total_water_m": 0.015263599999999999,
+  "pet_mm_day": [
+   6.97934935242336,
+   6.989761504832997,
+   6.080594128267244,
+   6.1163549608175325
+  ],
+  "pet": {
+   "latitude_deg": 32.59052,
+   "latitude_source": "NEON JORN megapit DP1.00096.001 permegapit decimalLatitude 32.590520 (measured pit location, not a plot GPS)",
+   "terrain_factor": 1.0,
+   "terrain_note": "flat diagnostic: no aspect or slope multiplier is applied",
+   "method": "ecohyd_hargreaves",
+   "date_rule": "calendar date of the 24 h window midpoint at fixed UTC-7"
+  },
+  "valid_targets_per_level": {
+   "501": 4,
+   "502": 4,
+   "503": 3
+  },
+  "valid_joint_targets": 3,
+  "initial_below_residual": [
+   false,
+   false,
+   false
+  ],
+  "prepared_inputs": {
+   "day_end_utc": [
+    "2025-04-27T06:30:00Z",
+    "2025-04-28T06:30:00Z",
+    "2025-04-29T06:30:00Z",
+    "2025-04-30T06:30:00Z"
+   ],
+   "t0_utc": "2025-04-26T06:30:00Z",
+   "observed_end_theta_m3m3": {
+    "501": [
+     0.0309,
+     0.0273,
+     0.0266,
+     0.0264
+    ],
+    "502": [
+     0.0653,
+     0.0634,
+     0.0628,
+     0.0613
+    ],
+    "503": [
+     0.0588,
+     0.0573,
+     0.0567,
+     null
+    ]
+   },
+   "observed_valid": {
+    "501": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "502": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "503": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "observed_joint_valid": [
+    true,
+    true,
+    true,
+    false
+   ],
+   "sensor_depths_m": [
+    0.058,
+    0.158,
+    0.258
+   ],
+   "raw_initial_point_theta": [
+    0.0305,
+    0.0656,
+    0.0588
+   ],
+   "integrated_initial_layer_theta": [
+    0.03359582,
+    0.05909642000000001,
+    0.059943759999999985
+   ],
+   "integrated_initial_layer_water_m": [
+    0.003359582,
+    0.005909642000000001,
+    0.0059943759999999974
+   ],
+   "weather_days": [
+    {
+     "window_start_utc": "2025-04-26T06:30:00Z",
+     "window_end_utc": "2025-04-27T06:30:00Z",
+     "pet_calendar_date": "2025-04-26",
+     "n_passing": 48,
+     "tmin_c": 5.7061,
+     "tmean_c_count_weighted": 20.903989583333335,
+     "tmax_c": 31.2754,
+     "pet_mm_day": 6.97934935242336
+    },
+    {
+     "window_start_utc": "2025-04-27T06:30:00Z",
+     "window_end_utc": "2025-04-28T06:30:00Z",
+     "pet_calendar_date": "2025-04-27",
+     "n_passing": 48,
+     "tmin_c": 5.6866,
+     "tmean_c_count_weighted": 21.043629166666665,
+     "tmax_c": 30.9695,
+     "pet_mm_day": 6.989761504832997
+    },
+    {
+     "window_start_utc": "2025-04-28T06:30:00Z",
+     "window_end_utc": "2025-04-29T06:30:00Z",
+     "pet_calendar_date": "2025-04-28",
+     "n_passing": 48,
+     "tmin_c": 4.5852,
+     "tmean_c_count_weighted": 17.982968361398587,
+     "tmax_c": 26.9772,
+     "pet_mm_day": 6.080594128267244
+    },
+    {
+     "window_start_utc": "2025-04-29T06:30:00Z",
+     "window_end_utc": "2025-04-30T06:30:00Z",
+     "pet_calendar_date": "2025-04-29",
+     "n_passing": 48,
+     "tmin_c": 1.4836,
+     "tmean_c_count_weighted": 16.000235289210234,
+     "tmax_c": 26.7057,
+     "pet_mm_day": 6.1163549608175325
+    }
+   ],
+   "pet_source": {
+    "latitude_deg": 32.59052,
+    "latitude_source": "NEON JORN megapit DP1.00096.001 permegapit decimalLatitude 32.590520 (measured pit location, not a plot GPS)",
+    "terrain_factor": 1.0,
+    "terrain_note": "flat diagnostic: no aspect or slope multiplier is applied",
+    "method": "ecohyd_hargreaves",
+    "date_rule": "calendar date of the 24 h window midpoint at fixed UTC-7",
+    "air_series": "NEON DP1.00002.001 single aspirated, level 000.020, month 2025-04, RELEASE-2026"
+   }
+  },
+  "support_note": "state = instantaneous end-of-day column state at the anchor + k x 86400 s; observation = 30-minute mean ending at that instant; the initial layer means are integrals of the point profile (representativeness differs from the point sensors and is not hidden)"
+ },
+ "persistence": {
+  "initial_point_values_held": {
+   "per_layer": {
+    "501": {
+     "n": 4,
+     "bias": 0.0026999999999999993,
+     "rmse": 0.003256531897586756,
+     "mae": 0.0029,
+     "mse": 1.0604999999999998e-05
+    },
+    "502": {
+     "n": 4,
+     "bias": 0.002400000000000008,
+     "rmse": 0.002795532149698879,
+     "mae": 0.002400000000000008,
+     "mse": 7.815000000000036e-06
+    },
+    "503": {
+     "n": 3,
+     "bias": 0.0011999999999999997,
+     "rmse": 0.0014899664425751331,
+     "mae": 0.0011999999999999997,
+     "mse": 2.219999999999998e-06
+    }
+   },
+   "overall_rmse": 0.0026229754097208025,
+   "pooled_rmse_alternative": 0.002702524072720977
+  },
+  "initial_layer_means_held": {
+   "per_layer": {
+    "501": {
+     "n": 4,
+     "bias": 0.005795819999999998,
+     "rmse": 0.006075074441716742,
+     "mae": 0.005795819999999998,
+     "mse": 3.690652947239998e-05
+    },
+    "502": {
+     "n": 4,
+     "bias": -0.004103579999999987,
+     "rmse": 0.00434676532796514,
+     "mae": 0.004103579999999987,
+     "mse": 1.889436881639989e-05
+    },
+    "503": {
+     "n": 3,
+     "bias": 0.0023437599999999864,
+     "rmse": 0.0025046378855235613,
+     "mae": 0.0023437599999999864,
+     "mse": 6.273210937599935e-06
+    }
+   },
+   "overall_rmse": 0.004548776730301595,
+   "pooled_rmse_alternative": 0.00469064083592384
+  }
+ },
+ "runs": {
+  "d0_E0.5_open": {
+   "trajectory": {
+    "water_m": [
+     [
+      0.0032380164769206456,
+      0.005909642000000001,
+      0.0059943759999999974
+     ],
+     [
+      0.0031249209416363112,
+      0.005909642000000001,
+      0.0059943759999999974
+     ],
+     [
+      0.0030332885379935996,
+      0.005909642000000001,
+      0.0059943759999999974
+     ],
+     [
+      0.002946443477143372,
+      0.005909642000000001,
+      0.0059943759999999974
+     ]
+    ],
+    "percolation_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "diffusion_m": [
+     [
+      -0.0,
+      -0.0
+     ],
+     [
+      -0.0,
+      -0.0
+     ],
+     [
+      -0.0,
+      -0.0
+     ],
+     [
+      -0.0,
+      -0.0
+     ]
+    ],
+    "evaporation_m": [
+     0.00012156552307935433,
+     0.0001130955352843344,
+     9.163240364271167e-05,
+     8.684506085022738e-05
+    ],
+    "evaporation_unmet_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "drainage_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "surface_return_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_residual_m3": [
+     -3.6591823321385775e-19,
+     1.3552527156068805e-18,
+     -8.131516293641283e-19,
+     -5.827586677109586e-19
+    ],
+    "step_bound_m3": [
+     2.575792024117618e-16,
+     2.555277368023676e-16,
+     2.53619205540092e-16,
+     2.5207287299433855e-16
+    ],
+    "t_s": [
+     86400.0,
+     172800.0,
+     259200.0,
+     345600.0
+    ]
+   },
+   "layer_theta": [
+    [
+     0.03238016476920645,
+     0.05909642000000001,
+     0.059943759999999985
+    ],
+    [
+     0.03124920941636311,
+     0.05909642000000001,
+     0.059943759999999985
+    ],
+    [
+     0.030332885379935996,
+     0.05909642000000001,
+     0.059943759999999985
+    ],
+    [
+     0.02946443477143372,
+     0.05909642000000001,
+     0.059943759999999985
+    ]
+   ],
+   "initial_storage_m": 0.015263599999999999,
+   "final_storage_m": 0.01485046147714337,
+   "cumulative": {
+    "n_steps": 4,
+    "elapsed_s": 345600.0,
+    "added_m3": 0.0,
+    "surface_return_m3": 0.0,
+    "drainage_m3": 0.0,
+    "evaporation_m3": 0.00041313852285662775,
+    "evaporation_unmet_m3": 0.0
+   },
+   "cumulative_ledger": {
+    "residual_m3": -4.336808689942018e-19,
+    "bound_m3": 7.456240069814157e-16,
+    "n_terms": 55
+   },
+   "max_step_residual_over_bound": 0.0053037401440888254,
+   "backend_agreement_max_abs": {
+    "cuda_vs_numpy": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    },
+    "cuda_vs_numba": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    },
+    "numpy_vs_numba": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    }
+   },
+   "per_backend_ledger": {
+    "cuda": {
+     "residual_m3": -4.336808689942018e-19,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    },
+    "numpy": {
+     "residual_m3": -4.336808689942018e-19,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    },
+    "numba": {
+     "residual_m3": -4.336808689942018e-19,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    }
+   },
+   "restart": {
+    "after_day": 2,
+    "backends": [
+     "cuda",
+     "numpy",
+     "numba"
+    ],
+    "whole_trajectory_and_cumulative_identical": true,
+    "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+   }
+  },
+  "d0_E0_open": {
+   "trajectory": {
+    "water_m": [
+     [
+      0.003359582,
+      0.005909642000000001,
+      0.0059943759999999974
+     ],
+     [
+      0.003359582,
+      0.005909642000000001,
+      0.0059943759999999974
+     ],
+     [
+      0.003359582,
+      0.005909642000000001,
+      0.0059943759999999974
+     ],
+     [
+      0.003359582,
+      0.005909642000000001,
+      0.0059943759999999974
+     ]
+    ],
+    "percolation_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "diffusion_m": [
+     [
+      -0.0,
+      -0.0
+     ],
+     [
+      -0.0,
+      -0.0
+     ],
+     [
+      -0.0,
+      -0.0
+     ],
+     [
+      -0.0,
+      -0.0
+     ]
+    ],
+    "evaporation_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "evaporation_unmet_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "drainage_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "surface_return_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_residual_m3": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_bound_m3": [
+     2.575792024117618e-16,
+     2.575792024117618e-16,
+     2.575792024117618e-16,
+     2.575792024117618e-16
+    ],
+    "t_s": [
+     86400.0,
+     172800.0,
+     259200.0,
+     345600.0
+    ]
+   },
+   "layer_theta": [
+    [
+     0.03359582,
+     0.05909642000000001,
+     0.059943759999999985
+    ],
+    [
+     0.03359582,
+     0.05909642000000001,
+     0.059943759999999985
+    ],
+    [
+     0.03359582,
+     0.05909642000000001,
+     0.059943759999999985
+    ],
+    [
+     0.03359582,
+     0.05909642000000001,
+     0.059943759999999985
+    ]
+   ],
+   "initial_storage_m": 0.015263599999999999,
+   "final_storage_m": 0.015263599999999999,
+   "cumulative": {
+    "n_steps": 4,
+    "elapsed_s": 345600.0,
+    "added_m3": 0.0,
+    "surface_return_m3": 0.0,
+    "drainage_m3": 0.0,
+    "evaporation_m3": 0.0,
+    "evaporation_unmet_m3": 0.0
+   },
+   "cumulative_ledger": {
+    "residual_m3": 0.0,
+    "bound_m3": 7.456240069814157e-16,
+    "n_terms": 55
+   },
+   "max_step_residual_over_bound": 0.0,
+   "backend_agreement_max_abs": {
+    "cuda_vs_numpy": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    },
+    "cuda_vs_numba": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    },
+    "numpy_vs_numba": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    }
+   },
+   "per_backend_ledger": {
+    "cuda": {
+     "residual_m3": 0.0,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    },
+    "numpy": {
+     "residual_m3": 0.0,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    },
+    "numba": {
+     "residual_m3": 0.0,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    }
+   },
+   "restart": {
+    "after_day": 2,
+    "backends": [
+     "cuda",
+     "numpy",
+     "numba"
+    ],
+    "whole_trajectory_and_cumulative_identical": true,
+    "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+   }
+  },
+  "d0.05_E1.2_open": {
+   "trajectory": {
+    "water_m": [
+     [
+      0.003140348126728481,
+      0.005841131837658943,
+      0.005990362780222125
+     ],
+     [
+      0.0029604856674249973,
+      0.005771425923281062,
+      0.005984629173728027
+     ],
+     [
+      0.0028398759892264975,
+      0.0057020535190938975,
+      0.005977228968796245
+     ],
+     [
+      0.002734885943687077,
+      0.00563335368513262,
+      0.005968223424516854
+     ]
+    ],
+    "percolation_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "diffusion_m": [
+     [
+      -7.252338211893104e-05,
+      -4.0132197778730276e-06
+     ],
+     [
+      -7.543952087197948e-05,
+      -5.733606494097703e-06
+     ],
+     [
+      -7.677260911894595e-05,
+      -7.400204931782207e-06
+     ],
+     [
+      -7.770537824066908e-05,
+      -9.005544279391059e-06
+     ]
+    ],
+    "evaporation_m": [
+     0.0002917572553904504,
+     0.0002553019801754627,
+     0.00019738228731744554,
+     0.00018269542378008947
+    ],
+    "evaporation_unmet_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "drainage_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "surface_return_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_residual_m3": [
+     1.8973538018496328e-18,
+     -1.8431436932253575e-18,
+     -1.4907779871675686e-18,
+     1.9786689647860456e-18
+    ],
+    "step_bound_m3": [
+     2.575792024117618e-16,
+     2.5265568494921583e-16,
+     2.4834736447254326e-16,
+     2.450164614000415e-16
+    ],
+    "t_s": [
+     86400.0,
+     172800.0,
+     259200.0,
+     345600.0
+    ]
+   },
+   "layer_theta": [
+    [
+     0.03140348126728481,
+     0.05841131837658943,
+     0.05990362780222126
+    ],
+    [
+     0.02960485667424997,
+     0.057714259232810615,
+     0.05984629173728028
+    ],
+    [
+     0.028398759892264973,
+     0.05702053519093897,
+     0.059772289687962464
+    ],
+    [
+     0.02734885943687077,
+     0.056333536851326194,
+     0.05968223424516855
+    ]
+   ],
+   "initial_storage_m": 0.015263599999999999,
+   "final_storage_m": 0.014336463053336551,
+   "cumulative": {
+    "n_steps": 4,
+    "elapsed_s": 345600.0,
+    "added_m3": 0.0,
+    "surface_return_m3": 0.0,
+    "drainage_m3": 0.0,
+    "evaporation_m3": 0.000927136946663448,
+    "evaporation_unmet_m3": 0.0
+   },
+   "cumulative_ledger": {
+    "residual_m3": 4.336808689942018e-19,
+    "bound_m3": 7.456240069814157e-16,
+    "n_terms": 55
+   },
+   "max_step_residual_over_bound": 0.008075657257801334,
+   "backend_agreement_max_abs": {
+    "cuda_vs_numpy": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    },
+    "cuda_vs_numba": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    },
+    "numpy_vs_numba": {
+     "water_m": 0.0,
+     "percolation_m": 0.0,
+     "diffusion_m": 0.0,
+     "evaporation_m": 0.0,
+     "evaporation_unmet_m": 0.0,
+     "drainage_m": 0.0,
+     "surface_return_m": 0.0,
+     "step_residual_m3": 0.0,
+     "step_bound_m3": 0.0
+    }
+   },
+   "per_backend_ledger": {
+    "cuda": {
+     "residual_m3": 4.336808689942018e-19,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    },
+    "numpy": {
+     "residual_m3": 4.336808689942018e-19,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    },
+    "numba": {
+     "residual_m3": 4.336808689942018e-19,
+     "bound_m3": 7.456240069814157e-16,
+     "n_terms": 55
+    }
+   },
+   "restart": {
+    "after_day": 2,
+    "backends": [
+     "cuda",
+     "numpy",
+     "numba"
+    ],
+    "whole_trajectory_and_cumulative_identical": true,
+    "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+   }
+  }
+ },
+ "scores": {
+  "d0_E0.5_open": {
+   "per_layer": {
+    "501": {
+     "n": 4,
+     "bias": 0.0030566735842348196,
+     "rmse": 0.00320594512142687,
+     "mae": 0.0030566735842348196,
+     "mse": 1.0278084121600746e-05
+    },
+    "502": {
+     "n": 4,
+     "bias": -0.004103579999999987,
+     "rmse": 0.00434676532796514,
+     "mae": 0.004103579999999987,
+     "mse": 1.889436881639989e-05
+    },
+    "503": {
+     "n": 3,
+     "bias": 0.0023437599999999864,
+     "rmse": 0.0025046378855235613,
+     "mae": 0.0023437599999999864,
+     "mse": 6.273210937599935e-06
+    }
+   },
+   "overall_rmse": 0.0034373276381321084,
+   "pooled_rmse_alternative": 0.003509849058717772,
+   "skill_vs_initial_point_values_held": -0.7173286761434359,
+   "skill_vs_initial_layer_means_held": 0.4289782919587075
+  },
+  "d0_E0_open": {
+   "per_layer": {
+    "501": {
+     "n": 4,
+     "bias": 0.005795819999999998,
+     "rmse": 0.006075074441716742,
+     "mae": 0.005795819999999998,
+     "mse": 3.690652947239998e-05
+    },
+    "502": {
+     "n": 4,
+     "bias": -0.004103579999999987,
+     "rmse": 0.00434676532796514,
+     "mae": 0.004103579999999987,
+     "mse": 1.889436881639989e-05
+    },
+    "503": {
+     "n": 3,
+     "bias": 0.0023437599999999864,
+     "rmse": 0.0025046378855235613,
+     "mae": 0.0023437599999999864,
+     "mse": 6.273210937599935e-06
+    }
+   },
+   "overall_rmse": 0.004548776730301595,
+   "pooled_rmse_alternative": 0.00469064083592384,
+   "skill_vs_initial_point_values_held": -2.007466532286808,
+   "skill_vs_initial_layer_means_held": 0.0
+  },
+  "d0.05_E1.2_open": {
+   "per_layer": {
+    "501": {
+     "n": 4,
+     "bias": 0.0013889893176676302,
+     "rmse": 0.0015573799356853452,
+     "mae": 0.0013889893176676302,
+     "mse": 2.4254322640752896e-06
+    },
+    "502": {
+     "n": 4,
+     "bias": -0.005830087587083695,
+     "rmse": 0.0058704674487365886,
+     "mae": 0.005830087587083695,
+     "mse": 3.446238806667587e-05
+    },
+    "503": {
+     "n": 3,
+     "bias": 0.0022407364091546708,
+     "rmse": 0.0023902970431822963,
+     "mae": 0.0022407364091546708,
+     "mse": 5.7135199546460276e-06
+    }
+   },
+   "overall_rmse": 0.003768348014952847,
+   "pooled_rmse_alternative": 0.003869365007652979,
+   "skill_vs_initial_point_values_held": -1.0640184246800928,
+   "skill_vs_initial_layer_means_held": 0.3137019472962643
+  }
+ }
+}
