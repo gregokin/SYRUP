@@ -1,9 +1,6 @@
 {
-  "scope": "Final accepted report and evidence, before Git publication",
+  "scope": "Final accepted report and committed evidence; local caches excluded",
   "files": {
-    ".ruff_cache/.gitignore": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316",
-    ".ruff_cache/0.16.10/12851872870943077523": "e3b66dd35282e68d58b5d784900441f575fd850b81cb0ac438479be627d456f6",
-    ".ruff_cache/CACHEDIR.TAG": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae",
     "README.md": "e247fe34b9b0a10d202efde1b5af1e1db0a8e73ff1dd7feb939ebef69b29a6d2",
     "SYRUP_JORN_MOAB_interface_comparison_20261117.docx": "6ad1376b0a3aa084057e777c376b6cacf7649f97ab6420b958d600742f549ab9",
     "acceptance.json": "ca31670ea07d3f8d2dc7af9d940416350c7a19365da4893e4757f59f5af89c34",
