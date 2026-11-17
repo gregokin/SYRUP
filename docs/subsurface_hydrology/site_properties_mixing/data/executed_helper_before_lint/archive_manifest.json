@@ -1,0 +1,30 @@
+{
+  "scope": "Exact executed helper/test source bytes before style-only corrections; archived as .py.txt to prevent unintended test discovery/import. Original runtime path and hashes retained.",
+  "files": [
+    {
+      "executed_path": "benchmarks/subsurface_site_comparison/__init__.py",
+      "archive_path": "benchmarks/subsurface_site_comparison/__init__.py.txt",
+      "sha256": "0675101f12ec68daf61d4f612c3615a1ec476c64404b6c5b7f421e66d61b0a20"
+    },
+    {
+      "executed_path": "benchmarks/subsurface_site_comparison/compare.py",
+      "archive_path": "benchmarks/subsurface_site_comparison/compare.py.txt",
+      "sha256": "c49dbbb3965a1b328a927115c1ef6c27fa0d255ae7e3906a236c96f38920620b"
+    },
+    {
+      "executed_path": "benchmarks/subsurface_site_comparison/interfaces.py",
+      "archive_path": "benchmarks/subsurface_site_comparison/interfaces.py.txt",
+      "sha256": "c05bb4a2050287e92406d9558b4d9d8ff25b07e22484d143e74a768e561910b6"
+    },
+    {
+      "executed_path": "benchmarks/subsurface_site_comparison/study.py",
+      "archive_path": "benchmarks/subsurface_site_comparison/study.py.txt",
+      "sha256": "bb516c1ddad5069bf57bfbe246aff1799b83c81604a7923d0a9c7ff87f32bd7e"
+    },
+    {
+      "executed_path": "tests/subsurface_site_comparison/test_site_comparison.py",
+      "archive_path": "tests/subsurface_site_comparison/test_site_comparison.py.txt",
+      "sha256": "9a338a8fac299ce86dfc8887d2494582111f770785f0ec6bb3a76845a52fed0f"
+    }
+  ]
+}

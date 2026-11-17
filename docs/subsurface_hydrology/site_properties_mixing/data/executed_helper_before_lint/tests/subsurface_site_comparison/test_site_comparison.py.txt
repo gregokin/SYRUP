@@ -1,0 +1,521 @@
+"""Tests of the site hydraulic mixing study helper: interface formulas, site values/provenance/pins, config generation, train-only selection, the held-out union and the H/G comparison logic. These are helper
+tests with synthetic results; no column physics is duplicated and no site water result is produced here."""
+from __future__ import annotations
+
+import copy
+import json
+import math
+import shutil
+import sys
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.subsurface_site_comparison import compare as C
+from benchmarks.subsurface_site_comparison import interfaces as I
+from benchmarks.subsurface_site_comparison import study as S
+from benchmarks.subsurface_validation import drydown_driver as dd
+
+F = I.ECOHYD_FACTOR
+
+
+# ----------------------------------------------------------------------------------------------------------- interfaces
+def test_factor_value():
+    assert F == (1 + 30 / 26) ** -1.5 and abs(F - 0.31635738822500753) < 1e-17
+
+
+def test_known_100_to_1_harmonic_and_geometric():
+    h = I.interface_coefficients([100.0, 1.0], [0, 0.1, 0.2], "harmonic", factor=1.0)["interface_conductivity_m_s"][0]
+    g = I.interface_coefficients([100.0, 1.0], [0, 0.1, 0.2], "geometric", factor=1.0)["interface_conductivity_m_s"][0]
+    assert math.isclose(h, 200.0 / 101.0, rel_tol=1e-15) and math.isclose(g, 10.0, rel_tol=1e-14)
+    assert h < g < 50.5                                          # harmonic < geometric < arithmetic
+
+
+@pytest.mark.parametrize("method", I.METHODS)
+def test_homogeneous_is_exact(method):
+    k = 3.7e-5
+    out = I.interface_coefficients([k, k, k], [0, 0.1, 0.2, 0.3], method)
+    assert out["interface_conductivity_m_s"] == [F * k, F * k]   # exactly the local K, no rounding drift
+
+
+def test_nominal_layers_match_two_kikj_and_sqrt():
+    ks = [3.3e-5, 2.1e-5, 1.2e-5]
+    k = [F * x for x in ks]
+    h = I.interface_coefficients(ks, [0, 0.1, 0.2, 0.3], "harmonic")["interface_conductivity_m_s"]
+    g = I.interface_coefficients(ks, [0, 0.1, 0.2, 0.3], "geometric")["interface_conductivity_m_s"]
+    for i in range(2):
+        assert math.isclose(h[i], 2 * k[i] * k[i + 1] / (k[i] + k[i + 1]), rel_tol=1e-14)
+        assert math.isclose(g[i], math.sqrt(k[i] * k[i + 1]), rel_tol=1e-14)
+
+
+def test_unequal_thickness_weights():
+    w = I.interface_weights([0, 0.1, 0.4])                       # h = 0.1, 0.3
+    assert w[0] == pytest.approx((0.25, 0.75), rel=1e-15) and math.isclose(sum(w[0]), 1.0)
+    h = I.interface_coefficients([4.0, 1.0], [0, 0.1, 0.4], "harmonic", factor=1.0)["interface_conductivity_m_s"][0]
+    g = I.interface_coefficients([4.0, 1.0], [0, 0.1, 0.4], "geometric", factor=1.0)["interface_conductivity_m_s"][0]
+    assert math.isclose(h, 1.0 / (0.25 / 4.0 + 0.75 / 1.0), rel_tol=1e-15)
+    assert math.isclose(g, 4.0 ** 0.25, rel_tol=1e-14)           # exp(0.25 ln4 + 0.75 ln1)
+    # the thicker layer dominates, so the unequal-weight result differs from the equal-weight one
+    assert not math.isclose(h, 2 * 4.0 / 5.0, rel_tol=1e-3)
+
+
+@pytest.mark.parametrize("bad", [0.0, -1e-6, float("nan"), float("inf"), True, "1e-5", None])
+def test_invalid_conductivity_refused(bad):
+    with pytest.raises(ValueError):
+        I.interface_coefficients([1e-5, bad], [0, 0.1, 0.2], "harmonic")
+
+
+@pytest.mark.parametrize("edges", [[0, 0.1], [0.0], [0.1, 0.2, 0.3], [0, 0.2, 0.1], [0, 0.1, 0.1], [0, 0.1, float("nan")], [0, True, 0.2], "abc", None])
+def test_invalid_geometry_refused(edges):
+    with pytest.raises(ValueError):
+        I.interface_coefficients([1e-5, 1e-5], edges, "harmonic")
+
+
+def test_malformed_inputs_refused():
+    with pytest.raises(ValueError):
+        I.interface_coefficients([], [0, 0.1], "harmonic")
+    with pytest.raises(ValueError):
+        I.interface_coefficients([1e-5, 1e-5], [0, 0.1, 0.2, 0.3], "geometric")       # 2 conductivities vs 3 layers
+    with pytest.raises(ValueError):
+        I.interface_coefficients([1e-5, 1e-5], [0, 0.1, 0.2], "arithmetic")
+    with pytest.raises(ValueError):
+        I.interface_coefficients([1e-5, 1e-5], [0, 0.1, 0.2], "harmonic", factor=0.0)
+
+
+def test_record_has_full_provenance():
+    r = I.interface_coefficients([1e-5, 2e-5], [0, 0.1, 0.2], "geometric")
+    assert set(r) == {"method", "units", "factor", "ks_m_s", "local_conductivity_m_s", "weights_upper_lower", "interface_conductivity_m_s", "edges_m"} and r["units"] == "m s-1"
+
+
+# ------------------------------------------------------------------------------------------------- site values and pins
+@pytest.fixture(scope="module")
+def receipt():
+    return S.load_receipt()
+
+
+def test_receipt_pin_enforced(tmp_path):
+    bad = tmp_path / "r.json"
+    shutil.copy(S.RECEIPT, bad)
+    bad.write_bytes(bad.read_bytes() + b" ")
+    with pytest.raises(S.ProtocolError):
+        S.load_receipt(bad)
+    assert S.load_receipt()["_file_sha256"] == S.RECEIPT_SHA
+
+
+def test_template_pin_enforced(tmp_path):
+    for n in S.TEMPLATE_SHA:
+        shutil.copy(S.OLD / n, tmp_path / n)
+    (tmp_path / "frozen_JORN4_B_heldout_TEMPLATE.json").write_text("{}")
+    S.load_template("JORN4_A", tmp_path)
+    with pytest.raises(S.ProtocolError):
+        S.load_template("JORN4_B", tmp_path)
+
+
+def test_site_values_from_receipt(receipt):
+    j, m = S.site_properties(receipt, "JORN"), S.site_properties(receipt, "MOAB")
+    assert [la["record"] for la in j["layers"]] == ["JORN_A", "JORN_10_20_dry_mass", "JORN_Bw"]
+    assert [la["record"] for la in m["layers"]] == ["MOAB_0_10_dry_mass", "MOAB_Bw", "MOAB_Bw"]
+    assert [la["effective_density_g_cm3"] for la in j["layers"]] == [1.4196, 1.4172961608026395, 1.4346276006597622]
+    assert j["layers"][2]["raw_density_g_cm3"] == 0.9035 and j["layers"][2]["raw_air_entry_kpa"] < 0.0 and j["layers"][2]["effective_air_entry_kpa"] == 0
+    assert j["theta_evaporation_stress"] == 0.039508152304 and m["theta_evaporation_stress"] == 0.05900343186546672
+    assert math.isclose(j["layers"][2]["theta_saturation"], 0.4586310940906557) and math.isclose(j["layers"][2]["Ks_mm_h"], 104.33238089230187)
+    assert [la["effective_density_g_cm3"] for la in m["layers"]] == [1.50454, 1.4818, 1.4818]        # MOAB layers unmodified
+    assert m["layers"][1]["Ks_m_s"] == m["layers"][2]["Ks_m_s"] and math.isclose(j["layers"][0]["Ks_m_s"], 120.78651558947541 / 3.6e6)
+
+
+def test_site_interfaces_match_earlier_audit(receipt):
+    ref = {("JORN", 0): (38.04030610769962, 38.04068880186915), ("JORN", 1): (35.27147110527629, 35.35482603917107), ("MOAB", 0): (19.11449109822864, 19.143720252232242), ("MOAB", 1): (18.11390121078689, 18.11390121078689)}
+    for (site, i), (hm, gm) in ref.items():
+        p = S.site_properties(receipt, site)
+        h = S.interface_record(p, "harmonic")["interface_conductivity_m_s"][i] * 3.6e6
+        g = S.interface_record(p, "geometric")["interface_conductivity_m_s"][i] * 3.6e6
+        assert math.isclose(h, hm, rel_tol=1e-12) and math.isclose(g, gm, rel_tol=1e-12)
+    m = S.interface_record(S.site_properties(receipt, "MOAB"), "geometric")["interface_conductivity_m_s"]
+    assert m[1] == F * S.site_properties(receipt, "MOAB")["layers"][1]["Ks_m_s"]                   # homogeneous lower pair: exactly K
+
+
+def test_nonphysical_receipt_refused(receipt):
+    bad = copy.deepcopy(receipt)
+    next(r for r in bad["records"] if r["name"] == "JORN_Bw")["FC6_with_zero_air_floor"] = 0.99
+    with pytest.raises(S.ProtocolError):
+        S.site_properties(bad, "JORN")
+    bad = copy.deepcopy(receipt)
+    next(r for r in bad["records"] if r["name"] == "MOAB_Bw")["Ks_mm_h"] = float("nan")
+    with pytest.raises(S.ProtocolError):
+        S.site_properties(bad, "MOAB")
+    with pytest.raises(S.ProtocolError):
+        S.site_properties(receipt, "XXXX")
+
+
+def test_config_validates_and_methods_differ_only_in_interface(receipt):
+    scen = S.training_scenarios()
+    ch, cg = (S.make_config("JORN4_A", m, scen, receipt) for m in I.METHODS)
+    for c in (ch, cg):
+        v = dd.validate_config(c)
+        assert v["layers"]["theta_residual"].tolist() == [0.01] * 3 and v["layers"]["edges_m"].tolist() == [0, 0.1, 0.2, 0.3]
+    assert ch["layers"]["interface_conductivity_m_s"] != cg["layers"]["interface_conductivity_m_s"]
+    strip = lambda c: {k: v for k, v in c.items() if k not in ("name", "provenance")} | {"layers": {k: v for k, v in c["layers"].items() if k != "interface_conductivity_m_s"}}  # noqa: E731
+    assert strip(ch) == strip(cg)
+    pv = ch["provenance"]
+    assert pv["receipt"]["sha256"] == S.RECEIPT_SHA and pv["method"] == "harmonic" and pv["interface"]["method"] == "harmonic" and "SURROGATES" in pv["properties"] and "not measured" in pv["properties"]
+    assert pv["layers"][2]["raw_density_g_cm3"] == 0.9035 and pv["layers"][2]["effective_density_g_cm3"] > 1.4
+    assert ch["pins"]["expected_sources"]["maple_syrup"]["files"] == 180 and ch["pins"]["expected_sources"]["maple_syrup"]["package_sha256"].startswith("37d89f23")
+    assert ch["layers"]["theta_evaporation_stress"] == 0.039508152304 and ch["site"]["site"] == "JORN"
+    assert S.make_config("MOAB2_C", "geometric", scen[:2], receipt)["layers"]["theta_evaporation_stress"] == 0.05900343186546672
+
+
+def test_receipt_not_from_loader_refused(receipt):
+    r = {k: v for k, v in receipt.items() if k != "_file_sha256"}
+    with pytest.raises(S.ProtocolError):
+        S.make_config("JORN4_A", "harmonic", S.training_scenarios()[:1], r)
+
+
+# ------------------------------------------------------------------------------------------- scenarios and selection
+def test_training_grid():
+    sc = S.training_scenarios()
+    names = [s["name"] for s in sc]
+    assert len(sc) == 56 and len(set(names)) == 56 and sum(s["bottom"] == "closed" for s in sc) == 2
+    assert "d0.05_E1.2_open" in names and "d0_E0.5_open" in names and "d0_E0_closed" in names and "d0.05_E1.2_closed" in names
+    assert all(s["potential_et"] == "weather" for s in sc) and sorted({s["diffusion_coefficient"] for s in sc}) == S.D_GRID
+
+
+def _scores(best: tuple, rmse: float = 0.004, ties: dict | None = None) -> dict:
+    out = {}
+    for s in S.training_scenarios():
+        d, e = s["diffusion_coefficient"], s["evaporation_factor"]
+        out[s["name"]] = {"overall_rmse": 0.01 + abs(d - best[0]) * 0.001 + abs(e - best[1]) * 0.001}
+    out[S.scenario_name(*best)]["overall_rmse"] = rmse
+    out.update(ties or {})
+    return out
+
+
+def test_selection_uses_open_only_and_tie_rule():
+    sc = _scores((0.03, 0.5))
+    sc["d0_E0_closed"] = {"overall_rmse": 1e-9}                       # closed controls never selected
+    assert S.select_best(sc)["name"] == "d0.03_E0.5_open"
+    sc["d0.1_E0.25_open"] = {"overall_rmse": 0.004}                   # exact tie: smaller E wins
+    assert S.select_best(sc)["name"] == "d0.1_E0.25_open"
+    sc["d0.3_E0.25_open"] = {"overall_rmse": 0.004}                   # same E: smaller d wins
+    assert S.select_best(sc)["name"] == "d0.1_E0.25_open"
+    sc["d0.01_E0.25_open"] = {"overall_rmse": 0.004}
+    assert S.select_best(sc)["name"] == "d0.01_E0.25_open"
+    sc2 = _scores((0.05, 1.0))
+    sc2["d0.05_E1_open"] = {"overall_rmse": None}                     # undefined RMSE is ineligible
+    assert S.select_best(sc2)["name"] != "d0.05_E1_open"
+    with pytest.raises(S.ProtocolError):
+        S.select_best({"d0_E0_open": {"overall_rmse": None}})
+
+
+def test_heldout_union_dedup_and_order():
+    bh, bg = S.select_best(_scores((0.03, 0.5))), S.select_best(_scores((0.1, 0.25)))
+    names = [s["name"] for s in S.heldout_scenarios(bh, bg)]
+    assert names == ["d0.03_E0.5_open", "d0.1_E0.25_open", "d0.05_E1.2_open", "d0_E0.5_open", "d0.03_E0_open", "d0_E0.25_open", "d0.1_E0_open", "d0_E0_open"]
+    assert len(names) == len(set(names))
+    same = [s["name"] for s in S.heldout_scenarios(bh, bh)]                          # identical selections de-duplicate
+    assert same == ["d0.03_E0.5_open", "d0.05_E1.2_open", "d0_E0.5_open", "d0.03_E0_open", "d0_E0_open"]
+    ref = S.select_best(_scores((0.05, 1.2)))                                         # selected pair equals the reference
+    names = [s["name"] for s in S.heldout_scenarios(ref, ref)]
+    assert names.count("d0.05_E1.2_open") == 1 and "d0_E1.2_open" in names and "d0.05_E0_open" in names
+    zero = S.select_best(_scores((0.0, 0.5)))                                         # selected pair is the generic best: zero-exchange duplicate removed
+    names = [s["name"] for s in S.heldout_scenarios(zero, zero)]
+    assert names.count("d0_E0.5_open") == 1 and names.count("d0_E0_open") == 1
+
+
+def test_generate_and_finalize(tmp_path):
+    shas = S.generate(tmp_path / "g")
+    assert len(shas) == 7 and (tmp_path / "g" / "JORN4_A_training_harmonic.json").is_file()
+    with pytest.raises(S.ProtocolError):
+        S.generate(tmp_path / "g")                                                    # never overwrites
+    again = S.generate(tmp_path / "g2")
+    assert again == shas                                                              # deterministic bytes
+    for name in shas:
+        if name.endswith("_training_harmonic.json") or name.endswith("_TEMPLATE.json"):
+            dd.validate_config(json.loads((tmp_path / "g" / name).read_text()))
+    th, tg = _train_result("harmonic"), _train_result("geometric", (0.1, 0.25))
+    th["config_sha256"], tg["config_sha256"] = "a" * 64, "b" * 64
+    sel = S.finalize(th, tg, tmp_path / "f")
+    assert sel["common_primary_pair"] == "d0.03_E0.5_open" and len(sel["heldout_scenarios"]) == 8
+    cfgs = {m: {w: json.loads((tmp_path / "f" / f"{w}_heldout_{m}.json").read_text()) for w in ("JORN4_B", "MOAB2_C")} for m in I.METHODS}
+    for w in ("JORN4_B", "MOAB2_C"):
+        assert cfgs["harmonic"][w]["scenarios"] == cfgs["geometric"][w]["scenarios"]
+        assert [s["name"] for s in cfgs["harmonic"][w]["scenarios"]] == sel["heldout_scenarios"]
+        dd.validate_config(cfgs["harmonic"][w]); dd.validate_config(cfgs["geometric"][w])
+    with pytest.raises(S.ProtocolError):
+        S.finalize(th, tg, tmp_path / "f")
+
+
+# ------------------------------------------------------------------------------------------------------- comparison
+def _run(shift: float = 0.0, n: int = 3, L: int = 3) -> dict:
+    base = np.linspace(0.02, 0.06, n * L).reshape(n, L)
+    tr = {k: (base + shift).tolist() for k in ("water_m",)}
+    tr.update({"percolation_m": np.zeros((n, L - 1)).tolist(), "diffusion_m": (np.full((n, L - 1), 1e-5) * (1 + shift)).tolist(), "evaporation_m": np.full(n, 1e-4).tolist(), "evaporation_unmet_m": np.zeros(n).tolist(),
+               "drainage_m": np.zeros(n).tolist(), "surface_return_m": np.zeros(n).tolist(), "t_s": (86400.0 * np.arange(1, n + 1)).tolist()})
+    return {"trajectory": tr, "layer_theta": (base + shift).tolist(), "initial_storage_m": 0.1, "final_storage_m": 0.09 + shift}
+
+
+def _score(rmse: float) -> dict:
+    pl = {v: {"n": 5, "bias": 0.001, "rmse": rmse, "mae": rmse, "mse": rmse**2} for v in ("501", "502", "503")}
+    return {"per_layer": pl, "overall_rmse": rmse, "pooled_rmse_alternative": rmse, "skill_vs_initial_point_values_held": 0.2}
+
+
+WIN = {"JORN4_A": ("train", "2025-04-05T21:00:00Z"), "JORN4_B": ("heldout", None), "MOAB2_C": ("heldout", None)}
+
+
+def _meta(window: str, method: str) -> dict:
+    """Result metadata of the driver (plan, sources, persistence) with this window's REAL pinned start/anchor."""
+    w = S.load_template(window)["window"]
+    role = S.WINDOWS[window]["role"]
+    plan = {"name": f"{window} {role} site-derived hydraulics, {method} interface mixing (prescribed bounded sensitivity inputs)", "run_start_utc": w["run_start_utc"], "anchor_rule": w["anchor"], "model_days": 3,
+            "initial_layer_water_m": [0.005, 0.006, 0.007], "initial_total_water_m": 0.018, "day_end_utc": ["a", "b", "c", "d"], "pet_mm_day": [4.0, 5.0, 6.0], "prepared_inputs": {"observed_end_theta_m3m3": {"501": [0.04, 0.03, 0.02]}}}
+    src = {"maple_syrup": {"package_sha256": "37d8" + "0" * 60, "files": 180, "file": f"/tmp/{method}/maple_syrup/__init__.py"}, "maple": {"package_sha256": "fbc5" + "0" * 60, "files": 412, "file": f"/tmp/{method}/maple/__init__.py"}}
+    return {"config_sha256": ("a" if method == "harmonic" else "b") * 64, "plan": plan, "sources_before": copy.deepcopy(src), "sources_after": copy.deepcopy(src),
+            "persistence": {"initial_point_values_held": {"overall_rmse": 0.01}}}
+
+
+def _results(shift_d: float = 1e-6, window: str = "JORN4_A"):
+    names = ["d0_E0_open", "d0.05_E1.2_open", "d0.03_E0.5_open", "d0_E0.5_open"]
+    rh = {**_meta(window, "harmonic"), "runs": {n: _run() for n in names}, "scores": {n: _score(0.01) for n in names}}
+    rg = {**_meta(window, "geometric"), "runs": {n: _run(0.0 if n.startswith("d0_") else shift_d) for n in names}, "scores": {n: _score(0.01 if n.startswith("d0_") else 0.0102) for n in names}}
+    return rh, rg
+
+
+def test_diff_stats_counts_zero_reference():
+    s = C.diff_stats([0.0, 1.0, 2.0], [0.5, 1.0, 2.2])
+    assert s["max_abs"] == pytest.approx(0.5) and s["n_zero_reference_nonzero_diff"] == 1 and s["max_rel"] == pytest.approx(0.1) and not s["identical"]
+    assert C.diff_stats([1.0, 2.0], [1.0, 2.0])["identical"]
+    with pytest.raises(S.ProtocolError):
+        C.diff_stats([1.0], [1.0, 2.0])
+    with pytest.raises(S.ProtocolError):
+        C.diff_stats([1.0], [float("nan")])
+
+
+def test_d0_identity_passes_and_fails():
+    rh, rg = _results()
+    assert C.d0_identity(rh, rg) == {"d0_E0_open": True, "d0_E0.5_open": True}
+    rg["runs"]["d0_E0.5_open"] = _run(1e-12)
+    with pytest.raises(S.ProtocolError):
+        C.d0_identity(rh, rg)
+
+
+def test_compare_train_matching_tuple_and_selections():
+    rh, rg = _results()
+    out = C.compare_train(rh, rg, strict=False)
+    assert out["n_scenarios"] == 4 and out["overall_rmse_diff_max_abs"] == pytest.approx(0.0002) and out["n_undefined"] == 0
+    row = {r["scenario"]: r for r in out["rows"]}
+    assert row["d0.05_E1.2_open"]["diff"] == pytest.approx(0.0002) and row["d0_E0_open"]["diff"] == 0.0
+    assert out["same_selected_pair"] is False or out["same_selected_pair"] is True
+    assert out["scenario_comparison"]["d0.03_E0.5_open"]["runs"]["series"]["layer_theta"]["max_abs"] == pytest.approx(1e-6)
+    rg["scores"]["d0_E0_open"]["overall_rmse"] = None
+    assert C.compare_train(rh, rg, strict=False)["n_undefined"] == 1
+    bad = {**rg, "runs": {"d0_E0_open": rg["runs"]["d0_E0_open"]}, "scores": {"d0_E0_open": rg["scores"]["d0_E0_open"]}}
+    with pytest.raises(S.ProtocolError):
+        C.compare_train(rh, bad, strict=False)
+
+
+def _selection(window: str, names: list, h: str = "d0.03_E0.5_open", g: str = "d0.05_E1.2_open") -> dict:
+    return {"protocol": S.PROTOCOL_ID, "harmonic_best": {"name": h}, "geometric_best": {"name": g}, "heldout_scenarios": names,
+            "config_sha256": {f"{window}_heldout_harmonic.json": "a" * 64, f"{window}_heldout_geometric.json": "b" * 64}}
+
+
+def test_heldout_primary_is_common_h_pair():
+    rh, rg = _results(window="JORN4_B")
+    sel = _selection("JORN4_B", list(rh["runs"]))
+    out = C.compare_heldout(rh, rg, sel, window="JORN4_B")
+    assert out["primary_pair"] == "d0.03_E0.5_open" and out["secondary_pair_geometric_selected"] == "d0.05_E1.2_open" and out["orientation"] == "geometric - harmonic"
+    assert out["primary"]["scores"]["overall_rmse"]["diff"] == pytest.approx(0.0002) and len(out["scenarios"]) == 4 and out["pairing"]["window"] == "JORN4_B"
+    bad = copy.deepcopy(sel); bad["harmonic_best"]["name"] = "d9_E9_open"
+    with pytest.raises(S.ProtocolError):
+        C.compare_heldout(rh, rg, bad, window="JORN4_B")
+
+
+# --------------------------------------------------------------------------- correction01: pairing / window / selection
+def test_orientation_is_geometric_minus_harmonic():
+    rh, rg = _results()
+    t = C.compare_train(rh, rg, strict=False)
+    row = {r["scenario"]: r for r in t["rows"]}["d0.05_E1.2_open"]
+    assert row["geometric_overall_rmse"] > row["harmonic_overall_rmse"] and row["diff"] > 0.0 and t["orientation"] == "geometric - harmonic"
+    sc = C.compare_scores(rh["scores"]["d0.05_E1.2_open"], rg["scores"]["d0.05_E1.2_open"])
+    assert sc["overall_rmse"]["diff"] == pytest.approx(rg["scores"]["d0.05_E1.2_open"]["overall_rmse"] - rh["scores"]["d0.05_E1.2_open"]["overall_rmse"])
+    run = C.compare_runs(rh["runs"]["d0.05_E1.2_open"], rg["runs"]["d0.05_E1.2_open"])
+    assert run["final_storage_m"]["diff"] == pytest.approx(1e-6) and run["orientation"] == "geometric - harmonic"
+    assert C.diff_stats([1.0], [3.0])["max_abs"] == 2.0 and C.compare_scores(_score(0.01), _score(0.03))["overall_rmse"]["diff"] == pytest.approx(0.02)
+
+
+def _mutate(path, value):
+    rh, rg = _results(window="JORN4_B")
+    node = rg
+    for k in path[:-1]:
+        node = node[k]
+    node[path[-1]] = value
+    return rh, rg
+
+
+@pytest.mark.parametrize("path,value", [(("plan", "pet_mm_day"), [4.0, 5.0, 6.1]), (("plan", "prepared_inputs"), {"observed_end_theta_m3m3": {"501": [0.04, 0.03, 0.021]}}), (("plan", "initial_layer_water_m"), [0.005, 0.006, 0.0071]),
+                                         (("plan", "day_end_utc"), ["a", "b", "c", "x"]), (("plan", "model_days"), 2), (("persistence",), {"initial_point_values_held": {"overall_rmse": 0.02}})])
+def test_different_prepared_inputs_refused(path, value):
+    rh, rg = _mutate(path, value)
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rh, rg, window="JORN4_B")
+
+
+def test_source_package_identity_checked_not_paths():
+    rh, rg = _results(window="JORN4_B")
+    rg["sources_before"]["maple_syrup"]["file"] = "/elsewhere/maple_syrup/__init__.py"                 # a different filesystem prefix alone is fine
+    rg["sources_after"]["maple_syrup"]["file"] = "/elsewhere/maple_syrup/__init__.py"
+    assert C.check_pair(rh, rg, window="JORN4_B")["source_packages"]["maple_syrup"]["files"] == 180
+    for key, field, val in (("sources_before", "package_sha256", "e" * 64), ("sources_after", "files", 181)):
+        rh, rg = _results(window="JORN4_B")
+        rg[key]["maple_syrup"][field] = val
+        with pytest.raises(S.ProtocolError):
+            C.check_pair(rh, rg, window="JORN4_B")
+    rh, rg = _results(window="JORN4_B")
+    del rh["sources_after"]["maple"]
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rh, rg, window="JORN4_B")
+
+
+def test_initial_storage_tsrc_and_layer_n_raise():
+    rh, rg = _results()
+    rg["runs"]["d0.03_E0.5_open"]["initial_storage_m"] = 0.1000001
+    with pytest.raises(S.ProtocolError):
+        C.compare_runs(rh["runs"]["d0.03_E0.5_open"], rg["runs"]["d0.03_E0.5_open"])
+    rh, rg = _results()
+    rg["runs"]["d0_E0_open"]["trajectory"]["t_s"][1] += 1.0
+    with pytest.raises(S.ProtocolError):
+        C.compare_runs(rh["runs"]["d0_E0_open"], rg["runs"]["d0_E0_open"])
+    with pytest.raises(S.ProtocolError):
+        sc = _score(0.01); sc["per_layer"]["502"]["n"] = 4
+        C.compare_scores(_score(0.01), sc)
+
+
+def test_method_role_and_window_pairing_refused():
+    rh, rg = _results(window="JORN4_B")
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rg, rh, window="JORN4_B")                                                       # methods swapped
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rh, rg, window="MOAB2_C")                                                       # requested window is not the results'
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rh, rg, window="JORN4_B", role="train")
+    rm, rgm = _results(window="MOAB2_C")
+    rgm["plan"]["name"] = rg["plan"]["name"]                                                         # a MOAB result labelled JORN4_B...
+    rm["plan"]["name"] = rh["plan"]["name"]
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rm, rgm, window="JORN4_B")                                                      # ...fails the pinned start/anchor check
+    rh2, rg2 = _results(window="JORN4_B")
+    rg2["plan"]["name"] = "something else"
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(rh2, rg2, window="JORN4_B")
+    mix_h, mix_g = _results(window="JORN4_B")
+    mix_g["plan"]["name"] = mix_g["plan"]["name"].replace("JORN4_B heldout", "MOAB2_C heldout")
+    with pytest.raises(S.ProtocolError):
+        C.check_pair(mix_h, mix_g, window="JORN4_B")
+
+
+def test_heldout_window_wired_and_bound_to_config_hash():
+    rh, rg = _results(window="JORN4_B")
+    sel = _selection("JORN4_B", list(rh["runs"]))
+    with pytest.raises(S.ProtocolError):
+        C.compare_heldout(rh, rg, sel, window="MOAB2_C")
+    with pytest.raises(S.ProtocolError):
+        C.compare_heldout(rh, rg, sel)                                                               # strict mode demands the window
+    rh["config_sha256"] = "c" * 64
+    with pytest.raises(S.ProtocolError):
+        C.compare_heldout(rh, rg, sel, window="JORN4_B")                                             # result not the frozen config
+    rh, rg = _results(window="JORN4_B")
+    sel["heldout_scenarios"] = sel["heldout_scenarios"][:-1]
+    with pytest.raises(S.ProtocolError):
+        C.compare_heldout(rh, rg, sel, window="JORN4_B")
+    rh, rg = _results(window="JORN4_A")                                                              # a TRAIN pair is not accepted as held-out
+    with pytest.raises(S.ProtocolError):
+        C.compare_heldout(rh, rg, _selection("JORN4_A", list(rh["runs"])), window="JORN4_A")
+
+
+def test_cli_compare_heldout_uses_window(tmp_path, capsys):
+    rh, rg = _results(window="MOAB2_C")
+    sel = _selection("MOAB2_C", list(rh["runs"]))
+    for n, o in (("h", rh), ("g", rg), ("s", sel)):
+        (tmp_path / f"{n}.json").write_text(json.dumps(o))
+    base = ["compare-heldout", "--selection", str(tmp_path / "s.json"), "--harmonic", str(tmp_path / "h.json"), "--geometric", str(tmp_path / "g.json")]
+    assert S.main(base + ["--window", "MOAB2_C"]) == 0
+    capsys.readouterr()
+    assert S.main(base + ["--window", "JORN4_B"]) == 2                                              # MOAB results are not accepted as JORN4_B
+    assert "REFUSED" in capsys.readouterr().err
+
+
+def _train_result(method: str, best=(0.03, 0.5), window: str = "JORN4_A"):
+    names = [s["name"] for s in S.training_scenarios()]
+    sc = {n: _score(v["overall_rmse"]) for n, v in _scores(best).items()}
+    r = {**_meta(window, method), "runs": {n: _run() for n in names}, "scores": sc}
+    return r
+
+
+def test_select_best_rejects_malformed_rmse():
+    for bad in (float("nan"), float("inf"), float("-inf"), -1e-9, True, "0.001", [0.1]):
+        sc = _scores((0.03, 0.5))
+        sc["d0.001_E0.1_open"] = {"overall_rmse": bad}
+        with pytest.raises(S.ProtocolError):
+            S.select_best(sc)
+    sc = _scores((0.03, 0.5)); sc["d0_E0_closed"] = {"overall_rmse": float("nan")}                    # also refused for the non-selectable closed controls
+    with pytest.raises(S.ProtocolError):
+        S.select_best(sc)
+    sc = _scores((0.03, 0.5)); sc["d0.001_E0.1_open"] = {"overall_rmse": None}                        # None keeps its meaning (undefined, skipped)
+    assert S.select_best(sc)["name"] == "d0.03_E0.5_open"
+    sc = _scores((0.03, 0.5)); sc["d0.001_E0.1_open"] = {"overall_rmse": 0.0}
+    assert S.select_best(sc)["name"] == "d0.001_E0.1_open"
+
+
+def test_finalize_verifies_actual_train_results(tmp_path):
+    th, tg = _train_result("harmonic"), _train_result("geometric", (0.1, 0.25))
+    th["config_sha256"], tg["config_sha256"] = "a" * 64, "b" * 64
+    good = S.finalize(th, tg, tmp_path / "ok", {"harmonic": "a" * 64, "geometric": "b" * 64})
+    assert good["common_primary_pair"] == "d0.03_E0.5_open"
+    held = _train_result("harmonic"); held["plan"]["name"] = held["plan"]["name"].replace("JORN4_A train", "JORN4_B heldout")
+    with pytest.raises(S.ProtocolError):
+        S.finalize(held, tg, tmp_path / "e1")                                                          # a held-out result can never select
+    with pytest.raises(S.ProtocolError):
+        S.finalize(tg, th, tmp_path / "e2")                                                            # methods swapped
+    short = _train_result("harmonic"); short["runs"].pop("d0_E0_closed")
+    with pytest.raises(S.ProtocolError):
+        S.finalize(short, tg, tmp_path / "e3")                                                         # not the frozen 56-scenario grid
+    with pytest.raises(S.ProtocolError):
+        S.finalize(th, tg, tmp_path / "e4", {"harmonic": "f" * 64, "geometric": "b" * 64})             # result not bound to the frozen config
+    odd = _train_result("geometric"); odd["plan"]["pet_mm_day"] = [1.0, 1.0, 1.0]
+    with pytest.raises(S.ProtocolError):
+        S.finalize(th, odd, tmp_path / "e5")                                                           # different prepared inputs
+
+
+def test_derived_local_conductivity_refused():
+    with pytest.raises(ValueError):
+        I.local_conductivities([5e-324])                                                               # positive denormal: f * 5e-324 underflows to 0
+    with pytest.raises(ValueError):
+        I.interface_coefficients([5e-324, 1e-5], [0, 0.1, 0.2], "harmonic")                            # no ZeroDivisionError
+    with pytest.raises(ValueError):
+        I.interface_coefficients([1e-5, 5e-324], [0, 0.1, 0.2], "geometric")
+    with pytest.raises(ValueError):
+        I.local_conductivities([1e308], factor=1e10)                                                   # overflow to inf
+    assert I.local_conductivities([1e-300])[0] > 0.0
+
+
+def test_property_effect_matches_names():
+    rh, _ = _results()
+    hist = {"scores": {"d0_E0_open": _score(0.007), "d0.05_E1.2_open": _score(0.009)}}
+    out = C.property_effect(rh, hist)
+    assert set(out["matched"]) == {"d0_E0_open", "d0.05_E1.2_open"} and out["matched"]["d0_E0_open"]["diff"] == pytest.approx(0.003)
+    assert sorted(out["unmatched_new_only"]) == ["d0.03_E0.5_open", "d0_E0.5_open"]
+
+
+def test_historical_result_pins():
+    for name, sha in S.HISTORICAL_RESULT_SHA.items():
+        import hashlib
+        assert hashlib.sha256((S.OLD / name).read_bytes()).hexdigest() == sha
+def test_compare_train_strict_accepts_train_pair_and_refuses_heldout():
+    th, tg = _train_result("harmonic"), _train_result("geometric", (0.1, 0.25))
+    out = C.compare_train(th, tg, expected_config_sha256={"harmonic": "a" * 64, "geometric": "b" * 64})
+    assert out["n_scenarios"] == 56 and out["pairing"]["window"] == "JORN4_A" and out["pairing"]["role"] == "train" and out["orientation"] == "geometric - harmonic"
+    hh, hg = _results(window="JORN4_B")
+    with pytest.raises(S.ProtocolError):
+        C.compare_train(hh, hg)                                                                      # a held-out pair is not a training comparison
+    with pytest.raises(S.ProtocolError):
+        C.compare_train(th, tg, expected_config_sha256={"harmonic": "z" * 64, "geometric": "b" * 64})

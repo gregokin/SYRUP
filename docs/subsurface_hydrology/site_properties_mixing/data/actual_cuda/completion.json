@@ -1,0 +1,62 @@
+{
+ "mode": "cuda",
+ "rows": [
+  {
+   "config": "JORN4_A_training_harmonic.json",
+   "config_sha256": "0c4a770a41dd313a01c50ccc53e7197531226605002ec4fa9c27f2665a332dbf",
+   "result": "JORN4_A_training_harmonic_result.json",
+   "result_sha256": "68f06dee98818ade9a67b92cc5a0ea9e65839be3a63d215cc809f888b6486053",
+   "seconds_including_startup": 5.8003836540010525,
+   "scenarios": 56,
+   "max_abs_trajectory_difference_from_actual_cpu": 6.776263578034403e-21
+  },
+  {
+   "config": "JORN4_A_training_geometric.json",
+   "config_sha256": "9b4e04c68dcfad335eff288b58bd13fcb5f7cc681ee8513b39e47a4810e88eee",
+   "result": "JORN4_A_training_geometric_result.json",
+   "result_sha256": "a4bca6db0cd54cc6de79df15a74fa87d18b3deac2f19d60331c6711e028ffe04",
+   "seconds_including_startup": 2.2912684450002416,
+   "scenarios": 56,
+   "max_abs_trajectory_difference_from_actual_cpu": 3.469446951953614e-18
+  },
+  {
+   "config": "JORN4_B_heldout_harmonic.json",
+   "config_sha256": "ac0c83efb71d407ca60dca71474749e8ecf4185dd187bc89f5cb238e8a82fa8c",
+   "result": "JORN4_B_heldout_harmonic_result.json",
+   "result_sha256": "93c4653a429326f330daa55ccbea465d2cc7c101acf302918d7a971e4f900fc0",
+   "seconds_including_startup": 0.26205483299963817,
+   "scenarios": 3,
+   "max_abs_trajectory_difference_from_actual_cpu": 0.0
+  },
+  {
+   "config": "JORN4_B_heldout_geometric.json",
+   "config_sha256": "300e20f6cbbd2cad44064f45b7cc5e986ea023e01335314e4ecf974f42201f48",
+   "result": "JORN4_B_heldout_geometric_result.json",
+   "result_sha256": "5e60ffb963af1bbe2b56780ef5bcd8f1fe71840e5287a6d601e24f1216e22e3b",
+   "seconds_including_startup": 0.2589000770003622,
+   "scenarios": 3,
+   "max_abs_trajectory_difference_from_actual_cpu": 0.0
+  },
+  {
+   "config": "MOAB2_C_heldout_harmonic.json",
+   "config_sha256": "67fa08fcdf6f49608b2de49e68fda35277ae5942b47a596a690c8a94c8e05191",
+   "result": "MOAB2_C_heldout_harmonic_result.json",
+   "result_sha256": "b01b9c21ad49bc6349fcbe1d2a14c3fc69735e84e218196d619eb6351044f01e",
+   "seconds_including_startup": 0.2797964560013497,
+   "scenarios": 3,
+   "max_abs_trajectory_difference_from_actual_cpu": 0.0
+  },
+  {
+   "config": "MOAB2_C_heldout_geometric.json",
+   "config_sha256": "884448ca9325836c0107e62e916d099b6b31712eb3ebc31bdf1f6919701657a9",
+   "result": "MOAB2_C_heldout_geometric_result.json",
+   "result_sha256": "393eccdde2449409c68cb3603adb4db4082f4b3f73d87c9e19c0db35b20433c0",
+   "seconds_including_startup": 0.28236224800093623,
+   "scenarios": 3,
+   "max_abs_trajectory_difference_from_actual_cpu": 0.0
+  }
+ ],
+ "all_inputs_match_generic_reference": true,
+ "reconstruction_label": "Column state midpoint reconstruction on each backend, not native lifecycle checkpoint qualification",
+ "scope": "Rain-free N=1 diagnostic, no storm/LEAF/T/bed; no new production physics or default."
+}

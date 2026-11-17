@@ -1,0 +1,7 @@
+Configuration,Scenarios,CPU loop incl. startup (s),CUDA loop incl. startup (s),Max |CUDA − CPU| trajectory field
+JORN4_A_training_harmonic,56,3.49,5.80,6.776e-21
+JORN4_A_training_geometric,56,0.90,2.29,3.469e-18
+JORN4_B_heldout_harmonic,3,0.22,0.26,0.000e+00
+JORN4_B_heldout_geometric,3,0.23,0.26,0.000e+00
+MOAB2_C_heldout_harmonic,3,0.23,0.28,0.000e+00
+MOAB2_C_heldout_geometric,3,0.23,0.28,0.000e+00

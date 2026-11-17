@@ -1,0 +1,32 @@
+{
+  "rows": [
+    {
+      "name": "JORN4_A_training",
+      "scenarios": 56,
+      "seconds_including_startup": 9.844240798998726,
+      "parent_CPU_config_sha256": "e8e69dfc1ee647ce772d41fb486c3c494302ba23952b63a6800098af77dbf6fe",
+      "config_sha256": "21117b4ca3cb56693c17e1c8f6bcad63d669c810cc06a14554aebf52af88f29b",
+      "result_sha256": "f1efe2e8a10e96b96e9b3063cf35ce404681867ca36d024253fc1e77fc48bd18",
+      "max_abs_difference_from_historical_CPU_any_trajectory_field": 0.0
+    },
+    {
+      "name": "JORN4_B_heldout",
+      "scenarios": 3,
+      "seconds_including_startup": 0.25946927899894945,
+      "parent_CPU_config_sha256": "625dfce8e8fc3f73c38a6cdbfc6056dd5fe49ee2c3e85817e324c2daae2979ca",
+      "config_sha256": "1f60617c10991e5f34ca69827fe6cc6fffa62100c5aa58b94c583b13da6c1f54",
+      "result_sha256": "5b7787daac4a24990bbf4f5c4bee63558b29397ba74e4b3f20f1ba9c44145dcd",
+      "max_abs_difference_from_historical_CPU_any_trajectory_field": 0.0
+    },
+    {
+      "name": "MOAB2_C_heldout",
+      "scenarios": 3,
+      "seconds_including_startup": 0.2780219150008634,
+      "parent_CPU_config_sha256": "a9d13681c2ba6d1f51f510f876370c1c6e9508d76234c58a829ae6f9312a8e9d",
+      "config_sha256": "4d7f18341569c80cf7464146102b6cbaf9435c6c381bcec52b20ed99c454fabb",
+      "result_sha256": "6db8de65e39e033b59fe18cb0523e93652e7f1719a8d10293bb7ce76987a1493",
+      "max_abs_difference_from_historical_CPU_any_trajectory_field": 0.0
+    }
+  ],
+  "scope": "Source-guarded actual CUDA repeat of existing generic reference configurations, plus NumPy/Numba and per-backend reconstructed continuation; singleprofile not scaling proof."
+}

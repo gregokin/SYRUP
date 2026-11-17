@@ -1,0 +1,842 @@
+{
+ "orientation": "geometric - harmonic",
+ "pairing": {
+  "plan_identical_except_name": true,
+  "persistence_identical": true,
+  "source_packages": {
+   "maple_syrup": {
+    "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "files": 180
+   },
+   "maple": {
+    "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "files": 412
+   }
+  },
+  "window": "JORN4_B",
+  "role": "heldout"
+ },
+ "primary_pair": "d0_E0_open",
+ "primary": {
+  "scores": {
+   "overall_rmse": {
+    "harmonic": 0.004548776730301595,
+    "geometric": 0.004548776730301595,
+    "diff": 0.0
+   },
+   "pooled_rmse_alternative": {
+    "harmonic": 0.00469064083592384,
+    "geometric": 0.00469064083592384,
+    "diff": 0.0
+   },
+   "per_layer": {
+    "501": {
+     "rmse": {
+      "harmonic": 0.006075074441716742,
+      "geometric": 0.006075074441716742,
+      "diff": 0.0
+     },
+     "bias": {
+      "harmonic": 0.005795819999999998,
+      "geometric": 0.005795819999999998,
+      "diff": 0.0
+     },
+     "mse": {
+      "harmonic": 3.690652947239998e-05,
+      "geometric": 3.690652947239998e-05,
+      "diff": 0.0
+     },
+     "n": 4
+    },
+    "502": {
+     "rmse": {
+      "harmonic": 0.00434676532796514,
+      "geometric": 0.00434676532796514,
+      "diff": 0.0
+     },
+     "bias": {
+      "harmonic": -0.004103579999999987,
+      "geometric": -0.004103579999999987,
+      "diff": 0.0
+     },
+     "mse": {
+      "harmonic": 1.889436881639989e-05,
+      "geometric": 1.889436881639989e-05,
+      "diff": 0.0
+     },
+     "n": 4
+    },
+    "503": {
+     "rmse": {
+      "harmonic": 0.0025046378855235613,
+      "geometric": 0.0025046378855235613,
+      "diff": 0.0
+     },
+     "bias": {
+      "harmonic": 0.0023437599999999864,
+      "geometric": 0.0023437599999999864,
+      "diff": 0.0
+     },
+     "mse": {
+      "harmonic": 6.273210937599935e-06,
+      "geometric": 6.273210937599935e-06,
+      "diff": 0.0
+     },
+     "n": 3
+    }
+   },
+   "skill_vs_initial_point_values_held": {
+    "harmonic": -2.007466532286808,
+    "geometric": -2.007466532286808,
+    "diff": 0.0
+   },
+   "skill_vs_initial_layer_means_held": {
+    "harmonic": 0.0,
+    "geometric": 0.0,
+    "diff": 0.0
+   }
+  },
+  "runs": {
+   "series": {
+    "water_m": {
+     "n": 12,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": 0.0,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "percolation_m": {
+     "n": 8,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "diffusion_m": {
+     "n": 8,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "evaporation_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "evaporation_unmet_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "drainage_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "surface_return_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "layer_theta": {
+     "n": 12,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": 0.0,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "total_storage_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": 0.0,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    }
+   },
+   "final_storage_m": {
+    "harmonic": 0.015263599999999999,
+    "geometric": 0.015263599999999999,
+    "diff": 0.0
+   },
+   "initial_storage_identical": true,
+   "orientation": "geometric - harmonic"
+  }
+ },
+ "secondary_pair_geometric_selected": "d0_E0_open",
+ "secondary": {
+  "scores": {
+   "overall_rmse": {
+    "harmonic": 0.004548776730301595,
+    "geometric": 0.004548776730301595,
+    "diff": 0.0
+   },
+   "pooled_rmse_alternative": {
+    "harmonic": 0.00469064083592384,
+    "geometric": 0.00469064083592384,
+    "diff": 0.0
+   },
+   "per_layer": {
+    "501": {
+     "rmse": {
+      "harmonic": 0.006075074441716742,
+      "geometric": 0.006075074441716742,
+      "diff": 0.0
+     },
+     "bias": {
+      "harmonic": 0.005795819999999998,
+      "geometric": 0.005795819999999998,
+      "diff": 0.0
+     },
+     "mse": {
+      "harmonic": 3.690652947239998e-05,
+      "geometric": 3.690652947239998e-05,
+      "diff": 0.0
+     },
+     "n": 4
+    },
+    "502": {
+     "rmse": {
+      "harmonic": 0.00434676532796514,
+      "geometric": 0.00434676532796514,
+      "diff": 0.0
+     },
+     "bias": {
+      "harmonic": -0.004103579999999987,
+      "geometric": -0.004103579999999987,
+      "diff": 0.0
+     },
+     "mse": {
+      "harmonic": 1.889436881639989e-05,
+      "geometric": 1.889436881639989e-05,
+      "diff": 0.0
+     },
+     "n": 4
+    },
+    "503": {
+     "rmse": {
+      "harmonic": 0.0025046378855235613,
+      "geometric": 0.0025046378855235613,
+      "diff": 0.0
+     },
+     "bias": {
+      "harmonic": 0.0023437599999999864,
+      "geometric": 0.0023437599999999864,
+      "diff": 0.0
+     },
+     "mse": {
+      "harmonic": 6.273210937599935e-06,
+      "geometric": 6.273210937599935e-06,
+      "diff": 0.0
+     },
+     "n": 3
+    }
+   },
+   "skill_vs_initial_point_values_held": {
+    "harmonic": -2.007466532286808,
+    "geometric": -2.007466532286808,
+    "diff": 0.0
+   },
+   "skill_vs_initial_layer_means_held": {
+    "harmonic": 0.0,
+    "geometric": 0.0,
+    "diff": 0.0
+   }
+  },
+  "runs": {
+   "series": {
+    "water_m": {
+     "n": 12,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": 0.0,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "percolation_m": {
+     "n": 8,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "diffusion_m": {
+     "n": 8,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "evaporation_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "evaporation_unmet_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "drainage_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "surface_return_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": null,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "layer_theta": {
+     "n": 12,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": 0.0,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    },
+    "total_storage_m": {
+     "n": 4,
+     "max_abs": 0.0,
+     "rms_abs": 0.0,
+     "max_rel": 0.0,
+     "n_zero_reference_nonzero_diff": 0,
+     "identical": true
+    }
+   },
+   "final_storage_m": {
+    "harmonic": 0.015263599999999999,
+    "geometric": 0.015263599999999999,
+    "diff": 0.0
+   },
+   "initial_storage_identical": true,
+   "orientation": "geometric - harmonic"
+  }
+ },
+ "d0_identity": {
+  "d0_E0_open": true,
+  "d0_E0.5_open": true
+ },
+ "scenarios": {
+  "d0_E0_open": {
+   "scores": {
+    "overall_rmse": {
+     "harmonic": 0.004548776730301595,
+     "geometric": 0.004548776730301595,
+     "diff": 0.0
+    },
+    "pooled_rmse_alternative": {
+     "harmonic": 0.00469064083592384,
+     "geometric": 0.00469064083592384,
+     "diff": 0.0
+    },
+    "per_layer": {
+     "501": {
+      "rmse": {
+       "harmonic": 0.006075074441716742,
+       "geometric": 0.006075074441716742,
+       "diff": 0.0
+      },
+      "bias": {
+       "harmonic": 0.005795819999999998,
+       "geometric": 0.005795819999999998,
+       "diff": 0.0
+      },
+      "mse": {
+       "harmonic": 3.690652947239998e-05,
+       "geometric": 3.690652947239998e-05,
+       "diff": 0.0
+      },
+      "n": 4
+     },
+     "502": {
+      "rmse": {
+       "harmonic": 0.00434676532796514,
+       "geometric": 0.00434676532796514,
+       "diff": 0.0
+      },
+      "bias": {
+       "harmonic": -0.004103579999999987,
+       "geometric": -0.004103579999999987,
+       "diff": 0.0
+      },
+      "mse": {
+       "harmonic": 1.889436881639989e-05,
+       "geometric": 1.889436881639989e-05,
+       "diff": 0.0
+      },
+      "n": 4
+     },
+     "503": {
+      "rmse": {
+       "harmonic": 0.0025046378855235613,
+       "geometric": 0.0025046378855235613,
+       "diff": 0.0
+      },
+      "bias": {
+       "harmonic": 0.0023437599999999864,
+       "geometric": 0.0023437599999999864,
+       "diff": 0.0
+      },
+      "mse": {
+       "harmonic": 6.273210937599935e-06,
+       "geometric": 6.273210937599935e-06,
+       "diff": 0.0
+      },
+      "n": 3
+     }
+    },
+    "skill_vs_initial_point_values_held": {
+     "harmonic": -2.007466532286808,
+     "geometric": -2.007466532286808,
+     "diff": 0.0
+    },
+    "skill_vs_initial_layer_means_held": {
+     "harmonic": 0.0,
+     "geometric": 0.0,
+     "diff": 0.0
+    }
+   },
+   "runs": {
+    "series": {
+     "water_m": {
+      "n": 12,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "percolation_m": {
+      "n": 8,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "diffusion_m": {
+      "n": 8,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "evaporation_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "evaporation_unmet_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "drainage_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "surface_return_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "layer_theta": {
+      "n": 12,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "total_storage_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     }
+    },
+    "final_storage_m": {
+     "harmonic": 0.015263599999999999,
+     "geometric": 0.015263599999999999,
+     "diff": 0.0
+    },
+    "initial_storage_identical": true,
+    "orientation": "geometric - harmonic"
+   }
+  },
+  "d0.05_E1.2_open": {
+   "scores": {
+    "overall_rmse": {
+     "harmonic": 0.014503381613169518,
+     "geometric": 0.014500923363728158,
+     "diff": -2.4582494413602496e-06
+    },
+    "pooled_rmse_alternative": {
+     "harmonic": 0.014956260237528024,
+     "geometric": 0.014953134569279816,
+     "diff": -3.1256682482081605e-06
+    },
+    "per_layer": {
+     "501": {
+      "rmse": {
+       "harmonic": 0.0067771734176765575,
+       "geometric": 0.006775205691764673,
+       "diff": -1.96772591188471e-06
+      },
+      "bias": {
+       "harmonic": -0.006716329076349037,
+       "geometric": -0.006714419097343616,
+       "diff": 1.909979005421461e-06
+      },
+      "mse": {
+       "harmonic": 4.593007953326175e-05,
+       "geometric": 4.590341216572042e-05,
+       "diff": -2.6667367541325195e-08
+      },
+      "n": 4
+     },
+     "502": {
+      "rmse": {
+       "harmonic": 0.02283690302407499,
+       "geometric": 0.022829019912048925,
+       "diff": -7.883112026065703e-06
+      },
+      "bias": {
+       "harmonic": -0.022457030139749284,
+       "geometric": -0.022449070039049585,
+       "diff": 7.960100699699879e-06
+      },
+      "mse": {
+       "harmonic": 0.0005215241397310055,
+       "geometric": 0.0005211641501447263,
+       "diff": -3.59989586279255e-07
+      },
+      "n": 4
+     },
+     "503": {
+      "rmse": {
+       "harmonic": 0.00797433479278389,
+       "geometric": 0.007985159540779687,
+       "diff": 1.0824747995796802e-05
+      },
+      "bias": {
+       "harmonic": -0.007247815911516566,
+       "geometric": -0.007258409867384082,
+       "diff": -1.059395586751593e-05
+      },
+      "mse": {
+       "harmonic": 6.359001538740369e-05,
+       "geometric": 6.376277289170486e-05,
+       "diff": 1.7275750430117216e-07
+      },
+      "n": 3
+     }
+    },
+    "skill_vs_initial_point_values_held": {
+     "harmonic": -29.57384857808478,
+     "geometric": -29.563485232662323,
+     "diff": 0.010363345422458536
+    },
+    "skill_vs_initial_layer_means_held": {
+     "harmonic": -9.165981316785306,
+     "geometric": -9.16253544454992,
+     "diff": 0.0034458722353853943
+    }
+   },
+   "runs": {
+    "series": {
+     "water_m": {
+      "n": 12,
+      "max_abs": 1.4869378947368964e-06,
+      "rms_abs": 8.471334718027737e-07,
+      "max_rel": 0.0003649090777151628,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": false
+     },
+     "percolation_m": {
+      "n": 8,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "diffusion_m": {
+      "n": 8,
+      "max_abs": 6.687687891503971e-07,
+      "rms_abs": 3.404769207900513e-07,
+      "max_rel": 0.0015067739402254464,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": false
+     },
+     "evaporation_m": {
+      "n": 4,
+      "max_abs": 2.806745396646479e-07,
+      "rms_abs": 1.7373544553262614e-07,
+      "max_rel": 0.000289078855456681,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": false
+     },
+     "evaporation_unmet_m": {
+      "n": 4,
+      "max_abs": 2.3960293219675924e-07,
+      "rms_abs": 1.5919319900717566e-07,
+      "max_rel": 0.0002800194615268209,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": false
+     },
+     "drainage_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "surface_return_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "layer_theta": {
+      "n": 12,
+      "max_abs": 1.4869378947367229e-05,
+      "rms_abs": 8.471334718027484e-06,
+      "max_rel": 0.00036490907771512016,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": false
+     },
+     "total_storage_m": {
+      "n": 4,
+      "max_abs": 4.943593265964441e-07,
+      "rms_abs": 2.6932053866933605e-07,
+      "max_rel": 5.31518027576586e-05,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": false
+     }
+    },
+    "final_storage_m": {
+     "harmonic": 0.009300894813491764,
+     "geometric": 0.009300400454165168,
+     "diff": -4.943593265964441e-07
+    },
+    "initial_storage_identical": true,
+    "orientation": "geometric - harmonic"
+   }
+  },
+  "d0_E0.5_open": {
+   "scores": {
+    "overall_rmse": {
+     "harmonic": 0.010728817576260052,
+     "geometric": 0.010728817576260052,
+     "diff": 0.0
+    },
+    "pooled_rmse_alternative": {
+     "harmonic": 0.01118040944151217,
+     "geometric": 0.01118040944151217,
+     "diff": 0.0
+    },
+    "per_layer": {
+     "501": {
+      "rmse": {
+       "harmonic": 0.017892875677207397,
+       "geometric": 0.017892875677207397,
+       "diff": 0.0
+      },
+      "bias": {
+       "harmonic": -0.0178,
+       "geometric": -0.0178,
+       "diff": 0.0
+      },
+      "mse": {
+       "harmonic": 0.00032015500000000003,
+       "geometric": 0.00032015500000000003,
+       "diff": 0.0
+      },
+      "n": 4
+     },
+     "502": {
+      "rmse": {
+       "harmonic": 0.00434676532796514,
+       "geometric": 0.00434676532796514,
+       "diff": 0.0
+      },
+      "bias": {
+       "harmonic": -0.004103579999999987,
+       "geometric": -0.004103579999999987,
+       "diff": 0.0
+      },
+      "mse": {
+       "harmonic": 1.889436881639989e-05,
+       "geometric": 1.889436881639989e-05,
+       "diff": 0.0
+      },
+      "n": 4
+     },
+     "503": {
+      "rmse": {
+       "harmonic": 0.0025046378855235613,
+       "geometric": 0.0025046378855235613,
+       "diff": 0.0
+      },
+      "bias": {
+       "harmonic": 0.0023437599999999864,
+       "geometric": 0.0023437599999999864,
+       "diff": 0.0
+      },
+      "mse": {
+       "harmonic": 6.273210937599935e-06,
+       "geometric": 6.273210937599935e-06,
+       "diff": 0.0
+      },
+      "n": 3
+     }
+    },
+    "skill_vs_initial_point_values_held": {
+     "harmonic": -15.73074514312012,
+     "geometric": -15.73074514312012,
+     "diff": 0.0
+    },
+    "skill_vs_initial_layer_means_held": {
+     "harmonic": -4.563069435189508,
+     "geometric": -4.563069435189508,
+     "diff": 0.0
+    }
+   },
+   "runs": {
+    "series": {
+     "water_m": {
+      "n": 12,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "percolation_m": {
+      "n": 8,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "diffusion_m": {
+      "n": 8,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "evaporation_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "evaporation_unmet_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "drainage_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "surface_return_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": null,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "layer_theta": {
+      "n": 12,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     },
+     "total_storage_m": {
+      "n": 4,
+      "max_abs": 0.0,
+      "rms_abs": 0.0,
+      "max_rel": 0.0,
+      "n_zero_reference_nonzero_diff": 0,
+      "identical": true
+     }
+    },
+    "final_storage_m": {
+     "harmonic": 0.012904018,
+     "geometric": 0.012904018,
+     "diff": 0.0
+    },
+    "initial_storage_identical": true,
+    "orientation": "geometric - harmonic"
+   }
+  }
+ }
+}

@@ -1,0 +1,56 @@
+{
+ "mode": "cpu",
+ "rows": [
+  {
+   "config": "JORN4_A_training_harmonic.json",
+   "config_sha256": "9ff2d58d55bef21eb705d2042b1624ab758965230e32b5341b0486f82f50f739",
+   "result": "JORN4_A_training_harmonic_result.json",
+   "result_sha256": "8bbf5e5b597995f3f1a7325b3468e031057a4c0caa1a73bd7f975d6d8febeac3",
+   "seconds_including_startup": 3.48880049500076,
+   "scenarios": 56
+  },
+  {
+   "config": "JORN4_A_training_geometric.json",
+   "config_sha256": "2713431b7fdd0725ae6f8cd0dcd8469b6b71f9f65a64d0c4d8f1bb650b5b87a3",
+   "result": "JORN4_A_training_geometric_result.json",
+   "result_sha256": "ea4e6f3ff7e6e7759079c21c97e3139594b361b87f83e5ef75b0b55738d7aabe",
+   "seconds_including_startup": 0.897427855999922,
+   "scenarios": 56
+  },
+  {
+   "config": "JORN4_B_heldout_harmonic.json",
+   "config_sha256": "929d991105a7d7d3e644ce39dbf99075de5be22e0be52667cf63e1f741cae948",
+   "result": "JORN4_B_heldout_harmonic_result.json",
+   "result_sha256": "8386e02821e4d12ceebea0f83d7f4bcf51472fce6ec7bad7561a6b4d9ea400d8",
+   "seconds_including_startup": 0.2187791140004265,
+   "scenarios": 3
+  },
+  {
+   "config": "JORN4_B_heldout_geometric.json",
+   "config_sha256": "02d7747a27f12545b02e5322f41180c87d7d392df58dccbbc3e6aba410161fe3",
+   "result": "JORN4_B_heldout_geometric_result.json",
+   "result_sha256": "3f7f1cc55c5292658fee3e9bec7057b0d889147e54700e9caff1491bcc85641e",
+   "seconds_including_startup": 0.22758966499895905,
+   "scenarios": 3
+  },
+  {
+   "config": "MOAB2_C_heldout_harmonic.json",
+   "config_sha256": "0621a4fb7b81c0ebe0a74fa676985bdb444f32d3e86bb04bd822eb7868f841e2",
+   "result": "MOAB2_C_heldout_harmonic_result.json",
+   "result_sha256": "bf8f8573412021c7ee661614bed53e958dfb3ac8d7a784f3b5b4ae1bdb04af9a",
+   "seconds_including_startup": 0.23026477500025067,
+   "scenarios": 3
+  },
+  {
+   "config": "MOAB2_C_heldout_geometric.json",
+   "config_sha256": "5791e9261c9388a5a8abde36ea98156f8011372ad37e44d5e5d42484cd78e704",
+   "result": "MOAB2_C_heldout_geometric_result.json",
+   "result_sha256": "f9ed08269d9cc39b283b4e13fa3860761f9480f367682156da1e294147f1e7dc",
+   "seconds_including_startup": 0.23080654300065362,
+   "scenarios": 3
+  }
+ ],
+ "all_inputs_match_generic_reference": true,
+ "reconstruction_label": "Column state midpoint reconstruction on each backend, not native lifecycle checkpoint qualification",
+ "scope": "Rain-free N=1 diagnostic, no storm/LEAF/T/bed; no new production physics or default."
+}

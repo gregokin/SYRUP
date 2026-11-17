@@ -1,0 +1,4 @@
+Window,RMSE G − H (10⁻⁶),Max |Δθ| (10⁻⁵),Max relative Δθ (%),Max |Δ layer water| (mm),Max |Δ daily evaporation| (mm),|Δ final storage| (mm),H final storage (mm)
+JORN A,+1.179,1.424,0.0521,0.001424,0.0002569,0.001265,5.697
+JORN B,-2.458,1.487,0.0365,0.001487,0.0002807,0.0004944,9.301
+MOAB C,+2.238,1.839,0.0578,0.001839,0.0008762,0.002754,9.112

@@ -1,0 +1,1590 @@
+{
+  "immutable_control_sha256": "e2d4cc98dc64f0bc6495cccbbf41d69772e02b99e1fd7ad330c8cfc0dbc3e4a9",
+  "checks": [
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_A_training_geometric.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_A_training_geometric_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 3.749822027959314e-19,
+          "max_error_over_inherited_bound": 0.0035140113619928186
+        },
+        {
+          "scenario": "d0_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 4.2661680078361706e-19,
+          "max_error_over_inherited_bound": 0.0039978864969933
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 4.3355666878422317e-19,
+          "max_error_over_inherited_bound": 0.004062920983491668
+        },
+        {
+          "scenario": "d0_E1_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.001_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.2699150530778694e-18,
+          "max_error_over_inherited_bound": 0.012199322410213076
+        },
+        {
+          "scenario": "d0.001_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.110285697237582e-18,
+          "max_error_over_inherited_bound": 0.010894783423246058
+        },
+        {
+          "scenario": "d0.001_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.0360201735726332e-18,
+          "max_error_over_inherited_bound": 0.01005196405077021
+        },
+        {
+          "scenario": "d0.001_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.3409061549640917e-18,
+          "max_error_over_inherited_bound": 0.013393150385894816
+        },
+        {
+          "scenario": "d0.001_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.6783931002734936e-18,
+          "max_error_over_inherited_bound": 0.01704221518509894
+        },
+        {
+          "scenario": "d0.001_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.6783931002734936e-18,
+          "max_error_over_inherited_bound": 0.01704221518509894
+        },
+        {
+          "scenario": "d0.003_E0_open",
+          "days": 10,
+          "max_water_error_m": 6.060282011313208e-19,
+          "max_error_over_inherited_bound": 0.005862825250688275
+        },
+        {
+          "scenario": "d0.003_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 7.444242396168468e-19,
+          "max_error_over_inherited_bound": 0.007669348260991012
+        },
+        {
+          "scenario": "d0.003_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.8210001348284522e-18,
+          "max_error_over_inherited_bound": 0.01881597933501111
+        },
+        {
+          "scenario": "d0.003_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.1766995222235095e-18,
+          "max_error_over_inherited_bound": 0.012167591660795677
+        },
+        {
+          "scenario": "d0.003_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.062392108564112e-19,
+          "max_error_over_inherited_bound": 0.009352409477896572
+        },
+        {
+          "scenario": "d0.003_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.062392108564112e-19,
+          "max_error_over_inherited_bound": 0.009352409477896572
+        },
+        {
+          "scenario": "d0.01_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.671462938123284e-19,
+          "max_error_over_inherited_bound": 0.008877884726759116
+        },
+        {
+          "scenario": "d0.01_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 8.760431577563896e-19,
+          "max_error_over_inherited_bound": 0.008497785193157085
+        },
+        {
+          "scenario": "d0.01_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 9.745170319920288e-19,
+          "max_error_over_inherited_bound": 0.010299607903741926
+        },
+        {
+          "scenario": "d0.01_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.164856550952744e-18,
+          "max_error_over_inherited_bound": 0.013755032785246346
+        },
+        {
+          "scenario": "d0.01_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.003093972619086e-18,
+          "max_error_over_inherited_bound": 0.01061668125544393
+        },
+        {
+          "scenario": "d0.01_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.003093972619086e-18,
+          "max_error_over_inherited_bound": 0.01061668125544393
+        },
+        {
+          "scenario": "d0.03_E0_open",
+          "days": 10,
+          "max_water_error_m": 7.381778166223548e-19,
+          "max_error_over_inherited_bound": 0.007770776600736073
+        },
+        {
+          "scenario": "d0.03_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 7.204150581764668e-19,
+          "max_error_over_inherited_bound": 0.009007518586024619
+        },
+        {
+          "scenario": "d0.03_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 6.808329789276569e-19,
+          "max_error_over_inherited_bound": 0.010558362614058644
+        },
+        {
+          "scenario": "d0.03_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.323539810252552e-19,
+          "max_error_over_inherited_bound": 0.015168100568946937
+        },
+        {
+          "scenario": "d0.03_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.095184883989937e-18,
+          "max_error_over_inherited_bound": 0.019018079460775852
+        },
+        {
+          "scenario": "d0.03_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.095184883989937e-18,
+          "max_error_over_inherited_bound": 0.019018079460775852
+        },
+        {
+          "scenario": "d0.05_E0_open",
+          "days": 10,
+          "max_water_error_m": 7.879102828871778e-19,
+          "max_error_over_inherited_bound": 0.008319398785158374
+        },
+        {
+          "scenario": "d0.05_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.1237578851775626e-18,
+          "max_error_over_inherited_bound": 0.015277569584088966
+        },
+        {
+          "scenario": "d0.05_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.0356326154476332e-18,
+          "max_error_over_inherited_bound": 0.016057867588940938
+        },
+        {
+          "scenario": "d0.05_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.0530043343361032e-18,
+          "max_error_over_inherited_bound": 0.01742712943632147
+        },
+        {
+          "scenario": "d0.05_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.6382145201042509e-18,
+          "max_error_over_inherited_bound": 0.029317786321441976
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.6382145201042509e-18,
+          "max_error_over_inherited_bound": 0.029317786321441976
+        },
+        {
+          "scenario": "d0.1_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.252820350118161e-19,
+          "max_error_over_inherited_bound": 0.008723703365872684
+        },
+        {
+          "scenario": "d0.1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.1087370422693257e-18,
+          "max_error_over_inherited_bound": 0.013358272754128014
+        },
+        {
+          "scenario": "d0.1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 7.455485712476629e-19,
+          "max_error_over_inherited_bound": 0.01734609978891983
+        },
+        {
+          "scenario": "d0.1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 8.428138179948923e-19,
+          "max_error_over_inherited_bound": 0.01824547867425266
+        },
+        {
+          "scenario": "d0.1_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.1459391786114e-19,
+          "max_error_over_inherited_bound": 0.019844796060684147
+        },
+        {
+          "scenario": "d0.1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.1459391786114e-19,
+          "max_error_over_inherited_bound": 0.019844796060684147
+        },
+        {
+          "scenario": "d0.3_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.173617917429174e-18,
+          "max_error_over_inherited_bound": 0.012415397572584133
+        },
+        {
+          "scenario": "d0.3_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 9.880866482741898e-19,
+          "max_error_over_inherited_bound": 0.011646749704019901
+        },
+        {
+          "scenario": "d0.3_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 7.47890737857613e-19,
+          "max_error_over_inherited_bound": 0.01898771505605768
+        },
+        {
+          "scenario": "d0.3_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.51932463676568e-19,
+          "max_error_over_inherited_bound": 0.022175602513416843
+        },
+        {
+          "scenario": "d0.3_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.630207075626157e-19,
+          "max_error_over_inherited_bound": 0.009289174781310914
+        },
+        {
+          "scenario": "d0.3_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.630207075626157e-19,
+          "max_error_over_inherited_bound": 0.009289174781310914
+        },
+        {
+          "scenario": "d1_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.996317880685456e-19,
+          "max_error_over_inherited_bound": 0.009516961482020508
+        },
+        {
+          "scenario": "d1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.1443381283865878e-18,
+          "max_error_over_inherited_bound": 0.01669158874806263
+        },
+        {
+          "scenario": "d1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 7.580571977431819e-19,
+          "max_error_over_inherited_bound": 0.01715852067036291
+        },
+        {
+          "scenario": "d1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 8.903054129371341e-19,
+          "max_error_over_inherited_bound": 0.01654492061398257
+        },
+        {
+          "scenario": "d1_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.520774754358267e-19,
+          "max_error_over_inherited_bound": 0.011844557573982664
+        },
+        {
+          "scenario": "d1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.520774754358267e-19,
+          "max_error_over_inherited_bound": 0.011844557573982664
+        },
+        {
+          "scenario": "d0_E0_closed",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.05_E1.2_closed",
+          "days": 10,
+          "max_water_error_m": 1.6382145201042509e-18,
+          "max_error_over_inherited_bound": 0.029317786321441976
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_A_training_harmonic.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_A_training_harmonic_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 3.749822027959314e-19,
+          "max_error_over_inherited_bound": 0.0035140113619928186
+        },
+        {
+          "scenario": "d0_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 4.2661680078361706e-19,
+          "max_error_over_inherited_bound": 0.0039978864969933
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 4.3355666878422317e-19,
+          "max_error_over_inherited_bound": 0.004062920983491668
+        },
+        {
+          "scenario": "d0_E1_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.001_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.6434238822738558e-18,
+          "max_error_over_inherited_bound": 0.01578719560831262
+        },
+        {
+          "scenario": "d0.001_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.3031611814769668e-18,
+          "max_error_over_inherited_bound": 0.012787254589924267
+        },
+        {
+          "scenario": "d0.001_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.5780354189908383e-18,
+          "max_error_over_inherited_bound": 0.015678701786870846
+        },
+        {
+          "scenario": "d0.001_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.136510667031009e-19,
+          "max_error_over_inherited_bound": 0.008828747998846814
+        },
+        {
+          "scenario": "d0.001_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.008458010542324e-19,
+          "max_error_over_inherited_bound": 0.005819802311382952
+        },
+        {
+          "scenario": "d0.001_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.008458010542324e-19,
+          "max_error_over_inherited_bound": 0.005819802311382952
+        },
+        {
+          "scenario": "d0.003_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.7648555567168014e-18,
+          "max_error_over_inherited_bound": 0.01729269494032526
+        },
+        {
+          "scenario": "d0.003_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 9.210445136162567e-19,
+          "max_error_over_inherited_bound": 0.009433378834465548
+        },
+        {
+          "scenario": "d0.003_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 2.1542145003691e-18,
+          "max_error_over_inherited_bound": 0.022354482281520028
+        },
+        {
+          "scenario": "d0.003_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 2.075426897983166e-18,
+          "max_error_over_inherited_bound": 0.021606731043772132
+        },
+        {
+          "scenario": "d0.003_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.528147521044384e-19,
+          "max_error_over_inherited_bound": 0.009876406393571199
+        },
+        {
+          "scenario": "d0.003_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.528147521044384e-19,
+          "max_error_over_inherited_bound": 0.009876406393571199
+        },
+        {
+          "scenario": "d0.01_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.648726905670647e-19,
+          "max_error_over_inherited_bound": 0.008838391184718795
+        },
+        {
+          "scenario": "d0.01_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 5.651059334610856e-19,
+          "max_error_over_inherited_bound": 0.005814866433759921
+        },
+        {
+          "scenario": "d0.01_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 9.881936138752226e-19,
+          "max_error_over_inherited_bound": 0.011141065644244596
+        },
+        {
+          "scenario": "d0.01_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.3697501582672881e-18,
+          "max_error_over_inherited_bound": 0.016171135959285203
+        },
+        {
+          "scenario": "d0.01_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.034130291622842e-19,
+          "max_error_over_inherited_bound": 0.01005379800395489
+        },
+        {
+          "scenario": "d0.01_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.034130291622842e-19,
+          "max_error_over_inherited_bound": 0.01005379800395489
+        },
+        {
+          "scenario": "d0.03_E0_open",
+          "days": 10,
+          "max_water_error_m": 9.485292103388295e-19,
+          "max_error_over_inherited_bound": 0.009985017434061732
+        },
+        {
+          "scenario": "d0.03_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 8.106060992128165e-19,
+          "max_error_over_inherited_bound": 0.008950336577792234
+        },
+        {
+          "scenario": "d0.03_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.0397527083620024e-18,
+          "max_error_over_inherited_bound": 0.011532290236449125
+        },
+        {
+          "scenario": "d0.03_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.453355443344338e-19,
+          "max_error_over_inherited_bound": 0.011123823781411336
+        },
+        {
+          "scenario": "d0.03_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.1963492897328026e-18,
+          "max_error_over_inherited_bound": 0.013310724688732815
+        },
+        {
+          "scenario": "d0.03_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.1963492897328026e-18,
+          "max_error_over_inherited_bound": 0.013310724688732815
+        },
+        {
+          "scenario": "d0.05_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.1798587360535205e-18,
+          "max_error_over_inherited_bound": 0.012426105982457336
+        },
+        {
+          "scenario": "d0.05_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 7.802516582800371e-19,
+          "max_error_over_inherited_bound": 0.011063698316670428
+        },
+        {
+          "scenario": "d0.05_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 6.001786534758238e-19,
+          "max_error_over_inherited_bound": 0.011039314853045563
+        },
+        {
+          "scenario": "d0.05_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.519117794470189e-19,
+          "max_error_over_inherited_bound": 0.010977203944437157
+        },
+        {
+          "scenario": "d0.05_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.406931826327385e-19,
+          "max_error_over_inherited_bound": 0.016827579179443754
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.406931826327385e-19,
+          "max_error_over_inherited_bound": 0.016827579179443754
+        },
+        {
+          "scenario": "d0.1_E0_open",
+          "days": 10,
+          "max_water_error_m": 7.212689346382102e-19,
+          "max_error_over_inherited_bound": 0.007624203703537638
+        },
+        {
+          "scenario": "d0.1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.2993058275287796e-18,
+          "max_error_over_inherited_bound": 0.01901022397683946
+        },
+        {
+          "scenario": "d0.1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 8.351728271030004e-19,
+          "max_error_over_inherited_bound": 0.011132977950219648
+        },
+        {
+          "scenario": "d0.1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.300494629380695e-19,
+          "max_error_over_inherited_bound": 0.01146780142878645
+        },
+        {
+          "scenario": "d0.1_E1_open",
+          "days": 10,
+          "max_water_error_m": 8.194518936386654e-19,
+          "max_error_over_inherited_bound": 0.013109317744638412
+        },
+        {
+          "scenario": "d0.1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 8.194518936386654e-19,
+          "max_error_over_inherited_bound": 0.013109317744638412
+        },
+        {
+          "scenario": "d0.3_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.025010296241119e-18,
+          "max_error_over_inherited_bound": 0.010781169932262481
+        },
+        {
+          "scenario": "d0.3_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.3827141593018134e-18,
+          "max_error_over_inherited_bound": 0.01782652882627916
+        },
+        {
+          "scenario": "d0.3_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 6.571253129039391e-19,
+          "max_error_over_inherited_bound": 0.01069807979717073
+        },
+        {
+          "scenario": "d0.3_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 8.571984187285544e-19,
+          "max_error_over_inherited_bound": 0.01837812770548168
+        },
+        {
+          "scenario": "d0.3_E1_open",
+          "days": 10,
+          "max_water_error_m": 4.44672066882654e-19,
+          "max_error_over_inherited_bound": 0.007936529462869027
+        },
+        {
+          "scenario": "d0.3_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 4.44672066882654e-19,
+          "max_error_over_inherited_bound": 0.007936529462869027
+        },
+        {
+          "scenario": "d1_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.667659285476387e-19,
+          "max_error_over_inherited_bound": 0.009169291462575889
+        },
+        {
+          "scenario": "d1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 9.136204063569367e-19,
+          "max_error_over_inherited_bound": 0.012476589138017252
+        },
+        {
+          "scenario": "d1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 4.77502347280434e-19,
+          "max_error_over_inherited_bound": 0.009896068273812161
+        },
+        {
+          "scenario": "d1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.27775632967562e-19,
+          "max_error_over_inherited_bound": 0.013236105716344829
+        },
+        {
+          "scenario": "d1_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.385636494086777e-19,
+          "max_error_over_inherited_bound": 0.01229895574148204
+        },
+        {
+          "scenario": "d1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.385636494086777e-19,
+          "max_error_over_inherited_bound": 0.01229895574148204
+        },
+        {
+          "scenario": "d0_E0_closed",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.05_E1.2_closed",
+          "days": 10,
+          "max_water_error_m": 9.406931826327385e-19,
+          "max_error_over_inherited_bound": 0.016827579179443754
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_B_heldout_geometric.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_B_heldout_geometric_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 4,
+          "max_water_error_m": 8.23190070348434e-19,
+          "max_error_over_inherited_bound": 0.011840692419218184
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_B_heldout_harmonic.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/JORN4_B_heldout_harmonic_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 4,
+          "max_water_error_m": 1.2856064764862302e-18,
+          "max_error_over_inherited_bound": 0.018695886872687126
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/MOAB2_C_heldout_geometric.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/MOAB2_C_heldout_geometric_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 6,
+          "max_water_error_m": 1.8245127630933694e-19,
+          "max_error_over_inherited_bound": 0.0016561403643140988
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 6,
+          "max_water_error_m": 8.040054720827341e-19,
+          "max_error_over_inherited_bound": 0.01060439191203531
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 6,
+          "max_water_error_m": 2.743583571954748e-19,
+          "max_error_over_inherited_bound": 0.0027067398056552397
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/MOAB2_C_heldout_harmonic.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cpu/MOAB2_C_heldout_harmonic_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 6,
+          "max_water_error_m": 1.8245127630933694e-19,
+          "max_error_over_inherited_bound": 0.0016561403643140988
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 6,
+          "max_water_error_m": 1.041198564397269e-18,
+          "max_error_over_inherited_bound": 0.011494168901367766
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 6,
+          "max_water_error_m": 2.743583571954748e-19,
+          "max_error_over_inherited_bound": 0.0027067398056552397
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_A_training_geometric.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_A_training_geometric_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 3.749822027959314e-19,
+          "max_error_over_inherited_bound": 0.0035140113619928186
+        },
+        {
+          "scenario": "d0_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 4.2661680078361706e-19,
+          "max_error_over_inherited_bound": 0.0039978864969933
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 4.3355666878422317e-19,
+          "max_error_over_inherited_bound": 0.004062920983491668
+        },
+        {
+          "scenario": "d0_E1_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.001_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.2699150530778694e-18,
+          "max_error_over_inherited_bound": 0.012199322410213076
+        },
+        {
+          "scenario": "d0.001_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.110285697237582e-18,
+          "max_error_over_inherited_bound": 0.010894783423246058
+        },
+        {
+          "scenario": "d0.001_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.0360201735726332e-18,
+          "max_error_over_inherited_bound": 0.01005196405077021
+        },
+        {
+          "scenario": "d0.001_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.3409061549640917e-18,
+          "max_error_over_inherited_bound": 0.013393150385894816
+        },
+        {
+          "scenario": "d0.001_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.6783931002734936e-18,
+          "max_error_over_inherited_bound": 0.01704221518509894
+        },
+        {
+          "scenario": "d0.001_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.6783931002734936e-18,
+          "max_error_over_inherited_bound": 0.01704221518509894
+        },
+        {
+          "scenario": "d0.003_E0_open",
+          "days": 10,
+          "max_water_error_m": 6.060282011313208e-19,
+          "max_error_over_inherited_bound": 0.005862825250688275
+        },
+        {
+          "scenario": "d0.003_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 7.444242396168468e-19,
+          "max_error_over_inherited_bound": 0.007669348260991012
+        },
+        {
+          "scenario": "d0.003_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.8210001348284522e-18,
+          "max_error_over_inherited_bound": 0.01881597933501111
+        },
+        {
+          "scenario": "d0.003_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.1766995222235095e-18,
+          "max_error_over_inherited_bound": 0.012167591660795677
+        },
+        {
+          "scenario": "d0.003_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.062392108564112e-19,
+          "max_error_over_inherited_bound": 0.009352409477896572
+        },
+        {
+          "scenario": "d0.003_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.062392108564112e-19,
+          "max_error_over_inherited_bound": 0.009352409477896572
+        },
+        {
+          "scenario": "d0.01_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.671462938123284e-19,
+          "max_error_over_inherited_bound": 0.008877884726759116
+        },
+        {
+          "scenario": "d0.01_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 8.760431577563896e-19,
+          "max_error_over_inherited_bound": 0.008497785193157085
+        },
+        {
+          "scenario": "d0.01_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 9.745170319920288e-19,
+          "max_error_over_inherited_bound": 0.010299607903741926
+        },
+        {
+          "scenario": "d0.01_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.164856550952744e-18,
+          "max_error_over_inherited_bound": 0.013755032785246346
+        },
+        {
+          "scenario": "d0.01_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.003093972619086e-18,
+          "max_error_over_inherited_bound": 0.01061668125544393
+        },
+        {
+          "scenario": "d0.01_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.003093972619086e-18,
+          "max_error_over_inherited_bound": 0.01061668125544393
+        },
+        {
+          "scenario": "d0.03_E0_open",
+          "days": 10,
+          "max_water_error_m": 7.381778166223548e-19,
+          "max_error_over_inherited_bound": 0.007770776600736073
+        },
+        {
+          "scenario": "d0.03_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 7.204150581764668e-19,
+          "max_error_over_inherited_bound": 0.009007518586024619
+        },
+        {
+          "scenario": "d0.03_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 6.808329789276569e-19,
+          "max_error_over_inherited_bound": 0.010558362614058644
+        },
+        {
+          "scenario": "d0.03_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.323539810252552e-19,
+          "max_error_over_inherited_bound": 0.015168100568946937
+        },
+        {
+          "scenario": "d0.03_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.095184883989937e-18,
+          "max_error_over_inherited_bound": 0.019018079460775852
+        },
+        {
+          "scenario": "d0.03_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.095184883989937e-18,
+          "max_error_over_inherited_bound": 0.019018079460775852
+        },
+        {
+          "scenario": "d0.05_E0_open",
+          "days": 10,
+          "max_water_error_m": 7.879102828871778e-19,
+          "max_error_over_inherited_bound": 0.008319398785158374
+        },
+        {
+          "scenario": "d0.05_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.1237578851775626e-18,
+          "max_error_over_inherited_bound": 0.015277569584088966
+        },
+        {
+          "scenario": "d0.05_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.0356326154476332e-18,
+          "max_error_over_inherited_bound": 0.016057867588940938
+        },
+        {
+          "scenario": "d0.05_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.0530043343361032e-18,
+          "max_error_over_inherited_bound": 0.01742712943632147
+        },
+        {
+          "scenario": "d0.05_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.6382145201042509e-18,
+          "max_error_over_inherited_bound": 0.029317786321441976
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.6382145201042509e-18,
+          "max_error_over_inherited_bound": 0.029317786321441976
+        },
+        {
+          "scenario": "d0.1_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.252820350118161e-19,
+          "max_error_over_inherited_bound": 0.008723703365872684
+        },
+        {
+          "scenario": "d0.1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.1939042364517674e-18,
+          "max_error_over_inherited_bound": 0.015193009557760486
+        },
+        {
+          "scenario": "d0.1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 9.559032000273391e-19,
+          "max_error_over_inherited_bound": 0.01734609978891983
+        },
+        {
+          "scenario": "d0.1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.813043542825475e-19,
+          "max_error_over_inherited_bound": 0.012324688218304247
+        },
+        {
+          "scenario": "d0.1_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.1459391786114e-19,
+          "max_error_over_inherited_bound": 0.019844796060684147
+        },
+        {
+          "scenario": "d0.1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.1459391786114e-19,
+          "max_error_over_inherited_bound": 0.019844796060684147
+        },
+        {
+          "scenario": "d0.3_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.173617917429174e-18,
+          "max_error_over_inherited_bound": 0.012415397572584133
+        },
+        {
+          "scenario": "d0.3_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 9.880866482741898e-19,
+          "max_error_over_inherited_bound": 0.011646749704019901
+        },
+        {
+          "scenario": "d0.3_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 7.47890737857613e-19,
+          "max_error_over_inherited_bound": 0.01898771505605768
+        },
+        {
+          "scenario": "d0.3_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.51932463676568e-19,
+          "max_error_over_inherited_bound": 0.022175602513416843
+        },
+        {
+          "scenario": "d0.3_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.630207075626157e-19,
+          "max_error_over_inherited_bound": 0.009289174781310914
+        },
+        {
+          "scenario": "d0.3_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.630207075626157e-19,
+          "max_error_over_inherited_bound": 0.009289174781310914
+        },
+        {
+          "scenario": "d1_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.996317880685456e-19,
+          "max_error_over_inherited_bound": 0.009516961482020508
+        },
+        {
+          "scenario": "d1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.1443381283865878e-18,
+          "max_error_over_inherited_bound": 0.01669158874806263
+        },
+        {
+          "scenario": "d1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 7.580571977431819e-19,
+          "max_error_over_inherited_bound": 0.01715852067036291
+        },
+        {
+          "scenario": "d1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 8.903054129371341e-19,
+          "max_error_over_inherited_bound": 0.01654492061398257
+        },
+        {
+          "scenario": "d1_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.520774754358267e-19,
+          "max_error_over_inherited_bound": 0.011844557573982664
+        },
+        {
+          "scenario": "d1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.520774754358267e-19,
+          "max_error_over_inherited_bound": 0.011844557573982664
+        },
+        {
+          "scenario": "d0_E0_closed",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.05_E1.2_closed",
+          "days": 10,
+          "max_water_error_m": 1.6382145201042509e-18,
+          "max_error_over_inherited_bound": 0.029317786321441976
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_A_training_harmonic.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_A_training_harmonic_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 3.749822027959314e-19,
+          "max_error_over_inherited_bound": 0.0035140113619928186
+        },
+        {
+          "scenario": "d0_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 4.2661680078361706e-19,
+          "max_error_over_inherited_bound": 0.0039978864969933
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 4.3355666878422317e-19,
+          "max_error_over_inherited_bound": 0.004062920983491668
+        },
+        {
+          "scenario": "d0_E1_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.001_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.6434238822738558e-18,
+          "max_error_over_inherited_bound": 0.01578719560831262
+        },
+        {
+          "scenario": "d0.001_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.3031611814769668e-18,
+          "max_error_over_inherited_bound": 0.012787254589924267
+        },
+        {
+          "scenario": "d0.001_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.5780354189908383e-18,
+          "max_error_over_inherited_bound": 0.015678701786870846
+        },
+        {
+          "scenario": "d0.001_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.136510667031009e-19,
+          "max_error_over_inherited_bound": 0.008828747998846814
+        },
+        {
+          "scenario": "d0.001_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.008458010542324e-19,
+          "max_error_over_inherited_bound": 0.005819802311382952
+        },
+        {
+          "scenario": "d0.001_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.008458010542324e-19,
+          "max_error_over_inherited_bound": 0.005819802311382952
+        },
+        {
+          "scenario": "d0.003_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.7648555567168014e-18,
+          "max_error_over_inherited_bound": 0.01729269494032526
+        },
+        {
+          "scenario": "d0.003_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 9.210445136162567e-19,
+          "max_error_over_inherited_bound": 0.009433378834465548
+        },
+        {
+          "scenario": "d0.003_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 2.1542145003691e-18,
+          "max_error_over_inherited_bound": 0.022354482281520028
+        },
+        {
+          "scenario": "d0.003_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 2.075426897983166e-18,
+          "max_error_over_inherited_bound": 0.021606731043772132
+        },
+        {
+          "scenario": "d0.003_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.528147521044384e-19,
+          "max_error_over_inherited_bound": 0.009876406393571199
+        },
+        {
+          "scenario": "d0.003_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.528147521044384e-19,
+          "max_error_over_inherited_bound": 0.009876406393571199
+        },
+        {
+          "scenario": "d0.01_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.648726905670647e-19,
+          "max_error_over_inherited_bound": 0.008838391184718795
+        },
+        {
+          "scenario": "d0.01_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 5.651059334610856e-19,
+          "max_error_over_inherited_bound": 0.005814866433759921
+        },
+        {
+          "scenario": "d0.01_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 9.881936138752226e-19,
+          "max_error_over_inherited_bound": 0.011141065644244596
+        },
+        {
+          "scenario": "d0.01_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 1.3697501582672881e-18,
+          "max_error_over_inherited_bound": 0.016171135959285203
+        },
+        {
+          "scenario": "d0.01_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.034130291622842e-19,
+          "max_error_over_inherited_bound": 0.01005379800395489
+        },
+        {
+          "scenario": "d0.01_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.034130291622842e-19,
+          "max_error_over_inherited_bound": 0.01005379800395489
+        },
+        {
+          "scenario": "d0.03_E0_open",
+          "days": 10,
+          "max_water_error_m": 9.485292103388295e-19,
+          "max_error_over_inherited_bound": 0.009985017434061732
+        },
+        {
+          "scenario": "d0.03_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 8.106060992128165e-19,
+          "max_error_over_inherited_bound": 0.008950336577792234
+        },
+        {
+          "scenario": "d0.03_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 1.0397527083620024e-18,
+          "max_error_over_inherited_bound": 0.011532290236449125
+        },
+        {
+          "scenario": "d0.03_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.453355443344338e-19,
+          "max_error_over_inherited_bound": 0.011123823781411336
+        },
+        {
+          "scenario": "d0.03_E1_open",
+          "days": 10,
+          "max_water_error_m": 1.1963492897328026e-18,
+          "max_error_over_inherited_bound": 0.013310724688732815
+        },
+        {
+          "scenario": "d0.03_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 1.1963492897328026e-18,
+          "max_error_over_inherited_bound": 0.013310724688732815
+        },
+        {
+          "scenario": "d0.05_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.1798587360535205e-18,
+          "max_error_over_inherited_bound": 0.012426105982457336
+        },
+        {
+          "scenario": "d0.05_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 7.802516582800371e-19,
+          "max_error_over_inherited_bound": 0.011063698316670428
+        },
+        {
+          "scenario": "d0.05_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 6.001786534758238e-19,
+          "max_error_over_inherited_bound": 0.011039314853045563
+        },
+        {
+          "scenario": "d0.05_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 7.519117794470189e-19,
+          "max_error_over_inherited_bound": 0.010977203944437157
+        },
+        {
+          "scenario": "d0.05_E1_open",
+          "days": 10,
+          "max_water_error_m": 9.406931826327385e-19,
+          "max_error_over_inherited_bound": 0.016827579179443754
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 9.406931826327385e-19,
+          "max_error_over_inherited_bound": 0.016827579179443754
+        },
+        {
+          "scenario": "d0.1_E0_open",
+          "days": 10,
+          "max_water_error_m": 7.212689346382102e-19,
+          "max_error_over_inherited_bound": 0.007624203703537638
+        },
+        {
+          "scenario": "d0.1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.2993058275287796e-18,
+          "max_error_over_inherited_bound": 0.01901022397683946
+        },
+        {
+          "scenario": "d0.1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 8.351728271030004e-19,
+          "max_error_over_inherited_bound": 0.011132977950219648
+        },
+        {
+          "scenario": "d0.1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.300494629380695e-19,
+          "max_error_over_inherited_bound": 0.01146780142878645
+        },
+        {
+          "scenario": "d0.1_E1_open",
+          "days": 10,
+          "max_water_error_m": 8.194518936386654e-19,
+          "max_error_over_inherited_bound": 0.013109317744638412
+        },
+        {
+          "scenario": "d0.1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 8.194518936386654e-19,
+          "max_error_over_inherited_bound": 0.013109317744638412
+        },
+        {
+          "scenario": "d0.3_E0_open",
+          "days": 10,
+          "max_water_error_m": 1.025010296241119e-18,
+          "max_error_over_inherited_bound": 0.010781169932262481
+        },
+        {
+          "scenario": "d0.3_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 1.3827141593018134e-18,
+          "max_error_over_inherited_bound": 0.01782652882627916
+        },
+        {
+          "scenario": "d0.3_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 6.571253129039391e-19,
+          "max_error_over_inherited_bound": 0.01069807979717073
+        },
+        {
+          "scenario": "d0.3_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 8.571984187285544e-19,
+          "max_error_over_inherited_bound": 0.01837812770548168
+        },
+        {
+          "scenario": "d0.3_E1_open",
+          "days": 10,
+          "max_water_error_m": 4.44672066882654e-19,
+          "max_error_over_inherited_bound": 0.007936529462869027
+        },
+        {
+          "scenario": "d0.3_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 4.44672066882654e-19,
+          "max_error_over_inherited_bound": 0.007936529462869027
+        },
+        {
+          "scenario": "d1_E0_open",
+          "days": 10,
+          "max_water_error_m": 8.667659285476387e-19,
+          "max_error_over_inherited_bound": 0.009169291462575889
+        },
+        {
+          "scenario": "d1_E0.1_open",
+          "days": 10,
+          "max_water_error_m": 9.136204063569367e-19,
+          "max_error_over_inherited_bound": 0.012476589138017252
+        },
+        {
+          "scenario": "d1_E0.25_open",
+          "days": 10,
+          "max_water_error_m": 4.77502347280434e-19,
+          "max_error_over_inherited_bound": 0.009896068273812161
+        },
+        {
+          "scenario": "d1_E0.5_open",
+          "days": 10,
+          "max_water_error_m": 9.27775632967562e-19,
+          "max_error_over_inherited_bound": 0.013236105716344829
+        },
+        {
+          "scenario": "d1_E1_open",
+          "days": 10,
+          "max_water_error_m": 6.385636494086777e-19,
+          "max_error_over_inherited_bound": 0.01229895574148204
+        },
+        {
+          "scenario": "d1_E1.2_open",
+          "days": 10,
+          "max_water_error_m": 6.385636494086777e-19,
+          "max_error_over_inherited_bound": 0.01229895574148204
+        },
+        {
+          "scenario": "d0_E0_closed",
+          "days": 10,
+          "max_water_error_m": 3.428677342043329e-19,
+          "max_error_over_inherited_bound": 0.003213062125805594
+        },
+        {
+          "scenario": "d0.05_E1.2_closed",
+          "days": 10,
+          "max_water_error_m": 9.406931826327385e-19,
+          "max_error_over_inherited_bound": 0.016827579179443754
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_B_heldout_geometric.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_B_heldout_geometric_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 4,
+          "max_water_error_m": 8.23190070348434e-19,
+          "max_error_over_inherited_bound": 0.011840692419218184
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_B_heldout_harmonic.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/JORN4_B_heldout_harmonic_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 4,
+          "max_water_error_m": 1.2856064764862302e-18,
+          "max_error_over_inherited_bound": 0.018695886872687126
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 4,
+          "max_water_error_m": 2.901847651060049e-19,
+          "max_error_over_inherited_bound": 0.00286864501694676
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/MOAB2_C_heldout_geometric.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/MOAB2_C_heldout_geometric_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 6,
+          "max_water_error_m": 1.8245127630933694e-19,
+          "max_error_over_inherited_bound": 0.0016561403643140988
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 6,
+          "max_water_error_m": 8.040054720827341e-19,
+          "max_error_over_inherited_bound": 0.01060439191203531
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 6,
+          "max_water_error_m": 2.743583571954748e-19,
+          "max_error_over_inherited_bound": 0.0027067398056552397
+        }
+      ]
+    },
+    {
+      "config": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/MOAB2_C_heldout_harmonic.json",
+      "result": "/home/okin/SYRUP/agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/actual_cuda/MOAB2_C_heldout_harmonic_result.json",
+      "precision_decimal_digits": 70,
+      "scope": "Independent declared equation control; no reimplemented production solver or site property inference.",
+      "rows": [
+        {
+          "scenario": "d0_E0_open",
+          "days": 6,
+          "max_water_error_m": 1.8245127630933694e-19,
+          "max_error_over_inherited_bound": 0.0016561403643140988
+        },
+        {
+          "scenario": "d0.05_E1.2_open",
+          "days": 6,
+          "max_water_error_m": 1.041198564397269e-18,
+          "max_error_over_inherited_bound": 0.011494168901367766
+        },
+        {
+          "scenario": "d0_E0.5_open",
+          "days": 6,
+          "max_water_error_m": 2.743583571954748e-19,
+          "max_error_over_inherited_bound": 0.0027067398056552397
+        }
+      ]
+    }
+  ],
+  "scope": "70-digit independent declared dry-column equation check; per-comparison inherited bounds, not a formal accumulated numerical-error proof; native ledgers checked separately."
+}

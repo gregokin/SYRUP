@@ -1,0 +1,79 @@
+"""Interface redistribution conductivity from per-layer saturated conductivities: weighted harmonic and weighted geometric means.
+
+Local fixed redistribution conductivity of layer i: K_i = f * Ks_i with the EcoHyD factor f = (1 + 30/26)^(-1.5) (WaterCell.cpp saturated/unsaturated adjustment; retained, not a moisture-dependent
+conductivity and not wetting-front suction). The interface between two layer CENTRES uses half-layer distances: w_i = h_i / (h_i + h_j), w_j = h_j / (h_i + h_j), with h from the layer edges.
+    harmonic  : 1 / (w_i / K_i + w_j / K_j)          (for equal layers 2 K_i K_j / (K_i + K_j))
+    geometric : exp(w_i ln K_i + w_j ln K_j)         (for equal layers sqrt(K_i K_j))
+Identical neighbours return that conductivity EXACTLY (no rounding drift). Zero, negative, non-finite, boolean or malformed input is refused (ValueError) before anything is returned. There are no floors or tolerances.
+"""
+from __future__ import annotations
+
+import math
+from typing import Any
+
+METHODS = ("harmonic", "geometric")
+ECOHYD_FACTOR = (1.0 + 30.0 / 26.0) ** -1.5          # 0.31635738822500753
+
+
+def _positive(value: Any, what: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0.0:
+        raise ValueError(f"{what} must be a positive finite number, got {value!r}")
+    return float(value)
+
+
+def layer_thicknesses(edges_m: Any) -> list:
+    """Thicknesses from layer edges (a list of at least two strictly increasing finite numbers starting at 0)."""
+    if not isinstance(edges_m, (list, tuple)) or len(edges_m) < 2:
+        raise ValueError("edges_m must be a list of at least two numbers")
+    edges = []
+    for i, e in enumerate(edges_m):
+        if isinstance(e, bool) or not isinstance(e, (int, float)) or not math.isfinite(e):
+            raise ValueError(f"edges_m[{i}] must be a finite number, got {e!r}")
+        edges.append(float(e))
+    if edges[0] != 0.0 or any(b <= a for a, b in zip(edges, edges[1:])):
+        raise ValueError("edges_m must start at 0 and increase strictly (positive layer thickness)")
+    return [b - a for a, b in zip(edges, edges[1:])]
+
+
+def interface_weights(edges_m: Any) -> list:
+    """[(w_upper, w_lower)] for every interface between adjacent layer centres, from the actual edges (half-layer distances)."""
+    h = layer_thicknesses(edges_m)
+    return [(hi / (hi + hj), hj / (hi + hj)) for hi, hj in zip(h, h[1:])]
+
+
+def harmonic(k_i: float, k_j: float, w_i: float, w_j: float) -> float:
+    return k_i if k_i == k_j else 1.0 / (w_i / k_i + w_j / k_j)
+
+
+def geometric(k_i: float, k_j: float, w_i: float, w_j: float) -> float:
+    return k_i if k_i == k_j else math.exp(w_i * math.log(k_i) + w_j * math.log(k_j))
+
+
+def local_conductivities(ks_m_s: Any, factor: float = ECOHYD_FACTOR) -> list:
+    """K_i = factor * Ks_i for every layer (saturated conductivity Ks_i in m/s, positive finite)."""
+    if not isinstance(ks_m_s, (list, tuple)) or not ks_m_s:
+        raise ValueError("ks_m_s must be a non-empty list")
+    f = _positive(factor, "factor")
+    out = []
+    for i, k in enumerate(ks_m_s):
+        v = f * _positive(k, f"ks_m_s[{i}]")
+        if not math.isfinite(v) or v <= 0.0:                 # e.g. a denormal Ks whose product underflows to 0: refused, never floored
+            raise ValueError(f"derived local conductivity factor*ks_m_s[{i}] = {v!r} is not positive and finite (ks_m_s[{i}] = {k!r})")
+        out.append(v)
+    return out
+
+
+def interface_coefficients(ks_m_s: Any, edges_m: Any, method: str, factor: float = ECOHYD_FACTOR) -> dict:
+    """Full-precision record: layer Ks, local K, weights and the interface conductivities (m/s) for `method`."""
+    if method not in METHODS:
+        raise ValueError(f"method must be one of {METHODS}, got {method!r}")
+    k = local_conductivities(ks_m_s, factor)
+    w = interface_weights(edges_m)
+    if len(w) != len(k) - 1:
+        raise ValueError(f"{len(k)} conductivities need {len(k)} layers and {len(k)+1} edges; got {len(w)+1} layers")
+    fn = harmonic if method == "harmonic" else geometric
+    coeff = [fn(k[i], k[i + 1], w[i][0], w[i][1]) for i in range(len(w))]
+    if not all(math.isfinite(c) and c > 0.0 for c in coeff):
+        raise ValueError(f"non-finite or non-positive interface coefficient {coeff!r}")
+    return {"method": method, "units": "m s-1", "factor": float(factor), "ks_m_s": [float(x) for x in ks_m_s], "local_conductivity_m_s": k, "weights_upper_lower": [list(x) for x in w],
+            "interface_conductivity_m_s": coeff, "edges_m": [float(x) for x in edges_m]}

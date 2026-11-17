@@ -1,0 +1,16 @@
+Window,Scenario,L1 N,L1 bias,L1 RMSE,L2 N,L2 bias,L2 RMSE,L3 N,L3 bias,L3 RMSE
+JORN A,point persistence,8,+5.91,7.91,10,-1.90,2.30,10,-2.19,2.35
+JORN A,"layer persistence (= d 0, E 0)",8,+7.91,9.49,10,-6.87,6.99,10,+0.03,0.86
+JORN A,"harmonic reference (0.05, 1.2)",8,-21.40,21.48,10,-38.68,39.66,10,-20.66,22.93
+JORN A,"geometric reference (0.05, 1.2)",8,-21.39,21.48,10,-38.67,39.66,10,-20.67,22.94
+JORN A,"old generic reference (0.05, 1.2)",8,-6.81,6.94,10,-11.04,11.20,10,+0.42,0.96
+JORN B,point persistence,4,+2.70,3.26,4,+2.40,2.80,3,+1.20,1.49
+JORN B,"layer persistence (= d 0, E 0)",4,+5.80,6.08,4,-4.10,4.35,3,+2.34,2.50
+JORN B,"harmonic reference (0.05, 1.2)",4,-6.72,6.78,4,-22.46,22.84,3,-7.25,7.97
+JORN B,"geometric reference (0.05, 1.2)",4,-6.71,6.78,4,-22.45,22.83,3,-7.26,7.99
+JORN B,"old generic reference (0.05, 1.2)",4,+1.39,1.56,4,-5.83,5.87,3,+2.24,2.39
+MOAB C,point persistence,6,+22.78,23.99,4,+0.85,1.71,4,+0.00,1.23
+MOAB C,"layer persistence (= d 0, E 0)",6,+22.17,23.41,4,+1.11,1.85,4,+0.98,1.57
+MOAB C,"harmonic reference (0.05, 1.2)",6,-25.76,26.50,4,-16.59,17.47,4,-5.02,6.17
+MOAB C,"geometric reference (0.05, 1.2)",6,-25.75,26.50,4,-16.60,17.49,4,-5.02,6.18
+MOAB C,"old generic reference (0.05, 1.2)",6,+0.04,1.50,4,-0.36,0.89,4,+1.38,1.97

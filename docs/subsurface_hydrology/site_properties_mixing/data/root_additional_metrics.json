@@ -1,0 +1,63 @@
+{
+  "comparison_orientation": "geometric minus harmonic",
+  "physical_CPU_CUDA_max_abs_by_field": {
+    "water_m": 8.673617379884035e-19,
+    "percolation_m": 0.0,
+    "diffusion_m": 6.2341624917916505e-19,
+    "evaporation_m": 8.673617379884035e-19,
+    "evaporation_unmet_m": 0.0,
+    "drainage_m": 0.0,
+    "surface_return_m": 0.0,
+    "step_residual_m3": 3.469446951953614e-18,
+    "step_bound_m3": 7.395570986446986e-32,
+    "t_s": 0.0,
+    "layer_theta": 1.3877787807814457e-17
+  },
+  "rows": [
+    {
+      "window": "JORN4_A",
+      "primary_equal_layer_RMSE_units": "m3/m3",
+      "point_persistence_RMSE": 0.0049442643537739766,
+      "selected_null_RMSE": 0.0068218353393985276,
+      "reference_H_RMSE": 0.029212972731194463,
+      "reference_G_RMSE": 0.02921415179467443,
+      "reference_generic_RMSE": 0.007627667743290156,
+      "maximum_same_tuple_H_G_theta_difference_m3_m3": 1.6029376112364213e-05,
+      "reference_evap_mm": {
+        "harmonic": 11.107313927557996,
+        "geometric": 11.108578587399817,
+        "generic": 2.9327701607794108
+      }
+    },
+    {
+      "window": "JORN4_B",
+      "primary_equal_layer_RMSE_units": "m3/m3",
+      "point_persistence_RMSE": 0.0026229754097208025,
+      "selected_null_RMSE": 0.004548776730301595,
+      "reference_H_RMSE": 0.014503381613169518,
+      "reference_G_RMSE": 0.014500923363728158,
+      "reference_generic_RMSE": 0.003768348014952847,
+      "maximum_same_tuple_H_G_theta_difference_m3_m3": 1.4869378947367229e-05,
+      "reference_evap_mm": {
+        "harmonic": 5.962705186508234,
+        "geometric": 5.963199545834829,
+        "generic": 0.927136946663448
+      }
+    },
+    {
+      "window": "MOAB2_C",
+      "primary_equal_layer_RMSE_units": "m3/m3",
+      "point_persistence_RMSE": 0.013906573186007319,
+      "selected_null_RMSE": 0.01358801955755613,
+      "reference_H_RMSE": 0.0186711225280056,
+      "reference_G_RMSE": 0.018673360204108373,
+      "reference_generic_RMSE": 0.0015199719741465932,
+      "maximum_same_tuple_H_G_theta_difference_m3_m3": 1.838908954773788e-05,
+      "reference_evap_mm": {
+        "harmonic": 8.850812981221935,
+        "geometric": 8.853566974990121,
+        "generic": 3.3377139287789768
+      }
+    }
+  ]
+}
