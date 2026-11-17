@@ -1,0 +1,11 @@
+{
+  "status": "pass",
+  "scope": "Static document and preservation checks only; no model run or Office paginated render",
+  "docx_sha256": "43b85a238882c1b054ecc53c521b739b55fec26fe284d8be11d61013344c3853",
+  "bytes": 128688,
+  "tables_exactly_match_CSVs": 6,
+  "source_PNG_and_embedded_image_identical": true,
+  "prior_accepted_artifact_hashes_unchanged": 144,
+  "tracked_baseline_files_unchanged": true,
+  "citations_units_examples_and_source_distinctions_checked": true
+}

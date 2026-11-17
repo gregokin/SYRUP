@@ -1,0 +1,137 @@
+{
+  "scope": "Independent arithmetic using existing records only; no model simulation",
+  "actual_first_day_and_window_controls": [
+    {
+      "window": "JORN4_A",
+      "soil": "generic",
+      "PET_mm_day": 6.139189215844968,
+      "initial_theta": 0.047593319999999995,
+      "stress_scale": 0.18,
+      "moisture_fraction": 0.06991123792044444,
+      "E_multiplier": 0.5,
+      "pre_supply_cap_mm": 0.21459915895378215,
+      "available_mm": 3.7593319999999992,
+      "actual_first_day_mm": 0.21459915895378218,
+      "cumulative_evaporation_mm": 1.5824183857851986
+    },
+    {
+      "window": "JORN4_A",
+      "soil": "texture_derived",
+      "PET_mm_day": 6.139189215844968,
+      "initial_theta": 0.047593319999999995,
+      "stress_scale": 0.039508152304,
+      "moisture_fraction": 1,
+      "E_multiplier": 0.5,
+      "pre_supply_cap_mm": 3.069594607922484,
+      "available_mm": 3.7593319999999992,
+      "actual_first_day_mm": 3.0695946079224843,
+      "cumulative_evaporation_mm": 3.7593319999999997
+    },
+    {
+      "window": "JORN4_B",
+      "soil": "generic",
+      "PET_mm_day": 6.97934935242336,
+      "initial_theta": 0.03359582,
+      "stress_scale": 0.18,
+      "moisture_fraction": 0.03483577535408642,
+      "E_multiplier": 0.5,
+      "pre_supply_cap_mm": 0.12156552307935435,
+      "available_mm": 2.3595819999999996,
+      "actual_first_day_mm": 0.12156552307935434,
+      "cumulative_evaporation_mm": 0.4131385228566277
+    },
+    {
+      "window": "JORN4_B",
+      "soil": "texture_derived",
+      "PET_mm_day": 6.97934935242336,
+      "initial_theta": 0.03359582,
+      "stress_scale": 0.039508152304,
+      "moisture_fraction": 0.7230978210336995,
+      "E_multiplier": 0.5,
+      "pre_supply_cap_mm": 2.5233761544851463,
+      "available_mm": 2.3595819999999996,
+      "actual_first_day_mm": 2.3595819999999996,
+      "cumulative_evaporation_mm": 2.3595819999999996
+    },
+    {
+      "window": "MOAB2_C",
+      "soil": "generic",
+      "PET_mm_day": 6.622971756619692,
+      "initial_theta": 0.065282375,
+      "stress_scale": 0.18,
+      "moisture_fraction": 0.1315366816555749,
+      "E_multiplier": 0.5,
+      "pre_supply_cap_mm": 0.435581863782174,
+      "available_mm": 5.5282375,
+      "actual_first_day_mm": 0.435581863782174,
+      "cumulative_evaporation_mm": 1.8411914254220925
+    },
+    {
+      "window": "MOAB2_C",
+      "soil": "texture_derived",
+      "PET_mm_day": 6.622971756619692,
+      "initial_theta": 0.065282375,
+      "stress_scale": 0.05900343186546672,
+      "moisture_fraction": 1,
+      "E_multiplier": 0.5,
+      "pre_supply_cap_mm": 3.311485878309846,
+      "available_mm": 5.5282375,
+      "actual_first_day_mm": 3.311485878309846,
+      "cumulative_evaporation_mm": 5.34090914970658
+    }
+  ],
+  "illustrative_examples_not_field_runs": [
+    {
+      "soil": "generic",
+      "initial_theta": 0.05,
+      "stress_scale": 0.18,
+      "residual_theta": 0.01,
+      "top_layer_thickness_m": 0.1,
+      "PET_mm_day": 6,
+      "E_multiplier": 0.5,
+      "moisture_fraction": 0.0771604938271605,
+      "pre_cap_evaporation_mm": 0.2314814814814815,
+      "available_mm": 4,
+      "actual_evaporation_mm": 0.2314814814814815
+    },
+    {
+      "soil": "JORN",
+      "initial_theta": 0.05,
+      "stress_scale": 0.039508152304,
+      "residual_theta": 0.01,
+      "top_layer_thickness_m": 0.1,
+      "PET_mm_day": 6,
+      "E_multiplier": 0.5,
+      "moisture_fraction": 1,
+      "pre_cap_evaporation_mm": 3.0,
+      "available_mm": 4,
+      "actual_evaporation_mm": 3.0
+    },
+    {
+      "soil": "generic",
+      "initial_theta": 0.05,
+      "stress_scale": 0.18,
+      "residual_theta": 0.01,
+      "top_layer_thickness_m": 0.1,
+      "PET_mm_day": 6,
+      "E_multiplier": 1.2,
+      "moisture_fraction": 0.0771604938271605,
+      "pre_cap_evaporation_mm": 0.5555555555555556,
+      "available_mm": 4,
+      "actual_evaporation_mm": 0.5555555555555556
+    },
+    {
+      "soil": "JORN",
+      "initial_theta": 0.05,
+      "stress_scale": 0.039508152304,
+      "residual_theta": 0.01,
+      "top_layer_thickness_m": 0.1,
+      "PET_mm_day": 6,
+      "E_multiplier": 1.2,
+      "moisture_fraction": 1,
+      "pre_cap_evaporation_mm": 7.199999999999999,
+      "available_mm": 4,
+      "actual_evaporation_mm": 4
+    }
+  ]
+}

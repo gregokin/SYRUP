@@ -1,0 +1,54 @@
+{
+  "utc": "2026-11-17T22:15:33.218833+00:00",
+  "scope": "Read-only source identities supporting documentation; no reference code run",
+  "files": {
+    "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/subsurface.py": {
+      "sha256": "bd50377ed2eea80e29bbb96fe290f33af8a78427b1c0de38134f049a2cb80dfa",
+      "bytes": 95532
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/subsurface_numba.py": {
+      "sha256": "d3d39ddfb71e563adb6513496ffcac6fa75d459de56632cbcb2e858fe1c85226",
+      "bytes": 45054
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/soil_evaporation.py": {
+      "sha256": "c1450a07c61c093d65da7e0f483f1861f53b7e02b2ee28449af09322d3bc4fdd",
+      "bytes": 40950
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/floating_evaporation.py": {
+      "sha256": "c879415f2b1913cc5da16b414fc2ffc8b661720e19e97d923c5823f5aeca2bd6",
+      "bytes": 12611
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/benchmarks/subsurface_validation/drydown_driver.py": {
+      "sha256": "22adc6510464ab4aceb9524f71cdd72a595a800e8034eb066cccd7e3594ab88c",
+      "bytes": 38941
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/soil_evaporation_explanation_20261117/docs_candidate/src/maple_syrup/soil_texture_properties.py": {
+      "sha256": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+      "bytes": 46435
+    },
+    "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/src/WaterCell.cpp": {
+      "sha256": "af476e1aa727ed515d75ed06a4a25b5285470caddebb141c35b8c0cf6201d9e9",
+      "bytes": 20479
+    },
+    "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/src/WaterCell.h": {
+      "sha256": "3d12ac41a7e234469e100d5187d26d25f719ce48955f9559f0e2c3e2ee2cc3b3",
+      "bytes": 13028
+    },
+    "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/Parameters/soilparameters_tabernas.txt": {
+      "sha256": "db02855a9359eed71c1976309ccefeaa3780a2314c2b57cd08b2f9ec4ec77e62",
+      "bytes": 1959
+    },
+    "/home/okin/SYRUP/reference_models/ecohyd/dryad_4j0zpc8gn/extracted/Irob_et_al_drought_resilience/Model/Parameters/soilparameters_EH.txt": {
+      "sha256": "67a16438580978a9e2613cad20b584d6941d36a4594c6115f363512b533edddb",
+      "bytes": 2040
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/neon_texture_failure_audit_20261117/saxton_rawls_2006.pdf": {
+      "sha256": "24038366b95d508de140786b5b71fb634164dc9f89d1de158944c445c77186e5",
+      "bytes": 1543783
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/diffusivity_literature_sweep_20261101/sources/Tietjen_2010.pdf": {
+      "sha256": "31f16ba4d4ad6f504f6d9bc540cc89cde07e2f88ae09ee478e721e88e74d67b9",
+      "bytes": 680053
+    }
+  }
+}

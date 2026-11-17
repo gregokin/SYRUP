@@ -1,0 +1,22 @@
+{
+  "scope": "NEW companion document/support only; older manifest preserved",
+  "files": {
+    "SYRUP_evaporation_and_d_E_explained_20261117.docx": "43b85a238882c1b054ecc53c521b739b55fec26fe284d8be11d61013344c3853",
+    "evaporation_explanation/acceptance.json": "a16cb018acf5e24ccc12636650c193dbf768beca81b1077ee44b8f59cd47dbb9",
+    "evaporation_explanation/build_explanation.py": "5b32011a09cd25767aaa5a957c328a4ed8621c635223fbde9ebc6ca096f82c1f",
+    "evaporation_explanation/evidence/provenance.json": "952a80beb5760c30fec02ec8cbc90280fc58e9ce043dd6c4901efd4023b5d00a",
+    "evaporation_explanation/explanation.md": "042305587576948614415f8ba650c336fa23536a04fe7fd729d8986576fa6610",
+    "evaporation_explanation/figures/fig_moisture_response.png": "21d9c1a657736cc551648534a85ff86d061ea017ca1b6495596ede54cec86dcb",
+    "evaporation_explanation/review/root_d_example_check.json": "f6dcefa5defb6efc9983381fcf512b2c41b60dde4fe0406a986226b1dd9e38af",
+    "evaporation_explanation/review/root_document_verification.json": "8c7b36a81927334f81f1ac0a9c8ffaf94717cfaa1a29e0148a8c2c5aa3ec298d",
+    "evaporation_explanation/review/root_numeric_checks.json": "e55b866960ad67c6b43f3a784336ddd92e333b9e18fca0135995092c2325c60b",
+    "evaporation_explanation/review/root_source_evidence.json": "d56aabb99682f80d34866880021cc19509c8f4c765ed911052ba175d5eb1a354",
+    "evaporation_explanation/tables/appendix.csv": "9e115722f04a0d0516f07e3b2ce73d09b4180c38acce564fb70ccf00a4c6f7f0",
+    "evaporation_explanation/tables/controls.csv": "75c0b77edf5ff1b8a7f7ee5a1616eb3e849521944b2814de23525fdc487ddce2",
+    "evaporation_explanation/tables/matrix.csv": "e85faf9e6aaff0e58e1e21dfce61dfeb56ca3c706cafcbaff72b26cf275cecf4",
+    "evaporation_explanation/tables/oldnew.csv": "da83575eb9ddb5c5e76c0299b35ad66e61a16c09506f9f9118b24c0cfd5f3169",
+    "evaporation_explanation/tables/outcome.csv": "d6881f872e500ca0914dcb391ba235f8a500213eba763f74403f15f5f2daa578",
+    "evaporation_explanation/tables/terms.csv": "45f983a639b9b0199809ded2ce7834375947ddbb478024f5e0544b9a468559dc",
+    "evaporation_explanation/verification.md": "94694359445cec013a4a4174453dbff962959ebb2f0404cfb33c95db4c096de2"
+  }
+}

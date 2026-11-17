@@ -1,0 +1,4 @@
+Soil,Stress scale,Residual,Saturated conductivity (mm/h),Layer-to-layer conductivity (mm/h)
+Earlier generic reference,0.18,0.01,6.9,2.1829 (all pairs)
+New JORN (3 layers),"0.0395 (top-layer water content at 1,500 kPa)",0.01,120.8 / 119.7 / 104.3,38.0 and 35.3 (harmonic)
+New MOAB (3 layers),0.0590 (same rule),0.01,64.0 / 57.3 / 57.3,19.1 and 18.1 (harmonic)

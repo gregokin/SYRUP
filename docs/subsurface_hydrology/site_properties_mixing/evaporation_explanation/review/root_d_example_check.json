@@ -1,0 +1,18 @@
+{
+  "scope": "Independent analytic arithmetic for document illustration, not a model run",
+  "values": {
+    "new": {
+      "rate_per_hour": 0.038040300000000006,
+      "dimensionless_interval_rate": 0.9129672000000002,
+      "fraction_of_1mm_equilibration_transfer": 0.5986683756280606,
+      "transfer_mm": 0.5986683756280606
+    },
+    "old": {
+      "rate_per_hour": 0.0021828660000000003,
+      "dimensionless_interval_rate": 0.05238878400000001,
+      "fraction_of_1mm_equilibration_transfer": 0.051040145293621775,
+      "transfer_mm": 0.051040145293621775
+    }
+  },
+  "transfer_ratio": 11.729362684687992
+}

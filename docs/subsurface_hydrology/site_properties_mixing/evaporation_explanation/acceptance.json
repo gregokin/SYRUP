@@ -1,0 +1,33 @@
+{
+  "status": "accepted documentation-only addition",
+  "utc": "2026-11-17T22:30:45.934563+00:00",
+  "base_commit": "70f184b53cd300ce5e4e1c54b413ec3cce2284ed",
+  "deliverable": "SYRUP_evaporation_and_d_E_explained_20261117.docx",
+  "scope": "Plain-language explanation of old/new soil-property results, E multiplier, moisture stress, d redistribution, and parameter origins/estimation; no model/default change",
+  "implementation_and_review": {
+    "author_session": "4ea0f4de-329c-4b6d-80fe-045ae4573362",
+    "workflow": "Claude authored; Codex independently reviewed primary scientific/code evidence, checked existing-data arithmetic, requested bounded corrections and rebuilt; final figure layout checked",
+    "primary_2009_evidence": "Publisher indexed text, sections 2.3/3.1 and Table 2, DOI10.1029/2007WR006589; no original PDF/code or optimizer claim",
+    "source_distinctions": "Original Tietjen site factor, later EcoHyD EP and cover factor, Saxton-Rawls property estimates, and our combined bare diagnostic E are distinguished"
+  },
+  "verification": {
+    "status": "pass",
+    "scope": "Static document and preservation checks only; no model run or Office paginated render",
+    "docx_sha256": "43b85a238882c1b054ecc53c521b739b55fec26fe284d8be11d61013344c3853",
+    "bytes": 128688,
+    "tables_exactly_match_CSVs": 6,
+    "source_PNG_and_embedded_image_identical": true,
+    "prior_accepted_artifact_hashes_unchanged": 144,
+    "tracked_baseline_files_unchanged": true,
+    "citations_units_examples_and_source_distinctions_checked": true
+  },
+  "arithmetic": "Independent first-day checks of all 6 old/new window cases; cumulative controls and analytic illustration checked; no new model simulation",
+  "ruff": "Only new documentation builder checked; clean",
+  "preservation": "All 144 prior accepted report/evidence artifact hashes and all tracked baseline files unchanged; original dirty root status preserved",
+  "limits": [
+    "No Office paginated render/page-count verification",
+    "Scientific explanation of previously executed bounded diagnostic cases, not new field validation",
+    "No new parameter estimate, model run or scientific default adoption",
+    "Rebuilding provenance uses documented local sources and extracted report tools"
+  ]
+}
