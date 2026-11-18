@@ -1,0 +1,81 @@
+{
+  "baseline_head": "2fcc0b80624f857e17cb9b92d951be932e163857",
+  "sources": [
+    {
+      "item": "Saxton\u2013Rawls 2006 PDF (Table 1, printed p.1571 = PDF p.3)",
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/neon_texture_failure_audit_20261117/saxton_rawls_2006.pdf",
+      "lines": "hash verified; location per assignment",
+      "sha256": "24038366b95d508de140786b5b71fb634164dc9f89d1de158944c445c77186e5"
+    },
+    {
+      "item": "Coefficients Eq 1\u20134, constants",
+      "path": "src/maple_syrup/soil_texture_properties.py",
+      "lines": "L106\u2013125",
+      "sha256": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481"
+    },
+    {
+      "item": "Eq 1\u20136 normal regressions",
+      "path": "same",
+      "lines": "L376\u2013386",
+      "sha256": ""
+    },
+    {
+      "item": "Eq 7\u20139 density adjustment",
+      "path": "same",
+      "lines": "L388\u2013390",
+      "sha256": ""
+    },
+    {
+      "item": "Eq 15, 18, 16 Ks",
+      "path": "same",
+      "lines": "L404\u2013406",
+      "sha256": ""
+    },
+    {
+      "item": "Interface rule, EcoHyD factor",
+      "path": "benchmarks/subsurface_site_comparison/interfaces.py",
+      "lines": "L16, L39\u201352",
+      "sha256": "02dfd1bd6f76d14d3a8d13ea7a175e02c71746fa744a7f7dabbf03dfa5f2c09b"
+    },
+    {
+      "item": "EcoHyD Ku, K_geom",
+      "path": "/home/okin/SYRUP/reference_models/ecohyd/github_baldauf_2023/source/model/src/WaterCell.cpp",
+      "lines": "L549\u2013552",
+      "sha256": "af476e1aa727ed515d75ed06a4a25b5285470caddebb141c35b8c0cf6201d9e9"
+    },
+    {
+      "item": "Prior probe values (cross-check)",
+      "path": "docs/subsurface_hydrology/site_properties_mixing/data/root_relative_density_probe.json",
+      "lines": "records JORN_A, JORN_10_20_dry_mass",
+      "sha256": "9ad303384f26116f37088aa6609d3519c7396d22d46d8d0ac42919358165675f"
+    },
+    {
+      "item": "Property audit probe (cross-check)",
+      "path": "\u2026/data/property_audit/root_probe.json",
+      "lines": "",
+      "sha256": "7b18b863faace9c913c531d787cb6355a465878a47986dcfcb8f77cdd55bcf36"
+    }
+  ],
+  "builder_sha256": "fc30eaa11edfa425e2860228d92af817cefe5f94daed94f7f609ea515e80eb1e",
+  "explanation_md_sha256": "c7c7679e1bf7d6e584471dca6abbf764001b32673767281a19caf89644259c2a",
+  "numbers_json_sha256": "b2cbdbe5d3453bdc41f510f12a17da3a3835801dcc81c34c3af6aa80d68d4054",
+  "docx_sha256": "8e3074c7d3c40b18c8007214e0d6567fd43820c355bd210c06ece28e06904a1e",
+  "docx_verification": {
+    "oMathPara": 32,
+    "oMath": 32,
+    "fractions": 21,
+    "subscripts": 78,
+    "superscripts": 8,
+    "radicals": 1,
+    "equation_arrays": 9,
+    "tables": 5,
+    "raw_latex_or_dollar": false,
+    "words": 2853,
+    "image_parts": []
+  },
+  "pdf_check": {
+    "sha256_verified": true,
+    "text_reextracted": false,
+    "note": "no PDF text tool available; Table 1 page location is per assignment"
+  }
+}

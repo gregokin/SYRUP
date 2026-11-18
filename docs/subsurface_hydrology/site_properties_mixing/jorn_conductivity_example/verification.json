@@ -1,0 +1,27 @@
+{
+  "old_files_unchanged": 1742,
+  "independent_65digit_matches": {
+    "Ks_mm_h": "120.78651558947543326332680426565940737379205399181546192413284688",
+    "layer2_Ks_mm_h": "119.70776661032677701526468541331680543002878890293413069372981579",
+    "interface_harmonic_mm_h": "38.040306107699618815188201985978592087635166798531480851497801607",
+    "interface_geometric_mm_h": "38.040688801869147802882635845788942439142032019671560872342322600"
+  },
+  "docx_sha256": "8e3074c7d3c40b18c8007214e0d6567fd43820c355bd210c06ece28e06904a1e",
+  "math_stats": {
+    "oMathPara": 32,
+    "f": 21,
+    "sSub": 78,
+    "sSup": 8,
+    "eqArr": 9
+  },
+  "xml_zip_valid": true,
+  "rendered_office_pagination_checked": false,
+  "status": "accepted",
+  "scope": "Documentation and worked arithmetic only; no new model qualification",
+  "claude_session": "3781bdbf-7b20-4d59-8592-a2b365895e16",
+  "root_review": "Confirmed and corrected g comparison, inferred OM label, units, attribution and bounds. Original1742trackedfilesunchanged.",
+  "baseline": "2fcc0b80624f857e17cb9b92d951be932e163857",
+  "utc": "2026-11-18T01:48:38.227309+00:00",
+  "ruff": "PASS; newbuilderonly",
+  "primary_table_verification": "Root web-read original SR2006 Table1p1571eq15/16/18 and retention/density formulas; later-source claimscheckedprimarypaper/dissertationindexedtables; noOfficevisualpreview"
+}
