@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-18T01:54:23.814978+00:00",
+  "scope": "Pooled E1 stress calibration diagnostic; actualNumbaopt+NumPy/Numba/CUDAselectedcontrols;no productiondefaultchanges",
+  "all_three_windows_used_for_calibration": true,
+  "observations": 53,
+  "numba_fits": 3,
+  "actual_native_objective_evaluations": 624,
+  "actual_native_window_runs_for_optimization": 1872,
+  "cuda_configuration_checks": 27,
+  "tests": 83,
+  "independent_fraction_scores": "PASS all53obsall3fits",
+  "production_original_files_unchanged": 1742,
+  "cuda": "NVIDIA GeForce GTX1080Ti GPU0 availableguard;CuPy14.2.0;selectedmatchesactualCPU",
+  "restart_scope": "Public column state midpoint export/reconstruction, not native lifecycle checkpoint acceptance",
+  "root_initial_controls_first_attempt": "JSON serialization of CumulativeBudget failed after native verification; corrected orchestration only, final6controlscomplete; originalerrorpreserved",
+  "remaining": "ClaudeDOCXauthor+Rootreview, postmergepreservation/publication"
+}

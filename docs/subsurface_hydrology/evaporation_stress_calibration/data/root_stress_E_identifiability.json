@@ -1,0 +1,26 @@
+{
+  "secondary": {
+    "fitted_stress": 0.2171797728919738,
+    "min_top_theta": 0.03359582,
+    "max_top_theta": 0.065282375,
+    "theta_below_both_018_and_fit": true,
+    "analytical_E_equivalent_at_018": 0.686920157646227,
+    "scope": "Analytical equivalence only; no E!=1 fit or added model run. With all theta below stress, evaporation response uses E/stress^2. This does not make stress a measured retention/wilting point."
+  },
+  "main": {
+    "fitted_stress": 0.21717029762566153,
+    "min_top_theta": 0.03359582,
+    "max_top_theta": 0.065282375,
+    "theta_below_both_018_and_fit": true,
+    "analytical_E_equivalent_at_018": 0.686980100405347,
+    "scope": "Analytical equivalence only; no E!=1 fit or added model run. With all theta below stress, evaporation response uses E/stress^2. This does not make stress a measured retention/wilting point."
+  },
+  "sensitivity_d0": {
+    "fitted_stress": 0.20644317480382438,
+    "min_top_theta": 0.02688562567271258,
+    "max_top_theta": 0.065282375,
+    "theta_below_both_018_and_fit": true,
+    "analytical_E_equivalent_at_018": 0.7602281585124732,
+    "scope": "Analytical equivalence only; no E!=1 fit or added model run. With all theta below stress, evaporation response uses E/stress^2. This does not make stress a measured retention/wilting point."
+  }
+}

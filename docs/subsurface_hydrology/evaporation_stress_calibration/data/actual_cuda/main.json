@@ -1,0 +1,1213 @@
+{
+ "cpu_fit_sha256": "f81543eedc3cc58fd7508612021fc0dbfd61baccd5a29d625cf2f7edf03a216b",
+ "stress": 0.21717029762566153,
+ "verification": {
+  "selected": {
+   "JORN4_A": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 3,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": -8.673617379884035e-19,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     },
+     "numba": {
+      "residual_m3": -8.673617379884035e-19,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     },
+     "cuda": {
+      "residual_m3": -8.673617379884035e-19,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     }
+    }
+   },
+   "JORN4_B": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 2,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 2.168404344971009e-18,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     },
+     "numba": {
+      "residual_m3": 2.168404344971009e-18,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     },
+     "cuda": {
+      "residual_m3": 2.168404344971009e-18,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     }
+    }
+   },
+   "MOAB2_C": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 1.3552527156068805e-20,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 1.3552527156068805e-20,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 3,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 2.168404344971009e-18,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     },
+     "numba": {
+      "residual_m3": 2.168404344971009e-18,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     },
+     "cuda": {
+      "residual_m3": 2.168404344971009e-18,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     }
+    }
+   }
+  },
+  "baseline_018": {
+   "JORN4_A": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 3,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": -1.734723475976807e-18,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     },
+     "numba": {
+      "residual_m3": -1.734723475976807e-18,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     },
+     "cuda": {
+      "residual_m3": -1.734723475976807e-18,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     }
+    }
+   },
+   "JORN4_B": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 2,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 1.3010426069826053e-18,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     },
+     "numba": {
+      "residual_m3": 1.3010426069826053e-18,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     },
+     "cuda": {
+      "residual_m3": 1.3010426069826053e-18,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     }
+    }
+   },
+   "MOAB2_C": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 1.3552527156068805e-20,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 1.3552527156068805e-20,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 3,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     },
+     "numba": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     },
+     "cuda": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     }
+    }
+   }
+  },
+  "site_theta1500": {
+   "JORN4_A": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 3,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     },
+     "numba": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     },
+     "cuda": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.895558909836836e-15,
+      "n_terms": 127
+     }
+    }
+   },
+   "JORN4_B": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 2,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 0.0,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     },
+     "numba": {
+      "residual_m3": 0.0,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     },
+     "cuda": {
+      "residual_m3": 0.0,
+      "bound_m3": 7.456240069814157e-16,
+      "n_terms": 55
+     }
+    }
+   },
+   "MOAB2_C": {
+    "backends": [
+     "numpy",
+     "numba",
+     "cuda"
+    ],
+    "backend_agreement_max_abs": {
+     "numpy_vs_numba": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numpy_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     },
+     "numba_vs_cuda": {
+      "water_m": 0.0,
+      "percolation_m": 0.0,
+      "diffusion_m": 0.0,
+      "evaporation_m": 0.0,
+      "evaporation_unmet_m": 0.0,
+      "drainage_m": 0.0,
+      "surface_return_m": 0.0,
+      "step_residual_m3": 0.0,
+      "step_bound_m3": 0.0
+     }
+    },
+    "restart_after_day": 3,
+    "restart_label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance",
+    "ledgers": {
+     "numpy": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     },
+     "numba": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     },
+     "cuda": {
+      "residual_m3": 0.0,
+      "bound_m3": 1.2603935672927945e-15,
+      "n_terms": 79
+     }
+    }
+   }
+  }
+ },
+ "actual_selected_cuda": {
+  "JORN4_A": {
+   "trajectory": {
+    "water_m": [
+     [
+      0.005020932442188325,
+      0.005754152153984816,
+      0.005734864700296914
+     ],
+     [
+      0.004991146050242276,
+      0.005515756524395231,
+      0.005647293456063982
+     ],
+     [
+      0.004896638013534572,
+      0.00536434629470701,
+      0.005534207603059006
+     ],
+     [
+      0.004784720413140262,
+      0.00523593357621755,
+      0.005414996042169586
+     ],
+     [
+      0.004676005908756574,
+      0.0051161605941001664,
+      0.005295560097341642
+     ],
+     [
+      0.0046071077045059024,
+      0.005012012080955325,
+      0.005182234099840429
+     ],
+     [
+      0.0045413485288523,
+      0.004916960335722401,
+      0.0050762117960602504
+     ],
+     [
+      0.004452273003396878,
+      0.004820600074317512,
+      0.0049740511330844525
+     ],
+     [
+      0.0043794404396130665,
+      0.004729764758348668,
+      0.004876416885997461
+     ],
+     [
+      0.004302383406439563,
+      0.004641193500805927,
+      0.00478240485550551
+     ]
+    ],
+    "percolation_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "diffusion_m": [
+     [
+      -0.000556451145718269,
+      1.2840700296916746e-05
+     ],
+     [
+      -0.00032596687382251664,
+      -8.757124423293202e-05
+     ],
+     [
+      -0.0002644960826931973,
+      -0.00011308585300497608
+     ],
+     [
+      -0.00024762427937888006,
+      -0.00011921156088941982
+     ],
+     [
+      -0.00023920892694532728,
+      -0.00011943594482794349
+     ],
+     [
+      -0.00021747451064605422,
+      -0.0001133259975012131
+     ],
+     [
+      -0.0002010740490131026,
+      -0.00010602230378017858
+     ],
+     [
+      -0.0001985209243806874,
+      -0.00010216066297579766
+     ],
+     [
+      -0.00018846956305583487,
+      -9.763424708699115e-05
+     ],
+     [
+      -0.00018258328803469147,
+      -9.401203049195111e-05
+     ]
+    ],
+    "evaporation_m": [
+     0.00029485070352994446,
+     0.0003557532657685655,
+     0.0003590041194009009,
+     0.000359541879773191,
+     0.0003479234313290146,
+     0.0002863727148967262,
+     0.00026683322466670447,
+     0.0002875964498361096,
+     0.00026130212683964625,
+     0.0002596403212081946
+    ],
+    "evaporation_unmet_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "drainage_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "surface_return_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_residual_m3": [
+     -9.215718466126788e-19,
+     1.7889335846010823e-18,
+     -1.0299920638612292e-18,
+     1.2468324983583301e-18,
+     4.336808689942018e-19,
+     -2.439454888092385e-18,
+     1.5178830414797062e-18,
+     -8.131516293641283e-19,
+     1.0842021724855044e-19,
+     -1.0842021724855044e-18
+    ],
+    "step_bound_m3": [
+     2.8358755344015657e-16,
+     2.7861183283389136e-16,
+     2.726083577394152e-16,
+     2.66550023222144e-16,
+     2.6048261378887765e-16,
+     2.546112702040031e-16,
+     2.497786189621211e-16,
+     2.4527570423776985e-16,
+     2.404224019915606e-16,
+     2.3601282670002695e-16
+    ],
+    "t_s": [
+     86400.0,
+     172800.0,
+     259200.0,
+     345600.0,
+     432000.0,
+     518400.0,
+     604800.0,
+     691200.0,
+     777600.0,
+     864000.0
+    ]
+   },
+   "layer_theta": [
+    [
+     0.05020932442188324,
+     0.05754152153984815,
+     0.057348647002969155
+    ],
+    [
+     0.049911460502422754,
+     0.05515756524395231,
+     0.056472934560639836
+    ],
+    [
+     0.04896638013534572,
+     0.0536434629470701,
+     0.05534207603059007
+    ],
+    [
+     0.047847204131402615,
+     0.052359335762175496,
+     0.05414996042169587
+    ],
+    [
+     0.04676005908756574,
+     0.051161605941001664,
+     0.05295560097341643
+    ],
+    [
+     0.04607107704505902,
+     0.05012012080955324,
+     0.051822340998404305
+    ],
+    [
+     0.045413485288523,
+     0.04916960335722401,
+     0.05076211796060252
+    ],
+    [
+     0.044522730033968776,
+     0.04820600074317512,
+     0.04974051133084453
+    ],
+    [
+     0.043794404396130665,
+     0.047297647583486674,
+     0.04876416885997462
+    ],
+    [
+     0.04302383406439563,
+     0.04641193500805927,
+     0.04782404855505511
+    ]
+   ],
+   "initial_storage_m": 0.016804799999999998,
+   "final_storage_m": 0.013725981762751,
+   "cumulative_budget": {
+    "n_steps": 10,
+    "elapsed_s": 864000.0,
+    "added_m3": 0.0,
+    "surface_return_m3": 0.0,
+    "drainage_m3": 0.0,
+    "evaporation_m3": 0.003078818237248998,
+    "evaporation_unmet_m3": 0.0
+   },
+   "cumulative_ledger": {
+    "residual_m3": -8.673617379884035e-19,
+    "bound_m3": 1.895558909836836e-15,
+    "n_terms": 127
+   }
+  },
+  "JORN4_B": {
+   "trajectory": {
+    "water_m": [
+     [
+      0.004005872677474676,
+      0.005352760441111599,
+      0.005737940690911957
+     ],
+     [
+      0.004242407091197923,
+      0.005123840267737245,
+      0.005492502391222447
+     ],
+     [
+      0.004343665097605145,
+      0.004990981873837771,
+      0.005292059046125974
+     ],
+     [
+      0.0043659878767406185,
+      0.004886189929141514,
+      0.0051298448182735224
+     ]
+    ],
+    "percolation_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "diffusion_m": [
+     [
+      -0.0008133168679764425,
+      -0.00025643530908804027
+     ],
+     [
+      -0.0004743584730638653,
+      -0.00024543829968951095
+     ],
+     [
+      -0.0003333017389959472,
+      -0.00020044334509647274
+     ],
+     [
+      -0.00026700617254870793,
+      -0.00016221422785245095
+     ]
+    ],
+    "evaporation_m": [
+     0.0001670261905017667,
+     0.00023782405934061893,
+     0.00023204373258872438,
+     0.00024468339341323535
+    ],
+    "evaporation_unmet_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "drainage_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "surface_return_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_residual_m3": [
+     -1.111307226797642e-18,
+     2.1141942363467336e-18,
+     8.402566836762659e-19,
+     3.2526065174565133e-19
+    ],
+    "step_bound_m3": [
+     2.575792024117618e-16,
+     2.547605703111223e-16,
+     2.5074719656447777e-16,
+     2.4683136808595036e-16
+    ],
+    "t_s": [
+     86400.0,
+     172800.0,
+     259200.0,
+     345600.0
+    ]
+   },
+   "layer_theta": [
+    [
+     0.040058726774746756,
+     0.05352760441111599,
+     0.057379406909119586
+    ],
+    [
+     0.04242407091197922,
+     0.051238402677372445,
+     0.05492502391222448
+    ],
+    [
+     0.04343665097605145,
+     0.0499098187383777,
+     0.05292059046125975
+    ],
+    [
+     0.04365987876740618,
+     0.048861899291415135,
+     0.05129844818273523
+    ]
+   ],
+   "initial_storage_m": 0.015263599999999999,
+   "final_storage_m": 0.014382022624155655,
+   "cumulative_budget": {
+    "n_steps": 4,
+    "elapsed_s": 345600.0,
+    "added_m3": 0.0,
+    "surface_return_m3": 0.0,
+    "drainage_m3": 0.0,
+    "evaporation_m3": 0.0008815773758443454,
+    "evaporation_unmet_m3": 0.0
+   },
+   "cumulative_ledger": {
+    "residual_m3": 2.168404344971009e-18,
+    "bound_m3": 7.456240069814157e-16,
+    "n_terms": 55
+   }
+  },
+  "MOAB2_C": {
+   "trajectory": {
+    "water_m": [
+     [
+      0.005943872467681787,
+      0.00589291479348835,
+      0.005527740593798212
+     ],
+     [
+      0.005570097287960335,
+      0.005768595988972019,
+      0.005579285308834682
+     ],
+     [
+      0.0052841936718832005,
+      0.005645273283569583,
+      0.005593407190352385
+     ],
+     [
+      0.005066875896956475,
+      0.005528725161350872,
+      0.005579564790224882
+     ],
+     [
+      0.004893556212703317,
+      0.005419739997699085,
+      0.005545361182784158
+     ],
+     [
+      0.004716450561016643,
+      0.005311287849440015,
+      0.005495267875735114
+     ]
+    ],
+    "percolation_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ],
+    "diffusion_m": [
+     [
+      -1.4107112713438106e-05,
+      9.942809379821443e-05
+     ],
+     [
+      -7.277408947986056e-05,
+      5.154471503646958e-05
+     ],
+     [
+      -0.00010920082388473292,
+      1.4121881517703552e-05
+     ],
+     [
+      -0.00013039052234621452,
+      -1.3842400127503182e-05
+     ],
+     [
+      -0.00014318877109251066,
+      -3.4203607440723336e-05
+     ],
+     [
+      -0.00015854545530811403,
+      -5.009330704904462e-05
+     ]
+    ],
+    "evaporation_m": [
+     0.000598472145031652,
+     0.0004465492692013124,
+     0.00039510443996186784,
+     0.0003477082972729404,
+     0.00031650845534566836,
+     0.0003356511069947869
+    ],
+    "evaporation_unmet_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "drainage_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "surface_return_m": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "step_residual_m3": [
+     -5.421010862427522e-19,
+     9.215718466126788e-19,
+     -1.463672932855431e-18,
+     2.8189256484623115e-18,
+     -2.6020852139652106e-18,
+     3.0357660829594124e-18
+    ],
+    "step_bound_m3": [
+     3.0313263010839366e-16,
+     2.9303317927222727e-16,
+     2.8549748621171536e-16,
+     2.788299447067805e-16,
+     2.7296223159299903e-16,
+     2.6762102797887674e-16
+    ],
+    "t_s": [
+     86400.0,
+     172800.0,
+     259200.0,
+     345600.0,
+     432000.0,
+     518400.0
+    ]
+   },
+   "layer_theta": [
+    [
+     0.059438724676817864,
+     0.05892914793488349,
+     0.05527740593798213
+    ],
+    [
+     0.05570097287960334,
+     0.05768595988972019,
+     0.055792853088346826
+    ],
+    [
+     0.052841936718832,
+     0.056452732835695824,
+     0.05593407190352386
+    ],
+    [
+     0.05066875896956474,
+     0.05528725161350872,
+     0.05579564790224883
+    ],
+    [
+     0.04893556212703317,
+     0.05419739997699084,
+     0.055453611827841594
+    ],
+    [
+     0.047164505610166434,
+     0.05311287849440015,
+     0.05495267875735115
+    ]
+   ],
+   "initial_storage_m": 0.017963,
+   "final_storage_m": 0.015523006286191774,
+   "cumulative_budget": {
+    "n_steps": 6,
+    "elapsed_s": 518400.0,
+    "added_m3": 0.0,
+    "surface_return_m3": 0.0,
+    "drainage_m3": 0.0,
+    "evaporation_m3": 0.002439993713808228,
+    "evaporation_unmet_m3": 0.0
+   },
+   "cumulative_ledger": {
+    "residual_m3": 2.168404344971009e-18,
+    "bound_m3": 1.2603935672927945e-15,
+    "n_terms": 79
+   }
+  }
+ },
+ "sources_before": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/evaporation_stress_calibration_20261117/analysis_candidate/src/maple_syrup/__init__.py"
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py"
+  }
+ },
+ "sources_after": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/evaporation_stress_calibration_20261117/analysis_candidate/src/maple_syrup/__init__.py"
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py"
+  }
+ }
+}

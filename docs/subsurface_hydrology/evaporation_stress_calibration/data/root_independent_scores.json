@@ -1,0 +1,95 @@
+{
+  "main": {
+    "n": 53,
+    "rmse": 0.009120181829084136,
+    "windows": {
+      "JORN4_A": {
+        "n": 28,
+        "rmse": 0.010241487843953895
+      },
+      "JORN4_B": {
+        "n": 11,
+        "rmse": 0.008256371938335377
+      },
+      "MOAB2_C": {
+        "n": 14,
+        "rmse": 0.007179875023380533
+      }
+    },
+    "site": {
+      "JORN": {
+        "n": 39,
+        "rmse": 0.009722707368868577
+      },
+      "MOAB": {
+        "n": 14,
+        "rmse": 0.007179875023380533
+      }
+    },
+    "exact_fraction_sse": "4408418979564492854652218676656491/1000000000000000000000000000000000000",
+    "selected_is_lowest_evaluated": true,
+    "prepared_inputs_identical_to_independent_controls": true
+  },
+  "secondary": {
+    "n": 53,
+    "rmse": 0.009120727861051134,
+    "windows": {
+      "JORN4_A": {
+        "n": 28,
+        "rmse": 0.010241469884195808
+      },
+      "JORN4_B": {
+        "n": 11,
+        "rmse": 0.00825703870210203
+      },
+      "MOAB2_C": {
+        "n": 14,
+        "rmse": 0.0071819493255997225
+      }
+    },
+    "site": {
+      "JORN": {
+        "n": 39,
+        "rmse": 0.009722853491008498
+      },
+      "MOAB": {
+        "n": 14,
+        "rmse": 0.0071819493255997225
+      }
+    },
+    "exact_fraction_sse": "4408946865913781924039411754209671/1000000000000000000000000000000000000",
+    "selected_is_lowest_evaluated": true,
+    "prepared_inputs_identical_to_independent_controls": true
+  },
+  "sensitivity_d0": {
+    "n": 53,
+    "rmse": 0.0038921035304433273,
+    "windows": {
+      "JORN4_A": {
+        "n": 28,
+        "rmse": 0.004111655620500074
+      },
+      "JORN4_B": {
+        "n": 11,
+        "rmse": 0.002076143570816087
+      },
+      "MOAB2_C": {
+        "n": 14,
+        "rmse": 0.004488834373849761
+      }
+    },
+    "site": {
+      "JORN": {
+        "n": 39,
+        "rmse": 0.0036542003501329754
+      },
+      "MOAB": {
+        "n": 14,
+        "rmse": 0.004488834373849761
+      }
+    },
+    "exact_fraction_sse": "802868904259538894904601906311691/1000000000000000000000000000000000000",
+    "selected_is_lowest_evaluated": true,
+    "prepared_inputs_identical_to_independent_controls": true
+  }
+}

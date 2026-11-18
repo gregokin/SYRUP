@@ -1,0 +1,4 @@
+Fit,Selected θ*,Grid points with MSE within +1 % of the minimum,... within +5 %
+Main,0.2172,0.2000–0.2350,0.1850–0.2750
+Secondary,0.2172,0.2000–0.2350,0.1850–0.2750
+Diagnostic,0.2064,0.2000–0.2100,0.1950–0.2200

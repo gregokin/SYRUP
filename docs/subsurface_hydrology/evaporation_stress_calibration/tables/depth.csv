@@ -1,0 +1,4 @@
+Vertical sensor,n,Main RMSE (pt),Main bias (pt),d 0 RMSE (pt),d 0 bias (pt),Zero-change RMSE (pt)
+501 (all sites),18,0.930,+0.828,0.596,-0.115,1.490
+502 (all sites),18,1.114,-0.974,0.230,-0.033,0.230
+503 (all sites),17,0.603,-0.445,0.200,-0.108,0.200

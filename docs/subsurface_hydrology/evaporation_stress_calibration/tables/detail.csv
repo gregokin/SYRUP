@@ -1,0 +1,10 @@
+Window,Sensor @ depth,Valid / targets,Offset (pt),RMSE of changes (pt),Unshifted RMSE (pt),Bias of changes (pt),Zero-change RMSE (pt)
+"JORN plot 4, window A",501@0.058m,8 / 10,-0.199,0.626,0.805,+0.541,0.791
+"JORN plot 4, window A",502@0.158m,10 / 10,+0.497,1.435,1.923,-1.403,0.230
+"JORN plot 4, window A",503@0.258m,10 / 10,-0.222,0.752,0.555,-0.689,0.235
+"JORN plot 4, window B",501@0.058m,4 / 4,-0.310,1.195,1.495,+1.150,0.326
+"JORN plot 4, window B",502@0.158m,4 / 4,+0.650,0.583,1.232,-0.581,0.280
+"JORN plot 4, window B",503@0.258m,3 / 4,-0.114,0.379,0.270,-0.367,0.149
+"MOAB plot 2, window C",501@0.055m,6 / 6,+0.062,1.058,1.000,+0.996,2.399
+"MOAB plot 2, window C",502@0.155m,4 / 6,-0.026,0.318,0.294,-0.296,0.171
+"MOAB plot 2, window C",503@0.255m,4 / 6,-0.098,0.155,0.235,+0.109,0.123

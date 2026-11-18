@@ -1,0 +1,522 @@
+{
+ "fits": {
+  "header": [
+   "Fit",
+   "Interface",
+   "d",
+   "Selected stress \u03b8* (m\u00b3 m\u207b\u00b3)",
+   "(vol. %)",
+   "Pooled RMSE (pt)",
+   "Zero-change RMSE (pt)",
+   "SSE reduction vs zero change",
+   "n",
+   "Evaluations (grid + refine)"
+  ],
+  "rows": [
+   [
+    "Main",
+    "harmonic",
+    "0.05",
+    "0.21717",
+    "21.72",
+    "0.912",
+    "0.886",
+    "-5.9 %",
+    53,
+    "208 (199 + 9)"
+   ],
+   [
+    "Secondary",
+    "geometric",
+    "0.05",
+    "0.21718",
+    "21.72",
+    "0.912",
+    "0.886",
+    "-6.0 %",
+    53,
+    "208 (199 + 9)"
+   ],
+   [
+    "Diagnostic",
+    "harmonic",
+    "0",
+    "0.20644",
+    "20.64",
+    "0.389",
+    "0.886",
+    "+80.7 %",
+    53,
+    "208 (199 + 9)"
+   ]
+  ]
+ },
+ "dates": {
+  "header": [
+   "Window",
+   "Site / plot",
+   "t0 (UTC)",
+   "Last modelled end (UTC)",
+   "Daily updates",
+   "Valid targets",
+   "Missing targets",
+   "Sensor depths (cm)"
+  ],
+  "rows": [
+   [
+    "JORN4_A",
+    "JORN plot 4",
+    "2025-04-08T22:00:00Z",
+    "2025-04-18T22:00:00Z",
+    10,
+    28,
+    2,
+    "5.8 / 15.8 / 25.8"
+   ],
+   [
+    "JORN4_B",
+    "JORN plot 4",
+    "2025-04-26T06:30:00Z",
+    "2025-04-30T06:30:00Z",
+    4,
+    11,
+    1,
+    "5.8 / 15.8 / 25.8"
+   ],
+   [
+    "MOAB2_C",
+    "MOAB plot 2",
+    "2025-05-22T03:30:00Z",
+    "2025-05-28T03:30:00Z",
+    6,
+    14,
+    4,
+    "5.5 / 15.5 / 25.5"
+   ]
+  ]
+ },
+ "ident": {
+  "header": [
+   "Fit",
+   "Fitted \u03b8*",
+   "Modelled top-layer \u03b8, min\u2013max",
+   "Below 0.18 and \u03b8*?",
+   "Equivalent E at \u03b8* = 0.18 (algebra only)"
+  ],
+  "rows": [
+   [
+    "Main",
+    "0.2172",
+    "0.0336\u20130.0653",
+    "yes, every day",
+    "0.6870"
+   ],
+   [
+    "Secondary",
+    "0.2172",
+    "0.0336\u20130.0653",
+    "yes, every day",
+    "0.6869"
+   ],
+   [
+    "Diagnostic",
+    "0.2064",
+    "0.0269\u20130.0653",
+    "yes, every day",
+    "0.7602"
+   ]
+  ]
+ },
+ "controls": {
+  "header": [
+   "Fit",
+   "At selected \u03b8*",
+   "Control \u03b8* = 0.18",
+   "Control site \u03b81500 (JORN 0.0395, MOAB 0.0590)",
+   "Zero change"
+  ],
+  "rows": [
+   [
+    "Main",
+    "0.912",
+    "0.936",
+    "2.364",
+    "0.886"
+   ],
+   [
+    "Secondary",
+    "0.912",
+    "0.936",
+    "2.364",
+    "0.886"
+   ],
+   [
+    "Diagnostic",
+    "0.389",
+    "0.425",
+    "1.783",
+    "0.886"
+   ]
+  ]
+ },
+ "windows": {
+  "header": [
+   "Window / site",
+   "n",
+   "Main RMSE (pt)",
+   "Main bias (pt)",
+   "d 0 RMSE (pt)",
+   "d 0 bias (pt)",
+   "Zero-change RMSE (pt)"
+  ],
+  "rows": [
+   [
+    "JORN plot 4, window A",
+    28,
+    "1.024",
+    "-0.593",
+    "0.411",
+    "-0.335",
+    "0.466"
+   ],
+   [
+    "JORN plot 4, window B",
+    11,
+    "0.826",
+    "+0.107",
+    "0.208",
+    "+0.072",
+    "0.270"
+   ],
+   [
+    "MOAB plot 2, window C",
+    14,
+    "0.718",
+    "+0.373",
+    "0.449",
+    "+0.292",
+    "1.575"
+   ],
+   [
+    "JORN (all windows)",
+    39,
+    "0.972",
+    "-0.395",
+    "0.365",
+    "-0.220",
+    "0.420"
+   ],
+   [
+    "MOAB (all windows)",
+    14,
+    "0.718",
+    "+0.373",
+    "0.449",
+    "+0.292",
+    "1.575"
+   ]
+  ]
+ },
+ "depth": {
+  "header": [
+   "Vertical sensor",
+   "n",
+   "Main RMSE (pt)",
+   "Main bias (pt)",
+   "d 0 RMSE (pt)",
+   "d 0 bias (pt)",
+   "Zero-change RMSE (pt)"
+  ],
+  "rows": [
+   [
+    "501 (all sites)",
+    18,
+    "0.930",
+    "+0.828",
+    "0.596",
+    "-0.115",
+    "1.490"
+   ],
+   [
+    "502 (all sites)",
+    18,
+    "1.114",
+    "-0.974",
+    "0.230",
+    "-0.033",
+    "0.230"
+   ],
+   [
+    "503 (all sites)",
+    17,
+    "0.603",
+    "-0.445",
+    "0.200",
+    "-0.108",
+    "0.200"
+   ]
+  ]
+ },
+ "detail": {
+  "header": [
+   "Window",
+   "Sensor @ depth",
+   "Valid / targets",
+   "Offset (pt)",
+   "RMSE of changes (pt)",
+   "Unshifted RMSE (pt)",
+   "Bias of changes (pt)",
+   "Zero-change RMSE (pt)"
+  ],
+  "rows": [
+   [
+    "JORN plot 4, window A",
+    "501@0.058m",
+    "8 / 10",
+    "-0.199",
+    "0.626",
+    "0.805",
+    "+0.541",
+    "0.791"
+   ],
+   [
+    "JORN plot 4, window A",
+    "502@0.158m",
+    "10 / 10",
+    "+0.497",
+    "1.435",
+    "1.923",
+    "-1.403",
+    "0.230"
+   ],
+   [
+    "JORN plot 4, window A",
+    "503@0.258m",
+    "10 / 10",
+    "-0.222",
+    "0.752",
+    "0.555",
+    "-0.689",
+    "0.235"
+   ],
+   [
+    "JORN plot 4, window B",
+    "501@0.058m",
+    "4 / 4",
+    "-0.310",
+    "1.195",
+    "1.495",
+    "+1.150",
+    "0.326"
+   ],
+   [
+    "JORN plot 4, window B",
+    "502@0.158m",
+    "4 / 4",
+    "+0.650",
+    "0.583",
+    "1.232",
+    "-0.581",
+    "0.280"
+   ],
+   [
+    "JORN plot 4, window B",
+    "503@0.258m",
+    "3 / 4",
+    "-0.114",
+    "0.379",
+    "0.270",
+    "-0.367",
+    "0.149"
+   ],
+   [
+    "MOAB plot 2, window C",
+    "501@0.055m",
+    "6 / 6",
+    "+0.062",
+    "1.058",
+    "1.000",
+    "+0.996",
+    "2.399"
+   ],
+   [
+    "MOAB plot 2, window C",
+    "502@0.155m",
+    "4 / 6",
+    "-0.026",
+    "0.318",
+    "0.294",
+    "-0.296",
+    "0.171"
+   ],
+   [
+    "MOAB plot 2, window C",
+    "503@0.255m",
+    "4 / 6",
+    "-0.098",
+    "0.155",
+    "0.235",
+    "+0.109",
+    "0.123"
+   ]
+  ]
+ },
+ "bands": {
+  "header": [
+   "Fit",
+   "Selected \u03b8*",
+   "Grid points with MSE within +1 % of the minimum",
+   "... within +5 %"
+  ],
+  "rows": [
+   [
+    "Main",
+    "0.2172",
+    "0.2000\u20130.2350",
+    "0.1850\u20130.2750"
+   ],
+   [
+    "Secondary",
+    "0.2172",
+    "0.2000\u20130.2350",
+    "0.1850\u20130.2750"
+   ],
+   [
+    "Diagnostic",
+    "0.2064",
+    "0.2000\u20130.2100",
+    "0.1950\u20130.2200"
+   ]
+  ]
+ },
+ "verif": {
+  "header": [
+   "Check",
+   "Result"
+  ],
+  "rows": [
+   [
+    "Optimisation",
+    "624 stress evaluations (208 per fit) \u00d7 3 windows = 1872 actual compiled-Numba column runs"
+   ],
+   [
+    "Per-step and cumulative water ledger",
+    "checked inside every native run (residual far below the native bound); no water added, drainage 0, unmet evaporation 0 in the selected main trajectories"
+   ],
+   [
+    "NumPy vs Numba, midpoint public-state export/reconstruction",
+    "selected solutions and E = 1 controls: PASS (identical trajectories after reconstruction)"
+   ],
+   [
+    "CUDA",
+    "27 configurations (3 fits \u00d7 selected + 2 controls \u00d7 3 windows) on NVIDIA GeForce GTX 1080 Ti, CuPy 14.2.0; selected CUDA trajectories match the saved CPU ones; largest NumPy/Numba/CUDA difference over all compared fields 1.4e-20"
+   ],
+   [
+    "Independent exact scoring (Root)",
+    "Fraction-arithmetic recomputation of all 53 observations for all 3 fits: PASS; selected stress is the lowest evaluated in every fit"
+   ],
+   [
+    "Unit tests",
+    "83 tests pass; the 180 production SYRUP modules and 412 MAPLE files are unchanged; the 1742 pre-existing tracked project files were also verified untouched"
+   ],
+   [
+    "Scope",
+    "single-column selected-case equivalence; not GPU performance, not scaling, not production restart/lifecycle checkpoint qualification"
+   ]
+  ]
+ },
+ "sources": {
+  "header": [
+   "Item",
+   "Kind",
+   "SHA-256"
+  ],
+  "rows": [
+   [
+    "maple_syrup package",
+    "180 files",
+    "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0"
+   ],
+   [
+    "maple package",
+    "412 files",
+    "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+   ],
+   [
+    "actual_cpu/summary.json",
+    "data file",
+    "436dce71a9390d1af3bfe83fca1fe027db8529d4d3de5da182dbc1985f815fd3"
+   ],
+   [
+    "actual_cpu/fits/main.json",
+    "data file",
+    "f81543eedc3cc58fd7508612021fc0dbfd61baccd5a29d625cf2f7edf03a216b"
+   ],
+   [
+    "actual_cpu/fits/secondary.json",
+    "data file",
+    "b47922fd914427eee1a7fc2e49e299e6c13ad244c550d89d87c78d047075268a"
+   ],
+   [
+    "actual_cpu/fits/sensitivity_d0.json",
+    "data file",
+    "8f170fe89afcf41888be1a9e2faee0f7a5eea4dc5c59651ebb098434fec0dc5c"
+   ],
+   [
+    "actual_cuda/completion.json",
+    "data file",
+    "2d4b3301102d7d6682314620ca374d53bbbe3761a8c3ab05dbf1558ae5e41f7f"
+   ],
+   [
+    "root_independent_scores.json",
+    "data file",
+    "7d98b2431ff34c0d550d7d52a9e29272d61680bd96083095fa0fa2aa6d83ef94"
+   ],
+   [
+    "root_run_acceptance.json",
+    "data file",
+    "00badbca47da4c966b056ecedb09102036a04dc16ba8b00e23553eb7d8f4ae29"
+   ],
+   [
+    "actual_cpu/prepared_inputs/JORN4_A.json",
+    "prepared inputs",
+    "94c5c787f60a40cb66bae6828ab91b27593b95637639e5c5d6ccd6a45e17f772"
+   ],
+   [
+    "actual_cpu/prepared_inputs/JORN4_B.json",
+    "prepared inputs",
+    "2ca19b232d4fcc30e52c8ab9a2fea5f9b59400c30a45502a47246c84300ccb72"
+   ],
+   [
+    "actual_cpu/prepared_inputs/MOAB2_C.json",
+    "prepared inputs",
+    "1b4ac2657d34f19b200b0f4412fa0eeb31cf5f1060d5af102afd591c7c46ef66"
+   ],
+   [
+    "benchmarks/subsurface_stress_calibration/__init__.py",
+    "frozen helper",
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   ],
+   [
+    "benchmarks/subsurface_stress_calibration/calibrate.py",
+    "frozen helper",
+    "e40eb32beb89f70eefa36514f1a4eaf6574a4aa088a09157b1a76a7b56c8c0ca"
+   ],
+   [
+    "benchmarks/subsurface_stress_calibration/scoring.py",
+    "frozen helper",
+    "33c8c061d2ef02714260a7dd108474f457d9ec107cc4c7ed008d853a61462ea2"
+   ],
+   [
+    "benchmarks/subsurface_stress_calibration/search.py",
+    "frozen helper",
+    "d338da6369bc2ec0d8d1e036ab52c77f6eb83cf52a3261f453cf5c1c76f56b8a"
+   ],
+   [
+    "tests/subsurface_stress_calibration/test_stress_calibration.py",
+    "frozen helper",
+    "63b7c84e84b2852d3956543c6b94356bc02c624dea1a43452931aeefcd8bd7de"
+   ]
+  ]
+ }
+}
