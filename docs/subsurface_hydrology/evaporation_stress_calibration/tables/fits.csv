@@ -1,0 +1,4 @@
+Fit,Interface,d,Selected stress θ* (m³ m⁻³),(vol. %),Pooled RMSE (pt),Zero-change RMSE (pt),SSE reduction vs zero change,n,Evaluations (grid + refine)
+Main,harmonic,0.05,0.21717,21.72,0.912,0.886,-5.9 %,53,208 (199 + 9)
+Secondary,geometric,0.05,0.21718,21.72,0.912,0.886,-6.0 %,53,208 (199 + 9)
+Diagnostic,harmonic,0,0.20644,20.64,0.389,0.886,+80.7 %,53,208 (199 + 9)

@@ -1,0 +1,12 @@
+{
+  "fits": [
+    "main",
+    "secondary",
+    "sensitivity_d0"
+  ],
+  "cuda_configurations": 27,
+  "actual_selected_cuda_compared_to_saved_cpu": true,
+  "gpu_name": "NVIDIA GeForce GTX 1080 Ti",
+  "cupy": "14.2.0",
+  "scope": "Single-column selected-case equivalence; no GPU fitting or large-domain scaling claim"
+}

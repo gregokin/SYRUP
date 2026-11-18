@@ -1,0 +1,57 @@
+{
+ "protocol": "syrup.evaporation_stress_calibration/1",
+ "fits": {
+  "main": {
+   "method": "harmonic",
+   "d": 0.05,
+   "E": 1.0
+  },
+  "secondary": {
+   "method": "geometric",
+   "d": 0.05,
+   "E": 1.0
+  },
+  "sensitivity_d0": {
+   "method": "harmonic",
+   "d": 0.0,
+   "E": 1.0
+  }
+ },
+ "stress_range": [
+  0.010001,
+  1.0
+ ],
+ "n_grid": 199,
+ "baseline_stress": 0.18,
+ "expected_sources": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412
+  }
+ },
+ "receipt_sha256": "9ad303384f26116f37088aa6609d3519c7396d22d46d8d0ac42919358165675f",
+ "config_sha256": {
+  "main_baseline_0.18_JORN4_A.json": "5a55baf787ef998d4a2db2590c800522e054e8a251e2fbe08ecc608cef878d93",
+  "main_baseline_0.18_JORN4_B.json": "2c672d88e73adecc206ad8c307127097e0bf1294446265979a9fceb1542aefe2",
+  "main_baseline_0.18_MOAB2_C.json": "78cb076933fc19391c60889b4ca5ad3c83feaf19568289578b37231058dc006b",
+  "main_site_theta1500_JORN4_A.json": "37b408f910c5c20c5de262ba0e14a48574ed41237bf44a61aa5b29ed1d8d1596",
+  "main_site_theta1500_JORN4_B.json": "670e69edb0f5150d58a014c20801ab483412373e0c031939c988808db22656b7",
+  "main_site_theta1500_MOAB2_C.json": "dc96e752045ac8ec7e7cd6683df74df6994a23f063ddf8a6b4e345c62676f1e1",
+  "secondary_baseline_0.18_JORN4_A.json": "5c1a2299303a423d739eed855e0df5812cc7e141e7548df0e2616a3b1b9463ed",
+  "secondary_baseline_0.18_JORN4_B.json": "d138b1bb498e2d29725226e6af4889ea2c6efcfab2f01e305b046e81dc9ea435",
+  "secondary_baseline_0.18_MOAB2_C.json": "75878d3670448b693d5daab7bceec7926ecf43bf47b1771e82fdaa1350064f08",
+  "secondary_site_theta1500_JORN4_A.json": "af7e7af6147cfcac718b7002ed6406ba1bf973012e73e0339021272b8a419c81",
+  "secondary_site_theta1500_JORN4_B.json": "3fd827a2c39f48d71257e3508beb63b81505135fe6a9a984521af08570ca86c0",
+  "secondary_site_theta1500_MOAB2_C.json": "91a36776482817d2387143659beae3e2289a53cd9dd31e950226ffb36ca4ae99",
+  "sensitivity_d0_baseline_0.18_JORN4_A.json": "57f1e0857f4ee3d867d2f6b6aa1cd5ab0f9fb72683b1fe9fb5275d1dd979109e",
+  "sensitivity_d0_baseline_0.18_JORN4_B.json": "4ff881387bf618e4d6f1e4aea865618e2c5ce0b184267ec4849ddb6857ac1031",
+  "sensitivity_d0_baseline_0.18_MOAB2_C.json": "f05efb28f0e0bd72e7b4b314475b8c094462047a56d5f0ceb44c4441899bac63",
+  "sensitivity_d0_site_theta1500_JORN4_A.json": "f8692b6e944d77c4da54096a51ac81e1a35c6b46b83fdbc5b326efaee8b11deb",
+  "sensitivity_d0_site_theta1500_JORN4_B.json": "ccb195b0261b14a604447f4c7d3a035594e1b29d5745677c18956206730ceb55",
+  "sensitivity_d0_site_theta1500_MOAB2_C.json": "a55fb1624fd92cbd9412f76de545a718fce7981c7d5daa1767237f8e3b595e91"
+ }
+}

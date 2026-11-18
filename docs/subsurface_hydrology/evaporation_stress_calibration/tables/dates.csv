@@ -1,0 +1,4 @@
+Window,Site / plot,t0 (UTC),Last modelled end (UTC),Daily updates,Valid targets,Missing targets,Sensor depths (cm)
+JORN4_A,JORN plot 4,2025-04-08T22:00:00Z,2025-04-18T22:00:00Z,10,28,2,5.8 / 15.8 / 25.8
+JORN4_B,JORN plot 4,2025-04-26T06:30:00Z,2025-04-30T06:30:00Z,4,11,1,5.8 / 15.8 / 25.8
+MOAB2_C,MOAB plot 2,2025-05-22T03:30:00Z,2025-05-28T03:30:00Z,6,14,4,5.5 / 15.5 / 25.5

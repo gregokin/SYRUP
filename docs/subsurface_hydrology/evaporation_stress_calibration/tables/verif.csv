@@ -1,0 +1,8 @@
+Check,Result
+Optimisation,624 stress evaluations (208 per fit) × 3 windows = 1872 actual compiled-Numba column runs
+Per-step and cumulative water ledger,"checked inside every native run (residual far below the native bound); no water added, drainage 0, unmet evaporation 0 in the selected main trajectories"
+"NumPy vs Numba, midpoint public-state export/reconstruction",selected solutions and E = 1 controls: PASS (identical trajectories after reconstruction)
+CUDA,"27 configurations (3 fits × selected + 2 controls × 3 windows) on NVIDIA GeForce GTX 1080 Ti, CuPy 14.2.0; selected CUDA trajectories match the saved CPU ones; largest NumPy/Numba/CUDA difference over all compared fields 1.4e-20"
+Independent exact scoring (Root),Fraction-arithmetic recomputation of all 53 observations for all 3 fits: PASS; selected stress is the lowest evaluated in every fit
+Unit tests,83 tests pass; the 180 production SYRUP modules and 412 MAPLE files are unchanged; the 1742 pre-existing tracked project files were also verified untouched
+Scope,"single-column selected-case equivalence; not GPU performance, not scaling, not production restart/lifecycle checkpoint qualification"

@@ -1,0 +1,7 @@
+{
+  "benchmarks/subsurface_stress_calibration/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "benchmarks/subsurface_stress_calibration/calibrate.py": "e40eb32beb89f70eefa36514f1a4eaf6574a4aa088a09157b1a76a7b56c8c0ca",
+  "benchmarks/subsurface_stress_calibration/scoring.py": "33c8c061d2ef02714260a7dd108474f457d9ec107cc4c7ed008d853a61462ea2",
+  "benchmarks/subsurface_stress_calibration/search.py": "d338da6369bc2ec0d8d1e036ab52c77f6eb83cf52a3261f453cf5c1c76f56b8a",
+  "tests/subsurface_stress_calibration/test_stress_calibration.py": "63b7c84e84b2852d3956543c6b94356bc02c624dea1a43452931aeefcd8bd7de"
+}

@@ -1,0 +1,47 @@
+{
+  "utc": "2026-11-18T02:04:37.821165+00:00",
+  "status": "accepted",
+  "scope": "Native-column pooled E1 calibration diagnostic and report only; no production physics/default changes",
+  "baseline": "2fcc0b80624f857e17cb9b92d951be932e163857",
+  "claude_session": "a26412f6-dd55-494a-bbcf-c71037ffd0dc",
+  "old_tracked_files_unchanged": 1742,
+  "live_checkout_dirty_signature_unchanged": true,
+  "frozen_helper_files": 5,
+  "frozen_report_data_files": 36,
+  "tests": 83,
+  "ruff": "PASS under candidate pyproject",
+  "cpu_fits": 3,
+  "profile_native_numba_evaluations": 624,
+  "native_window_runs_for_profile": 1872,
+  "cuda_configurations": 27,
+  "independent_fraction_scores": "PASS;53observationsall3fits;initialoffsetscoreonly;allselectedlowest-evaluated",
+  "conservation": "PASS every actual native run perstep+cumulative using existing native bounds",
+  "restart": "Public native column-state midpoint reconstruction only, no production checkpoint claim",
+  "docx_sha256": "32cac33e1353489f4d843c477e0d0ed32257b9b26a6f2bdde6a123044fced95b",
+  "docx_xml_zip": "PASS;10tables;5embeddedPNGsbyteidenticaltofigures",
+  "root_png_visual_review": "Figures1/2/3/4 checked;rawfigure4overlap corrected and inspected; no Office pagination preview",
+  "scientific_limits": [
+    "Allthreewindowspooledforcalibration;noheldoutvalidation",
+    "EmpiricalconditionalstressatE1;Eandstressnotseparatelyidentifiableinthesedryquadraticregimewindows",
+    "d0betterhereisdiagnostic,nochangeofdefault",
+    "SinglecolumnCUDAequivalence,notGPUscaling"
+  ],
+  "selected_stress_d005": 0.21717029762566153,
+  "selected_stress_d0": 0.20644317480382438,
+  "format_correction": {
+    "change": "CSV output LF line endings; builder explicit lineterminator; CSV parsed values identical; DOCX and all frozen data unchanged",
+    "csv_files": [
+      "bands.csv",
+      "controls.csv",
+      "dates.csv",
+      "depth.csv",
+      "detail.csv",
+      "fits.csv",
+      "ident.csv",
+      "sources.csv",
+      "verif.csv",
+      "windows.csv"
+    ],
+    "scope": "Root routine documentation-format correction after initial localcommit, before publication"
+  }
+}

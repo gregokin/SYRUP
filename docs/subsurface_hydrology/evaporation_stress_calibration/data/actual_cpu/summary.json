@@ -1,0 +1,110 @@
+{
+ "protocol": "syrup.evaporation_stress_calibration/1",
+ "label": "empirical evaporation-stress threshold (volumetric fraction) calibrated to pooled observed changes; NOT the measured theta1500 / wilting point; all three windows are used in the fit (mechanism diagnostic, no held-out claim)",
+ "stress_range": [
+  0.010001,
+  1.0
+ ],
+ "fits": {
+  "main": {
+   "method": "harmonic",
+   "d": 0.05,
+   "selected_stress": 0.21717029762566153,
+   "pooled_rmse": 0.009120181829084138,
+   "zero_change_rmse": 0.008860437827250189,
+   "n": 53,
+   "n_local_minima": 1,
+   "boundary_solution": false,
+   "multiple_minima": false,
+   "n_evaluations": 208
+  },
+  "secondary": {
+   "method": "geometric",
+   "d": 0.05,
+   "selected_stress": 0.2171797728919738,
+   "pooled_rmse": 0.009120727861051134,
+   "zero_change_rmse": 0.008860437827250189,
+   "n": 53,
+   "n_local_minima": 1,
+   "boundary_solution": false,
+   "multiple_minima": false,
+   "n_evaluations": 208
+  },
+  "sensitivity_d0": {
+   "method": "harmonic",
+   "d": 0.0,
+   "selected_stress": 0.20644317480382438,
+   "pooled_rmse": 0.0038921035304433273,
+   "zero_change_rmse": 0.008860437827250189,
+   "n": 53,
+   "n_local_minima": 1,
+   "boundary_solution": false,
+   "multiple_minima": false,
+   "n_evaluations": 208
+  }
+ },
+ "sources_before": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/evaporation_stress_calibration_20261117/analysis_candidate/src/maple_syrup/__init__.py"
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py"
+  }
+ },
+ "raw_before": {
+  "JORN4_A": {
+   "raw_files_checked": 21,
+   "air_files_checked": 12
+  },
+  "JORN4_B": {
+   "raw_files_checked": 21,
+   "air_files_checked": 12
+  },
+  "MOAB2_C": {
+   "raw_files_checked": 21,
+   "air_files_checked": 12
+  }
+ },
+ "sources_after": {
+  "maple_syrup": {
+   "package_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+   "files": 180,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/evaporation_stress_calibration_20261117/analysis_candidate/src/maple_syrup/__init__.py"
+  },
+  "maple": {
+   "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+   "files": 412,
+   "file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src/maple/__init__.py"
+  }
+ },
+ "raw_after": {
+  "JORN4_A": {
+   "raw_files_checked": 21,
+   "air_files_checked": 12
+  },
+  "JORN4_B": {
+   "raw_files_checked": 21,
+   "air_files_checked": 12
+  },
+  "MOAB2_C": {
+   "raw_files_checked": 21,
+   "air_files_checked": 12
+  }
+ },
+ "file_sha256": {
+  "prepared_inputs": {
+   "JORN4_A": "94c5c787f60a40cb66bae6828ab91b27593b95637639e5c5d6ccd6a45e17f772",
+   "JORN4_B": "2ca19b232d4fcc30e52c8ab9a2fea5f9b59400c30a45502a47246c84300ccb72",
+   "MOAB2_C": "1b4ac2657d34f19b200b0f4412fa0eeb31cf5f1060d5af102afd591c7c46ef66"
+  },
+  "fits": {
+   "main": "f81543eedc3cc58fd7508612021fc0dbfd61baccd5a29d625cf2f7edf03a216b",
+   "secondary": "b47922fd914427eee1a7fc2e49e299e6c13ad244c550d89d87c78d047075268a",
+   "sensitivity_d0": "8f170fe89afcf41888be1a9e2faee0f7a5eea4dc5c59651ebb098434fec0dc5c"
+  }
+ }
+}

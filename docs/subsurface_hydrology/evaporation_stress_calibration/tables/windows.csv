@@ -1,0 +1,6 @@
+Window / site,n,Main RMSE (pt),Main bias (pt),d 0 RMSE (pt),d 0 bias (pt),Zero-change RMSE (pt)
+"JORN plot 4, window A",28,1.024,-0.593,0.411,-0.335,0.466
+"JORN plot 4, window B",11,0.826,+0.107,0.208,+0.072,0.270
+"MOAB plot 2, window C",14,0.718,+0.373,0.449,+0.292,1.575
+JORN (all windows),39,0.972,-0.395,0.365,-0.220,0.420
+MOAB (all windows),14,0.718,+0.373,0.449,+0.292,1.575
