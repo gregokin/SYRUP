@@ -27,5 +27,21 @@
     "SinglecolumnCUDAequivalence,notGPUscaling"
   ],
   "selected_stress_d005": 0.21717029762566153,
-  "selected_stress_d0": 0.20644317480382438
+  "selected_stress_d0": 0.20644317480382438,
+  "format_correction": {
+    "change": "CSV output LF line endings; builder explicit lineterminator; CSV parsed values identical; DOCX and all frozen data unchanged",
+    "csv_files": [
+      "bands.csv",
+      "controls.csv",
+      "dates.csv",
+      "depth.csv",
+      "detail.csv",
+      "fits.csv",
+      "ident.csv",
+      "sources.csv",
+      "verif.csv",
+      "windows.csv"
+    ],
+    "scope": "Root routine documentation-format correction after initial localcommit, before publication"
+  }
 }

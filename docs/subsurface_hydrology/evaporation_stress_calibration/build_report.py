@@ -300,7 +300,7 @@ def build_tables(R, D):
 def write_tables(T):
     for k, (hd, rows) in T.items():
         with open(TAB / f"{k}.csv", "w", newline="") as f:
-            w = csv.writer(f)
+            w = csv.writer(f, lineterminator="\n")
             w.writerow(hd)
             w.writerows(rows)
     (TAB / "report_tables.json").write_text(json.dumps({k: {"header": h, "rows": r} for k, (h, r) in T.items()}, indent=1, default=str) + "\n")
