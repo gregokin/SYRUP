@@ -1,0 +1,9 @@
+{
+  "driver_call_wall_s": 1.8513654689886607,
+  "scope": "includes driver import/case validation/preparation/disposable kernel warmup/integration/output; excludes outer interpreter/bootstrap/source checks",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "peak_rss_kib": 232856,
+  "model_scope": "one1m2three-layercolumn, not domain-scaling/GPU benchmark",
+  "source_helper_unchanged": true
+}

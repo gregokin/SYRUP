@@ -1,0 +1,32 @@
+{
+  "config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/actual_numba_config.json",
+  "config_sha256": "c019eca94042769103026f7e709dc325983ea63f5cd065ed18fb22655c1c6a05",
+  "expected_sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/analysis_candidate/src",
+      "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+      "files": 180
+    }
+  ],
+  "command": [
+    "/home/okin/MAPLE/.venv/bin/python",
+    "-B",
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/root_release_verified_bootstrap.py",
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/actual_numba_config.json"
+  ],
+  "utc": "2026-11-19T03:07:38.176227+00:00",
+  "status": "closed",
+  "pid": 3,
+  "start_ticks": "11845341",
+  "ppid": 2,
+  "returncode": 0,
+  "seconds": 7.446037212997908,
+  "ended_utc": "2026-11-19T03:07:45.619147+00:00"
+}

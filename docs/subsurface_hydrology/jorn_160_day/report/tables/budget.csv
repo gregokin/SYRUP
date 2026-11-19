@@ -1,0 +1,8 @@
+Term,mm of water,Note
+Initial storage,22.9424,integral of the three sensor values
++ Rain,25.088,all entered the soil
+- Evaporation,34.0455,actual soil evaporation
+- Runoff,0.0,none
+- Bottom drainage,0.0,none
+= Final storage,13.9849,initial + rain - evap. = 13.985 mm
+Closure residual,-8.67e-18 m³,native bound 2.710e-13 m³

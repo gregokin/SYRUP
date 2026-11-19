@@ -1,0 +1,8 @@
+Check,Result
+NumPy vs Numba,every trajectory/flux array identical (max difference 0)
+Storm step 1800 s vs 900 s,max water-content difference 0.000619 percentage points
+Independent 90-digit calculation,"max water error 5.77e-18 m (Numba/NumPy), 9.30e-18 m (900 s); under 0.05 of the native one-step bound"
+Restart at day 80 (separate process),"rows, ledgers, clocks, scores identical (driver-level, not a production checkpoint qualification)"
+Closure,-8.67e-18 m³ vs bound 2.710e-13 m³
+Tests,"77 focused tests passed, Ruff clean (Root); no GPU run"
+Ponding / onset / runoff / drainage counts,all zero (Root's a-priori bound: max water content 0.3371 < lowest field capacity 0.3951)

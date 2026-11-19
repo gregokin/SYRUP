@@ -1,0 +1,18 @@
+{
+ "source_checks_and_input_preparation_s": 1.1157325509993825,
+ "operator_prepare_s": 4.55532821000088,
+ "jit_warmup_control_s": 0.0005896220100112259,
+ "integration_s": 0.049636455994914286,
+ "n_days_integrated_this_process": 160,
+ "n_matrix_steps_this_process": 110,
+ "n_soil_steps_this_process": 270,
+ "n_days_cumulative": 160,
+ "n_matrix_steps_cumulative": 110,
+ "n_soil_steps_cumulative": 270,
+ "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+ "backend": "numba",
+ "python": "3.12.3",
+ "numba": "0.67.0",
+ "clock": "time.perf_counter raw seconds",
+ "output_write_s": 0.046914040998672135
+}
