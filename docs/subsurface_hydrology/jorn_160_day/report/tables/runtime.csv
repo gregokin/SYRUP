@@ -1,0 +1,4 @@
+Run,Integration (s),Operator prep + JIT (s),Warm-up control (s),Source checks + input prep (s),Output write (s),Driver call wall (s),Full fresh command (s)
+"Numba, 1800 s storm step",0.0398,4.891,0.0006,1.067,0.049,6.286,7.446
+"NumPy, 1800 s storm step",0.1252,0.142,0.0019,1.117,0.041,1.851,2.801
+"Numba, 900 s storm step",0.0496,4.555,0.0006,1.116,0.047,6.008,7.175

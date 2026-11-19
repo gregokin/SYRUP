@@ -1,0 +1,66 @@
+{
+ "docx": {
+  "file": "SYRUP_JORN_160day_rainfall_comparison_20261119.docx",
+  "zip_ok": true,
+  "media": 4,
+  "tables": 7,
+  "header_rows_repeat": 7,
+  "paragraphs": 285,
+  "words": 2838,
+  "bytes": 511782,
+  "sha256": "c590ec2753e7b4304696f193720b97a539604238849f31521457c5d1be24bd6b"
+ },
+ "figures": {
+  "fig1_raw_160day.png": "943363168405e2dc4b10f195c730df656fd47589f533c667ee70b4d6c2df7cb1",
+  "fig2_aligned_160day.png": "62c56070662f33df3caecc30427e8fe200c18d5aa7fb701c629112f2626651d2",
+  "fig3_rain_pulse_zoom.png": "17e80c8aa9e0c5cdf96d72bc28cef61cb6ca72ef00d7e8070858d156a3166a7f",
+  "fig4_water_budget.png": "cb6e6432c506ab459efc3795538241f900546d0ff2a9aaa653f63797b10a2397"
+ },
+ "tables": {
+  "budget.csv": "ff24dac8208c82c28f59b0a2578cad88dfc050b7abece2e79e375c59769863dc",
+  "checks.csv": "b1153c2d92d009d5cab9ea3c99433ba19d6ef74dd71730a58740fb740a72406e",
+  "daily_results.csv": "d309577ac7054507a4d073d0073087bdc791982d44e7804898a7df4a161ee0bb",
+  "events.csv": "697151c1524631fc89227f86a8f33743ea62886d2d2be7f598d55d99d6cdf606",
+  "props.csv": "67d5a93d2d9155b4543618469f47a3749a80a803e1386ac12fbad1a861c9b4ca",
+  "provenance_inputs.csv": "a254df759a7d09355bd4d0285ddca140fbe7747fe5ad16aed159a61f650db18e",
+  "provenance_seal.csv": "0ca30251a41fe1c9a787b10fae27874838b3dc017dc71de026d07d9df9a5a5e1",
+  "runtime.csv": "1107c4a8a53d56b416878c292bc6a95cf8a9f6782d1292d960293d82b3dd58f5",
+  "scores.csv": "d1ae628bc9c62dee2943b0e454da5cae64fb0322b26126595af01cec8f4bfd01",
+  "setup.csv": "0156e861c6b8b9aaf68a28ac66507a6418ec24ec9e1efa52de83249df27f5470"
+ },
+ "builder": "9b4d3b914e65bf43c3fbbafcdd24267338802d8a8386905c6358e21367a29eb7",
+ "report_md": "57673e58a05e3085284b51f56b6722e3e2572f9db3336f8d2b224c774aaf7d9f",
+ "data": {
+  "actual_numba__result.json": "d5b0ed2755fa4dd8f49497864edfa554c89bceec1f0656759c7686a601e884b9",
+  "actual_numba__timing.json": "379866f1b9eb91aba50195dc8481e750cce4892228dd2e44dc30d4d85938f8e8",
+  "actual_numba_dt900__timing.json": "fbb445915dbbcb0d3e11c4582161994cab4d6d44255dce56bda8c5c821d930c6",
+  "actual_numba_dt900_runs__result.json": "108d8f9bdceb91b7171760f958d525b293f7168f4fa1b86d6b526180b739a7ed",
+  "actual_numba_runs__result.json": "f7f26f6af853db89efb54521db97ac21bba0c3dd68b0130c82e41d81a972d8a5",
+  "actual_numpy__timing.json": "cbd0871e5f856d01796e89483d4812200efe9484b14f1607dffb4dcb278cbab7",
+  "actual_numpy_runs__result.json": "d29a234140854fd3b59de5e73d1826d5f14a07aa969aaa93e93737c831de7162",
+  "case_numba.json": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+  "frozen_helper_manifest.json": "df395a94234067489ce6a4e8d042b2fc87faabf6356313e56694a165319becf0",
+  "root_decimal_verification.json": "dd284b5b5868f02b4e6fb4629778db84475916f2176d0108a25543653814b627",
+  "root_independent_inputs.json": "9ee9477c4fb1d23fae9d117efb00b603725468a6e53dc6aca7fd14ff9be2572d",
+  "root_inputs_manifest.json": "bdc09b51d6da471ed17fbaeabf7c12489e8fab31728bc1beec1b1cd470533284",
+  "root_physical_bounds.json": "4f57b8a9db8019250fe892b84da7256dfe16e7ecf048a1b627bb0cf9c5a65b7b",
+  "root_restart_verification.json": "d1427e3ef187528be9387d165be008a19bc7c5e10fed0218a126b6bca3a77b44",
+  "root_result_audit.json": "691b084584a4457559c32d898de78aa299c4319594d5d1749c5f8b80e5c1b09c",
+  "runtime_numba.json": "a5e3554fdf8ead91acdd6a3ba2d16bdeb758b0e91ec327c4f0436892d31a3330",
+  "runtime_numba_dt900.json": "7472445da20beb254b0b06edc255fc81ed5cf6d649e8bc79995d3e9c3099062a",
+  "runtime_numpy.json": "460f3678ba21dfd8375d24d0108c5761a8c203b2149cc6fdcbc85349ee23e0ed"
+ },
+ "sealed_inputs_checked": {
+  "actual_numba/result.json": "d5b0ed2755fa4dd8f49497864edfa554c89bceec1f0656759c7686a601e884b9",
+  "actual_numba/timing.json": "379866f1b9eb91aba50195dc8481e750cce4892228dd2e44dc30d4d85938f8e8",
+  "actual_numpy/timing.json": "cbd0871e5f856d01796e89483d4812200efe9484b14f1607dffb4dcb278cbab7",
+  "actual_numba_dt900/timing.json": "fbb445915dbbcb0d3e11c4582161994cab4d6d44255dce56bda8c5c821d930c6",
+  "root_result_audit.json": "691b084584a4457559c32d898de78aa299c4319594d5d1749c5f8b80e5c1b09c",
+  "root_decimal_verification.json": "dd284b5b5868f02b4e6fb4629778db84475916f2176d0108a25543653814b627",
+  "root_restart_verification.json": "d1427e3ef187528be9387d165be008a19bc7c5e10fed0218a126b6bca3a77b44",
+  "root_independent_inputs.json": "9ee9477c4fb1d23fae9d117efb00b603725468a6e53dc6aca7fd14ff9be2572d",
+  "root_physical_bounds.json": "4f57b8a9db8019250fe892b84da7256dfe16e7ecf048a1b627bb0cf9c5a65b7b",
+  "frozen_helper_manifest.json": "df395a94234067489ce6a4e8d042b2fc87faabf6356313e56694a165319becf0"
+ },
+ "note": "publication artifact = the DOCX named here only; the earlier DRAFT file is under superseded/ and is not part of this manifest"
+}

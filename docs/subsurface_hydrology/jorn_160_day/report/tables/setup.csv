@@ -1,0 +1,9 @@
+Item,Value
+Period,"160 nominal days, 2024-01-18 to 2024-06-25 (UTC-7 days)"
+Column,"one 1 m² column, three 10 cm layers (0-30 cm), open bottom, gravity on"
+Observed rain,25.088 mm; 26 positive half-hours on 11 days; peak 10.034 mm/h
+Matrix intake limit K,38.2117 mm/h (peak rain is 26% of it)
+Diffusion d / evaporation stress,0.0010239461376024856 / 0.20170581117963332 (m³/m³); E factor 1; transpiration 0
+Initial water,"22.9424 mm (layers 7.295, 8.625, 7.022 mm)"
+Steps,"55 matrix-intake steps, 215 soil steps"
+Clock,nominal 160.000 days; physical 161.146 days (+27.5 h of storm time)

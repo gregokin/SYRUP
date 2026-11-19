@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "utc": "2026-11-19T03:28:23.718627+00:00",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/analysis_candidate/docs/subsurface_hydrology/jorn_160_day/report/SYRUP_JORN_160day_rainfall_comparison_20261119.docx",
+  "docx_sha256": "c590ec2753e7b4304696f193720b97a539604238849f31521457c5d1be24bd6b",
+  "zip_integrity": true,
+  "embedded_pngs_exact": 4,
+  "tables": 7,
+  "daily_rows_exact": 160,
+  "sealed_inputs_results_unchanged": true,
+  "frozen_analysis_files_unchanged": 10,
+  "root_visual_review": "All four PNGs viewed, legends/labels/initial alignment readable; final unchanged PNG identity checked.",
+  "rendering_limit": "No Office pagination renderer available; ZIP/XML/media and PNG visual review only."
+}

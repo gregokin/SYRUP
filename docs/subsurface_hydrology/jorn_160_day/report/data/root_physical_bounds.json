@@ -1,0 +1,10 @@
+{
+  "scope": "Conservative a-priori bound for actualcaseonly, verifiedagainstnativecaseafterexecution",
+  "theta_global_upper_bound": 0.33712814,
+  "minimum_field_capacity": 0.39508647981211864,
+  "minimum_saturation": 0.4586310940906557,
+  "unponded_conductivity_mm_h": 38.211706604685595,
+  "peak_rain_intensity_mm_h": 10.034,
+  "proof": "Maximum layer moisture cannot increase under bounded pair relaxation or evaporation; crediting ALL rainfall into any10cmlayer gives initialmaximumtheta+totalrain/.1. This is below everyFCandSAT. With standing_before=0 and everyr<=K, native matrixlawalwaysunponded. Expectno ponded/onset/roomrejection/percolation/bottomdrainage/runoff; nativeactualledgersmustverify, no forcedno-runoff assumption.",
+  "unmeasured_psi_g_inactive_if_confirmed": true
+}

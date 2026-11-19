@@ -1,0 +1,65 @@
+{
+  "status": "ACCEPTED_BOUNDED_ANALYSIS_AND_REPORT",
+  "utc": "2026-11-19T03:29:11.641459+00:00",
+  "baseline_main": "7c14c74ec0c7d7dcfd6a6e0f76d25f4c121b1d06",
+  "branch": "feature/jorn-160-day-run",
+  "science": {
+    "d": 0.0010239461376024856,
+    "E": 1.0,
+    "evaporation_stress": 0.20170581117963332,
+    "preferential": "off per user",
+    "refit": false,
+    "column_area_m2": 1,
+    "layers_m": [
+      0,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "nominal_days": 160,
+    "rain_mm": 25.088,
+    "transpiration": 0
+  },
+  "sources": {
+    "SYRUP": {
+      "files": 180,
+      "sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0"
+    },
+    "MAPLE": {
+      "files": 412,
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+    }
+  },
+  "checks": {
+    "focused_cpu_tests": 77,
+    "ruff": "PASS from isolated candidate (candidate configuration)",
+    "native_source_guards": "PASS before and after actual execution",
+    "NumPy_NumBa": "bit identical trajectories and fluxes",
+    "separate_process_day80_resume": "exact rows/ledgers/clocks/scores",
+    "dt900_max_theta_difference": 6.189604631876011e-06,
+    "independent_90_digit_max_water_error_m": 5.771532866960833e-18,
+    "actual_raw_input_and_exact_fraction_scores": "PASS",
+    "report_artifacts": "root_artifact_verification.json PASS; four PNGs independently viewed"
+  },
+  "timing_seconds": {
+    "primary_numba_integration": 0.03980823000892997,
+    "primary_numba_fresh_command": 7.446037212997908,
+    "primary_numba_operator_prepare_including_JIT": 4.891464004002046
+  },
+  "scope_limits": [
+    "one CPU column; no GPU or scalability test",
+    "driver-level continuation; no production checkpoint codec qualification",
+    "daily nominal clock plus additional storm duration; not exact hourly field chronology",
+    "surrogate hydraulic properties; fixed 2025 pooled JORN/MOAB fit; 2024 out-of-sample check",
+    "no plants/transpiration, bed/sediment or spatial routing",
+    "no ponded infiltration or gravity activation in actual rain record",
+    "no Office renderer; ZIP/XML/media/PNG checks only"
+  ],
+  "confirmed_report_corrections": "report_correction02_assignment.md and author response; all resolved; no physics changed",
+  "publication_scope": [
+    "benchmarks/subsurface_wet_validation",
+    "tests/subsurface_wet_validation",
+    "docs/subsurface_hydrology/jorn_160_day"
+  ],
+  "preserved": "Original dirty live c76 branch, all old sources/receipts, other tasks and jobs. Superseded draft archived under task superseded_report_draft, excluded from publication."
+}

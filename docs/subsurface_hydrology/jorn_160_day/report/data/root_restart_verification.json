@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "midpoint_day": 80,
+  "separate_process_continuation": true,
+  "matching": {
+    "rows": "exact",
+    "ledger": "exact",
+    "cumulative_closure": "exact",
+    "matrix_regime": "exact",
+    "scores": "exact",
+    "physical_end_t_s": "exact",
+    "added_rain_hours": "exact"
+  },
+  "scope": "driver-level public component reconstruction under exactfrozenhelper and sourceguards, not productioncheckpointqualification"
+}
