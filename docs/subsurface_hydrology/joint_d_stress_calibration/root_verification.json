@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-19T01:29:24.774024+00:00",
+  "status": "accepted",
+  "scope": "Joint E1 calibration analysis and DOCX, no production/default changes",
+  "baseline": "e11c423b47418a5ab21f19e86359d1dfacf67b04",
+  "claude_session": "2c31340c-7516-4707-b706-0581f7aaff42",
+  "tests": 121,
+  "ruff": "PASS under candidate configuration",
+  "previous_tracked_files_preserved": 1812,
+  "live_dirty_checkout_preserved": true,
+  "frozen_helper_and_data_preserved": true,
+  "independent_fraction_scores": "Bothfits53obsPASS;selectedlowesteverevaluated",
+  "all_independent_native_controls_match": 24,
+  "native_conservation": "Allperstep+cumulativePASS under nativebounds",
+  "backend": "SelectedNumPy/Numba fulltrajectories andpubliccolumnstatemidpointreconstructionPASS",
+  "new_cuda_cases": "NOT RUN, authorizedGPU0occupied; no otherdevicesused orfallback",
+  "docx_sha256": "aae6c2ac93811231b11362396a5414a6e4a989d43f48bf3307057361a2fb5c23",
+  "docx_static": "ZIP/XMLvalid;8tables;4PNGsembeddedbyteidentical",
+  "figures_visual_review": "Root viewedall4PNGs;legible,coincidentinitialmarkerscorrect",
+  "office_pagination_rendered": false,
+  "harmonic_d": 0.0010239461376024856,
+  "harmonic_stress": 0.20170581117963332,
+  "pooled_rmse_fraction": 0.0037971648344158615,
+  "sse_reduction_vs_d0": 0.04819028701806105,
+  "limitations": [
+    "Allwindowsusedforcalibration,nofieldvalidation",
+    "No statistical significance test or confidenceinterval",
+    "ConditionalE1stressandd depends onprescribedK andgeometry",
+    "CUDAnewparametersuntestedhardwareoccupied,no scalingclaim"
+  ],
+  "root_control_logging_correction": "Independentcontrolcomparisonassertionspassed, first outputcounterloggingused obsoleteattribute; correctedorchestrationandall24rerunmatched. Logsretained; no model/source change."
+}

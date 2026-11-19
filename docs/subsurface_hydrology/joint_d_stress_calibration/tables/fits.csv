@@ -1,0 +1,8 @@
+Fit,d,θ* (vol. %),Pooled RMSE (pt),SSE reduction vs zero-change (%),SSE relative to new harmonic fit,Note
+"NEW joint, harmonic",0.0010239,20.1706,0.3797,81.6,1.000,interior optimum
+"NEW joint, geometric",0.0010233,20.1708,0.3797,81.6,1.000,interior optimum
+"Previous fixed d = 0, harmonic",0,20.6443,0.3892,80.7,1.051,"diagnostic, not a default"
+"Previous fixed d = 0.05, harmonic",0.05,21.7170,0.9120,-5.9,5.769,published main fit
+"Previous fixed d = 0.05, geometric",0.05,21.7180,0.9121,-6.0,5.770,published secondary fit
+"Control: d = 0.05, θ* = 18 %",0.05,18.0000,0.9362,-11.6,6.079,no refit
+Zero-change baseline,–,–,0.8860,0.0,5.445,model change = 0

@@ -1,0 +1,11 @@
+Check,Result,Scope
+Helper tests and Ruff,121 tests PASS; Ruff clean,"new helper + old stress/site suites; synthetic and mocked objectives, no physics qualification"
+Source packages before/after,maple_syrup 180 files and maple 412 files unchanged,"accepted native sources, hashes in Table B1"
+Pinned raw and air inputs before/after,unchanged,same pinned inventory as the previous study
+Prepared inputs vs previous study,identical (both fits),"same initial integrated water, weather and PET"
+Independent exact-fraction scores,"PASS (53 observations, both fits)",Fraction recomputation by Root; selected is the lowest evaluated pair
+"Native NumPy vs Numba, full trajectory","maximum absolute difference over all water, flux and ledger arrays = 0 (3 windows × 2 fits)","N = 1 column, selected pairs"
+Midpoint public column-state export/reconstruction,identical continuation (NumPy and Numba),"driver-level check, NOT a production restart claim"
+Native water ledgers,per-step and cumulative residuals within bounds (all runs),no water added; no unmet evaporation
+Independent native control reproduction,PASS (24 controls),Root
+New selected CUDA cases,NOT RUN,"authorized GPU 0 was occupied (last 2645 MiB, 56 %); GPU 1 not authorized; no GPU child, no fallback"

@@ -1,0 +1,7 @@
+Subset,n,Zero-change RMSE (pt),d = 0.05 fit (pt),d = 0 fit (pt),Joint fit (pt),Joint vs d = 0,Signed bias joint / d = 0 (pt)
+"JORN plot 4, window A",28,0.466,1.024,0.411,0.419,slightly worse,-0.368 / -0.335
+"JORN plot 4, window B",11,0.270,0.826,0.208,0.166,better,0.064 / 0.072
+"MOAB plot 2, window C",14,1.575,0.718,0.449,0.417,better,0.268 / 0.292
+Pooled JORN (39 obs.),39,0.420,0.972,0.365,0.365,slightly worse,-0.246 / -0.220
+Pooled MOAB (14 obs.),14,1.575,0.718,0.449,0.417,better,0.268 / 0.292
+All windows,53,0.886,0.912,0.389,0.380,better,–
