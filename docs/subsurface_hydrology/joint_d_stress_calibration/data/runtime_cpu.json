@@ -1,0 +1,12 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "numpy": "2.5.3",
+  "numba": "0.67.0",
+  "scipy": "1.18.1",
+  "elapsed_including_startup_s": 37.59438642999157,
+  "peak_rss_kib": 349476,
+  "scope": "Single-column native calibration, not full-domain performance/scaling",
+  "sources_unchanged": true,
+  "helper_unchanged": true
+}

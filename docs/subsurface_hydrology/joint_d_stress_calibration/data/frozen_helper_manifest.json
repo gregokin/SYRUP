@@ -1,0 +1,6 @@
+{
+  "benchmarks/subsurface_joint_stress/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "benchmarks/subsurface_joint_stress/joint.py": "dfe357a536e4437cd5b410c9d00fa4c62892f2bf4ab0892761487c3a22dcab59",
+  "benchmarks/subsurface_joint_stress/search2d.py": "48b0a908742e73141824b47dc98638e62fc416219f64b02270eb73a76976c9f3",
+  "tests/subsurface_joint_stress/test_joint.py": "7c3a9aa8a3246ac376cc798634eec007d91b44e93de220eb410c29cff603123a"
+}

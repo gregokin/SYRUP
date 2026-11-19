@@ -1,0 +1,573 @@
+{
+ "setup": {
+  "header": [
+   "Window",
+   "t0 (UTC)",
+   "End (UTC)",
+   "Days",
+   "Sensor depths (cm)",
+   "Valid n (501/502/503)",
+   "Missing",
+   "Fixed offsets (pt)"
+  ],
+  "rows": [
+   [
+    "JORN plot 4, window A",
+    "2025-04-08 22:00",
+    "2025-04-18 22:00",
+    10,
+    "5.8 / 15.8 / 25.8",
+    "8 / 10 / 10",
+    "2 / 0 / 0",
+    "-0.20 / +0.50 / -0.22"
+   ],
+   [
+    "JORN plot 4, window B",
+    "2025-04-26 06:30",
+    "2025-04-30 06:30",
+    4,
+    "5.8 / 15.8 / 25.8",
+    "4 / 4 / 3",
+    "0 / 0 / 1",
+    "-0.31 / +0.65 / -0.11"
+   ],
+   [
+    "MOAB plot 2, window C",
+    "2025-05-22 03:30",
+    "2025-05-28 03:30",
+    6,
+    "5.5 / 15.5 / 25.5",
+    "6 / 4 / 4",
+    "0 / 2 / 2",
+    "+0.06 / -0.03 / -0.10"
+   ]
+  ]
+ },
+ "fits": {
+  "header": [
+   "Fit",
+   "d",
+   "\u03b8* (vol. %)",
+   "Pooled RMSE (pt)",
+   "SSE reduction vs zero-change (%)",
+   "SSE relative to new harmonic fit",
+   "Note"
+  ],
+  "rows": [
+   [
+    "NEW joint, harmonic",
+    "0.0010239",
+    "20.1706",
+    "0.3797",
+    "81.6",
+    "1.000",
+    "interior optimum"
+   ],
+   [
+    "NEW joint, geometric",
+    "0.0010233",
+    "20.1708",
+    "0.3797",
+    "81.6",
+    "1.000",
+    "interior optimum"
+   ],
+   [
+    "Previous fixed d = 0, harmonic",
+    "0",
+    "20.6443",
+    "0.3892",
+    "80.7",
+    "1.051",
+    "diagnostic, not a default"
+   ],
+   [
+    "Previous fixed d = 0.05, harmonic",
+    "0.05",
+    "21.7170",
+    "0.9120",
+    "-5.9",
+    "5.769",
+    "published main fit"
+   ],
+   [
+    "Previous fixed d = 0.05, geometric",
+    "0.05",
+    "21.7180",
+    "0.9121",
+    "-6.0",
+    "5.770",
+    "published secondary fit"
+   ],
+   [
+    "Control: d = 0.05, \u03b8* = 18 %",
+    "0.05",
+    "18.0000",
+    "0.9362",
+    "-11.6",
+    "6.079",
+    "no refit"
+   ],
+   [
+    "Zero-change baseline",
+    "\u2013",
+    "\u2013",
+    "0.8860",
+    "0.0",
+    "5.445",
+    "model change = 0"
+   ]
+  ]
+ },
+ "windows": {
+  "header": [
+   "Subset",
+   "n",
+   "Zero-change RMSE (pt)",
+   "d = 0.05 fit (pt)",
+   "d = 0 fit (pt)",
+   "Joint fit (pt)",
+   "Joint vs d = 0",
+   "Signed bias joint / d = 0 (pt)"
+  ],
+  "rows": [
+   [
+    "JORN plot 4, window A",
+    28,
+    "0.466",
+    "1.024",
+    "0.411",
+    "0.419",
+    "slightly worse",
+    "-0.368 / -0.335"
+   ],
+   [
+    "JORN plot 4, window B",
+    11,
+    "0.270",
+    "0.826",
+    "0.208",
+    "0.166",
+    "better",
+    "0.064 / 0.072"
+   ],
+   [
+    "MOAB plot 2, window C",
+    14,
+    "1.575",
+    "0.718",
+    "0.449",
+    "0.417",
+    "better",
+    "0.268 / 0.292"
+   ],
+   [
+    "Pooled JORN (39 obs.)",
+    39,
+    "0.420",
+    "0.972",
+    "0.365",
+    "0.365",
+    "slightly worse",
+    "-0.246 / -0.220"
+   ],
+   [
+    "Pooled MOAB (14 obs.)",
+    14,
+    "1.575",
+    "0.718",
+    "0.449",
+    "0.417",
+    "better",
+    "0.268 / 0.292"
+   ],
+   [
+    "All windows",
+    53,
+    "0.886",
+    "0.912",
+    "0.389",
+    "0.380",
+    "better",
+    "\u2013"
+   ]
+  ]
+ },
+ "depth": {
+  "header": [
+   "Sensor",
+   "n",
+   "Zero-change RMSE",
+   "d = 0.05 RMSE",
+   "d = 0 RMSE",
+   "Joint RMSE",
+   "d = 0.05 bias",
+   "d = 0 bias",
+   "Joint bias"
+  ],
+  "rows": [
+   [
+    "501 (JORN \u2248 5.8 cm, MOAB \u2248 5.5 cm)",
+    18,
+    "1.490",
+    "0.930",
+    "0.596",
+    "0.553",
+    "0.828",
+    "-0.115",
+    "-0.101"
+   ],
+   [
+    "502 (JORN \u2248 15.8 cm, MOAB \u2248 15.5 cm)",
+    18,
+    "0.230",
+    "1.114",
+    "0.230",
+    "0.293",
+    "-0.974",
+    "-0.033",
+    "-0.137"
+   ],
+   [
+    "503 (JORN \u2248 25.8 cm, MOAB \u2248 25.5 cm)",
+    17,
+    "0.200",
+    "0.603",
+    "0.200",
+    "0.187",
+    "-0.445",
+    "-0.108",
+    "-0.092"
+   ]
+  ]
+ },
+ "profile": {
+  "header": [
+   "d (grid value)",
+   "Best \u03b8* at this d (vol. %)",
+   "Profile RMSE (pt)",
+   "MSE above refined best (%, 4 decimals)",
+   "Distinct \u03b8* evaluated at this d"
+  ],
+  "rows": [
+   [
+    "0.0010239 (refined optimum, off-grid)",
+    "20.171",
+    "0.3797",
+    "0 (reference)",
+    "\u2013"
+   ],
+   [
+    "0",
+    "20.644",
+    "0.3892",
+    "+5.0630",
+    96
+   ],
+   [
+    "1.12202e-05",
+    "20.638",
+    "0.3890",
+    "+4.9437",
+    95
+   ],
+   [
+    "8.91251e-05",
+    "20.596",
+    "0.3875",
+    "+4.1598",
+    95
+   ],
+   [
+    "0.000354813",
+    "20.460",
+    "0.3836",
+    "+2.0427",
+    94
+   ],
+   [
+    "0.000707946",
+    "20.299",
+    "0.3805",
+    "+0.4309",
+    94
+   ],
+   [
+    "0.001",
+    "20.180",
+    "0.3797",
+    "+0.0024",
+    96
+   ],
+   [
+    "0.00141254",
+    "20.030",
+    "0.3808",
+    "+0.5850",
+    94
+   ],
+   [
+    "0.00199526",
+    "19.852",
+    "0.3860",
+    "+3.3525",
+    210
+   ],
+   [
+    "0.00398107",
+    "19.444",
+    "0.4222",
+    "+23.6300",
+    95
+   ],
+   [
+    "0.0112202",
+    "19.079",
+    "0.5764",
+    "+130.3920",
+    208
+   ],
+   [
+    "0.0316228",
+    "20.221",
+    "0.8117",
+    "+356.9260",
+    94
+   ],
+   [
+    "0.05",
+    "21.717",
+    "0.9120",
+    "+476.8835",
+    102
+   ],
+   [
+    "0.177828",
+    "27.157",
+    "1.0588",
+    "+677.5595",
+    95
+   ],
+   [
+    "1",
+    "28.488",
+    "1.0728",
+    "+698.1889",
+    94
+   ]
+  ]
+ },
+ "region": {
+  "header": [
+   "Band (MSE \u2264 (1+x) \u00d7 refined best)",
+   "Grid points inside",
+   "d range of those grid points",
+   "\u03b8* range of those grid points (vol. %)",
+   "Components"
+  ],
+  "rows": [
+   [
+    "0.01",
+    5,
+    "0.000707946 \u2013 0.001",
+    "19.56 \u2013 20.80",
+    1
+   ],
+   [
+    "0.05",
+    44,
+    "7.94328e-06 \u2013 0.00199526",
+    "19.56 \u2013 21.72",
+    1
+   ]
+  ]
+ },
+ "verif": {
+  "header": [
+   "Check",
+   "Result",
+   "Scope"
+  ],
+  "rows": [
+   [
+    "Helper tests and Ruff",
+    "121 tests PASS; Ruff clean",
+    "new helper + old stress/site suites; synthetic and mocked objectives, no physics qualification"
+   ],
+   [
+    "Source packages before/after",
+    "maple_syrup 180 files and maple 412 files unchanged",
+    "accepted native sources, hashes in Table B1"
+   ],
+   [
+    "Pinned raw and air inputs before/after",
+    "unchanged",
+    "same pinned inventory as the previous study"
+   ],
+   [
+    "Prepared inputs vs previous study",
+    "identical (both fits)",
+    "same initial integrated water, weather and PET"
+   ],
+   [
+    "Independent exact-fraction scores",
+    "PASS (53 observations, both fits)",
+    "Fraction recomputation by Root; selected is the lowest evaluated pair"
+   ],
+   [
+    "Native NumPy vs Numba, full trajectory",
+    "maximum absolute difference over all water, flux and ledger arrays = 0 (3 windows \u00d7 2 fits)",
+    "N = 1 column, selected pairs"
+   ],
+   [
+    "Midpoint public column-state export/reconstruction",
+    "identical continuation (NumPy and Numba)",
+    "driver-level check, NOT a production restart claim"
+   ],
+   [
+    "Native water ledgers",
+    "per-step and cumulative residuals within bounds (all runs)",
+    "no water added; no unmet evaporation"
+   ],
+   [
+    "Independent native control reproduction",
+    "PASS (24 controls)",
+    "Root"
+   ],
+   [
+    "New selected CUDA cases",
+    "NOT RUN",
+    "authorized GPU 0 was occupied (last 2645 MiB, 56 %); GPU 1 not authorized; no GPU child, no fallback"
+   ]
+  ]
+ },
+ "sources": {
+  "header": [
+   "Item",
+   "Kind",
+   "SHA-256"
+  ],
+  "rows": [
+   [
+    "maple_syrup package",
+    "180 files",
+    "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0"
+   ],
+   [
+    "maple package",
+    "412 files",
+    "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+   ],
+   [
+    "benchmarks/subsurface_joint_stress/__init__.py",
+    "frozen helper",
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   ],
+   [
+    "benchmarks/subsurface_joint_stress/joint.py",
+    "frozen helper",
+    "dfe357a536e4437cd5b410c9d00fa4c62892f2bf4ab0892761487c3a22dcab59"
+   ],
+   [
+    "benchmarks/subsurface_joint_stress/search2d.py",
+    "frozen helper",
+    "48b0a908742e73141824b47dc98638e62fc416219f64b02270eb73a76976c9f3"
+   ],
+   [
+    "tests/subsurface_joint_stress/test_joint.py",
+    "frozen helper",
+    "7c3a9aa8a3246ac376cc798634eec007d91b44e93de220eb410c29cff603123a"
+   ],
+   [
+    "data/actual_cpu/evaluations/geometric.json",
+    "frozen result",
+    "ba8559e4b560145a29b13a71c61eee634af355f3b2073c2b605913c95a7c7b62"
+   ],
+   [
+    "data/actual_cpu/evaluations/harmonic.json",
+    "frozen result",
+    "3caf91245e758f6a2e9d6535cc9f8958bb5196c22f6c04c026103556228c225d"
+   ],
+   [
+    "data/actual_cpu/fits/geometric.json",
+    "frozen result",
+    "c154eeafea3a3b1cc886f8e99f26140c5694f61ac1ff8605252cfdd77e306bf0"
+   ],
+   [
+    "data/actual_cpu/fits/harmonic.json",
+    "frozen result",
+    "6866828d19645d3ce8104f382e3a8d648e1b8aaa88a2d1f6831eac85a429ec23"
+   ],
+   [
+    "data/actual_cpu/prepared_inputs/JORN4_A.json",
+    "frozen result",
+    "94c5c787f60a40cb66bae6828ab91b27593b95637639e5c5d6ccd6a45e17f772"
+   ],
+   [
+    "data/actual_cpu/prepared_inputs/JORN4_B.json",
+    "frozen result",
+    "2ca19b232d4fcc30e52c8ab9a2fea5f9b59400c30a45502a47246c84300ccb72"
+   ],
+   [
+    "data/actual_cpu/prepared_inputs/MOAB2_C.json",
+    "frozen result",
+    "1b4ac2657d34f19b200b0f4412fa0eeb31cf5f1060d5af102afd591c7c46ef66"
+   ],
+   [
+    "data/actual_cpu/protocol.json",
+    "frozen result",
+    "2834ce2612f5826d94c461793ddd079b9e17598c1b002828a095ab715968cc02"
+   ],
+   [
+    "data/actual_cpu/summary.json",
+    "frozen result",
+    "3908b37d37d27717f48967a79649602a657f36165fb332ad9d598e17e6381678"
+   ],
+   [
+    "data/frozen_helper_manifest.json",
+    "frozen result",
+    "10bf692c850b27566d7de0059cd50d623521fa779ad31708e3b548c0f880810a"
+   ],
+   [
+    "data/root_independent_verification.json",
+    "frozen result",
+    "17636cc3a26e137c2d49018240ec19ad71a9026a812e811e0cf3c3b54840e8e8"
+   ],
+   [
+    "data/root_run_acceptance.json",
+    "frozen result",
+    "06e7472e4d3a1571f2c9dc3ba682550c8f138962978886d8b1ce7cbd7db27326"
+   ],
+   [
+    "data/runtime_cpu.json",
+    "frozen result",
+    "36bf517bbf9aa17af38b0408b652674aa718607b747b0ff73932d97c989ad1a6"
+   ],
+   [
+    "data/stage1_acceptance.json",
+    "frozen result",
+    "461e18e5816d4d334ef71202a4d17ba84792a1c22daddda5840c5c02d7d108b9"
+   ],
+   [
+    "previous artifact manifest (immutable e11)",
+    "read-only",
+    "4af7b08fc2f1234a2130dabdd82e00b9acc9e28e3ed7fbd4c85388dea3504e23"
+   ],
+   [
+    "previous fits/main.json",
+    "read-only",
+    "f81543eedc3cc58fd7508612021fc0dbfd61baccd5a29d625cf2f7edf03a216b"
+   ],
+   [
+    "previous fits/secondary.json",
+    "read-only",
+    "b47922fd914427eee1a7fc2e49e299e6c13ad244c550d89d87c78d047075268a"
+   ],
+   [
+    "previous fits/sensitivity_d0.json",
+    "read-only",
+    "8f170fe89afcf41888be1a9e2faee0f7a5eea4dc5c59651ebb098434fec0dc5c"
+   ]
+  ]
+ }
+}

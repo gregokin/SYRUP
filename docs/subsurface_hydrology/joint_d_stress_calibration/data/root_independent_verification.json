@@ -1,0 +1,52 @@
+{
+  "geometric": {
+    "d": 0.0010232774828851175,
+    "stress": 0.20170795278541567,
+    "n": 53,
+    "rmse": 0.003797236758949968,
+    "windows": {
+      "JORN4_A": {
+        "n": 28,
+        "rmse": 0.004186266852658639
+      },
+      "JORN4_B": {
+        "n": 11,
+        "rmse": 0.0016556014978123816
+      },
+      "MOAB2_C": {
+        "n": 14,
+        "rmse": 0.004169283487129787
+      }
+    },
+    "exact_sse_fraction": "764207371186605403130126505094951/1000000000000000000000000000000000000",
+    "selected_is_lowest_evaluated": true,
+    "prepared_inputs_identical_to_previous": true,
+    "n_trace_pairs": 5017,
+    "improvement_sse_vs_d0": 0.04815422900029953
+  },
+  "harmonic": {
+    "d": 0.0010239461376024856,
+    "stress": 0.20170581117963332,
+    "n": 53,
+    "rmse": 0.0037971648344158624,
+    "windows": {
+      "JORN4_A": {
+        "n": 28,
+        "rmse": 0.004186299895535439
+      },
+      "JORN4_B": {
+        "n": 11,
+        "rmse": 0.0016553296295945407
+      },
+      "MOAB2_C": {
+        "n": 14,
+        "rmse": 0.004169053956462725
+      }
+    },
+    "exact_sse_fraction": "764178421325395513299856814051857/1000000000000000000000000000000000000",
+    "selected_is_lowest_evaluated": true,
+    "prepared_inputs_identical_to_previous": true,
+    "n_trace_pairs": 5103,
+    "improvement_sse_vs_d0": 0.04819028701806105
+  }
+}

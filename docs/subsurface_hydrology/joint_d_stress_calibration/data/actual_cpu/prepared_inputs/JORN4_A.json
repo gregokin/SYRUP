@@ -1,0 +1,234 @@
+{
+ "day_end_utc": [
+  "2025-04-09T22:00:00Z",
+  "2025-04-10T22:00:00Z",
+  "2025-04-11T22:00:00Z",
+  "2025-04-12T22:00:00Z",
+  "2025-04-13T22:00:00Z",
+  "2025-04-14T22:00:00Z",
+  "2025-04-15T22:00:00Z",
+  "2025-04-16T22:00:00Z",
+  "2025-04-17T22:00:00Z",
+  "2025-04-18T22:00:00Z"
+ ],
+ "t0_utc": "2025-04-08T22:00:00Z",
+ "observed_end_theta_m3m3": {
+  "501": [
+   0.048,
+   0.0463,
+   0.0435,
+   0.0401,
+   null,
+   0.0342,
+   0.0349,
+   0.0358,
+   0.0347,
+   null
+  ],
+  "502": [
+   0.0698,
+   0.0702,
+   0.0717,
+   0.072,
+   0.0707,
+   0.0693,
+   0.0702,
+   0.0706,
+   0.0693,
+   0.0672
+  ],
+  "503": [
+   0.0562,
+   0.0574,
+   0.0585,
+   0.0587,
+   0.0574,
+   0.0565,
+   0.0563,
+   0.0569,
+   0.0577,
+   0.0563
+  ]
+ },
+ "observed_valid": {
+  "501": [
+   true,
+   true,
+   true,
+   true,
+   false,
+   true,
+   true,
+   true,
+   true,
+   false
+  ],
+  "502": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "503": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "observed_joint_valid": [
+  true,
+  true,
+  true,
+  true,
+  false,
+  true,
+  true,
+  true,
+  true,
+  false
+ ],
+ "sensor_depths_m": [
+  0.058,
+  0.158,
+  0.258
+ ],
+ "raw_initial_point_theta": [
+  0.0456,
+  0.0682,
+  0.055
+ ],
+ "integrated_initial_layer_theta": [
+  0.047593319999999995,
+  0.06323444,
+  0.057220239999999985
+ ],
+ "integrated_initial_layer_water_m": [
+  0.004759332,
+  0.006323444000000001,
+  0.005722023999999997
+ ],
+ "weather_days": [
+  {
+   "window_start_utc": "2025-04-08T22:00:00Z",
+   "window_end_utc": "2025-04-09T22:00:00Z",
+   "pet_calendar_date": "2025-04-09",
+   "n_passing": 48,
+   "tmin_c": 2.6026,
+   "tmean_c_count_weighted": 17.286452083333334,
+   "tmax_c": 30.4485,
+   "pet_mm_day": 6.139189215844968
+  },
+  {
+   "window_start_utc": "2025-04-09T22:00:00Z",
+   "window_end_utc": "2025-04-10T22:00:00Z",
+   "pet_calendar_date": "2025-04-10",
+   "n_passing": 48,
+   "tmin_c": 5.5389,
+   "tmean_c_count_weighted": 20.475845833333334,
+   "tmax_c": 32.7665,
+   "pet_mm_day": 6.655504675326794
+  },
+  {
+   "window_start_utc": "2025-04-10T22:00:00Z",
+   "window_end_utc": "2025-04-11T22:00:00Z",
+   "pet_calendar_date": "2025-04-11",
+   "n_passing": 48,
+   "tmin_c": 7.6178,
+   "tmean_c_count_weighted": 22.420477083333335,
+   "tmax_c": 33.0836,
+   "pet_mm_day": 6.796725468403217
+  },
+  {
+   "window_start_utc": "2025-04-11T22:00:00Z",
+   "window_end_utc": "2025-04-12T22:00:00Z",
+   "pet_calendar_date": "2025-04-12",
+   "n_passing": 48,
+   "tmin_c": 6.1998,
+   "tmean_c_count_weighted": 21.94054375,
+   "tmax_c": 34.1719,
+   "pet_mm_day": 7.072196813519599
+  },
+  {
+   "window_start_utc": "2025-04-12T22:00:00Z",
+   "window_end_utc": "2025-04-13T22:00:00Z",
+   "pet_calendar_date": "2025-04-13",
+   "n_passing": 48,
+   "tmin_c": 5.3105,
+   "tmean_c_count_weighted": 21.88579166666667,
+   "tmax_c": 33.8512,
+   "pet_mm_day": 7.167561032309671
+  },
+  {
+   "window_start_utc": "2025-04-13T22:00:00Z",
+   "window_end_utc": "2025-04-14T22:00:00Z",
+   "pet_calendar_date": "2025-04-14",
+   "n_passing": 48,
+   "tmin_c": 10.3899,
+   "tmean_c_count_weighted": 21.980587500000002,
+   "tmax_c": 31.2924,
+   "pet_mm_day": 6.177068071235138
+  },
+  {
+   "window_start_utc": "2025-04-14T22:00:00Z",
+   "window_end_utc": "2025-04-15T22:00:00Z",
+   "pet_calendar_date": "2025-04-15",
+   "n_passing": 48,
+   "tmin_c": 8.3825,
+   "tmean_c_count_weighted": 20.15661875,
+   "tmax_c": 29.3443,
+   "pet_mm_day": 5.929035179608471
+  },
+  {
+   "window_start_utc": "2025-04-15T22:00:00Z",
+   "window_end_utc": "2025-04-16T22:00:00Z",
+   "pet_calendar_date": "2025-04-16",
+   "n_passing": 48,
+   "tmin_c": 7.8468,
+   "tmean_c_count_weighted": 20.5508625,
+   "tmax_c": 32.8877,
+   "pet_mm_day": 6.576801086906749
+  },
+  {
+   "window_start_utc": "2025-04-16T22:00:00Z",
+   "window_end_utc": "2025-04-17T22:00:00Z",
+   "pet_calendar_date": "2025-04-17",
+   "n_passing": 48,
+   "tmin_c": 14.2825,
+   "tmean_c_count_weighted": 23.93960625,
+   "tmax_c": 33.0085,
+   "pet_mm_day": 6.216990801832061
+  },
+  {
+   "window_start_utc": "2025-04-17T22:00:00Z",
+   "window_end_utc": "2025-04-18T22:00:00Z",
+   "pet_calendar_date": "2025-04-18",
+   "n_passing": 48,
+   "tmin_c": 5.1973,
+   "tmean_c_count_weighted": 18.859639191425828,
+   "tmax_c": 30.5814,
+   "pet_mm_day": 6.38463011681789
+  }
+ ],
+ "pet_source": {
+  "latitude_deg": 32.59052,
+  "latitude_source": "NEON JORN megapit DP1.00096.001 permegapit decimalLatitude 32.590520 (measured pit location, not a plot GPS)",
+  "terrain_factor": 1.0,
+  "terrain_note": "flat diagnostic: no aspect or slope multiplier is applied",
+  "method": "ecohyd_hargreaves",
+  "date_rule": "calendar date of the 24 h window midpoint at fixed UTC-7",
+  "air_series": "NEON DP1.00002.001 single aspirated, level 000.020, month 2025-04, RELEASE-2026"
+ }
+}

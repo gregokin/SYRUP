@@ -1,0 +1,54 @@
+{
+ "docx": {
+  "file": "SYRUP_JORN_MOAB_joint_d_stress_calibration_20261118.docx",
+  "zip_ok": true,
+  "media": 4,
+  "tables": 8,
+  "header_rows_repeat": 8,
+  "sections": 3,
+  "paragraphs": 456,
+  "bytes": 738954,
+  "sha256": "aae6c2ac93811231b11362396a5414a6e4a989d43f48bf3307057361a2fb5c23"
+ },
+ "figures": {
+  "fig1_objective_surface.png": "324ec8ae6757f51873f350447ffe125c09a62db2bf211c4d75563b08e93b6bae",
+  "fig2_profile_over_d.png": "078ae609d5c87af57a64f7036b3c3b01bd1fa31d7c424e9f2e251548a6490f90",
+  "fig3_aligned_windows.png": "2d40a72b2f5b4068bcf1559246d81152286d0550b4e3e62dc17ab4755776073f",
+  "fig4_window_sensor_rmse.png": "3dfa90a893282bb328ef5f33631569b16642f8c3001ccdc05cdd92e87146315f"
+ },
+ "tables": {
+  "depth.csv": "103c0c7611ab93af90e1a2825b791597a45d79f377b938ce199f23da01d7b5b7",
+  "fits.csv": "92b18f5845f4b090e51a6cbf7a7144b9c28c2743b8c22d7d92238f7846182632",
+  "profile.csv": "c3a48ca52061989b472d4813275456fd7709a9a53cea2858418ef065623f60ae",
+  "region.csv": "ed892029141bc3d7760da45b8964d25ddef17c6706c3d689db3f6253ef22fb95",
+  "report_tables.json": "e397eac4716dd48d737985334353d3632bd10bde1015d1e11d9ada96cbb3e09f",
+  "setup.csv": "179f3414e2baa96840da3121bf265a64467c5cafe427afadeca566b1514aa2be",
+  "sources.csv": "3122262af0239e48b0ed0942e89720abb06b8d635fd8ec6602eebe50901694db",
+  "verif.csv": "afc5fcf8f612fba9500c7862440b17408fbdc8ea7ca1b37aabc54818ef8ab2b3",
+  "windows.csv": "5ca151f39d463243daf4b4b75b56aebc3a3a003c48ebadaeb6dded263b91b468"
+ },
+ "builder": "334a9d48a9aa779adf6677a998cab5282aa2b73eb3c62e86ea28c80d91594fe9",
+ "report_md": "0ed323cb633240f0afc3bc7c5e04e42aac9f9d3316120383f9f59cd1c146c541",
+ "data": {
+  "actual_cpu/configs/geometric_JORN4_A.json": "836ddcb11ec9b829ae57a2da43833aebe4bc85290e9c48ddb0bc2616e6366d91",
+  "actual_cpu/configs/geometric_JORN4_B.json": "b2575320fd15e72f2927d210afc8c096acb275630b8708c097f66641a10b959a",
+  "actual_cpu/configs/geometric_MOAB2_C.json": "47327c1a3421a4c6feceb45dc9d752ff3b740aaa9c7010beeebdff915dde22d6",
+  "actual_cpu/configs/harmonic_JORN4_A.json": "d468888ca53566a3e0b4fc7cb6a948a1a5335983d871f7129266ef887451f301",
+  "actual_cpu/configs/harmonic_JORN4_B.json": "8addfb6a20bff22e33656176355e52ff226c6244705b082415942dbfa1071c94",
+  "actual_cpu/configs/harmonic_MOAB2_C.json": "50d678a0695a04c85bc329231061916048bfd720e5b81b4c25a0f67f51dcd370",
+  "actual_cpu/evaluations/geometric.json": "ba8559e4b560145a29b13a71c61eee634af355f3b2073c2b605913c95a7c7b62",
+  "actual_cpu/evaluations/harmonic.json": "3caf91245e758f6a2e9d6535cc9f8958bb5196c22f6c04c026103556228c225d",
+  "actual_cpu/fits/geometric.json": "c154eeafea3a3b1cc886f8e99f26140c5694f61ac1ff8605252cfdd77e306bf0",
+  "actual_cpu/fits/harmonic.json": "6866828d19645d3ce8104f382e3a8d648e1b8aaa88a2d1f6831eac85a429ec23",
+  "actual_cpu/prepared_inputs/JORN4_A.json": "94c5c787f60a40cb66bae6828ab91b27593b95637639e5c5d6ccd6a45e17f772",
+  "actual_cpu/prepared_inputs/JORN4_B.json": "2ca19b232d4fcc30e52c8ab9a2fea5f9b59400c30a45502a47246c84300ccb72",
+  "actual_cpu/prepared_inputs/MOAB2_C.json": "1b4ac2657d34f19b200b0f4412fa0eeb31cf5f1060d5af102afd591c7c46ef66",
+  "actual_cpu/protocol.json": "2834ce2612f5826d94c461793ddd079b9e17598c1b002828a095ab715968cc02",
+  "actual_cpu/summary.json": "3908b37d37d27717f48967a79649602a657f36165fb332ad9d598e17e6381678",
+  "frozen_helper_manifest.json": "10bf692c850b27566d7de0059cd50d623521fa779ad31708e3b548c0f880810a",
+  "root_independent_verification.json": "17636cc3a26e137c2d49018240ec19ad71a9026a812e811e0cf3c3b54840e8e8",
+  "root_run_acceptance.json": "06e7472e4d3a1571f2c9dc3ba682550c8f138962978886d8b1ce7cbd7db27326",
+  "runtime_cpu.json": "36bf517bbf9aa17af38b0408b652674aa718607b747b0ff73932d97c989ad1a6",
+  "stage1_acceptance.json": "461e18e5816d4d334ef71202a4d17ba84792a1c22daddda5840c5c02d7d108b9"
+ }
+}

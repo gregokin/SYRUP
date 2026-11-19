@@ -1,0 +1,17 @@
+{
+  "status": "actualCPUjointfitaccepted_for_report",
+  "utc": "2026-11-19T01:18:44.241174+00:00",
+  "tests": 121,
+  "native_source_syrup": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+  "native_source_maple": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "native_objective_parameter_pairs": 10120,
+  "native_objective_window_runs": 30360,
+  "selected_and_control_full_reruns": 24,
+  "verification_native_numpy_numba_full_and_midpoint_runs": 24,
+  "old_project_files_preserved": 1812,
+  "native_conservation": "allperstep+cumulativePASS",
+  "independent_fraction_scores": "all53observations,bothfitsPASS",
+  "prepared_inputs": "byte-equivalentcontenttopreviousstudy",
+  "gpu_status": "NEWselectedCUDAcasesNOTRUN:authorizedGPU0occupied2645MiB56%;GPU1notauthorized;noGPUchildlaunched",
+  "scope": "CalibrationdiagnosticN1,allwindowsused,notfieldvalidation/defaultchange"
+}

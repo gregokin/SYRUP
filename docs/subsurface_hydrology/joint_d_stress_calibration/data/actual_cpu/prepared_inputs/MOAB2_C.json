@@ -1,0 +1,162 @@
+{
+ "day_end_utc": [
+  "2025-05-23T03:30:00Z",
+  "2025-05-24T03:30:00Z",
+  "2025-05-25T03:30:00Z",
+  "2025-05-26T03:30:00Z",
+  "2025-05-27T03:30:00Z",
+  "2025-05-28T03:30:00Z"
+ ],
+ "t0_utc": "2025-05-22T03:30:00Z",
+ "observed_end_theta_m3m3": {
+  "501": [
+   0.0573,
+   0.0482,
+   0.0418,
+   0.0385,
+   0.0372,
+   0.0357
+  ],
+  "502": [
+   0.0607,
+   0.0601,
+   null,
+   0.0572,
+   null,
+   0.0578
+  ],
+  "503": [
+   0.0543,
+   0.0547,
+   null,
+   null,
+   0.0518,
+   0.0524
+  ]
+ },
+ "observed_valid": {
+  "501": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "502": [
+   true,
+   true,
+   false,
+   true,
+   false,
+   true
+  ],
+  "503": [
+   true,
+   true,
+   false,
+   false,
+   true,
+   true
+  ]
+ },
+ "observed_joint_valid": [
+  true,
+  true,
+  false,
+  false,
+  false,
+  true
+ ],
+ "sensor_depths_m": [
+  0.055,
+  0.155,
+  0.255
+ ],
+ "raw_initial_point_theta": [
+  0.0659,
+  0.0598,
+  0.0533
+ ],
+ "integrated_initial_layer_theta": [
+  0.065282375,
+  0.060064500000000014,
+  0.05428312499999999
+ ],
+ "integrated_initial_layer_water_m": [
+  0.006528237500000001,
+  0.006006450000000002,
+  0.005428312499999997
+ ],
+ "weather_days": [
+  {
+   "window_start_utc": "2025-05-22T03:30:00Z",
+   "window_end_utc": "2025-05-23T03:30:00Z",
+   "pet_calendar_date": "2025-05-22",
+   "n_passing": 48,
+   "tmin_c": 8.4579,
+   "tmean_c_count_weighted": 19.96453125,
+   "tmax_c": 29.641,
+   "pet_mm_day": 6.622971756619692
+  },
+  {
+   "window_start_utc": "2025-05-23T03:30:00Z",
+   "window_end_utc": "2025-05-24T03:30:00Z",
+   "pet_calendar_date": "2025-05-23",
+   "n_passing": 48,
+   "tmin_c": 14.3437,
+   "tmean_c_count_weighted": 22.349974999999997,
+   "tmax_c": 29.4581,
+   "pet_mm_day": 5.961166756388782
+  },
+  {
+   "window_start_utc": "2025-05-24T03:30:00Z",
+   "window_end_utc": "2025-05-25T03:30:00Z",
+   "pet_calendar_date": "2025-05-24",
+   "n_passing": 48,
+   "tmin_c": 9.6871,
+   "tmean_c_count_weighted": 20.568089537025237,
+   "tmax_c": 26.4154,
+   "pet_mm_day": 6.0060259151341295
+  },
+  {
+   "window_start_utc": "2025-05-25T03:30:00Z",
+   "window_end_utc": "2025-05-26T03:30:00Z",
+   "pet_calendar_date": "2025-05-25",
+   "n_passing": 48,
+   "tmin_c": 8.9848,
+   "tmean_c_count_weighted": 18.25492708333333,
+   "tmax_c": 27.0231,
+   "pet_mm_day": 5.872979082848279
+  },
+  {
+   "window_start_utc": "2025-05-26T03:30:00Z",
+   "window_end_utc": "2025-05-27T03:30:00Z",
+   "pet_calendar_date": "2025-05-26",
+   "n_passing": 48,
+   "tmin_c": 6.3317,
+   "tmean_c_count_weighted": 16.645760416666665,
+   "tmax_c": 25.6251,
+   "pet_mm_day": 5.814409765372075
+  },
+  {
+   "window_start_utc": "2025-05-27T03:30:00Z",
+   "window_end_utc": "2025-05-28T03:30:00Z",
+   "pet_calendar_date": "2025-05-27",
+   "n_passing": 48,
+   "tmin_c": 8.0146,
+   "tmean_c_count_weighted": 19.697204166666666,
+   "tmax_c": 28.979,
+   "pet_mm_day": 6.610583175965258
+  }
+ ],
+ "pet_source": {
+  "latitude_deg": 38.25136,
+  "latitude_source": "NEON MOAB megapit DP1.00096.001 permegapit decimalLatitude 38.251360 (measured pit location, not a plot GPS)",
+  "terrain_factor": 1.0,
+  "terrain_note": "flat diagnostic: no aspect or slope multiplier is applied",
+  "method": "ecohyd_hargreaves",
+  "date_rule": "calendar date of the 24 h window midpoint at fixed UTC-7",
+  "air_series": "NEON DP1.00002.001 single aspirated, level 000.020, month 2025-05, RELEASE-2026"
+ }
+}
