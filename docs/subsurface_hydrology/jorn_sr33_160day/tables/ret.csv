@@ -1,0 +1,4 @@
+Layer,Saturation (vol. %),Wilting point (vol. %),"NEW field capacity, 33 kPa (vol. %)","OLD field capacity, 6 kPa hybrid (vol. %)","Ks, 1x (mm/h)"
+0-10 cm (A),46.43,3.95,9.75,39.76,120.8
+10-20 cm (A+Bw mix),46.52,4.04,9.94,39.87,119.7
+20-30 cm (Bw),45.86,4.63,10.91,39.51,104.3

@@ -1,0 +1,8 @@
+Fixed in every run,Value
+Residual water content / evaporation stress threshold,1 vol. % / 20.171 vol. % (fitted earlier under the OLD field capacity)
+Tietjen diffusion coefficient d (dimensionless) / evaporation factor,0.0010239461 / 1
+Matrix suction / local conductivity factor,166 mm (unmeasured reference) / 0.316357
+"Layers, bottom, gravity","three 10 cm layers, 1 m², open bottom, gravity drainage on"
+Initial storage (all runs),"22.9424 mm; layer means 7.30, 8.62, 7.02 vol. %; sensor points 7.11, 9.21, 6.58 vol. %"
+Forcing,"NEON rain 25.088 mm (peak 10.034 mm/h; 26 half-hour rows with rain on 11 days), Hargreaves PET 1.26-9.37 mm/day (sum 777.3 mm), 160 nominal days from 2024-01-18 07:00 UTC"
+Excluded,"transpiration, growth, preferential flow, routing, sediment; surface water exported with zero residence"

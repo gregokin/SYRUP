@@ -1,0 +1,5 @@
+Run,Integration (s),Operator prep + JIT (s),Source checks + input prep (s),Full fresh command (s)
+SR33 0.5x,0.0414,4.59,1.13,7.26
+SR33 1x,0.0378,4.40,1.06,7.00
+SR33 2x,0.0411,4.70,1.12,7.38
+SR33 4x,0.0392,4.43,1.06,7.01

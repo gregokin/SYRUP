@@ -1,0 +1,4 @@
+K multiplier,"Aligned RMSE, old FC","Aligned RMSE, SR33","RAW RMSE, old FC","RAW RMSE, SR33"
+1x,1.049,2.273,1.202,2.298
+2x,0.923,1.671,1.194,1.765
+4x,0.995,1.200,1.304,1.391

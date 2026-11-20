@@ -1,0 +1,13 @@
+# JORN 160-day SR33 conductivity sensitivity
+
+The four user-requested runs use the new native Saxton–Rawls 33 kPa field capacities, with all Ks and derived K values scaled together by 0.5, 1, 2 and 4 relative to the original study. All other physical inputs, observations, initial water, weather and clock conventions are fixed. This study changes no production model code or default conductivity.
+
+Read the DOCX or report.md for results, assumptions, scientific references and interpretation. The new 4× case has the lowest error of these four, but the old-field-capacity 1× case retains a lower pooled aligned error; surface response improves while deep wetting remains excessive. No multiplier or refitted parameter is adopted.
+
+Codex independently verified Claude's input generator, ran four native Numba cases and eight NumPy/finer-timestep controls, and checked raw observations, exact-precision scores, per-layer water budgets and independent 90-digit gravity/evaporation/redistribution calculations. A separate-process 1× day 80 continuation matches exactly. Claude independently reviewed results and Root controls and authored the report; Codex corrected the identified scientific wording and endpoint-comparison errors through bounded Claude revisions, then verified all 13 Word tables against CSV, all 4 embedded PNGs, source/data seals and figures. No Office renderer was available.
+
+Exact source identities and results are in acceptance.json. The complete new native outputs, case configurations, timings, source guards and component-restart outputs are losslessly archived in evidence/native_outputs.zip with a per-member checksum manifest. Report tables/data/figures are under this directory; raw NEON input CSVs remain ignored. Commands and correction reports remain under agent_handoffs/tasks/jorn_sr33_160day_20261120/.
+
+Reproduction uses the unchanged benchmarks.subsurface_wet_validation.driver with a new case JSON, genuine pinned MAPLE and current 4e38 SYRUP sources. The generator benchmarks.jorn_sr33_sensitivity.generate derives FC from the actual new provider and refuses changed historical input receipts. Paths and hashes are explicit and machine-specific; external NEON/task input files must be available. Do not rebind old checkpoints or source profiles. Report regeneration uses build_report.py and existing report_tools; it runs no hydrology.
+
+Scope: a fixed three-layer 1 m² CPU column with observed rain, matrix-only infiltration, open bottom, evaporation and no transpiration. This is not GPU/catchment/coupled-model acceptance, a new calibration, or general repeated-storm qualification. See the report for nominal-calendar and physical-time distinction and uneven sensor coverage.

@@ -1,0 +1,348 @@
+{
+  "schema": "syrup.jorn160_wet.config/1",
+  "name": "JORN plot4 January18-June25 2024 matrix-only observed rain drydown SR33 FC all-K/Ks x1",
+  "provenance": {
+    "protocol": "syrup.jorn160_wet.daily_weather_with_storm_substeps/1",
+    "role": "frozen-parameter temporal-transfer diagnostic, not calibration; NEW SR33 field capacity and all-K/Ks relative factor 1 (sensitivity, not calibration)",
+    "parameter_source": {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/joint_d_stress_calibration_20261118/actual_cpu/fits/harmonic.json",
+      "sha256": "6866828d19645d3ce8104f382e3a8d648e1b8aaa88a2d1f6831eac85a429ec23",
+      "bytes": 677256
+    },
+    "matrix_only_user_approved": true,
+    "pref_infiltration": "disabled for this comparison; diagnose deeper discrepancies, do not infer absence of real preferential flow",
+    "moab": "MOAB May2025 dry records contributed to shared d/stress calibration; no MOAB run in this case",
+    "layer_properties": [
+      {
+        "record": "JORN_A",
+        "raw_density_g_cm3": 1.4196,
+        "effective_density_g_cm3": 1.4196,
+        "density_factor": 0.9043091729490303,
+        "raw_air_entry_kpa": -0.6079086840620981,
+        "effective_air_entry_kpa": 0,
+        "theta_saturation": 0.4643018867924528,
+        "theta_field_capacity": 0.09746408113338643,
+        "theta1500": 0.039508152304,
+        "Ks_mm_h": 120.78651558947541,
+        "Ks_m_s": 3.355180988596539e-05,
+        "theta_field_capacity_previous_hybrid_6kpa": 0.39760410394534984
+      },
+      {
+        "record": "JORN_10_20_dry_mass",
+        "raw_density_g_cm3": 1.31638,
+        "effective_density_g_cm3": 1.4172961608026395,
+        "density_factor": 0.9009999999999999,
+        "raw_air_entry_kpa": -0.5913324627159721,
+        "effective_air_entry_kpa": 0,
+        "theta_saturation": 0.4651712600744756,
+        "theta_field_capacity": 0.09939508831059733,
+        "theta1500": 0.04043829918009047,
+        "Ks_mm_h": 119.70776661032677,
+        "Ks_m_s": 3.3252157391757436e-05,
+        "theta_field_capacity_previous_hybrid_6kpa": 0.39866650157195227
+      },
+      {
+        "record": "JORN_Bw",
+        "raw_density_g_cm3": 0.9035,
+        "effective_density_g_cm3": 1.4346276006597622,
+        "density_factor": 0.901,
+        "raw_air_entry_kpa": -0.46075362971474765,
+        "effective_air_entry_kpa": 0,
+        "theta_saturation": 0.4586310940906557,
+        "theta_field_capacity": 0.10913571555870182,
+        "theta1500": 0.046312178008,
+        "Ks_mm_h": 104.33238089230187,
+        "Ks_m_s": 2.8981216914528297e-05,
+        "theta_field_capacity_previous_hybrid_6kpa": 0.39508647981211864
+      }
+    ],
+    "initial_timestamp_correction": "Old57-day observation screen listed rawSTART07:00; no model was executed. Here use original30minrecordsENDING07:00, keeping Jan18simulationstart and correct observation support.",
+    "clock": "Daily rain occurrence firstwet tolastwet interval including zero gaps; additional physicalduration then one86400s nominal-day interevent, per approved daily-weather approximation; not exact hourly field chronology.",
+    "field_capacity_update": {
+      "status": "NEW physical field-capacity method; the previous hybrid Tietjen-6kPa/Saxton-Rawls wet-branch FC (~39.8 vol%) is REPLACED, retention is NOT unchanged",
+      "method": "saxton_rawls_33kpa (current package default)",
+      "provider": "maple_syrup.soil_texture_properties.estimate_soil_texture_properties, DEFAULT field_capacity_method='saxton_rawls_33kpa' (recipe saxton_rawls_2006_table1_eq1_18_explicit_density_v2_fc33_default; theta_field_capacity = final density-adjusted theta_33; Saxton & Rawls 2006 doi 10.2136/sssaj2005.0117)",
+      "provider_recipe": "saxton_rawls_2006_table1_eq1_18_explicit_density_v2_fc33_default",
+      "provider_input_sha256": "246abdfca73d9f487b166980107fb1d20a58192b90f7a1cc7d155180445665ba",
+      "provider_source_digests": {
+        "soil_texture_properties.py": "eca32bc3de0e1570cdea12e32bd7dd3372aebb12015afd9403c31d25d2deec2f",
+        "soil_texture_properties_numba.py": "1e2fb1f11d83bab094e16cefcf625afefdf589c58c139c44d0c88e0b37e504a1",
+        "soil_texture_properties_cuda.py": "25dcc7cfb4b7441dd2ea62ba6564f88e473747ced9fad8c8e3f8d41d23b8f758"
+      },
+      "air_entry_kpa_override": 0.0,
+      "air_entry_note": "study-explicit air-entry override 0 for all layers (as in the original study); approved effective densities (not a new floor implementation); primary texture and OM unchanged",
+      "primary_texture_fractions_sand_silt_clay": [
+        [
+          0.867,
+          0.862881888208572,
+          0.8370000000000001
+        ],
+        [
+          0.062,
+          0.06433359668180921,
+          0.079
+        ],
+        [
+          0.071,
+          0.07278451510961881,
+          0.084
+        ]
+      ],
+      "organic_matter_percent": [
+        0.3448,
+        0.3211345842385937,
+        0.1724
+      ],
+      "bulk_density_kg_m3_effective": [
+        1419.6,
+        1417.2961608026396,
+        1434.6276006597623
+      ],
+      "texture_source": {
+        "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_field_capacity_audit_20261120/root_audit.json",
+        "sha256": "96528a5e507939565245a74d9d531c183236001659a04af85be479f15a3d7a70"
+      },
+      "unchanged_vs_original_and_provider_before_conductivity_sensitivity_scaling": [
+        "Ks",
+        "theta_saturation",
+        "theta_1500 (wilting)"
+      ],
+      "unchanged_note": "Ks equals the original/provider value ONLY before the conductivity-sensitivity scaling; the scaled Ks entries are listed in provenance.conductivity_sensitivity",
+      "not_refit": "d, stress, residual, suction, local factor, E, initial water unchanged and conditional on the OLD field capacity; no calibration claim"
+    },
+    "conductivity_sensitivity": {
+      "relative_factor": 1.0,
+      "base_config": {
+        "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/case_numba.json",
+        "sha256": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee"
+      },
+      "scaled_entries": [
+        "provenance.layer_properties[0..2].Ks_mm_h",
+        "provenance.layer_properties[0..2].Ks_m_s",
+        "matrix.ks_top_m_s",
+        "matrix.conductivity_m_s",
+        "layers.interface_conductivity_m_s[0..1]"
+      ],
+      "rule": "each entry = original x factor, once (not compounded); local factor and Tietjen d unchanged"
+    }
+  },
+  "site": {
+    "key": "JORN_plot4_2024-01_to_06",
+    "swc_site": "JORN",
+    "swc_hor": "004",
+    "latitude_deg": 32.59052,
+    "latitude_source": "NEON JORN megapit DP1.00096.001 permegapit decimalLatitude 32.590520 (measured pit location, not a plot GPS)",
+    "utc_offset_hours": -7,
+    "air_height_note": "Native forcing000.030 (prepared and interpolated); original dry calibrationused000.020. This explicit site-weather difference is not silently rebound."
+  },
+  "layers": {
+    "edges_m": [
+      0.0,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "theta_residual": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "theta_field_capacity": [
+      0.09746408113338643,
+      0.09939508831059733,
+      0.10913571555870182
+    ],
+    "theta_saturation": [
+      0.4643018867924528,
+      0.4651712600744756,
+      0.4586310940906557
+    ],
+    "theta_evaporation_stress": 0.20170581117963332,
+    "interface_conductivity_m_s": [
+      1.0566751696583226e-05,
+      9.797630862576748e-06
+    ]
+  },
+  "matrix": {
+    "ks_top_m_s": 3.355180988596539e-05,
+    "local_conductivity_factor": 0.31635738822500753,
+    "conductivity_m_s": 1.0614362945745998e-05,
+    "suction_m": 0.166,
+    "suction_provenance": "Unmeasured reference166mm from downloaded EcoHyD Tabernas soilparameters; record actual ponded/onset usage; allactualrainrates<K likely inactive suction dependence.",
+    "vegetation_cover_sum": 0.0,
+    "vegetation_a1": 0.013,
+    "vegetation_a2": 0.067
+  },
+  "physics": {
+    "diffusion_coefficient": 0.0010239461376024856,
+    "evaporation_factor": 1.0,
+    "transpiration_factor": 0,
+    "bottom": "open",
+    "gravity_drainage": true
+  },
+  "storm": {
+    "max_dt_s": 1800
+  },
+  "forcing": {
+    "start_utc": "2024-01-18T07:00:00Z",
+    "n_days": 160,
+    "files": {
+      "daily_air": {
+        "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_forcing_extension_20261119/preprocessed_160d/daily_air.csv",
+        "sha256": "7d6995dacdfb0476169decda17f918df8f3aa50cf84ac4f76ba3262f57e242c0",
+        "bytes": 11927
+      },
+      "derived_30min": {
+        "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_forcing_extension_20261119/preprocessed_160d/derived_30min.csv",
+        "sha256": "37df8e2f7817b50c50e9af97865bb8099485c779ef98219ea6e0a6f1bead6963",
+        "bytes": 846623
+      },
+      "rainfall_30min": {
+        "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_forcing_extension_20261119/preprocessed_160d/rainfall_30min.csv",
+        "sha256": "4bf8c682cf2b334dfa6e222cd4d7900b15e2a1af5ab899ce120211716c65c2f6",
+        "bytes": 391760
+      },
+      "receipt": {
+        "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_forcing_extension_20261119/preprocessed_160d/receipt.json",
+        "sha256": "1546b3000203c8d749fd4e186693b538d2a593d5591b1da2a4fa950985e80a82",
+        "bytes": 53134
+      }
+    },
+    "expected": {
+      "rain_rows": 7680,
+      "total_rain_mm": "25.088",
+      "peak_rain_mm_per_h": "10.034",
+      "interpolated_half_hours": 36
+    }
+  },
+  "swc": {
+    "depth_table": {
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/nevada_zero_flux_20261101/neon_metadata/swc_depthsV3",
+      "sha256": "876fd5bdcfb8b93352399dab20a3b41e01b2ca3f74bb140e3216feb80812827f"
+    },
+    "levels": {
+      "501": [
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-01/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2024-01.expanded.20240204T233645Z.csv",
+          "sha256": "d5bb9879e5953d86700186972c6f99b4a1cf641e8fbc99fc9b8c16d5bf88759d",
+          "bytes": 609065
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-02/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2024-02.expanded.20240320T202534Z.csv",
+          "sha256": "39cb5ed00e1a7cc9bd63fe948e2933b2a2047e4197e11315e2eb1458b37c9f5c",
+          "bytes": 574370
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-03/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2024-03.expanded.20240403T235101Z.csv",
+          "sha256": "9899f807e926552be0c24f2d8fa4be4bd230a393b4535aceea600a96081fc83c",
+          "bytes": 614313
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-04/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2024-04.expanded.20240502T160928Z.csv",
+          "sha256": "0197ea2fb7d5cab73a05ccbd102b4a1a8a152bb4fbc60948d00ed1a40dac9ac9",
+          "bytes": 593980
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/observations_may_june/2024-05/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2024-05.expanded.20240603T223144Z.csv",
+          "sha256": "61d0e49ca6b457a70b5c4ed2ffc024c11e13f83dfc5ed2134e0dda31ee1978c5",
+          "bytes": 612743
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/observations_may_june/2024-06/NEON.D14.JORN.DP1.00094.001.004.501.030.SWS_30_minute.2024-06.expanded.20240706T162453Z.csv",
+          "sha256": "b602d0e3af39a7d286229891c0da769d019d3a83b507e7bacc7c979d33a9d459",
+          "bytes": 592776
+        }
+      ],
+      "502": [
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-01/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2024-01.expanded.20240204T233645Z.csv",
+          "sha256": "e48664ee2ceae948bf6964f07b71ce698cbe4af68cd6e9ff2b50ddc9627ded7c",
+          "bytes": 614061
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-02/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2024-02.expanded.20240320T202534Z.csv",
+          "sha256": "05172cbf28333914c07a9a1746681749d3ca5b526aac422a0957c71088a6d362",
+          "bytes": 573692
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-03/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2024-03.expanded.20240403T235101Z.csv",
+          "sha256": "2cd8c91ec46449b646a76ca72b7fc3b19c4fafc27f5c3d89b8d455b5a52deb3e",
+          "bytes": 613569
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-04/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2024-04.expanded.20240502T160928Z.csv",
+          "sha256": "8d666ab6ec5234bc5f7fda5f8a4c16edcfa4981725b93b8a8d9031c1c9c38b81",
+          "bytes": 593222
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/observations_may_june/2024-05/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2024-05.expanded.20240603T223144Z.csv",
+          "sha256": "df71c66882a205421ad2404fee4ac1f2680490c33e6db8f1864c62a669ee2b18",
+          "bytes": 613672
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/observations_may_june/2024-06/NEON.D14.JORN.DP1.00094.001.004.502.030.SWS_30_minute.2024-06.expanded.20240706T162453Z.csv",
+          "sha256": "885ad7a4208748547ab250dfe181b1fa9d4a029772f51f9305bcb196e9f55ec7",
+          "bytes": 593443
+        }
+      ],
+      "503": [
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-01/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2024-01.expanded.20240204T233645Z.csv",
+          "sha256": "bda4aff3a99caeea1cbee68950617d158216d34e3c7025622567c564d3ebc6f8",
+          "bytes": 613086
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-02/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2024-02.expanded.20240320T202534Z.csv",
+          "sha256": "9ffee5fae16c79bbd2d6656b894bcfc3ae7c8425000e192c3e86a85da7a08f84",
+          "bytes": 573581
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-03/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2024-03.expanded.20240403T235101Z.csv",
+          "sha256": "11f260ee1ad0dc6ac0ab9705ddfb82c8b7d0a1564ed050778ae6ac75726b0116",
+          "bytes": 612401
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_cold_season_record_20261119/root_data_2023/DP1.00094.001/2024-04/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2024-04.expanded.20240502T160928Z.csv",
+          "sha256": "28e350b6852f1c82d73cf43f13d0e5055ed791a840da3f16733f3cbfa062592c",
+          "bytes": 592860
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/observations_may_june/2024-05/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2024-05.expanded.20240603T223144Z.csv",
+          "sha256": "d5afd02ab6a41bfbb73284dd116a0de1bd1bf633d7afaa8755c9aad31fc66879",
+          "bytes": 613188
+        },
+        {
+          "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/observations_may_june/2024-06/NEON.D14.JORN.DP1.00094.001.004.503.030.SWS_30_minute.2024-06.expanded.20240706T162453Z.csv",
+          "sha256": "1d391e6b53d891222d1517a6d76ea04727cdc073a3c0fdb50224edd356300fae",
+          "bytes": 593698
+        }
+      ]
+    }
+  },
+  "initial": {
+    "end_utc": "2024-01-18T07:00:00Z",
+    "expected_theta": [
+      0.0711,
+      0.0921,
+      0.0658
+    ],
+    "expected_depths_m": [
+      0.058,
+      0.158,
+      0.258
+    ]
+  },
+  "controls": {
+    "backend": "numba"
+  },
+  "expected_sources": {
+    "maple_syrup": {
+      "package_sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    },
+    "maple": {
+      "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    }
+  }
+}
