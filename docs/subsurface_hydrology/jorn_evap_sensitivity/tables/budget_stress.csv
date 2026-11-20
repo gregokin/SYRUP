@@ -1,0 +1,11 @@
+Quantity,"baseline (E 1, stress x1)",stress x1.5,stress x2,stress x2.5,stress x3
+Rain = intake (mm),25.088,25.088,25.088,25.088,25.088
+Runoff / ponding (mm),0,0,0,0,0
+Potential soil demand E x PET (mm),777.3,777.3,777.3,777.3,777.3
+Actual evaporation (mm),29.47,23.21,18.45,15.16,12.69
+Actual E / baseline actual E,1.000,0.788,0.626,0.514,0.431
+Bottom drainage (mm),1.282,4.901,7.714,9.242,10.147
+Final storage (mm; initial 22.9424),17.27,19.92,21.87,23.63,25.19
+Water crossing the upper interface (0-10 to 10-20 cm) (mm),6.77,10.68,13.31,14.75,15.60
+Water crossing the lower interface (10-20 to 20-30 cm) (mm),5.11,9.04,11.86,13.39,14.30
+"Net upward diffusive exchange, top-to-middle (mm)",6.18,4.92,3.84,3.01,2.34

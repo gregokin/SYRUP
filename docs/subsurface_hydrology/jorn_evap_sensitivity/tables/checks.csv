@@ -1,0 +1,9 @@
+Run,Closure residual / native bound (m³),900 s step: max change (percentage points),90-digit check: max error (m),NumPy vs Numba max difference
+"baseline (E 1, stress x1)",2.4e-17 / 2.50e-13,0.00023,1.1e-17,0 (exact)
+E 0.8,1.0e-17 / 2.51e-13,0.00022,7.3e-18,0 (exact)
+E 0.6,1.0e-17 / 2.52e-13,0.00015,7.2e-18,0 (exact)
+E 0.4,0.0e+00 / 2.52e-13,0.00015,9.7e-18,0 (exact)
+stress x1.5,6.9e-18 / 2.52e-13,0.00015,8.8e-18,0 (exact)
+stress x2,1.0e-17 / 2.57e-13,0.00015,6.6e-18,0 (exact)
+stress x2.5,5.2e-18 / 2.63e-13,0.00015,7.0e-18,0 (exact)
+stress x3,8.7e-18 / 2.63e-13,0.00015,8.9e-18,0 (exact)

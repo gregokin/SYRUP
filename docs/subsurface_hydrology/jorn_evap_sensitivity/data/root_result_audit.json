@@ -1,0 +1,1396 @@
+{
+  "status": "PASS",
+  "scope": "Read-only independent checks of raw observations, scores and layer budgets.",
+  "reference_SR33_K1_E1": {
+    "pooled_raw_rmse_pp": 2.2975733127993623,
+    "pooled_aligned_rmse_pp": 2.2730692268104713,
+    "E_mm": 29.473319986031193,
+    "bottom_drainage_mm": 1.28216786332307
+  },
+  "records": [
+    {
+      "key": "baseline",
+      "factor": "baseline",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 0.8966867829498826,
+            "bias_pp": -0.39798453133859363
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.992866065945492,
+            "bias_pp": -0.5832045313385934
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 1.0947664614811259,
+            "bias_pp": 0.9677232892340447
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 1.635100150219345,
+            "bias_pp": 1.552909289234042
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.005416616693998,
+            "bias_pp": 3.9209626212244317
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 3.5735205119662163,
+            "bias_pp": 3.478596621224435
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.2975733127993623
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.2730692268104713
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 17.274912150645765,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 1.28216786332307,
+        "evaporation": 29.473319986031193,
+        "gravity_transfers": [
+          6.773290709326027,
+          5.110236690569767
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -6.176619677195896,
+          -2.2083037724017123
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00017671477589020768,
+        0.00023390149512941827,
+        0.00011887383600667212
+      ],
+      "max_layer_budget_error_m": 9.974659986866641e-18,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.017274912150645763,
+        "soil_residual_m3": 2.42861286636753e-17,
+        "soil_bound_m3": 2.498053852545394e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.1600713090010686,
+        "operator_prepare_s": 4.492911093009752,
+        "jit_warmup_control_s": 0.0006635850004386157,
+        "integration_s": 0.03784121600619983,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.06057471901294775
+      },
+      "final_theta": [
+        0.023132289818386994,
+        0.06319552113962082,
+        0.08642131054844984
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.09437464628020406,
+        0.09943172058698065,
+        0.10905160478767907
+      ]
+    },
+    {
+      "key": "e0p8",
+      "factor": "e0p8",
+      "E": 0.8,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 0.7140743241597592,
+            "bias_pp": 0.05000467149621047
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.7250412804214396,
+            "bias_pp": -0.13521532850378937
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 1.2786721049298964,
+            "bias_pp": 1.1377815125826933
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 1.8190856579518937,
+            "bias_pp": 1.7229675125826909
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.1601104503271635,
+            "bias_pp": 4.072756607481585
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 3.72812399713675,
+            "bias_pp": 3.630390607481589
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.4086979380084355
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.3922791021449887
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 17.983263803782457,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 2.0542571684621835,
+        "evaporation": 27.99287902775537,
+        "gravity_transfers": [
+          7.654286858910177,
+          6.046888210350163
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.838371812801107,
+          -2.170050946669806
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00017649725626983637,
+        0.0002170948078222823,
+        0.00010383688773402122
+      ],
+      "max_layer_budget_error_m": 9.107298248878237e-18,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.017983263803782457,
+        "soil_residual_m3": 1.0408340855860843e-17,
+        "soil_bound_m3": 2.513809153414119e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0679966140014585,
+        "operator_prepare_s": 4.6815148269961355,
+        "jit_warmup_control_s": 0.0006467570055974647,
+        "integration_s": 0.04248417299822904,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.05380840599536896
+      },
+      "final_theta": [
+        0.0257442592613557,
+        0.06563891782428717,
+        0.08844946095218172
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.09514162206857929,
+        0.0994393712739929,
+        0.10905167110110826
+      ]
+    },
+    {
+      "key": "e0p6",
+      "factor": "e0p6",
+      "E": 0.6,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 0.8446872971022054,
+            "bias_pp": 0.5605056635740463
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.7349621488698992,
+            "bias_pp": 0.3752856635740466
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 1.5154906961768448,
+            "bias_pp": 1.3516746982838752
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.0545356956681147,
+            "bias_pp": 1.9368606982838723
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.250803581917261,
+            "bias_pp": 4.16222603049004
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 3.8187123758656036,
+            "bias_pp": 3.7198600304900435
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.5299970838740844
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.5284033623367628
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 18.863471542975127,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 3.2709567661121217,
+        "evaporation": 25.895971690912766,
+        "gravity_transfers": [
+          8.912981369366506,
+          7.27595037342623
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.378608856843398,
+          -1.9864024699873228
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00010874918658920762,
+        0.00015117683637017043,
+        4.7033000984131323e-05
+      ],
+      "max_layer_budget_error_m": 8.294146619514109e-18,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.018863471542975126,
+        "soil_residual_m3": 1.0408340855860843e-17,
+        "soil_bound_m3": 2.5157929466593306e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0508858510002028,
+        "operator_prepare_s": 4.3630981580063235,
+        "jit_warmup_control_s": 0.0006191260035848245,
+        "integration_s": 0.036920682003255934,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0626010810083244
+      },
+      "final_theta": [
+        0.029528757965641514,
+        0.06869638609084204,
+        0.09040957137326772
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.0957267078141578,
+        0.09944479366877959,
+        0.10905171810049434
+      ]
+    },
+    {
+      "key": "e0p4",
+      "factor": "e0p4",
+      "E": 0.4,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 1.198829197014691,
+            "bias_pp": 1.0537484085148514
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 1.0397823481693884,
+            "bias_pp": 0.8685284085148515
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 1.8085493864118296,
+            "bias_pp": 1.6049164678580072
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.343425448783576,
+            "bias_pp": 2.1901024678580043
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.4071850671903725,
+            "bias_pp": 4.314211691138595
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 3.97517883327246,
+            "bias_pp": 3.871845691138598
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.7261128495797453
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.739374987555802
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 20.24493876001838,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 5.493799660530764,
+        "evaporation": 22.291661579450857,
+        "gravity_transfers": [
+          11.231279980040297,
+          9.63426983045663
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.723022571119336,
+          -1.827929448788362
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00011196673764396481,
+        0.00014953744303658478,
+        4.305724275038836e-05
+      ],
+      "max_layer_budget_error_m": 1.3010426069826053e-17,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.02024493876001838,
+        "soil_residual_m3": 0.0,
+        "soil_bound_m3": 2.5157929466593306e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0686394140066113,
+        "operator_prepare_s": 4.397469742005342,
+        "jit_warmup_control_s": 0.0005950630002189428,
+        "integration_s": 0.038450455002021044,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.05673823399411049
+      },
+      "final_theta": [
+        0.03583301011628207,
+        0.0732673102725269,
+        0.0933490672113748
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.09631179355973632,
+        0.09945021606356626,
+        0.10905176509988043
+      ]
+    },
+    {
+      "key": "s1p5",
+      "factor": "s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255871676945,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 1.099038909436395,
+            "bias_pp": 0.9370629180311993
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.9460800100941058,
+            "bias_pp": 0.7518429180311994
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 1.7497565631077492,
+            "bias_pp": 1.5555270570429376
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.2857462670952975,
+            "bias_pp": 2.1407130570429347
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.391052799634311,
+            "bias_pp": 4.298576375205823
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 3.9590332523917686,
+            "bias_pp": 3.8562103752058254
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.6902306422813447
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.7003984893856585
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 19.915518178595445,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 4.901125226054008,
+        "evaporation": 23.213756595350556,
+        "gravity_transfers": [
+          10.677647282715352,
+          9.042347299005302
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.91814670839095,
+          -1.879064759028346
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00011112495543405543,
+        0.00014979789368790852,
+        4.3243563278838604e-05
+      ],
+      "max_layer_budget_error_m": 1.1709383462843448e-17,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.019915518178595444,
+        "soil_residual_m3": 6.938893903907228e-18,
+        "soil_bound_m3": 2.5157929466593306e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.031837730013649,
+        "operator_prepare_s": 4.47928959899582,
+        "jit_warmup_control_s": 0.0005880939861526713,
+        "integration_s": 0.042449326007044874,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0484639589994913
+      },
+      "final_theta": [
+        0.0340996283032506,
+        0.07221032034347447,
+        0.09284523313922939
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.09618177450516331,
+        0.099449011086947,
+        0.10905175465557242
+      ]
+    },
+    {
+      "key": "s2",
+      "factor": "s2",
+      "E": 1.0,
+      "stress_multiplier": 2.0,
+      "stress": 0.40341162235926664,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 1.6113085239273253,
+            "bias_pp": 1.4812537002591069
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 1.4428811409665292,
+            "bias_pp": 1.2960337002591071
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 2.0776621431048463,
+            "bias_pp": 1.8249877180255774
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.6067292074567394,
+            "bias_pp": 2.4101737180255745
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.47894008283209,
+            "bias_pp": 4.383106185182614
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 4.047062841385957,
+            "bias_pp": 3.9407401851826176
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.8958009726809264
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.922992668594784
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 21.86990978448694,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 7.713602413711531,
+        "evaporation": 18.44688780180152,
+        "gravity_transfers": [
+          13.309395114499807,
+          11.855276299074387
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -3.8421104021500208,
+          -1.5984660918188016
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00011597707383070865,
+        0.00014825274569779667,
+        4.2173279504731376e-05
+      ],
+      "max_layer_budget_error_m": 7.806255641895632e-18,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.02186990978448694,
+        "soil_residual_m3": -1.0408340855860843e-17,
+        "soil_bound_m3": 2.57225466319768e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0432712469919352,
+        "operator_prepare_s": 4.69034455200017,
+        "jit_warmup_control_s": 0.0006010509969200939,
+        "integration_s": 0.04726239500450902,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.04505881499790121
+      },
+      "final_theta": [
+        0.04469047485848703,
+        0.07835288505094201,
+        0.0956557379354404
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.0967506078689202,
+        0.09945428285965627,
+        0.10905180034942
+      ]
+    },
+    {
+      "key": "s2p5",
+      "factor": "s2p5",
+      "E": 1.0,
+      "stress_multiplier": 2.5,
+      "stress": 0.5042645279490833,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 1.9080609354934206,
+            "bias_pp": 1.7629362937468795
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 1.7383730500961043,
+            "bias_pp": 1.5777162937468798
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 2.3328726234263337,
+            "bias_pp": 2.025227936470184
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.8556973582980625,
+            "bias_pp": 2.6104139364701817
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.544089988754988,
+            "bias_pp": 4.444742604617504
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 4.112424526941604,
+            "bias_pp": 4.002376604617507
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 3.056876839683371
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 3.0965924878214617
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 23.632958196902138,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 9.242063633793206,
+        "evaporation": 15.155378169304667,
+        "gravity_transfers": [
+          14.74594535783172,
+          13.390508587074615
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -3.005598319343549,
+          -1.3860968802815021
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00012042239662529708,
+        0.00014687416590442037,
+        4.1260440358792394e-05
+      ],
+      "max_layer_budget_error_m": 9.974659986866641e-18,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.023632958196902136,
+        "soil_residual_m3": 5.204170427930421e-18,
+        "soil_bound_m3": 2.6282250513377193e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0892384909966495,
+        "operator_prepare_s": 4.5207852630119305,
+        "jit_warmup_control_s": 0.0006107020017225295,
+        "integration_s": 0.03772271200432442,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.04742437700042501
+      },
+      "final_theta": [
+        0.05487494792207181,
+        0.08360749331695072,
+        0.09784714072999887
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.09701389645443055,
+        0.09945672293731025,
+        0.10905182149914375
+      ]
+    },
+    {
+      "key": "s3",
+      "factor": "s3",
+      "E": 1.0,
+      "stress_multiplier": 3.0,
+      "stress": 0.6051174335389,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_pp": 2.079652131450198,
+            "bias_pp": 1.9223787204010252
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_pp": 1.9097469630974668,
+            "bias_pp": 1.7371587204010255
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_pp": 0.8805761101201224,
+            "bias_pp": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_pp": 2.5304317789339827,
+            "bias_pp": 2.174927021616344
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_pp": 3.0481143893525635,
+            "bias_pp": 2.760113021616341
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_pp": 2.3427809221050935,
+            "bias_pp": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_pp": 4.593319041902615,
+            "bias_pp": 4.490772447705131
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_pp": 4.161867058119244,
+            "bias_pp": 4.048406447705135
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_pp": 0.8864586063429545,
+            "bias_pp": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 3.179186895003108
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 3.2279731058191894
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 25.193512559449438,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 10.146623028213707,
+        "evaporation": 12.690264412336864,
+        "gravity_transfers": [
+          15.599040847312555,
+          14.304374917036698
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -2.342037687158796,
+          -1.2247523769274873
+        ]
+      },
+      "backend_max_absolute_difference": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference_pp_by_layer": [
+        0.00012456545104011507,
+        0.00014568979010143313,
+        4.047974783982777e-05
+      ],
+      "max_layer_budget_error_m": 1.0408340855860843e-17,
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.02519351255944944,
+        "soil_residual_m3": 8.673617379884035e-18,
+        "soil_bound_m3": 2.630479159151242e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0736038259929046,
+        "operator_prepare_s": 4.503439874009928,
+        "jit_warmup_control_s": 0.0006050259980838746,
+        "integration_s": 0.03857730700110551,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.03703757800394669
+      },
+      "final_theta": [
+        0.06435952427509392,
+        0.08802194620044554,
+        0.09955365511895496
+      ],
+      "initial_theta": [
+        0.0729522,
+        0.08624814000000003,
+        0.07022365999999997
+      ],
+      "peak_theta": [
+        0.09715691741446085,
+        0.09945804841159145,
+        0.10905183298788257
+      ]
+    }
+  ]
+}

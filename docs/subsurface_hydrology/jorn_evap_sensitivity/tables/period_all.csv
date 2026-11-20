@@ -1,0 +1,9 @@
+Setting,Before Mar 1 RAW,Before Mar 1 aligned,From Mar 1 RAW,From Mar 1 aligned
+"baseline (E 1, stress x1)",1.809,1.760,2.540,2.525
+E 0.8,1.828,1.766,2.691,2.692
+E 0.6,1.845,1.770,2.855,2.881
+E 0.4,1.901,1.814,3.108,3.157
+stress x1.5,1.883,1.798,3.065,3.109
+stress x2,1.991,1.895,3.312,3.382
+stress x2.5,2.068,1.968,3.508,3.596
+stress x3,2.115,2.012,3.660,3.761

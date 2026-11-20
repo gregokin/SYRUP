@@ -1,0 +1,9 @@
+Run,Integration (s),Operator prep + JIT (s),Source checks + input prep (s),Full fresh command (s)
+"baseline (E 1, stress x1)",0.0378,4.49,1.16,7.19
+E 0.8,0.0425,4.68,1.07,7.31
+E 0.6,0.0369,4.36,1.05,6.88
+E 0.4,0.0385,4.40,1.07,6.99
+stress x1.5,0.0424,4.48,1.03,7.01
+stress x2,0.0473,4.69,1.04,7.40
+stress x2.5,0.0377,4.52,1.09,7.13
+stress x3,0.0386,4.50,1.07,7.15

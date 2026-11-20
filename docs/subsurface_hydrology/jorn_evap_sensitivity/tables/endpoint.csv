@@ -1,0 +1,10 @@
+Setting (vol. %),"5.8 cm sensor, 2024-03-15","15.8 cm sensor, 2024-06-25","25.8 cm sensor, 2024-06-26"
+Observed (last valid sensor value),5.63,5.17,4.64
+"baseline (E 1, stress x1)",4.43,6.34,8.64
+E 0.8,5.05,6.58,8.84
+E 0.6,5.88,6.89,9.04
+E 0.4,6.79,7.34,9.33
+stress x1.5,6.57,7.24,9.28
+stress x2,7.67,7.85,9.57
+stress x2.5,8.32,8.38,9.78
+stress x3,8.71,8.81,9.96

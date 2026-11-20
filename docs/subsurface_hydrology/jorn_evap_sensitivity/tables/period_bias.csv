@@ -1,0 +1,9 @@
+"RAW bias (model minus sensor, percentage points)","Upper two, before Mar 1","Upper two, from Mar 1","All three, before Mar 1","All three, from Mar 1"
+"baseline (E 1, stress x1)",+0.04,+0.98,+0.70,+2.01
+E 0.8,+0.25,+1.25,+0.89,+2.25
+E 0.6,+0.47,+1.60,+1.06,+2.52
+E 0.4,+0.69,+1.99,+1.25,+2.84
+stress x1.5,+0.64,+1.91,+1.21,+2.78
+stress x2,+0.89,+2.32,+1.41,+3.10
+stress x2.5,+1.01,+2.62,+1.51,+3.32
+stress x3,+1.08,+2.83,+1.56,+3.48
