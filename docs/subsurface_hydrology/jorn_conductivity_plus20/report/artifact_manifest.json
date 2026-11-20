@@ -1,0 +1,65 @@
+{
+ "docx": {
+  "file": "SYRUP_JORN_160day_K_Ks_plus20_comparison_20261120.docx",
+  "zip_ok": true,
+  "media": 3,
+  "tables": 4,
+  "header_rows_repeat": 4,
+  "paragraphs": 196,
+  "words": 2133,
+  "bytes": 413092,
+  "sha256": "1c8de4489e775eb92c6e43b31030f8a96de593746c3e90a3bc1a99b4626c6e9e"
+ },
+ "figures": {
+  "fig1_raw_overlay.png": "5223afc2d2d313a956cd7dc919e85eefcc6a6255d49a3d5ff1ccd217184ee098",
+  "fig2_difference.png": "0c7be5a63beb8124add83aed52373fbc906668ae9f926b13869c89ed49a6e9dc",
+  "fig3_rain_pulse_zoom.png": "a8f17c9772fdb9ba9a7aef83b26b61570e3c4c1b518734134e0c1b3de8ce02b4"
+ },
+ "tables": {
+  "budget.csv": "e5cddda7868e5f3389fc53d0889964d5243ccbc21cd04809fe80362306b0a94c",
+  "daily_trajectories.csv": "663733d67669110f4a806c24e7e48176e64b2455a08fa2ec648398639d463ea0",
+  "parameter_diff.csv": "16ad83b12a5a7a33b38ea1a6a23e2215bb167ec849fa686cf09fcc7a67b3d05d",
+  "params.csv": "7dbafd41580f4fc1b259203694d41c6b38ae9d5fbd8bae34272115207a798462",
+  "provenance_seal.csv": "a69d9ad014c4d12a19bd2d3d153babc7baf62a6e9353afb9a54a7d272d403bfc",
+  "scores.csv": "3e8fbc0179ee361c6a6657ab45691426a66232cbc1b43687a61a4b1bc421dc34",
+  "timing.csv": "784d2bf879ce77ba7cd32c145fd7714816b5390f44c8717307f8a28ca35c7ec3"
+ },
+ "data": {
+  "case_numba_baseline.json": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+  "case_numba_plus20.json": "507aa743406b543330171cdb57f74c151fb76afc8e785e4aeb2f494f438ecd26",
+  "comparison.json": "1b57990f64711da95404443cc253fd15258b48aa33badec1a3a95b4571e238dc",
+  "frozen_helper_manifest.json": "df395a94234067489ce6a4e8d042b2fc87faabf6356313e56694a165319becf0",
+  "parameter_changes.json": "de40519b23516798d6074ce1959f65274334b0216cbd1bf0970782f867d6e24d",
+  "root_decimal_verification.json": "209b8bcf4f5984ef239d3526e01b001596e2f861bf80a8b72f9b102ea3dfaef7",
+  "root_parameter_validation.json": "af192262de8d921580beba95ca645d58992d1ec785dc5dcfda6a62fd8ba2356f",
+  "root_result_audit.json": "9d171d9c792b27c7649bcd5f7760cc8f40d137b28ded4bd9da0cf341f19d3f01",
+  "timing_numba_dt900_plus20.json": "7fddfd2e738367c621ff90759841de4875478859f284adb7cb4decef31d1b0f0",
+  "timing_numba_plus20.json": "b0776344858ba95fb4599f8500b02195985cbdb61a5c321e70e4bca0bdbe8000",
+  "timing_numpy_plus20.json": "24fa6caaf2d3a822f2e5638c21da3e69a53000b4f3956a73f2a9f8bd17181af7"
+ },
+ "builder": "75d117a76ea0fba6445386c9b339a7656946ad18955fb885ecf843f3d6d22576",
+ "report_md": "34eadd4627a7d7f9e59e4e3939b6e336f4a2d996dcd542a58d97481af53f8ddc",
+ "sealed_inputs_checked": {
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/case_numba.json": "507aa743406b543330171cdb57f74c151fb76afc8e785e4aeb2f494f438ecd26",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/parameter_changes.json": "de40519b23516798d6074ce1959f65274334b0216cbd1bf0970782f867d6e24d",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/root_parameter_validation.json": "af192262de8d921580beba95ca645d58992d1ec785dc5dcfda6a62fd8ba2356f",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/comparison.json": "1b57990f64711da95404443cc253fd15258b48aa33badec1a3a95b4571e238dc",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/root_result_audit.json": "9d171d9c792b27c7649bcd5f7760cc8f40d137b28ded4bd9da0cf341f19d3f01",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/root_decimal_verification.json": "209b8bcf4f5984ef239d3526e01b001596e2f861bf80a8b72f9b102ea3dfaef7",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/frozen_helper_manifest.json": "df395a94234067489ce6a4e8d042b2fc87faabf6356313e56694a165319becf0",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numba/result.json": "61cd9a042a999040e9cbf81f524c1e45b627ff0383146853aca9e4196d51bfa6",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numba/timing.json": "b0776344858ba95fb4599f8500b02195985cbdb61a5c321e70e4bca0bdbe8000",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numpy/result.json": "7df41a7289ad80cd6ffbfe7b8d51d9d333a43070debb7819bad5b63bd440c36b",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numpy/timing.json": "24fa6caaf2d3a822f2e5638c21da3e69a53000b4f3956a73f2a9f8bd17181af7",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numba_dt900/result.json": "67e8ba6d3d0941e491d0117e06b10934327e11559e7f9435f25dded7616696b6",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numba_dt900/timing.json": "7fddfd2e738367c621ff90759841de4875478859f284adb7cb4decef31d1b0f0",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numba_runs/result.json": "5b65043a13b73b4ae6fb1ada55040476c2c56faca3326ccc7f3dc9f026fee366",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numpy_runs/result.json": "daa6d4c016662d7dbab6460f65920629da3c9c567e1992f53db8459b1402d827",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/actual_numba_dt900_runs/result.json": "a7bd6e2ff631da85121ecec1aa51a82dedf160ac57e6957742a31ded64456ee6",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/case_numba.json": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/actual_numba/result.json": "d5b0ed2755fa4dd8f49497864edfa554c89bceec1f0656759c7686a601e884b9",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/actual_numba/timing.json": "379866f1b9eb91aba50195dc8481e750cce4892228dd2e44dc30d4d85938f8e8",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/actual_numba_runs/result.json": "f7f26f6af853db89efb54521db97ac21bba0c3dd68b0130c82e41d81a972d8a5",
+  "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119/root_result_audit.json": "691b084584a4457559c32d898de78aa299c4319594d5d1749c5f8b80e5c1b09c"
+ }
+}

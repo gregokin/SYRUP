@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "all_K_Ks_fields_scaled_once": 10,
+  "factor": 1.2,
+  "effective_conductivity_factor_unchanged": 0.31635738822500753,
+  "harmonic_interfaces_consistent": true,
+  "forcing_initial_retention_evaporation_d_stress_unchanged": true,
+  "original_sealed_results_unchanged": true
+}

@@ -1,0 +1,11 @@
+Term (mm over 1 m²),Baseline,+20%,Change
+Initial storage,22.9424,22.9424,0
++ Rain = intake,25.088,25.088,0
+- Evaporation,34.0455,34.4686,+0.4231
+- Runoff / percolation / drainage,0,0,0
+= Final storage,13.9849,13.5618,-0.4231
+Deep-layer peak gain (mm),0.5357,0.5891,+0.0534
+Deep-layer peak (nominal day),2024-03-20,2024-03-16,earlier
+"Deep layer, final (vol. %)",6.678,6.442,-0.236
+Jan 23 top-layer rise (points),9.060,9.042,-0.018
+"Jan 23 middle layer, 72 h (points)",0.136,0.164,+0.029

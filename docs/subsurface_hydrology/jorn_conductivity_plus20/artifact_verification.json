@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "docx_sha256": "1c8de4489e775eb92c6e43b31030f8a96de593746c3e90a3bc1a99b4626c6e9e",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120/report/SYRUP_JORN_160day_K_Ks_plus20_comparison_20261120.docx",
+  "zip_XML_media": "PASS;3 embeddedPNGs match independently viewed figures;4tables/repeatingheaders",
+  "CSV_values": "160 paired original/new trajectories/observations/evaporation exact; all LF",
+  "sealed_models_and_sources": "old/new config/results and frozen benchmark hashes unchanged",
+  "visual_review": "Root viewed all threePNG outputs; legible labels/legends; no clipping. Final image identity rechecked.",
+  "limit": "No Office pagination renderer; no rendered-page acceptance or new GPU/restart/full test-suite claim."
+}

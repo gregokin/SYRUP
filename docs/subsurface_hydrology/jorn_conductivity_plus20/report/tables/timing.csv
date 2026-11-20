@@ -1,0 +1,5 @@
+Run,Integration (s),Operator prep + JIT (s),Driver call wall (s),Full fresh command (s)
+"Baseline, Numba",0.0398,4.891,6.286,7.446
+"+20%, Numba",0.0362,6.821,8.675,13.757
+"+20%, NumPy",0.1486,0.138,-,2.727
+"+20%, Numba, 900 s storm step",0.0486,4.433,-,7.006

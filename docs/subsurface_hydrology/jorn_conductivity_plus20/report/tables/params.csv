@@ -1,0 +1,10 @@
+Quantity,Baseline (mm/h),+20% (mm/h),Used by the native run as
+"Ks, layer 0-10 cm",120.79,144.94,source estimate; represented by the derived K
+"Ks, layer 10-20 cm",119.71,143.65,source estimate; represented by the derived K
+"Ks, layer 20-30 cm",104.33,125.20,source estimate; represented by the derived K
+"Effective K, layer 0-10 cm",38.21,45.85,derived from Ks; equals the matrix K
+"Effective K, layer 10-20 cm",37.87,45.44,derived from Ks; used to form interface K
+"Effective K, layer 20-30 cm",33.01,39.61,derived from Ks; used to form interface K
+Matrix infiltration K (top layer),38.21,45.85,direct physical input (intake law)
+"Interface K, 0-10 / 10-20 cm",38.04,45.65,direct physical input (exchange law)
+"Interface K, 10-20 / 20-30 cm",35.27,42.33,direct physical input (exchange law)

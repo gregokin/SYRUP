@@ -1,0 +1,11 @@
+field,baseline,plus20,ratio
+.provenance.layer_properties[0].Ks_mm_h,120.78651558947541,144.9438187073705,1.2
+.provenance.layer_properties[0].Ks_m_s,3.355180988596539e-05,4.0262171863158465e-05,1.2
+.provenance.layer_properties[1].Ks_mm_h,119.70776661032677,143.64931993239213,1.2
+.provenance.layer_properties[1].Ks_m_s,3.3252157391757436e-05,3.9902588870108924e-05,1.2
+.provenance.layer_properties[2].Ks_mm_h,104.33238089230187,125.19885707076224,1.2
+.provenance.layer_properties[2].Ks_m_s,2.8981216914528297e-05,3.4777460297433953e-05,1.2
+.layers.interface_conductivity_m_s[0],1.0566751696583226e-05,1.268010203589987e-05,1.2
+.layers.interface_conductivity_m_s[1],9.797630862576748e-06,1.1757157035092098e-05,1.2
+.matrix.conductivity_m_s,1.0614362945745998e-05,1.2737235534895197e-05,1.2
+.matrix.ks_top_m_s,3.355180988596539e-05,4.0262171863158465e-05,1.2
