@@ -1,0 +1,7 @@
+Conductivity (mm/h),SR33 0.5x,SR33 1x,SR33 2x,SR33 4x
+"Matrix K, top layer (direct input)",19.1,38.2,76.4,152.8
+"Interface K, 0-10 / 10-20 cm",19.0,38.0,76.1,152.2
+"Interface K, 10-20 / 20-30 cm",17.6,35.3,70.5,141.1
+"Ks record, layer 0-10 cm",60.4,120.8,241.6,483.1
+"Ks record, layer 10-20 cm",59.9,119.7,239.4,478.8
+"Ks record, layer 20-30 cm",52.2,104.3,208.7,417.3

@@ -1,0 +1,209 @@
+{
+  "schema": "syrup.jorn_sr33_160day.qualification/1",
+  "status": "independently_accepted_sensitivity_study",
+  "utc": "2026-11-20T21:16:44.749485+00:00",
+  "base_main": "b5ef795471703294909c3d6a73d1fbf8e08bf7dd",
+  "production_package": {
+    "files": 180,
+    "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+    "changed": false
+  },
+  "MAPLE": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "files": 412,
+    "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "selected_factors": [
+    0.5,
+    1,
+    2,
+    4
+  ],
+  "field_capacity_volumetric": [
+    0.09746408113338643,
+    0.09939508831059733,
+    0.10913571555870182
+  ],
+  "fixed_d": 0.0010239461376024856,
+  "fixed_E": 1,
+  "fixed_evaporation_stress": 0.20170581117963332,
+  "same_forcing_initial_observations_as_original": true,
+  "cpu_environment": "/home/okin/MAPLE/.venv",
+  "verification": {
+    "root_setup_tests": 29,
+    "full_160day_runs": 12,
+    "backends": [
+      "numba",
+      "numpy"
+    ],
+    "storm_step_seconds": [
+      1800,
+      900
+    ],
+    "backend_physical_outputs": "bitwiseequal",
+    "max_dt900_theta_difference_percentage_points": 0.0007198030763294616,
+    "independent_decimal_controls": 12,
+    "decimal_digits": 90,
+    "max_water_error_m": 1.4841174671552674e-17,
+    "raw_observations_independently_checked": 282,
+    "per_layer_water_budgets": "PASS",
+    "water_conservation": "Existing MAPLE-derived bounds, no tolerance changes",
+    "driver_fresh_process_restart": "1xsplitday80 exact continuation",
+    "source_and_input_guards": "beforeafter exact",
+    "docx_csv_tables": 13,
+    "embedded_png": 4,
+    "all120_report_seals": "exact",
+    "ruff": "clean"
+  },
+  "review": {
+    "implementation_and_report_author": "Claude session d37c1dab-3e24-4aca-bfb6-1dd6fefcbc6d",
+    "independent_reviewer": "Codex Root",
+    "closed_findings": [
+      "Generated runner paths resolved before execution.",
+      "Report cannot infer a measured FC from one event or count overlapping interface transfers as external losses.",
+      "Soil megapit citation and non-colocation disclosed.",
+      "Observation endpoints paired at matching timestamps, not final model date.",
+      "Word tables split for legibility."
+    ],
+    "no_remaining_confirmed_defect": true
+  },
+  "results": {
+    "aligned_rmse_pp": [
+      2.7503117590059643,
+      2.2730692268104713,
+      1.671080349071027,
+      1.1997166689234804
+    ],
+    "old_FC_1x_aligned_rmse_pp": 1.0490644324729501,
+    "rain_intake_mm_all": 25.088,
+    "runoff_mm_all": 0,
+    "bottom_drainage_mm": [
+      1.2864938557249697,
+      1.28216786332307,
+      1.2738947515922254,
+      1.25875485150519
+    ],
+    "evaporation_mm": [
+      27.27658162708715,
+      29.473319986031193,
+      32.476627201145696,
+      35.754325502978475
+    ]
+  },
+  "limits": [
+    "Sensitivity study, not recalibration, fitted new K, or observed-site validation.",
+    "Old d/stress fit is conditional on old FC.",
+    "Matrix-only rain with zero-residence runoff; no catchment routing, plant transpiration, wind or sediment.",
+    "Nominal160days plus27.5physicalstormhours; historical daily approximation unchanged.",
+    "No automatic Green-Ampt recovery or general repeated-storm qualification.",
+    "No GPU run or domain-scaling acceptance; one1m2three-layerCPUcolumn.",
+    "No Office-rendered pagination claim."
+  ],
+  "docx": {
+    "name": "SYRUP_JORN_160day_SR33_K_sensitivity_20261120.docx",
+    "sha256": "5e6f1d96f449330221b727650f861cd747de6fcede2a15a777d4722065e27760"
+  },
+  "runs": [
+    {
+      "case": "k0p5",
+      "variant": "numba",
+      "config_sha256": "1c27e71312bce8f83e79636093715097ba7c80e7edfb663b76868ff9272fe7b9",
+      "fresh_process_seconds": 7.26368271400861,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k0p5",
+      "variant": "numpy",
+      "config_sha256": "31429c5dde5ae6f3d34a51560446aeaf03c89e18d33c78515fc6d2fd7ad164a6",
+      "fresh_process_seconds": 2.696265195001615,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k0p5",
+      "variant": "numba_dt900",
+      "config_sha256": "57cb85c3c5d4af6b374daeaae1a19b15fe538563430af7ffd94a16e72117c227",
+      "fresh_process_seconds": 7.033488247994683,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k1",
+      "variant": "numba",
+      "config_sha256": "f024054f5198ec8358c95f7a33683e6228084e6af246f9790cde586d437f3d2a",
+      "fresh_process_seconds": 6.996696586007602,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k1",
+      "variant": "numpy",
+      "config_sha256": "fcb836de9de807cad2402d801495f6088e2d4b3d9cb6e0e02fc068422db924b1",
+      "fresh_process_seconds": 2.652161805992364,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k1",
+      "variant": "numba_dt900",
+      "config_sha256": "eb6bf56ccaae2cee5af04af60b06ed91813e98ea971478a6d11b4bb77489ed20",
+      "fresh_process_seconds": 7.147412954000174,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k2",
+      "variant": "numba",
+      "config_sha256": "31affd0fdeb5ef4a127a7afcff5206ac0091cd2a9b7ea9aa5ef2045b40af6584",
+      "fresh_process_seconds": 7.38088318699738,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k2",
+      "variant": "numpy",
+      "config_sha256": "281c4b82a0690b83da598af10f6ac173ae6607612080b54f2b6d45bfbcae0def",
+      "fresh_process_seconds": 2.732384503004141,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k2",
+      "variant": "numba_dt900",
+      "config_sha256": "3575d47d4c92c5afbf610c622e582b63c264c70fceb57987aac699d395dcec92",
+      "fresh_process_seconds": 7.132866147003369,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k4",
+      "variant": "numba",
+      "config_sha256": "f303fee5cfadd6419481ea1c5f28f105a25269df53a4af48d5feb8ad114d783f",
+      "fresh_process_seconds": 7.013843698005076,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k4",
+      "variant": "numpy",
+      "config_sha256": "bf0f585c244cc3f78d5bc24d95b1a9e20c0c59f8e7fcfd0ef39dd23f0365efed",
+      "fresh_process_seconds": 2.661359949997859,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    },
+    {
+      "case": "k4",
+      "variant": "numba_dt900",
+      "config_sha256": "7d809d52ee7d21962c9b94c307bd5230e8bd3b8b25a2768d8f96082a18b3f98d",
+      "fresh_process_seconds": 7.300733996002236,
+      "status": "complete160days",
+      "source_guards": "exactbeforeafter"
+    }
+  ],
+  "numeric_archive": {
+    "file": "evidence/native_outputs.zip",
+    "members": 140,
+    "sha256": "cf0c10030e4b567891ad5eaf4346497107d3985ab8e6e57589737b898f0042ef"
+  }
+}

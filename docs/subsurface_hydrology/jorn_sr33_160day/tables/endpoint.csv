@@ -1,0 +1,4 @@
+Sensor,Last valid sensor close (UTC),Observed (vol. %),SR33 0.5x at that close (vol. %),SR33 1x at that close (vol. %),SR33 2x at that close (vol. %),SR33 4x at that close (vol. %)
+5.8 cm sensor,2024-03-15 07:00 UTC,5.63,4.25,4.43,4.69,5.03
+15.8 cm sensor,2024-06-25 07:00 UTC,5.17,7.51,6.34,5.06,3.81
+25.8 cm sensor,2024-06-26 07:00 UTC,4.64,9.85,8.64,6.75,4.68

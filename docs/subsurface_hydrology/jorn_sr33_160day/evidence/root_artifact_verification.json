@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_sr33_160day_20261120/analysis_candidate/docs/subsurface_hydrology/jorn_sr33_160day/SYRUP_JORN_160day_SR33_K_sensitivity_20261120.docx",
+  "sha256": "5e6f1d96f449330221b727650f861cd747de6fcede2a15a777d4722065e27760",
+  "tables": 13,
+  "table_csv_matches": [
+    "soil.csv",
+    "ret.csv",
+    "params.csv",
+    "fixed.csv",
+    "budget.csv",
+    "scores_aligned.csv",
+    "scores_raw.csv",
+    "bias.csv",
+    "endpoint.csv",
+    "matched.csv",
+    "matched_budget.csv",
+    "timing.csv",
+    "checks.csv"
+  ],
+  "media_png_exact": 4,
+  "max_table_columns": 7,
+  "all120_source_seals_unchanged": true,
+  "all_case_and_execution_input_hashes_unchanged": true,
+  "manifest_verified": true,
+  "scope": "Independent static Word/table/media/data verification; no Office render claim."
+}

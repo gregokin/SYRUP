@@ -1,0 +1,15 @@
+Quantity,old FC 1x,SR33 0.5x,SR33 1x,SR33 2x,SR33 4x
+Rain = intake (mm),25.088,25.088,25.088,25.088,25.088
+Runoff / ponding (mm),0,0,0,0,0
+Water crossing the upper interface (0-10 to 10-20 cm) by the gravity step (mm),0.00,6.64,6.77,7.01,7.40
+Water crossing the lower interface (10-20 to 20-30 cm) by the gravity step (mm),0.00,5.14,5.11,5.06,5.04
+Bottom drainage (mm),0.000,1.286,1.282,1.274,1.259
+"Net diffusive exchange, top-to-middle, upward (mm)",3.84,3.65,6.18,9.59,13.32
+"Net diffusive exchange, middle-to-deep, upward (mm)",0.34,1.03,2.21,4.06,6.13
+Evaporation (mm),34.045,27.277,29.473,32.477,35.754
+Final storage (mm; initial 22.9424),13.985,19.467,17.275,14.280,11.017
+"Highest daily-close value, top / middle / deep (vol. %)",15.35 / 8.67 / 7.56,9.43 / 9.94 / 10.91,9.44 / 9.94 / 10.91,9.46 / 9.95 / 10.90,9.46 / 9.95 / 10.88
+Top-layer rise at the Jan 23 storm close (points),9.06,3.18,3.14,3.07,2.96
+"Middle layer, 72 h change (points)",0.14,1.39,1.47,1.60,1.82
+"Deep layer, peak gain (mm)",0.54,3.89,3.88,3.87,3.86
+"Model end state 2024-06-26 07:00 UTC, top / middle / deep (vol. %); no observation implied",2.18 / 5.13 / 6.68,2.12 / 7.49 / 9.85,2.31 / 6.32 / 8.64,2.49 / 5.04 / 6.75,2.54 / 3.79 / 4.68

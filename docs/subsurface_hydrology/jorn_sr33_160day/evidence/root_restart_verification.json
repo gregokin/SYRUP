@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "utc": "2026-11-20T21:03:16.429575+00:00",
+  "factor": 1,
+  "split_day": 80,
+  "fresh_process_resume": true,
+  "exact_equal_fields": [
+    "rows",
+    "ledger",
+    "cumulative_closure",
+    "matrix_regime",
+    "scores",
+    "physical_end_t_s",
+    "added_rain_hours",
+    "nominal_elapsed_s",
+    "complete",
+    "days_done"
+  ],
+  "scope": "Field-driver public component state reconstruction, not production checkpoint or coupled simulation qualification."
+}

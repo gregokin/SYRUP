@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "rows": [
+    {
+      "factor": 0.5,
+      "config_sha256": "1c27e71312bce8f83e79636093715097ba7c80e7edfb663b76868ff9272fe7b9",
+      "FC": [
+        0.09746408113338643,
+        0.09939508831059733,
+        0.10913571555870182
+      ],
+      "matrix_K_mm_h": 19.105853302342798,
+      "interface_K_mm_h": [
+        19.020153053849807,
+        17.63573555263815
+      ]
+    },
+    {
+      "factor": 1,
+      "config_sha256": "f024054f5198ec8358c95f7a33683e6228084e6af246f9790cde586d437f3d2a",
+      "FC": [
+        0.09746408113338643,
+        0.09939508831059733,
+        0.10913571555870182
+      ],
+      "matrix_K_mm_h": 38.211706604685595,
+      "interface_K_mm_h": [
+        38.040306107699614,
+        35.2714711052763
+      ]
+    },
+    {
+      "factor": 2,
+      "config_sha256": "31affd0fdeb5ef4a127a7afcff5206ac0091cd2a9b7ea9aa5ef2045b40af6584",
+      "FC": [
+        0.09746408113338643,
+        0.09939508831059733,
+        0.10913571555870182
+      ],
+      "matrix_K_mm_h": 76.42341320937119,
+      "interface_K_mm_h": [
+        76.08061221539923,
+        70.5429422105526
+      ]
+    },
+    {
+      "factor": 4,
+      "config_sha256": "f303fee5cfadd6419481ea1c5f28f105a25269df53a4af48d5feb8ad114d783f",
+      "FC": [
+        0.09746408113338643,
+        0.09939508831059733,
+        0.10913571555870182
+      ],
+      "matrix_K_mm_h": 152.84682641874238,
+      "interface_K_mm_h": [
+        152.16122443079846,
+        141.0858844211052
+      ]
+    }
+  ],
+  "unchanged": "forcing,observations,initialwater,physics,boundary,geometry,SAT,stress,residual,suction,localfactor; newconfigs only",
+  "source": "new4e38; nooldprofilemodifications"
+}

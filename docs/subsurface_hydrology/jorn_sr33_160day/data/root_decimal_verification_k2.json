@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "scope": "Independent 90-digit rain + open gravity cascade + E + pair relaxation control.\n\nUses declared binary64 parameters and raw pinned rain; never calls a production\nhydrology update. This is an equation control, not an alternative field solver.\n",
+  "cases": [
+    {
+      "case": "numba",
+      "days": 160,
+      "decimal_digits": 90,
+      "max_water_error_m": 7.156682321964417e-18,
+      "max_error_over_declared_daily_bound": 0.010984174121927188,
+      "evaporation_mm": 32.47662720114567,
+      "bottom_drainage_mm": 1.2738947515922252,
+      "gravity_percolation_mm": [
+        7.013721198545351,
+        5.064885888154757
+      ]
+    },
+    {
+      "case": "numpy",
+      "days": 160,
+      "decimal_digits": 90,
+      "max_water_error_m": 7.156682321964417e-18,
+      "max_error_over_declared_daily_bound": 0.010984174121927188,
+      "evaporation_mm": 32.47662720114567,
+      "bottom_drainage_mm": 1.2738947515922252,
+      "gravity_percolation_mm": [
+        7.013721198545351,
+        5.064885888154757
+      ]
+    },
+    {
+      "case": "numba_dt900",
+      "days": 160,
+      "decimal_digits": 90,
+      "max_water_error_m": 6.3730313293236515e-18,
+      "max_error_over_declared_daily_bound": 0.008945041869974699,
+      "evaporation_mm": 32.477057830068375,
+      "bottom_drainage_mm": 1.2738947515922252,
+      "gravity_percolation_mm": [
+        7.0142382537403565,
+        5.06433757759507
+      ]
+    }
+  ]
+}

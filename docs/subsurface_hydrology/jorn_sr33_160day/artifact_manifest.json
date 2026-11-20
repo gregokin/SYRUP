@@ -1,0 +1,61 @@
+{
+ "docx": {
+  "file": "SYRUP_JORN_160day_SR33_K_sensitivity_20261120.docx",
+  "zip_ok": true,
+  "media": 4,
+  "tables": 13,
+  "header_rows_repeat": 13,
+  "paragraphs": 501,
+  "words": 3842,
+  "bytes": 790256,
+  "sha256": "5e6f1d96f449330221b727650f861cd747de6fcede2a15a777d4722065e27760"
+ },
+ "figures": {
+  "fig1_raw_overlay.png": "edaf271c5d875c8f26a5489d6e7c29bbd5a4194eebafcc7aae8620498924b656",
+  "fig2_aligned_overlay.png": "73828e40c4e2524bf7fcd150cbd638a0188fcd6d5ae16fcddd40efaee27204e3",
+  "fig3_january_zoom.png": "26205630f7d55bcf0f67ca3a5e2b44fefee68fb11d88fff957948c88e51d58b4",
+  "fig4_scores_and_budgets.png": "6e108d8f2898a2507a9a7668d198a75db4f8557690e2f1caeb1146d420848c12"
+ },
+ "tables": {
+  "bias.csv": "b550c496edd0ec16d1d2e4664a0539e2f07fd01765f34eec4584953ce0012d8f",
+  "budget.csv": "c6a57b57c7620125ea6699dab8dd116fb385d99692ae1434c973f284b79aa94c",
+  "case_hashes.csv": "2e8d648e629dda53ba902a50e72fce631a85b14774c6677ba2fc573eeaaa53ed",
+  "checks.csv": "f0c249e33b2deb2603c42ca38ff82e60f11bca2e569a01816c07587e2926f90d",
+  "daily_trajectories.csv": "9008fed3bd7cf5eab19fc26125181300cb5bb048dbbf37e8d9a6671d3a39f526",
+  "endpoint.csv": "1cff0065c32b3b8e561284d9e9a0921389f2d4bffc4ab09fe1601b3ff6972ae6",
+  "fixed.csv": "eab4c536c104eba31f4c4d4a166b3e48ab494b1280fff528fe03eb5c4269a5df",
+  "matched.csv": "b3e6c2cc346591a0b16f1ecc2b5c3fd7cfbc1f949f146aa15214a972f27ae7a9",
+  "matched_budget.csv": "4d513ccc1dc9900980ff5ae703da7a93295897715863dbe95ed459bb4fdf6c51",
+  "parameter_diff_vs_original.csv": "598ed895a5280405fa5d7ea09d279406c6ffcf7b0249dc36ccda6267360ea8d3",
+  "params.csv": "cdb6b846c7198e68f0192238e4d1b95540e3deb796e2758a7679c4ed31ad06e6",
+  "provenance_seal.csv": "b2361361f282b3148541a95e86d4c6a17ff56c4e676ad01babb2c5960e3e6eeb",
+  "ret.csv": "7d52de20d3174fcf6897908d101556300d1fdfaedbf36ae6d73c884785e6f968",
+  "scores_aligned.csv": "053a6b81179ba750ec6547244dc48b5e3ea755668e8ae171fd1777cb5ee5312d",
+  "scores_raw.csv": "5f593a3b112ca27aed0007c5fa505e00efd3bf9f97ed4114660e0b79d834d961",
+  "soil.csv": "c5300ef411446e753555475328ce8c3895b8324ffa7b5e37b4ce1eb64006ec8b",
+  "timing.csv": "0850ae67cb9207349cb6e3784525c62a7a348a5679e05f019125326db65cdabe"
+ },
+ "data": {
+  "case_numba_k0p5.json": "1c27e71312bce8f83e79636093715097ba7c80e7edfb663b76868ff9272fe7b9",
+  "case_numba_k1.json": "f024054f5198ec8358c95f7a33683e6228084e6af246f9790cde586d437f3d2a",
+  "case_numba_k2.json": "31affd0fdeb5ef4a127a7afcff5206ac0091cd2a9b7ea9aa5ef2045b40af6584",
+  "case_numba_k4.json": "f303fee5cfadd6419481ea1c5f28f105a25269df53a4af48d5feb8ad114d783f",
+  "case_numba_old_fc_1x.json": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+  "root_decimal_verification_k0p5.json": "1e20af72d7ed7b430c7ccc6fa5bbed89d68553674e629c9fbc05f0557a7989c8",
+  "root_decimal_verification_k1.json": "83ef4489ce81dae446245b013fbaafbaaab68bf80861115601c48b0fe1d09220",
+  "root_decimal_verification_k2.json": "4ec31e601a1ac2499c1b6a055b71b2615180a87f89347f8a3318e872914aa279",
+  "root_decimal_verification_k4.json": "f481bc389f0356f74960fbfbd46929ab5b2663751cb5ef1a73da55326ea04fa6",
+  "root_independent_inputs.json": "9ee9477c4fb1d23fae9d117efb00b603725468a6e53dc6aca7fd14ff9be2572d",
+  "root_parameter_verification.json": "8e46fa47880df2dda005b6f1fa9b335ef6d5228104fd58f4da5a06ad6f50f355",
+  "root_restart_verification.json": "add5467835ebec3c8a71c8c63471400a3f430bcf8ea79d69bf3d6b7b0d848470",
+  "root_result_audit.json": "67f7a79ee60ced24cc730241d225ab67ae7df790b1f53ba64aef4fae53a5fdfb",
+  "timing_numba_k0p5.json": "463c418335794616080b4592f84060fee0ed7994507c6a5efcb4dc5e03d78955",
+  "timing_numba_k1.json": "3535278248ddef27c6cca2dd06ea8c57961fd562a1338d5caba947321f1460e3",
+  "timing_numba_k2.json": "1f2fdac32bfdc3ce310fc64845fc943bfd2c9a1d3879ec626736fd42925afd77",
+  "timing_numba_k4.json": "ce0e5deaeba3c844924c6e47a6a86788cc5f46c95d250de38e9a0bcbdfd78449"
+ },
+ "builder": "57e789cddd8d3751ecb31c889fddc7e8a0e5a4262a1a465dfef9ed1bb7f0a1f1",
+ "report_md": "f9b4b35fd16484da3feab0ac4a11e67075684210bf87215f3af1b9dbd922c099",
+ "seal_files_rechecked": 120,
+ "root_restart_verification_sha256": "add5467835ebec3c8a71c8c63471400a3f430bcf8ea79d69bf3d6b7b0d848470"
+}

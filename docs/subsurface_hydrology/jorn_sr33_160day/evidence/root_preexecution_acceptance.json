@@ -1,0 +1,14 @@
+{
+  "status": "PREEXEC_ACCEPTED",
+  "utc": "2026-11-20T20:58:21.994579+00:00",
+  "checks": "Root29setup tests passed fullsourceguards; independent4configuration whitelists/exactK/Ks scales; rawobservations/initialprofile/forcing audited; original10helperhashes identical; Ruffclean; source package unchanged4e38",
+  "writer": "ClaudeC01closed0; onlyRootstylenonphysicaledits2files (fstringexactmessage,unusedimports/locals), reportphaseClaude review pending",
+  "native_source": "180/4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+  "maple": "412/fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+  "new_helper_hashes": {
+    "benchmarks/jorn_sr33_sensitivity/__init__.py": "06c22fe0bbef3e2d168855f12df5896047d6089c1d4fe4e6426f633ff495a20f",
+    "benchmarks/jorn_sr33_sensitivity/generate.py": "2498f5e80a2e92ddc1d16a503832546efaf81959df68fb501a7ec0f0d24bc9de",
+    "tests/jorn_sr33_sensitivity/test_setup.py": "069aa1f26dcd79a41d2dea68ef51fc9f4f75707e8f302ed5006eccf05589f2ea"
+  },
+  "resolved_setup_defect": "Relative runner paths corrected before any model execution; allnowabsolute; no physics/sourceguard change."
+}
