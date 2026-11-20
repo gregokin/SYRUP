@@ -1,0 +1,50 @@
+{
+  "status": "ACCEPTED_PRESCRIBED_CONDUCTIVITY_MULTIPLIER_STUDY",
+  "utc": "2026-11-20T03:33:01.732795+00:00",
+  "base_main": "483dc3df08bcf0acf9d9612d18270e1ea2f55dfc",
+  "new_factors_original_relative": [
+    2,
+    3,
+    4
+  ],
+  "reused_comparators": [
+    1,
+    1.2
+  ],
+  "scope": "All ten K/Ks entries scaled once relative ORIGINAL; original initial state, inputs, retention/d/E/stress/clocks maintained. No refit/default/source change.",
+  "source_pair": {
+    "SYRUP_files": 180,
+    "SYRUP_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "MAPLE_files": 412,
+    "MAPLE_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "verification": {
+    "parameters": "All three new native configurations admitted; harmonic interfaces and matrixK/Ks factor checked",
+    "actual_runs": 9,
+    "native_backends": "NumPy/Numba physical trajectories and fluxes exact for each factor",
+    "native_conservation_and_guards": "PASS before/after all actual runs; frozen helpers and source inputs unchanged",
+    "independent_control": "Per-factor90digit arithmetic and Fraction-pooled scores/raw-target joins PASS",
+    "storm_dt900_max_theta_difference": {
+      "x2": 9.067477025406778e-06,
+      "x3": 1.310296996523408e-05,
+      "x4": 1.683221942562485e-05
+    },
+    "primary90digit_max_water_error_m": {
+      "x2": 9.747157892941687e-18,
+      "x3": 8.902056685736632e-18,
+      "x4": 6.594914774208506e-18
+    },
+    "review": "Claude independently checked cases and authored report; Root independently verified raw metrics, all five trajectories/CSV, four PNGs and DOCX/media. Bounded wording/plot-reference corrections accepted.",
+    "report_artifact": "root_artifact_verification.json PASS; Ruff clean"
+  },
+  "limitations": [
+    "One1m2three-layerCPUcolumn; no new GPU/scaling/coupled qualification",
+    "No new restart or broad77test-suite rerun for input-only study",
+    "Conditional surrogate hydraulic properties and fitted2025d/stress; 2024 scenario selection exploratory",
+    "MatrixK never limits actual intake; results identify redistribution responses, not field infiltration capacity",
+    "No plants/transpiration; point-vs-layer support and nominal/physical-clock approximation retained",
+    "No Office pagination renderer, ZIP/XML/media/PNG checks only",
+    "Shared-host fresh-command times are not controlled speed comparisons"
+  ],
+  "docx_sha256": "632d4556902d29cd759c642de457fc050ee801b911f291d4a9892485b43b94af"
+}

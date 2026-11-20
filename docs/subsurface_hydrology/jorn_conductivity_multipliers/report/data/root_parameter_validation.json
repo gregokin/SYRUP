@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "factor": 2,
+      "all_ten_conductivities_scaled_once": true,
+      "harmonic_and_matrix_Ks_relation": "PASS",
+      "unchanged_other_physics_input_and_source_guards": true
+    },
+    {
+      "factor": 3,
+      "all_ten_conductivities_scaled_once": true,
+      "harmonic_and_matrix_Ks_relation": "PASS",
+      "unchanged_other_physics_input_and_source_guards": true
+    },
+    {
+      "factor": 4,
+      "all_ten_conductivities_scaled_once": true,
+      "harmonic_and_matrix_Ks_relation": "PASS",
+      "unchanged_other_physics_input_and_source_guards": true
+    }
+  ],
+  "historical_results_unchanged": true
+}

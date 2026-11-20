@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "case": "numba",
+      "days": 160,
+      "precision_digits": 90,
+      "max_water_error_m": 8.902056685736632e-18,
+      "max_error_over_native_single_step_bound": 0.04356834044289831,
+      "evaporation_mm_high_precision": 37.067308059002535,
+      "scope": "Independent exact pair relaxation+moisture-limitedE with real rain; native binary64 input parameters; all-rain-unponded/no-FC conditions verified, no production solver replacement."
+    },
+    {
+      "case": "numpy",
+      "days": 160,
+      "precision_digits": 90,
+      "max_water_error_m": 8.902056685736632e-18,
+      "max_error_over_native_single_step_bound": 0.04356834044289831,
+      "evaporation_mm_high_precision": 37.067308059002535,
+      "scope": "Independent exact pair relaxation+moisture-limitedE with real rain; native binary64 input parameters; all-rain-unponded/no-FC conditions verified, no production solver replacement."
+    },
+    {
+      "case": "numba_dt900",
+      "days": 160,
+      "precision_digits": 90,
+      "max_water_error_m": 7.560373048323087e-18,
+      "max_error_over_native_single_step_bound": 0.05433204634873652,
+      "evaporation_mm_high_precision": 37.06818775463605,
+      "scope": "Independent exact pair relaxation+moisture-limitedE with real rain; native binary64 input parameters; all-rain-unponded/no-FC conditions verified, no production solver replacement."
+    }
+  ]
+}

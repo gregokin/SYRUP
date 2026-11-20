@@ -1,0 +1,13 @@
+Quantity,1x (original),1.2x,2x,3x,4x
+Initial storage (mm),22.9424,22.9424,22.9424,22.9424,22.9424
+Rain = intake (mm),25.088,25.088,25.088,25.088,25.088
+Evaporation (mm),34.0455,34.4686,35.8342,37.0673,37.9622
+"Runoff, percolation, drainage (mm)",0,0,0,0,0
+Final storage (mm),13.9849,13.5618,12.1962,10.9631,10.0682
+Deep-layer peak gain (mm),0.536,0.589,0.761,0.938,1.089
+"Deep-layer peak, nominal day",03-20,03-16,03-06,02-24,02-22
+"Deep layer, final (vol. %)",6.68,6.44,5.58,4.77,4.19
+"Middle layer, final (vol. %)",5.13,4.90,4.28,3.79,3.45
+Net upward top-middle exchange (mm),3.84,4.31,5.79,7.09,8.01
+Jan 23 top-layer rise (points),9.06,9.04,8.97,8.88,8.78
+"Jan 23 middle layer, 72 h (points)",0.136,0.164,0.282,0.433,0.583

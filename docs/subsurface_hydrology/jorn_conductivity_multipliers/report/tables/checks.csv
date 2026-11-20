@@ -1,0 +1,6 @@
+Run,Integration (s),Operator prep + JIT (s),Full fresh command (s),Absolute closure residual / native bound (m³),900 s step: max change (points),90-digit check: max water error (m)
+1x (original),0.0398,4.89,7.45,8.7e-18 / 2.71e-13,-,-
+1.2x,0.0362,6.82,13.76,1.0e-17 / 2.74e-13,0.00069,4.92e-18
+2x,0.0397,4.46,7.12,1.0e-17 / 2.85e-13,0.00091,9.75e-18
+3x,0.0383,4.78,7.53,6.9e-18 / 2.95e-13,0.00131,8.90e-18
+4x,0.0429,4.26,6.77,2.4e-17 / 3.02e-13,0.00168,6.59e-18

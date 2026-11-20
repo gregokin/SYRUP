@@ -1,0 +1,888 @@
+{
+  "status": "PASS",
+  "scope": "Three new original-relative2x/3x/4x full160daycases, original1x/prior1.2x reused with preserved exact source/input identities; no refit/defaultchange.",
+  "records": [
+    {
+      "factor": 1,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_160_day_run_20261119",
+      "config_sha256": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+      "parameters": {
+        "layer_Ks_mm_h": [
+          120.78651558947541,
+          119.70776661032677,
+          104.33238089230187
+        ],
+        "effective_layer_K_mm_h": [
+          38.211706604685595,
+          37.87043639509174,
+          33.0063195263853
+        ],
+        "matrix_K_mm_h": 38.211706604685595,
+        "interface_K_mm_h": [
+          38.040306107699614,
+          35.2714711052763
+        ]
+      },
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_percentage_points": 1.8648329967604909,
+            "bias_percentage_points": 0.5662377524629733
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 1.8171822806709097,
+            "bias_percentage_points": 0.3810177524629734
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_percentage_points": 0.5340329713965695,
+            "bias_percentage_points": -0.31755197620393083
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 0.5059445894966175,
+            "bias_percentage_points": 0.26763402379606643
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_percentage_points": 1.468918506288984,
+            "bias_percentage_points": 1.4038100411112162
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 1.054236022331744,
+            "bias_percentage_points": 0.9614440411112195
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.2015486920384713,
+          "mse": 0.00014437192593393612
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.0490644324729501,
+          "mse": 0.00011005361834797928
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        }
+      },
+      "budgets_mm": {
+        "initial": 22.9424,
+        "rain": 25.088,
+        "evaporation": 34.04547324408592,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "final": 13.984926755914074,
+        "residual": -8.673617379884035e-15
+      },
+      "deep_peak": {
+        "date": "2024-03-20",
+        "close_utc": "2024-03-21T07:00:00Z",
+        "theta": 0.07558066105811219,
+        "gain_mm": 0.5357001058112227
+      },
+      "final_theta": [
+        0.021815292522202313,
+        0.0512545643344488,
+        0.06677941070248965
+      ],
+      "jan23_top_rise_pp": 9.06035286964669,
+      "max_abs_theta_change_pp_by_layer": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "runtime": {
+        "integration_s": 0.03980823000892997,
+        "operator_prepare_JIT_s": 4.891464004002046,
+        "fresh_command_s": 7.446037212997908
+      },
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.013984926755914074,
+        "soil_residual_m3": -8.673617379884035e-18,
+        "soil_bound_m3": 2.7102726879379276e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "backend_max_differences": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference": 6.189604631876011e-06,
+      "matrix_regime": {
+        "n_ponded_steps": 0.0,
+        "n_onsets": 0.0,
+        "room_rejected_m3": 0.0,
+        "runoff_matrix_pool_m3": 0.0,
+        "surface_return_m3": 0.0
+      },
+      "aligned_pooled_improvement_percent_vs_original": 0.0
+    },
+    {
+      "factor": 1.2,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_plus20_20261120",
+      "config_sha256": "507aa743406b543330171cdb57f74c151fb76afc8e785e4aeb2f494f438ecd26",
+      "parameters": {
+        "layer_Ks_mm_h": [
+          144.9438187073705,
+          143.64931993239213,
+          125.19885707076224
+        ],
+        "effective_layer_K_mm_h": [
+          45.854047925622716,
+          45.44452367411009,
+          39.60758343166236
+        ],
+        "matrix_K_mm_h": 45.85404792562271,
+        "interface_K_mm_h": [
+          45.648367329239534,
+          42.32576532633155
+        ]
+      },
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_percentage_points": 1.8516432206521556,
+            "bias_percentage_points": 0.568689802661162
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 1.8033922519766148,
+            "bias_percentage_points": 0.38346980266116204
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_percentage_points": 0.5804895799666718,
+            "bias_percentage_points": -0.4460832175572341
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 0.3966453069771369,
+            "bias_percentage_points": 0.13910278244276317
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_percentage_points": 1.4187775939948255,
+            "bias_percentage_points": 1.3687053129986284
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.998839401604607,
+            "bias_percentage_points": 0.9263393129986317
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.1918107148599826,
+          "mse": 0.00014204127800550626
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.0036606698022663,
+          "mse": 0.00010073347401079336
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        }
+      },
+      "budgets_mm": {
+        "initial": 22.9424,
+        "rain": 25.088,
+        "evaporation": 34.46857322995684,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "final": 13.56182677004317,
+        "residual": 1.0408340855860843e-14
+      },
+      "deep_peak": {
+        "date": "2024-03-16",
+        "close_utc": "2024-03-17T07:00:00Z",
+        "theta": 0.07611492139659408,
+        "gain_mm": 0.5891261396594105
+      },
+      "final_theta": [
+        0.022241290267581575,
+        0.04896088146798287,
+        0.06441609596486728
+      ],
+      "jan23_top_rise_pp": 9.042286258169629,
+      "max_abs_theta_change_pp_by_layer": [
+        0.07128179905303358,
+        0.23227877100573877,
+        0.23633147376223712
+      ],
+      "runtime": {
+        "integration_s": 0.03619646000015564,
+        "operator_prepare_JIT_s": 6.821218425000097,
+        "fresh_command_s": 13.756853199000034
+      },
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.01356182677004317,
+        "soil_residual_m3": 1.0408340855860843e-17,
+        "soil_bound_m3": 2.7439545911898404e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "backend_max_differences": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference": 6.905417305178019e-06,
+      "matrix_regime": {
+        "n_ponded_steps": 0.0,
+        "n_onsets": 0.0,
+        "room_rejected_m3": 0.0,
+        "runoff_matrix_pool_m3": 0.0,
+        "surface_return_m3": 0.0
+      },
+      "aligned_pooled_improvement_percent_vs_original": 4.32802421521945
+    },
+    {
+      "factor": 2,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_multipliers_20261120/x2",
+      "config_sha256": "39e1f991155c4f02b110af6361c4627bf8c56da974c1be78b06dd190a598d016",
+      "parameters": {
+        "layer_Ks_mm_h": [
+          241.57303117895083,
+          239.41553322065354,
+          208.66476178460374
+        ],
+        "effective_layer_K_mm_h": [
+          76.42341320937119,
+          75.74087279018347,
+          66.0126390527706
+        ],
+        "matrix_K_mm_h": 76.42341320937119,
+        "interface_K_mm_h": [
+          76.08061221539923,
+          70.5429422105526
+        ]
+      },
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_percentage_points": 1.8021974422643934,
+            "bias_percentage_points": 0.5760102797052528
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 1.7518118681212052,
+            "bias_percentage_points": 0.39079027970525293
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_percentage_points": 0.8380905319090397,
+            "bias_percentage_points": -0.7875035335692134
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 0.35095057868752794,
+            "bias_percentage_points": -0.2023175335692162
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_percentage_points": 1.2163029337380953,
+            "bias_percentage_points": 1.1737140089511042
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.7979086175800922,
+            "bias_percentage_points": 0.7313480089511074
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.1939675230592737,
+          "mse": 0.0001425558446120297
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 0.9230245383871136,
+          "mse": 8.51974298464744e-05
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        }
+      },
+      "budgets_mm": {
+        "initial": 22.9424,
+        "rain": 25.088,
+        "evaporation": 35.8342097155136,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "final": 12.196190284486413,
+        "residual": 1.0408340855860843e-14
+      },
+      "deep_peak": {
+        "date": "2024-03-06",
+        "close_utc": "2024-03-07T07:00:00Z",
+        "theta": 0.0778376858089774,
+        "gain_mm": 0.7614025808977435
+      },
+      "final_theta": [
+        0.02340835485803481,
+        0.04276419377056872,
+        0.05578935421626062
+      ],
+      "jan23_top_rise_pp": 8.968893320777251,
+      "max_abs_theta_change_pp_by_layer": [
+        0.29759205692876933,
+        0.8629620303885005,
+        1.0990056486229027
+      ],
+      "runtime": {
+        "integration_s": 0.039679258999967715,
+        "operator_prepare_JIT_s": 4.4562570590005635,
+        "fresh_command_s": 7.121140013000513
+      },
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.012196190284486413,
+        "soil_residual_m3": 1.0408340855860843e-17,
+        "soil_bound_m3": 2.852669404519656e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "backend_max_differences": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference": 9.067477025406778e-06,
+      "matrix_regime": {
+        "n_ponded_steps": 0.0,
+        "n_onsets": 0.0,
+        "room_rejected_m3": 0.0,
+        "runoff_matrix_pool_m3": 0.0,
+        "surface_return_m3": 0.0
+      },
+      "aligned_pooled_improvement_percent_vs_original": 12.014504560861317
+    },
+    {
+      "factor": 3,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_multipliers_20261120/x3",
+      "config_sha256": "0e639583e05a72275d68092665403f6df715088eeff1a5f178d3dc29e11aabcf",
+      "parameters": {
+        "layer_Ks_mm_h": [
+          362.35954676842624,
+          359.12329983098033,
+          312.9971426769056
+        ],
+        "effective_layer_K_mm_h": [
+          114.6351198140568,
+          113.61130918527523,
+          99.01895857915589
+        ],
+        "matrix_K_mm_h": 114.63511981405678,
+        "interface_K_mm_h": [
+          114.12091832309883,
+          105.81441331582889
+        ]
+      },
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_percentage_points": 1.7460993884912845,
+            "bias_percentage_points": 0.5832915146928807
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 1.6932498380885224,
+            "bias_percentage_points": 0.39807151469288077
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_percentage_points": 1.0844928290482323,
+            "bias_percentage_points": -1.0367838019773918
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 0.552398967201385,
+            "bias_percentage_points": -0.4515978019773945
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_percentage_points": 1.063821443092665,
+            "bias_percentage_points": 0.91865104949146
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.7173867579075353,
+            "bias_percentage_points": 0.47628504949146316
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.2391833153089766,
+          "mse": 0.00015355752889401468
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 0.9341253671834526,
+          "mse": 8.725902016156202e-05
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        }
+      },
+      "budgets_mm": {
+        "initial": 22.9424,
+        "rain": 25.088,
+        "evaporation": 37.06730805900255,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "final": 10.963091940997462,
+        "residual": 6.938893903907228e-15
+      },
+      "deep_peak": {
+        "date": "2024-02-24",
+        "close_utc": "2024-02-25T07:00:00Z",
+        "theta": 0.07960228992356652,
+        "gain_mm": 0.9378629923566546
+      },
+      "final_theta": [
+        0.02409868560618558,
+        0.03786551897532119,
+        0.04766671482846785
+      ],
+      "jan23_top_rise_pp": 8.875304932265253,
+      "max_abs_theta_change_pp_by_layer": [
+        0.5166363554511021,
+        1.369143533668154,
+        1.91126958740218
+      ],
+      "runtime": {
+        "integration_s": 0.03829356899950653,
+        "operator_prepare_JIT_s": 4.780313600000227,
+        "fresh_command_s": 7.53361761799988
+      },
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.010963091940997462,
+        "soil_residual_m3": 6.938893903907228e-18,
+        "soil_bound_m3": 2.9508331967495124e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "backend_max_differences": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference": 1.310296996523408e-05,
+      "matrix_regime": {
+        "n_ponded_steps": 0.0,
+        "n_onsets": 0.0,
+        "room_rejected_m3": 0.0,
+        "runoff_matrix_pool_m3": 0.0,
+        "surface_return_m3": 0.0
+      },
+      "aligned_pooled_improvement_percent_vs_original": 10.956339928382919
+    },
+    {
+      "factor": 4,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_multipliers_20261120/x4",
+      "config_sha256": "acd7b61cc236a541623879830f788a6a01451a74c4b2c6aefd257fa0f5d1adea",
+      "parameters": {
+        "layer_Ks_mm_h": [
+          483.14606235790166,
+          478.8310664413071,
+          417.3295235692075
+        ],
+        "effective_layer_K_mm_h": [
+          152.84682641874238,
+          151.48174558036695,
+          132.0252781055412
+        ],
+        "matrix_K_mm_h": 152.84682641874238,
+        "interface_K_mm_h": [
+          152.16122443079846,
+          141.0858844211052
+        ]
+      },
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 56,
+            "rmse_percentage_points": 1.6950251122950388,
+            "bias_percentage_points": 0.5909081538635238
+          },
+          "offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 1.6396708703863732,
+            "bias_percentage_points": 0.40568815386352397
+          },
+          "persistence_raw": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          },
+          "persistence_offset_aligned": {
+            "n": 56,
+            "rmse_percentage_points": 0.8805761101201224,
+            "bias_percentage_points": -0.11321428571428606
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 147,
+            "rmse_percentage_points": 1.264809567490441,
+            "bias_percentage_points": -1.2037432843921712
+          },
+          "offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 0.7303139471287161,
+            "bias_percentage_points": -0.6185572843921737
+          },
+          "persistence_raw": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          },
+          "persistence_offset_aligned": {
+            "n": 147,
+            "rmse_percentage_points": 2.3427809221050935,
+            "bias_percentage_points": 1.7776190476190477
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 79,
+            "rmse_percentage_points": 1.0291848445625504,
+            "bias_percentage_points": 0.6966271354848864
+          },
+          "offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.7991125098516655,
+            "bias_percentage_points": 0.25426113548488954
+          },
+          "persistence_raw": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          },
+          "persistence_offset_aligned": {
+            "n": 79,
+            "rmse_percentage_points": 0.8864586063429545,
+            "bias_percentage_points": 0.6935443037974681
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.304295845496725,
+          "mse": 0.00017011876525800166
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 0.9953949443002411,
+          "mse": 9.9081109513848e-05
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_percentage_points": 1.7986693268963394,
+          "mse": 0.00032352113475177306
+        }
+      },
+      "budgets_mm": {
+        "initial": 22.9424,
+        "rain": 25.088,
+        "evaporation": 37.962226392900476,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "final": 10.0681736070995,
+        "residual": -2.42861286636753e-14
+      },
+      "deep_peak": {
+        "date": "2024-02-22",
+        "close_utc": "2024-02-23T07:00:00Z",
+        "theta": 0.08111130413074358,
+        "gain_mm": 1.0887644130743601
+      },
+      "final_theta": [
+        0.02432497647350672,
+        0.03447858888537281,
+        0.04187817071211547
+      ],
+      "jan23_top_rise_pp": 8.780567910151643,
+      "max_abs_theta_change_pp_by_layer": [
+        0.6893007414616764,
+        1.7272399501456968,
+        2.4901239990374178
+      ],
+      "runtime": {
+        "integration_s": 0.04294972699972277,
+        "operator_prepare_JIT_s": 4.262028291000206,
+        "fresh_command_s": 6.76701025300008
+      },
+      "closure": {
+        "storage_initial_m3": 0.022942399999999998,
+        "storage_final_m3": 0.010068173607099499,
+        "soil_residual_m3": -2.42861286636753e-17,
+        "soil_bound_m3": 3.022075346944026e-13,
+        "rain_residual_m3": 0.0,
+        "rain_bound_m3": 6.060872692614794e-15,
+        "total_runoff_m3": 0.0,
+        "native_bound": "conservation.volume_roundoff_bound_m3 with the sum of the native per-step term counts plus the driver's own accumulations"
+      },
+      "backend_max_differences": {
+        "water_m": 0.0,
+        "layer_theta": 0.0,
+        "physical_t_s": 0.0,
+        "rain_m3": 0.0,
+        "intake_m3": 0.0,
+        "evaporation_m3": 0.0,
+        "wetting_J_m": 0.0,
+        "cumulative_matrix_intake_m": 0.0,
+        "drainage_m3": 0.0,
+        "runoff_pool_m3": 0.0,
+        "diffusion_m3": 0.0,
+        "percolation_m3": 0.0
+      },
+      "dt900_max_theta_difference": 1.683221942562485e-05,
+      "matrix_regime": {
+        "n_ponded_steps": 0.0,
+        "n_onsets": 0.0,
+        "room_rejected_m3": 0.0,
+        "runoff_matrix_pool_m3": 0.0,
+        "surface_return_m3": 0.0
+      },
+      "aligned_pooled_improvement_percent_vs_original": 5.115938212316895
+    }
+  ],
+  "controls": "New cases NumPy+Numba+900s and independent90digit check. No GPU or new restart test.",
+  "important": "Actual rain intake unchanged allfive cases. Only interlayer redistribution and indirect evaporation affect trajectories. d unchanged and d*K remains confounded; FC/SAT/retention unchanged."
+}
