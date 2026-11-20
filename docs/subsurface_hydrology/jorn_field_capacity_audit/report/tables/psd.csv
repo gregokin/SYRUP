@@ -1,0 +1,11 @@
+Size fraction (% of the fine-earth mass),"Layer 1, 0-10 cm (= measured A sample)","Layer 2, 10-20 cm (A-Bw mixture)","Layer 3, 20-30 cm (= measured Bw sample)"
+"Very fine sand, 0.047-0.105 mm",11.300,11.176,10.400
+"Fine sand, 0.105-0.25 mm",40.900,40.845,40.500
+"Medium sand, 0.25-0.5 mm",27.100,26.935,25.900
+"Coarse sand, 0.5-1 mm",6.700,6.590,5.900
+"Very coarse sand, 1-2 mm",0.700,0.741,1.000
+"Total sand, 0.047-2 mm",86.700,86.288,83.700
+"Silt, 0.002-0.047 mm",6.200,6.433,7.900
+"Clay, below 0.002 mm",7.100,7.278,8.400
+Sum of all fractions,100.000,100.000,100.000
+Very fine + fine sand,52.200,52.022,50.900

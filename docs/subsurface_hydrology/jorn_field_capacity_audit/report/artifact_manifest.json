@@ -1,0 +1,60 @@
+{
+ "docx": {
+  "file": "SYRUP_JORN_field_capacity_worked_audit_20261120.docx",
+  "zip_ok": true,
+  "media": 1,
+  "tables": 5,
+  "header_rows_repeat": 5,
+  "paragraphs": 289,
+  "words": 2961,
+  "bytes": 142617,
+  "sha256": "d6f0f6ed8a33f0b7529f9bccb48eca921c01bee0705d0443e790a1340c20ba33"
+ },
+ "figures": {
+  "fig1_wet_curves.png": "c1a00723f26268a30d2e5f4248e27380339d80a78c4a994da532d3e42b4321d9"
+ },
+ "tables": {
+  "controls.csv": "bb99f173225e2ba97e48521cb5557241988feba12903d7c3ee971e9daed6aac7",
+  "inputs.csv": "1890722ddac678adcc03f4e1d4796e4075fab0c8b11c2e096a9e5da07a4e8a34",
+  "provenance.csv": "d18d6bc1122e45dcaf74fb8636e50ab222932127c902b2fdc9db5ae4a6e75cbb",
+  "psd.csv": "14b68471417f1aba0b48ef6ddb41edfcad81f7f9ab377f8326067373239b3c46",
+  "psd_full.csv": "e7b373aebec87c7b8f54353e91897b82ee3a56abf267829c0c00339442e8ff47",
+  "results.csv": "8f9d7ee030f0f7b6eb1bbb1e614e1a678383160cf066a8dd9f2bc358070dedc6",
+  "sens.csv": "d36312bd2d03ecf08562f0348efc9c6b0e1a804bf3a7a42e67420f938a7c0d79",
+  "steps.csv": "9fb114e0abbe5795b3e247672d93ddfc35956d795e39418fc7678582ccc11981",
+  "steps_layer1.csv": "50cf20a4aab8c415f84ecb121600b9400bd00e862f4767d0c81562a917e59fbc",
+  "storage.csv": "bdef86fe61ecec515ca67469466d7fab79851435f1390132b29c6000637a6429"
+ },
+ "data": {
+  "independent_recalculation.json": "a4349bb0142e8230e9d91a69416b139cebe569b00130fab5cc31e9fb32ddd248",
+  "root_audit.json": "96528a5e507939565245a74d9d531c183236001659a04af85be479f15a3d7a70",
+  "root_audit.py": "98145f19040ca3655d7b9b23a7fc95db0fd9a9347fc1d33980e3907b4fb8746e",
+  "root_layers.csv": "c9f75dce3b3a7c2abb6cc47b79eeabce8d7aefd0a2d7712c222895206405fa9d"
+ },
+ "builder": "db57fbb58ac24ff54aaafc0b48f94818caa25da2dae64efdf43fb3ef53931897",
+ "report_md": "92c99b541d3ca83e06d3d9d096c109fd360e06a87c96bf6f576d807ea9e3b667",
+ "origin_hashes_of_root_files": {
+  "root_audit.json": "96528a5e507939565245a74d9d531c183236001659a04af85be479f15a3d7a70",
+  "root_layers.csv": "c9f75dce3b3a7c2abb6cc47b79eeabce8d7aefd0a2d7712c222895206405fa9d",
+  "root_audit.py": "98145f19040ca3655d7b9b23a7fc95db0fd9a9347fc1d33980e3907b4fb8746e"
+ },
+ "hashed_sources": {
+  "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perbiogeosample.2013-03.basic.20251204T185046Z.csv": "1fb305181e6dc2be882cfdcbaf1ffaba6c2a947f4f41be5dd7f0fff445240b80",
+  "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perhorizon.2013-03.basic.20251204T185046Z.csv": "ed508bd032a2b1d50ed81d3219bfe5bd3926a8c04bc06610b9902c03bfc40085",
+  "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perbulksample.2013-03.basic.20251204T185046Z.csv": "648a9b63a14bb8183a5e27dc341b0781396ac800e75a0fdb56299c74d01b1b74",
+  "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.variables.20251204T185046Z.csv": "48066c0321026f79b37aa51c06cc5c8bd91c975295e8a27e2b25abd111dc76cb",
+  "agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/analysis_candidate/docs/subsurface_hydrology/site_properties_mixing/data/root_relative_density_probe.json": "9ad303384f26116f37088aa6609d3519c7396d22d46d8d0ac42919358165675f",
+  "agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/analysis_candidate/src/maple_syrup/soil_texture_properties.py": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+  "agent_handoffs/tasks/jorn_160_day_run_20261119/case_numba.json": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_MOAB_E1_stress_calibration_20261117.docx": "32cac33e1353489f4d843c477e0d0ed32257b9b26a6f2bdde6a123044fced95b",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_160day_rainfall_comparison_20261119.docx": "c590ec2753e7b4304696f193720b97a539604238849f31521457c5d1be24bd6b",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_MOAB_interface_comparison_20261117.docx": "6ad1376b0a3aa084057e777c376b6cacf7649f97ab6420b958d600742f549ab9",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_MOAB_joint_d_stress_calibration_20261118.docx": "aae6c2ac93811231b11362396a5414a6e4a989d43f48bf3307057361a2fb5c23",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_conductivity_worked_example_20261117.docx": "8e3074c7d3c40b18c8007214e0d6567fd43820c355bd210c06ece28e06904a1e",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_160day_K_Ks_plus20_comparison_20261120.docx": "1c8de4489e775eb92c6e43b31030f8a96de593746c3e90a3bc1a99b4626c6e9e",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_evaporation_and_d_E_explained_20261117.docx": "43b85a238882c1b054ecc53c521b739b55fec26fe284d8be11d61013344c3853",
+  "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_160day_K_Ks_multipliers_2x_3x_4x_20261120.docx": "632d4556902d29cd759c642de457fc050ee801b911f291d4a9892485b43b94af",
+  "agent_handoffs/tasks/neon_texture_failure_audit_20261117/saxton_rawls_2006.pdf": "24038366b95d508de140786b5b71fb634164dc9f89d1de158944c445c77186e5",
+  "agent_handoffs/tasks/neon_texture_failure_audit_20261117/probes/pdf_raw_text.txt": "1f1ddba1e913344428a39b9956afa06afc254089f09b4d01d336424bc87f1c84"
+ }
+}

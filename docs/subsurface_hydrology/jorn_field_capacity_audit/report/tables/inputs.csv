@@ -1,0 +1,9 @@
+Input,Layer 1,Layer 2 (derived),Layer 3
+Source,A horizon sample,0.8627 A + 0.1373 Bw by mass,Bw horizon sample
+A-horizon mass weight in the mix,1,0.862730,0
+Estimated organic carbon (g/kg),2.0000,1.8627,1.0000
+Organic matter OM = 1.724 x OC / 10 (%),0.3448,0.3211,0.1724
+Raw bulk density (measured or mixed) (g/cm³),1.4196,1.31638 (0.8 A + 0.2 Bw),0.9035
+Density used after floors (g/cm³),1.4196,1.4173,1.4346
+Normal density from Eq. 6 (g/cm³),1.5698,1.5730,1.5923
+Density sample metadata,ID 0-10 cm; centre 5.0 cm; bottom depth 110.0 cm,mixture,ID 23-33 cm; centre 28.0 cm
