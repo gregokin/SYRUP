@@ -1,0 +1,455 @@
+{
+  "status": "PASS",
+  "scope": "Independent, same-timestamp January response and deep-layer support audit.",
+  "date_convention": "Jan23 storm is nominal dayJan23, closing Jan24 07UTC. First following validdeepcomparison is Jan25 07UTC. No point-to-bucket equivalence or sensor-fault conclusion assumed.",
+  "records": [
+    {
+      "key": "fc09_s1",
+      "fc_percent_all_layers": 9,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        8.730031377369052,
+        8.997498013815955,
+        8.999978313675177
+      ],
+      "poststorm_deep_change_pp": 1.913275247827674,
+      "storm_gravity_transfers_mm": [
+        7.326064438116002,
+        6.789925453330579
+      ],
+      "storm_bottom_drainage_mm": 4.88160071991507,
+      "Jan25_model_deep_percent": 8.999913956160386,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.999979960676903,
+      "whole_record_peak_close": "2024-02-11T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc10_s1",
+      "fc_percent_all_layers": 10,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        9.666705404159325,
+        9.996911128167845,
+        9.99997322675948
+      ],
+      "poststorm_deep_change_pp": 2.9132701609119778,
+      "storm_gravity_transfers_mm": [
+        6.326064438115999,
+        4.789789537185868
+      ],
+      "storm_bottom_drainage_mm": 1.881600719915064,
+      "Jan25_model_deep_percent": 9.999893957311064,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 9.99997322675948,
+      "whole_record_peak_close": "2024-01-24T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc11_s1",
+      "fc_percent_all_layers": 11,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        10.596711668919493,
+        10.986455279545737,
+        9.89137737994468
+      ],
+      "poststorm_deep_change_pp": 2.8046743140971775,
+      "storm_gravity_transfers_mm": [
+        5.326063031378892,
+        2.7850589059254407
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 9.900724486320767,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 10.040244443167579,
+      "whole_record_peak_close": "2024-02-25T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc12_s1",
+      "fc_percent_all_layers": 12,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        11.520048895474604,
+        11.959437993932456,
+        7.917683083592779
+      ],
+      "poststorm_deep_change_pp": 0.8309800177452766,
+      "storm_gravity_transfers_mm": [
+        4.324931692893251,
+        0.7806574478270746
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.952341679760082,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.884301710014684,
+      "whole_record_peak_close": "2024-03-25T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc13_s1",
+      "fc_percent_all_layers": 13,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        12.425233561170188,
+        11.747332644885836,
+        7.140521947244008
+      ],
+      "poststorm_deep_change_pp": 0.0538188813965057,
+      "storm_gravity_transfers_mm": [
+        3.320594732809781,
+        0.0
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.180118890752853,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.34388235392565,
+      "whole_record_peak_close": "2024-03-31T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc14_s1",
+      "fc_percent_all_layers": 14,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        13.316398561367002,
+        10.776080378258253,
+        7.1298166868341495
+      ],
+      "poststorm_deep_change_pp": 0.043113620986647005,
+      "storm_gravity_transfers_mm": [
+        2.315998164814363,
+        0.0
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.161301166717744,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.103839377753367,
+      "whole_record_peak_close": "2024-03-29T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc15_s1",
+      "fc_percent_all_layers": 15,
+      "stress": 0.2017,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.2895094517537125,
+        8.469388202313848,
+        7.0867030658475025
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        14.200899084644176,
+        9.804377305306534,
+        7.119503746530722
+      ],
+      "poststorm_deep_change_pp": 0.03280068068321901,
+      "storm_gravity_transfers_mm": [
+        1.312266604397639,
+        0.0
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.142867623756864,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 7.865596030791261,
+      "whole_record_peak_close": "2024-03-26T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc09_s1p5",
+      "fc_percent_all_layers": 9,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        8.880013945497357,
+        8.998888006140422,
+        8.999990361633412
+      ],
+      "poststorm_deep_change_pp": 1.9129123281301161,
+      "storm_gravity_transfers_mm": [
+        7.883051791720332,
+        7.363555983453337
+      ],
+      "storm_bottom_drainage_mm": 5.4565058179286785,
+      "Jan25_model_deep_percent": 8.999961423176133,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.99999109363418,
+      "whole_record_peak_close": "2024-02-11T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc10_s1p5",
+      "fc_percent_all_layers": 10,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        9.851869068515256,
+        9.998627168074599,
+        9.999988100781993
+      ],
+      "poststorm_deep_change_pp": 2.912910067278697,
+      "storm_gravity_transfers_mm": [
+        6.8812473047606035,
+        5.36438140477017
+      ],
+      "storm_bottom_drainage_mm": 2.4565058179286687,
+      "Jan25_model_deep_percent": 9.999952411352465,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 9.999989004486642,
+      "whole_record_peak_close": "2024-02-11T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc11_s1p5",
+      "fc_percent_all_layers": 11,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        10.820760664108443,
+        10.993573000951566,
+        10.461258201088594
+      ],
+      "poststorm_deep_change_pp": 3.3741801675852985,
+      "storm_gravity_transfers_mm": [
+        5.8812463220976055,
+        3.3607691228629366
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 10.465803858395335,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 10.999986695428838,
+      "whole_record_peak_close": "2024-02-11T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc12_s1p5",
+      "fc_percent_all_layers": 12,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        11.786685533465416,
+        11.966950404516838,
+        8.487567325761871
+      ],
+      "poststorm_deep_change_pp": 1.4004892922585763,
+      "storm_gravity_transfers_mm": [
+        4.880785451978171,
+        1.3551240708409609
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 8.517434252199731,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 10.005791942957448,
+      "whole_record_peak_close": "2024-04-03T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc13_s1p5",
+      "fc_percent_all_layers": 13,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        12.743561924710614,
+        12.313073792538352,
+        7.1471935098916415
+      ],
+      "poststorm_deep_change_pp": 0.0601154763883463,
+      "storm_gravity_transfers_mm": [
+        3.8771176627131894,
+        0.0
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.191598407395439,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.966851140234361,
+      "whole_record_peak_close": "2024-04-20T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc14_s1p5",
+      "fc_percent_all_layers": 14,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        13.68470004750063,
+        11.342316658548501,
+        7.136459953031126
+      ],
+      "poststorm_deep_change_pp": 0.049381919527831386,
+      "storm_gravity_transfers_mm": [
+        2.8724499234885053,
+        0.0
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.172764215632206,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.611376994220027,
+      "whole_record_peak_close": "2024-04-18T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    },
+    {
+      "key": "fc15_s1p5",
+      "fc_percent_all_layers": 15,
+      "stress": 0.30255,
+      "initial_layer_theta_percent": [
+        7.29522,
+        8.624814000000002,
+        7.022365999999996
+      ],
+      "prestorm_layer_theta_percent": [
+        6.84678773255632,
+        8.486640051869056,
+        7.087078033503295
+      ],
+      "poststorm_close": "2024-01-24T07:00:00Z",
+      "poststorm_layer_theta_percent": [
+        14.622876575459397,
+        10.3714000738341,
+        7.125859455764427
+      ],
+      "poststorm_deep_change_pp": 0.03878142226113185,
+      "storm_gravity_transfers_mm": [
+        1.8680757867235096,
+        0.0
+      ],
+      "storm_bottom_drainage_mm": 0.0,
+      "Jan25_model_deep_percent": 7.154060133089395,
+      "Jan25_observed_deep_percent": 6.34,
+      "whole_record_model_deep_peak_percent": 8.372047107380192,
+      "whole_record_peak_close": "2024-04-17T07:00:00Z",
+      "whole_record_observed_deep_peak_percent": 6.74
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PREEXEC_ACCEPTED",
+  "utc": "2026-11-20T23:22:26.529974+00:00",
+  "root_setup_tests": 80,
+  "physics_deltas": "Only all-layer uniformFC9-15% and exactstress0.2017/.30255; E1 SR33K1 d weather geometry initial masks clocks unchanged",
+  "source": "180/4e38",
+  "MAPLE": "412/fbc504bb",
+  "model_laws_changed": false,
+  "review": "Root inspected generator, all42 physical configs/launcher guards and callers. Root narrowed native-component test assertions to budget.bound_m3 only (removed pytest default relative tolerance and arbitrary floors); all80pass. Claude must independently review test-only correction at report stage.",
+  "new_helper_hashes": {
+    "benchmarks/jorn_fc_sensitivity/__init__.py": "f0a3a93678762754c4c6b453ce16f61d30aeacfd6e69123038c46e9e0910a1d4",
+    "benchmarks/jorn_fc_sensitivity/generate.py": "e1d22fc4abf91621f2c8faceecc0a3e9da8eaef345f408412984781f49a54854",
+    "tests/jorn_fc_sensitivity/test_setup.py": "44b7ba4126f2afab21baa2134f4964c684ec933074ebbb6cfa83b945c05adf37"
+  }
+}
