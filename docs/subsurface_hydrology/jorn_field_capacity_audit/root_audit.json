@@ -1,0 +1,324 @@
+{
+  "status": "PASS",
+  "scope": "Input and arithmetic audit only; no hydrology run or parameter/default adoption",
+  "precision_decimal_digits": 80,
+  "raw_selected": {
+    "A": {
+      "biogeosample": {
+        "uid": "37f9f043-c4fe-4d36-99e8-22fe1da0692f",
+        "horizonID": "14_JORNADA_PIT1_A",
+        "horizonName": "A",
+        "sandTotal": "86.7",
+        "estimatedOC": "2.0",
+        "sandVeryFineContent": "11.3",
+        "sandFineContent": "40.9",
+        "sandMediumContent": "27.1",
+        "sandCoarseContent": "6.7",
+        "sandVeryCoarseContent": "0.7",
+        "siltTotal": "6.2",
+        "clayTotal": "7.1"
+      },
+      "horizon": {
+        "uid": "9160ea02-0ed1-45c2-89bb-a4b7c180a3d5",
+        "horizonID": "14_JORNADA_PIT1_A",
+        "horizonTopDepth": "0.0",
+        "horizonBottomDepth": "18.0"
+      },
+      "density": {
+        "uid": "043bc517-f76e-480c-94e9-6a6148a73ae1",
+        "bulkDensID": "14_JORNADA_PIT1_0-10_BULKD_A",
+        "bulkDensCenterDepth": "5.0",
+        "bulkDensTopDepth": "0.0",
+        "bulkDensBottomDepth": "110.0",
+        "bulkDensExclCoarseFrag": "1.4196"
+      }
+    },
+    "Bw": {
+      "biogeosample": {
+        "uid": "d5922241-ec90-4722-852d-40f8d721efe7",
+        "horizonID": "14_JORNADA_PIT1_BW",
+        "horizonName": "Bw",
+        "sandTotal": "83.7",
+        "estimatedOC": "1.0",
+        "sandVeryFineContent": "10.4",
+        "sandFineContent": "40.5",
+        "sandMediumContent": "25.9",
+        "sandCoarseContent": "5.9",
+        "sandVeryCoarseContent": "1.0",
+        "siltTotal": "7.9",
+        "clayTotal": "8.4"
+      },
+      "horizon": {
+        "uid": "3050adce-4620-4994-aca7-6340341111ff",
+        "horizonID": "14_JORNADA_PIT1_BW",
+        "horizonTopDepth": "18.0",
+        "horizonBottomDepth": "46.0"
+      },
+      "density": {
+        "uid": "5e331496-2ab9-4f35-8712-8f02e3e60fa0",
+        "bulkDensID": "14_JORNADA_PIT1_23-33_BULKD_BW",
+        "bulkDensCenterDepth": "28.0",
+        "bulkDensTopDepth": "23.0",
+        "bulkDensBottomDepth": "33.0",
+        "bulkDensExclCoarseFrag": "0.9035"
+      }
+    }
+  },
+  "variables": [
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "sandTotal",
+      "description": "Total sand (0.047-2 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "siltTotal",
+      "description": "Total silt (0.002-0.047 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "clayTotal",
+      "description": "Total clay (<0.002 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "sandVeryFineContent",
+      "description": "Very fine sand (0.047-0.105 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "sandFineContent",
+      "description": "Fine sand (0.105-0.25 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "sandMediumContent",
+      "description": "Medium sand (0.25-0.5 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "sandCoarseContent",
+      "description": "Coarse sand (0.5-1 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "sandVeryCoarseContent",
+      "description": "Very coarse sand (1-2 mm) content on a weight basis of the <2 mm fraction",
+      "dataType": "real",
+      "units": "percent",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbiogeosample",
+      "fieldName": "estimatedOC",
+      "description": "Estimated organic carbon concentration of the <2 mm fraction",
+      "dataType": "real",
+      "units": "gramsPerKilogram",
+      "downloadPkg": "basic",
+      "pubFormat": "*.#(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    },
+    {
+      "table": "mgp_perbulksample",
+      "fieldName": "bulkDensExclCoarseFrag",
+      "description": "Bulk density of soil excluding coarse fragments (>2 mm)",
+      "dataType": "real",
+      "units": "gramsPerCubicCentimeter",
+      "downloadPkg": "basic",
+      "pubFormat": "*.####(round)",
+      "primaryKey": "N",
+      "categoricalCodeName": ""
+    }
+  ],
+  "middle_A_mass_weight": "0.86272960695239976298637171637369148726051747975508591744025281453683586806241359",
+  "layers": [
+    {
+      "layer": 1,
+      "depth_cm": [
+        0,
+        10
+      ],
+      "A_mass_weight": "1",
+      "texture_percent": {
+        "sandVeryFineContent": "11.3",
+        "sandFineContent": "40.9",
+        "sandMediumContent": "27.1",
+        "sandCoarseContent": "6.7",
+        "sandVeryCoarseContent": "0.7",
+        "siltTotal": "6.2",
+        "clayTotal": "7.1",
+        "sandTotal": "86.7",
+        "estimatedOC": "2.0"
+      },
+      "OM_percent": "0.3448",
+      "calculations": {
+        "t33": "0.1279772320",
+        "theta33_normal": "0.08612694179301988019200",
+        "tgap": "0.2870343816",
+        "gap_normal": "0.3625882482976",
+        "saturation_normal": "0.40761619009061988019200",
+        "density_normal": "1.5698170962598573174912000",
+        "density_raw": "1.4196",
+        "density_used": "1.4196",
+        "theta33": "0.097464081133386470191335849056603773584905660377358490566037735849056603773584906",
+        "theta_sat": "0.46430188679245283018867924528301886792452830188679245283018867924528301886792453",
+        "air_first": "0.103581435919457888",
+        "air_raw": "-0.60790868406209811812864757264389158912",
+        "air_used": "0",
+        "theta6": "0.39760410394534985564370771869639794168096054888507718696397941680960548885077187",
+        "theta6_raw_air_diagnostic_not_adopted": "0.39217509233926572503573692025861765841332365894978231935958072488260070187889655",
+        "theta6_normal_density_zero_air_diagnostic_not_adopted": "0.34916359949105624382836363636363636363636363636363636363636363636363636363636364",
+        "added_water_above_theta33_mm_per_10cm": "30.014002281196338545237186963979416809605488850771869639794168096054888507718696"
+      }
+    },
+    {
+      "layer": 2,
+      "depth_cm": [
+        10,
+        20
+      ],
+      "A_mass_weight": "0.86272960695239976298637171637369148726051747975508591744025281453683586806241359",
+      "texture_percent": {
+        "sandVeryFineContent": "11.176456646257159786687734544736322338534465731779577325696227533083152281256172",
+        "sandFineContent": "40.845091842780959905194548686549476594904206991902034366976101125814734347224966",
+        "sandMediumContent": "26.935275528342879715583646059648429784712620975706103100928303377444203041674896",
+        "sandCoarseContent": "6.5901836855619198103890973730989531898084139838040687339522022516294686944499309",
+        "sandVeryCoarseContent": "0.74118111791428007110408848508789255382184475607347422476792415563894923958127592",
+        "siltTotal": "6.4333596681809204029231680821647244716571202844163539403515702152873790242938969",
+        "clayTotal": "7.2784515109618803081177167687142010665613272763183883073276713411021133715188623",
+        "sandTotal": "86.288188820857199288959115149121074461781552439265257752320758443610507604187241",
+        "estimatedOC": "1.8627296069523997629863717163736914872605174797550859174402528145368358680624136"
+      },
+      "OM_percent": "0.3211345842385937191388504839028244124037132135097768121666995852261505036539601",
+      "calculations": {
+        "t33": "0.12956123315940422647776471915059271547063195715029537564003451825973574361426434",
+        "theta33_normal": "0.08764191511356584905079692835984436162501527403496803209732882344765414599524076",
+        "tgap": "0.28512409665769176829386038502270171271565476263156907149259640596428902601856153",
+        "gap_normal": "0.35946302213198373292875558989714000200281119166524700096188772015757684656636666",
+        "saturation_normal": "0.40640539408931809866926217656233692139989835983412773303946540791492880018554580",
+        "density_normal": "1.5730257056633070385264552321098071582902693464395615074454166690254386795083036",
+        "density_raw": "1.31638",
+        "density_used": "1.4172961608026396417123361641309362496195326811420449182083204187919202502369815",
+        "theta33": "0.099395088310597350697145537263910090581297286510252302983147408370938555751566958",
+        "theta_sat": "0.46517126007447560690100522108266556618130842221054908746855833253135084896717679",
+        "air_first": "0.122174750721253329877156267214016307388737697972295660044450541547769444216862",
+        "air_raw": "-0.59133246271597228857798189975767758984550299962712701031051390183552917307387631",
+        "air_used": "0",
+        "theta6": "0.39866650157195228759121255129743729789039730662867694483484725541127588656433864",
+        "theta6_raw_air_diagnostic_not_adopted": "0.39339821094904384546482576094353314602282399320595389021844329108587106094056524",
+        "theta6_normal_density_zero_air_diagnostic_not_adopted": "0.34844839791190859873863213143461100144082870787064415104998602892087886306003579",
+        "added_water_above_theta33_mm_per_10cm": "29.927141326135493689406701403352720730910002011842464185169984704033733081277168"
+      }
+    },
+    {
+      "layer": 3,
+      "depth_cm": [
+        20,
+        30
+      ],
+      "A_mass_weight": "0",
+      "texture_percent": {
+        "sandVeryFineContent": "10.4",
+        "sandFineContent": "40.5",
+        "sandMediumContent": "25.9",
+        "sandCoarseContent": "5.9",
+        "sandVeryCoarseContent": "1.0",
+        "siltTotal": "7.9",
+        "clayTotal": "8.4",
+        "sandTotal": "83.7",
+        "estimatedOC": "1.0"
+      },
+      "OM_percent": "0.1724",
+      "calculations": {
+        "t33": "0.1394434056",
+        "theta33_normal": "0.09723881840331340087488",
+        "tgap": "0.2732865464",
+        "gap_normal": "0.3400967899104",
+        "saturation_normal": "0.39914660831371340087488",
+        "density_normal": "1.5922614879686594876815680",
+        "density_raw": "0.9035",
+        "density_used": "1.4346276006597621984010927680",
+        "theta33": "0.109135715558701875537557376",
+        "theta_sat": "0.45863109409065577418826688",
+        "air_first": "0.268104587250459520",
+        "air_raw": "-0.46075362971474762053195267097682739200",
+        "air_used": "0",
+        "theta6": "0.39508647981211870170631969745454545454545454545454545454545454545454545454545455",
+        "theta6_raw_air_diagnostic_not_adopted": "0.39114894588782402951941941556726819445397898181539916598025083460417772417277467",
+        "theta6_normal_density_zero_air_diagnostic_not_adopted": "0.34425428287545885542033454545454545454545454545454545454545454545454545454545455",
+        "added_water_above_theta33_mm_per_10cm": "28.595076425341682616876232145454545454545454545454545454545454545454545454545455"
+      }
+    }
+  ],
+  "published_Table3_sand_theta33_normal": "0.10282792364858700",
+  "exact_prior_receipt_agreement_absolute_tolerance": 2e-13,
+  "equation_provenance": {
+    "Saxton_Rawls": "2006, Table1 Eq2\u201312; Table2 FC=33kPa; Table3 sandy examples",
+    "Tietjen": "2009, Section3.1 paragraph25, FC from similar-site field observations at -6kPa",
+    "SYRUP": "Hybrid pressure choice with study-specific density/air-entry floors; not a measured site FC"
+  },
+  "source_sha256": {
+    "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perbiogeosample.2013-03.basic.20251204T185046Z.csv": "1fb305181e6dc2be882cfdcbaf1ffaba6c2a947f4f41be5dd7f0fff445240b80",
+    "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perhorizon.2013-03.basic.20251204T185046Z.csv": "ed508bd032a2b1d50ed81d3219bfe5bd3926a8c04bc06610b9902c03bfc40085",
+    "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.mgp_perbulksample.2013-03.basic.20251204T185046Z.csv": "648a9b63a14bb8183a5e27dc341b0781396ac800e75a0fdb56299c74d01b1b74",
+    "agent_handoffs/tasks/jorn_three_layer_20261102/downloads/DP1.00096.001/2013-03/NEON.D14.JORN.DP1.00096.001.variables.20251204T185046Z.csv": "48066c0321026f79b37aa51c06cc5c8bd91c975295e8a27e2b25abd111dc76cb",
+    "agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/analysis_candidate/docs/subsurface_hydrology/site_properties_mixing/data/root_relative_density_probe.json": "9ad303384f26116f37088aa6609d3519c7396d22d46d8d0ac42919358165675f",
+    "agent_handoffs/tasks/site_hydraulics_interface_comparison_20261117/analysis_candidate/src/maple_syrup/soil_texture_properties.py": "ff737938a1c3fc4c77882a335f691175f8dce6b27e077b0faa64f2c01cc20481",
+    "agent_handoffs/tasks/jorn_160_day_run_20261119/case_numba.json": "e7513f545b074da5fc5627e96b79f62ed787863fb32c9df545a9422547e521ee",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_MOAB_E1_stress_calibration_20261117.docx": "32cac33e1353489f4d843c477e0d0ed32257b9b26a6f2bdde6a123044fced95b",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_160day_rainfall_comparison_20261119.docx": "c590ec2753e7b4304696f193720b97a539604238849f31521457c5d1be24bd6b",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_MOAB_interface_comparison_20261117.docx": "6ad1376b0a3aa084057e777c376b6cacf7649f97ab6420b958d600742f549ab9",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_MOAB_joint_d_stress_calibration_20261118.docx": "aae6c2ac93811231b11362396a5414a6e4a989d43f48bf3307057361a2fb5c23",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_conductivity_worked_example_20261117.docx": "8e3074c7d3c40b18c8007214e0d6567fd43820c355bd210c06ece28e06904a1e",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_160day_K_Ks_plus20_comparison_20261120.docx": "1c8de4489e775eb92c6e43b31030f8a96de593746c3e90a3bc1a99b4626c6e9e",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_evaporation_and_d_E_explained_20261117.docx": "43b85a238882c1b054ecc53c521b739b55fec26fe284d8be11d61013344c3853",
+    "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_160day_K_Ks_multipliers_2x_3x_4x_20261120.docx": "632d4556902d29cd759c642de457fc050ee801b911f291d4a9892485b43b94af",
+    "agent_handoffs/tasks/neon_texture_failure_audit_20261117/saxton_rawls_2006.pdf": "24038366b95d508de140786b5b71fb634164dc9f89d1de158944c445c77186e5"
+  }
+}

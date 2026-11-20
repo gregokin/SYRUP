@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "kind": "Documentation and independent arithmetic only",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_field_capacity_audit_20261120/report/SYRUP_JORN_field_capacity_worked_audit_20261120.docx",
+  "docx_sha256": "d6f0f6ed8a33f0b7529f9bccb48eca921c01bee0705d0443e790a1340c20ba33",
+  "unchanged_tracked_working_files": 736,
+  "unchanged_input_source_and_old_report_files": 16,
+  "controls": "Root80-digit primary-equation arithmetic, independent Claude60-digit raw reconstruction, actual case and archived receipt agree; PSD and all numerical steps preserved",
+  "document": {
+    "ZIP_XML_media_hashes": "PASS",
+    "tables": 5,
+    "figure_count": 1,
+    "max_columns": 4,
+    "all_repeat_headers": true
+  },
+  "not_claimed": [
+    "New hydrology run or parameter change",
+    "Site FC validation",
+    "CPU/GPU simulation qualification",
+    "Word/LibreOffice pagination rendering"
+  ]
+}

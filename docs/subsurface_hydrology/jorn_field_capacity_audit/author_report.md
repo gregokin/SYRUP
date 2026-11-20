@@ -1,0 +1,20 @@
+# Author report (Claude): JORN field-capacity audit and worked DOCX
+
+Scope kept: wrote only `report/**` and this file. No Git, network, install, model run or GPU; Root's audit files, sources, prior reports and jobs were read only (Root JSON/CSV/script copied into `report/data/` with hashes). Final output folder not written. Root acceptance pending.
+
+## Independent audit outcome: no arithmetic error, no correction to Root
+- Raw evidence checked: NEON DP1.00096.001 2013-03 Jornada pit 1, perbiogeosample / perhorizon / perbulksample CSVs (hashes in `root_audit.json` re-verified, along with the archived receipt, native provider source, the original `case_numba.json` and the Saxton-Rawls PDF). A (0-18 cm): sand bins 11.3/40.9/27.1/6.7/0.7 = 86.7, silt 6.2, clay 7.1; Bw (18-46 cm): 10.4/40.5/25.9/5.9/1.0 = 83.7, silt 7.9, clay 8.4; estimated OC 2.0 and 1.0 g/kg; bulk density (excluding coarse fragments) 1.4196 and 0.9035 g/cm3. Sums close to 100.
+- Equations: my own transcription from the PDF text (Table 1 Eq 2, 3, 4, 5, 6, 8, 9, 12; coefficients checked against `pdf_raw_text.txt`), and against the native provider constants (`g = 1.636 t - 0.107` is Eq 3 written as t + (0.636 t - 0.107); Eq 9 uses the NORMAL-density saturation). Independent 60-digit recomputation from the raw CSVs agrees with Root's 80-digit `root_audit.json` to < 1e-45 for theta33, theta6, saturation, densities, air entry, the mixture (A weight 0.86272960695...), and with the actual original `case_numba.json` (2e-13). Published Table 3 controls recomputed: 10.28 (sand 88/5) and 12.02 (loamy sand 80/5) vol. % at OM 2.5 %, matching "about 10" and "about 12".
+- Numbers confirmed: theta33 9.7464/9.9395/10.9136 vol. %; theta6 39.7604/39.8667/39.5086; saturation 46.4302/46.5171/45.8631; 27/33 = 81.82 % of the way; air floor changes theta6 by 0.54/0.53/0.39 points; normal density + zero air entry still 34.92/34.84/34.43 %.
+- Observations added (none changes Root's findings): Bw raw density 0.9035 gives a density factor 0.57 (outside the 0.9-1.3 range); the A density record carries an inconsistent bottom depth (110 cm) and the Bw density sample is 23-33 cm; S&R report a standard error of 0.052 m3/m3 for the 33 kPa regression; about 40 % of the sand is medium-to-very-coarse (not "mostly fine"); NEON also lists small 2-20 mm coarse fragments the model ignores. The Tietjen section 3.1 wording was taken from Root (not re-read here) and is labelled as such.
+
+## Deliverables (`report/`)
+`SYRUP_JORN_field_capacity_worked_audit_20261120.docx` (6 tables with repeating headers, 1 figure, ~2,550 words incl. tables; est. 7-8 pages), `report.md`, `build_report.py` (Ruff clean), `figures/fig1_wet_curves.png` (viewed; computed curves, not observations; legend outside, no clipping), `tables/` (LF CSV incl. `steps_layer1.csv`, `provenance.csv`), `data/` (Root audit JSON/CSV/script copy + `independent_recalculation.json`), `verification.md`, `artifact_manifest.json`. Structure: short conclusion; PSD table with all five sand bins + silt + clay for the measured A/Bw and derived middle layer; other inputs; 13-step worked layer-1 calculation with every term; all-layer results; figure; why high and implications; hypothetical storage table (15 vol. % layer, labelled not a run); suggested later choices (not adopted); references.
+
+## Commands
+`PYTHONPATH=<tasks>/site_hydraulics_interface_comparison_20261117/report_tools MPLCONFIGDIR=/tmp/syrup-fc-report PYTHONDONTWRITEBYTECODE=1 /home/okin/MAPLE/.venv/bin/python -B build_report.py` -> all asserts pass; `ruff check build_report.py` -> clean. DOCX checks: zip OK, 1 media, tables = header rows, footer page field, no raw LaTeX/placeholder text; CSV/Markdown have no CR.
+
+## Limits / for Root
+- Equations are shown as clean Unicode lines inside a table (no OMML); no Word/LibreOffice renderer, so layout and symbol rendering in Word are not visually verified.
+- The 10-15 vol. % band in the figure is labelled as the user-quoted range, not a measurement.
+- "Share of the way" is exactly 27/33 only because the air entry is floored at 0; with the raw negative air entry it is slightly different (diagnostic in Table 5).

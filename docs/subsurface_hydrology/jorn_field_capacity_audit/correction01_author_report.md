@@ -1,0 +1,18 @@
+# Correction01 author report (Claude): field-capacity audit
+
+Scope kept: only `report/**` and this file written (initial `author_report.md` preserved). No model, Git, network, install or GPU action; no source, Root file or result edited. Root acceptance pending; nothing copied to outputs.
+
+## Corrections made (builder text, so report.md, DOCX, CSV and manifest)
+1. 33 -> 6 kPa is now an INTERPOLATION along the printed Eq. 12 wet branch; "extrapolation" is used only for extending Eq. 11 below 33 kPa, which was not done.
+2. The 10-15 vol. % range is "the user's expected field-capacity range (illustrative, not a measurement)" in the plot legend, caption and prose; our 33 kPa values (9.75/9.94/10.91) are "close to, about 10-11 %, at or just below the lower edge", not "within".
+3. Table 4 (sensitivity): density diagnostic is "normal density substituted for the density used (air entry kept at 0)" with "Difference B - used"; a row states whether a floor is active (layer 1 none: measured 1.4196 exceeds the floors; layers 2 and 3 yes). The raw-negative-air-entry diagnostic is labelled non-physical, not a proposed input; text says "air-entry and density choices".
+4. Removed "no site retention data exist" and "none of [pore structure, ...] is measured"; now "no measured 6 kPa retention value was used in, or found among, the field inputs I audited" and a one-line distinction that NEON saturated-extract water fields are mass-based extract values, not volumetric water at 6 kPa. Coarse-fragment sentence removed.
+5. "A third of the sand" -> "roughly 40 %" (34.5/86.7 = 39.8 %, 32.8/83.7 = 39.2 %).
+6. Readability: the 5-column worked table is replaced in the document by 13 step headings with a full-width formula line, one line per term of the long sums, the numeric substitution and a bold Result (steps also kept as `tables/steps.csv`); results and sensitivity tables are transposed to Quantity x Layer 1/2/3; PSD table is 4 columns (Layer 1 = measured A, Layer 2 = A-Bw mixture, Layer 3 = measured Bw) with the raw A/Bw columns in `tables/psd_full.csv`. Equations remain plain Unicode lines (no OMML, no raw LaTeX).
+7. The 33 kPa value is offered only as a transparent sensitivity/control option, not validated at 6 kPa or for sandy soil in general; a qualified site curve or field drainage assessment would choose the operational field capacity; the existing d/stress fit is conditional; nothing adopted.
+8. The standard error 0.052 is kept with recorded evidence: the builder asserts the Table 1 row text "0.63/0.052" (and "0.36/0.063", "0.78/2.94") in the text extraction of the hashed Saxton-Rawls PDF (`neon_texture_failure_audit_20261117/probes/pdf_raw_text.txt`, hash in `tables/provenance.csv`); it is stated as read from that extraction.
+
+## Repeat checks and artifacts
+Command: `PYTHONPATH=<tasks>/site_hydraulics_interface_comparison_20261117/report_tools MPLCONFIGDIR=/tmp/syrup-fc-report PYTHONDONTWRITEBYTECODE=1 /home/okin/MAPLE/.venv/bin/python -B report/build_report.py`. All asserts pass again (17 hashed sources incl. the PDF text extraction; 60-digit recomputation vs Root 1e-45 and vs the original run file 2e-13; Table 3 sandy controls 10.28 and 12.02). `ruff check build_report.py`: clean. DOCX: zip OK, 1 media, 5 tables with repeating header rows, page footer field, no raw-LaTeX/placeholder text; Markdown/CSV have no CR. Figure re-rendered with the new legend (legend below the plot). Manifest and verification regenerated; DOCX SHA-256 in `report/artifact_manifest.json`.
+
+Limits unchanged: no Word/LibreOffice renderer, so pagination (likely 8-9 pages with the step list) and equation appearance in Word are not visually verified; the Tietjen paragraph wording comes from Root.

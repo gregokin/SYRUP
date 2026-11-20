@@ -1,0 +1,34 @@
+{
+  "status": "ACCEPTED_DOCUMENTATION_AND_PARAMETER_AUDIT",
+  "utc": "2026-11-20T19:05:54.025148+00:00",
+  "baseline_main": "64ac9d0ddf7380ae8297eb39ffc0da8b56929ac0",
+  "live_head_unchanged": "c76c603dde4e8f79ec48b18d954a386580d8bc89",
+  "scope": "New DOCX and audit/reproducibility evidence only. No hydrology rerun, source/default/parameter changes or replacement of historical outputs.",
+  "scientific_finding": "No confirmed arithmetic error. Actual sandy fine-earth PSD gives9.75/9.94/10.91vol%theta33; hybrid6kPa linear wet branch with studyairfloor0 gives39.76/39.87/39.51vol%. SiteFC/wetcurve not validated; changing operational FC remains a future explicit scientific choice.",
+  "verification": [
+    "Root80-digit independent primary-equation arithmetic and rawCSV/massmix/unitchecks PASS",
+    "Claude60-digit independent recomputation agrees with Root within1e-45; actualarchivedcase/receipt within2e-13",
+    "PublishedTable3 sandy controls agree with printedroundedvalues",
+    "Rootverifiedall17manifestsourcefiles,736preexistingtrackedworkingfiles and16raw/source/old-reportseals",
+    "All3layerPSD/CSV/Wordvalues/13workedsteps/DOCXZIP/XML/5repeatingheadertables/embeddedmedia PASS",
+    "RootviewedPNG; finalPNGbyteidentical toviewedfile",
+    "Ruff3newscripts PASS; Gitwhitespace PASS; existingphysics/testsunchanged"
+  ],
+  "review": "Claudeauthorplus2boundedcorrectioncycles; Rootindependentreview/calculationchecks andartifactverification. AllthreeClaudelaunchesCLOSED0.",
+  "qualified_run_source_identity_historical_not_new_simulation": {
+    "SYRUP_files": 180,
+    "SYRUP_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "MAPLE_files": 412,
+    "MAPLE_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "limits": [
+    "No measured6kPaFC used/foundin auditedinputs",
+    "2013megapitsoilproxy for2024sensors",
+    "OMconversion/density/airentryfloors areprovisionalstudyassumptions, nativeproviderstrictguards unchanged",
+    "NoOfficepaginationrenderer",
+    "No new CPU/GPU hydrology/restart/scaling/coupled qualification"
+  ],
+  "docx": "outputs/subsurface_site_comparison_20261117/SYRUP_JORN_field_capacity_worked_audit_20261120.docx",
+  "docx_sha256": "d6f0f6ed8a33f0b7529f9bccb48eca921c01bee0705d0443e790a1340c20ba33",
+  "new_task_jobs": "AllCLOSED; no GPU or watcher; unrelatedproductionjobs untouched"
+}

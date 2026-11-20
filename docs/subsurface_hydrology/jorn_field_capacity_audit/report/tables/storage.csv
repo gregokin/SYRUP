@@ -1,0 +1,6 @@
+Hypothetical 10 cm layer 1 (not a model run),Volumetric water (vol. %),Stored water (mm)
+Water at S&R field capacity θ₃₃,9.75,9.75
+An example wetted layer,15.00,15.00
+Water at SYRUP field capacity θ₆,39.76,39.76
+Example minus θ₃₃ (would exceed 33 kPa field capacity),5.25,5.25
+θ₆ minus example (still below SYRUP field capacity),24.76,24.76

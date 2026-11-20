@@ -1,0 +1,9 @@
+Quantity,Layer 1,Layer 2,Layer 3
+θ₃₃ at normal density (vol. %),8.61,8.76,9.72
+"θ₃₃ used, density-adjusted (vol. %)",9.75,9.94,10.91
+θS saturation (vol. %),46.43,46.52,45.86
+"Air entry, raw (kPa)",-0.608,-0.591,-0.461
+Air entry used after the zero floor (kPa),0,0,0
+θ₆ = SYRUP field capacity (vol. %),39.76,39.87,39.51
+Share of the way from θ₃₃ to θS,81.82%,81.82%,81.82%
+Water added above θ₃₃ (mm per 10 cm),30.01,29.93,28.60
