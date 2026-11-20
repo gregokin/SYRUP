@@ -1,0 +1,20 @@
+[
+  {
+    "module": "maple",
+    "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+    "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "files": 412,
+    "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src/maple/__init__.py",
+    "actual_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "actual_files": 412
+  },
+  {
+    "module": "maple_syrup",
+    "root": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src",
+    "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+    "files": 180,
+    "actual_file": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src/maple_syrup/__init__.py",
+    "actual_sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+    "actual_files": 180
+  }
+]

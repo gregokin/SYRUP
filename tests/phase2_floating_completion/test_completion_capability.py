@@ -9,7 +9,7 @@ import pickle
 import weakref
 
 import pytest
-from test_terminal import lake, settled
+from test_terminal import SECOND_RECESSION_TARGET_S, lake, settled
 
 from maple_syrup import floating_completion as fcm
 from maple_syrup.pond_event import PondRetainedHandoff
@@ -24,8 +24,8 @@ def backend(request):
 
 def complete(ev, st):
     s = settled(ev, st)
-    q = ev.evolve(s, 120.0, stop_when_quiet=True)
-    assert q.quiet_ready
+    q = ev.evolve(s, SECOND_RECESSION_TARGET_S, stop_when_quiet=True)  # bounded test window; the isolated pond quiets at ~125 s
+    assert q.quiet_ready and q.state.t_s < SECOND_RECESSION_TARGET_S
     h = ev.settle_retaining_water(q.state)
     assert h.complete
     return h

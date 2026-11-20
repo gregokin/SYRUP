@@ -1,0 +1,156 @@
+{
+  "schema": "maple_syrup.sr33_field_capacity_qualification/1",
+  "utc": "2026-11-20T20:38:24.415518+00:00",
+  "status": "accepted_bounded_native_api_change",
+  "base_main": "1fab6c2e5168d5d6632da9e51b94ac177311a5ce",
+  "source": {
+    "files": 180,
+    "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+    "changed_production_files": [
+      "src/maple_syrup/native_floating_soil.py",
+      "src/maple_syrup/soil_texture_properties.py",
+      "src/maple_syrup/soil_texture_properties_cuda.py",
+      "src/maple_syrup/soil_texture_properties_numba.py"
+    ]
+  },
+  "MAPLE": {
+    "revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+    "files": 412,
+    "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+    "materialization": "Genuine previously qualified native MAPLE source materializations; imported package paths verified before/after every run."
+  },
+  "environments": {
+    "cpu": "/home/okin/MAPLE/.venv",
+    "cuda": "/home/okin/MAPLE/.venv-cupy",
+    "gpu": "GPU0 GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871; freshly idle guarded before each launch"
+  },
+  "independent_results": {
+    "unique_cpu_pytest_passed": 745,
+    "cpu_skipped": 16,
+    "actual_cuda_pytest_passed": 16,
+    "additional_independent_cpu_controls": 10,
+    "additional_actual_cuda_controls": 17,
+    "counts_exclude_duplicate_author_and_style_reruns": true,
+    "lint": "52 pre-existing diagnostics vs 53 baseline; zero introduced diagnostics",
+    "source_guards": "all listed lanes before/after exact"
+  },
+  "review": {
+    "implementation": "Claude session b82d2d25-a152-490d-bf3c-1daa135de026, corrections01-05",
+    "independent_reviewer": "Codex Root",
+    "closed_confirmed_findings": [
+      "Native field-capacity method cannot be replaced while retaining config identity; version tag bound into identity.",
+      "Default recipe pressure metadata is consistently 33 kPa; legacy6 constants explicitly named.",
+      "Native completion controls use genuine quiet, preserve explicit incomplete original-lake control, and never equate time cap to completion."
+    ],
+    "new_physics_questions": []
+  },
+  "behavior": {
+    "default_field_capacity_method": "saxton_rawls_33kpa",
+    "default_output": "theta_field_capacity",
+    "deprecated_explicit_method": "tietjen_6kpa_deprecated",
+    "legacy_output": "theta_field_capacity_6kpa",
+    "source_schema": "maple_syrup.soil_texture_properties/2",
+    "conductivity": "Tietjen-style K and d unchanged; SR unsaturated Ku unadopted",
+    "water": "Unchanged initial inventory; existing gravity/reconciliation/accounting retained."
+  },
+  "limits": [
+    "No observed-site rerun or parameter refit; old JORN/MOAB results remain historical.",
+    "No rebinding or automatic migration of old source-locked profiles/checkpoints.",
+    "New native source needs separate coupled MASY/LEAF runtime qualification.",
+    "Retained communicating multi-cell lake oscillation remains an important surface-hydraulic follow-up; no damping or completion-tolerance change.",
+    "Small hardware fixtures and at most 5000-cell provider controls do not establish full-domain scalability.",
+    "Air-entry validity guard remains despite no direct physical use in default FC33/Ks; no domain widening."
+  ],
+  "runs": [
+    {
+      "lane": "root_cpu_provider",
+      "result": "evidence/root_cpu_provider/result.json",
+      "seconds": 12.843383250001352,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_cpu_native",
+      "result": "evidence/root_cpu_native/result.json",
+      "seconds": 9.842754901001172,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_cpu_held",
+      "result": "evidence/root_cpu_held/result.json",
+      "seconds": 24.40207814399764,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_cpu_resume",
+      "result": "evidence/root_cpu_resume/result.json",
+      "seconds": 61.71603727500042,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_native_cuda",
+      "result": "evidence/root_native_cuda/result.json",
+      "seconds": 53.496647396998014,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_checkpoint",
+      "result": "evidence/root_final_checkpoint/result.json",
+      "seconds": 131.33605153100507,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_completion",
+      "result": "evidence/root_final_completion/result.json",
+      "seconds": 37.59179472899996,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_context",
+      "result": "evidence/root_final_context/result.json",
+      "seconds": 126.8088612149877,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_completion_cuda",
+      "result": "evidence/root_final_completion_cuda/result.json",
+      "seconds": 93.29705497898976,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_provider_style",
+      "result": "evidence/root_final_provider_style/result.json",
+      "seconds": 12.685103249998065,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_held_style",
+      "result": "evidence/root_final_held_style/result.json",
+      "seconds": 1.9388296419929247,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_final_resume_style",
+      "result": "evidence/root_final_resume_style/result.json",
+      "seconds": 2.757080978000886,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_independent_cpu_v2",
+      "result": "evidence/root_independent_cpu_v2/result.json",
+      "seconds": 5.017327271998511,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_independent_cuda_v3",
+      "result": "evidence/root_independent_cuda_v3/result.json",
+      "seconds": 7.170451034995494,
+      "source_guards": "before == after; exact package files and SHA256"
+    },
+    {
+      "lane": "root_cuda_cells",
+      "result": "evidence/root_cuda_cells/result.json",
+      "seconds": 2.0269360070014955,
+      "source_guards": "before == after; exact package files and SHA256"
+    }
+  ]
+}

@@ -28,6 +28,11 @@ REFUSE = (fc.PondCheckpointError, fr.FloatingResumeError)
 PC_SHA256 = "94cd2339566646ba44f2015dad13a67194c26a8dd3cc85b56916f62d2b4a704f"  # the historical codec, byte-identical to the accepted file
 
 
+# SR33 (task sr33_default_20261120): the quiet closed-lake fixtures need a strictly unsaturated but machine-near-saturated start. With the 33 kPa field capacity the old 0.999999 leaves a
+# residual intake (quiet metric 2.2e-9 at 60 s, never ready); nextafter(1, 0) gives genuine quiet by ~3 s (Root probe root_quiet_fixture_probe.json). Initial condition of the fixture only; not a field recommendation.
+QUIET_LAKE_SATURATION = float(np.nextafter(1.0, 0.0))
+
+
 @pytest.fixture(params=["numpy", "numba"])
 def backend(request):
     if request.param == "numba":
@@ -35,13 +40,25 @@ def backend(request):
     return request.param
 
 
-def lake(tmp, backend, windowed, *, splash=False, discharge=None):
-    z = ph.basin() - 0.08  # thin closed profile
+SECOND_RECESSION_TARGET_S = 600.0  # bounded TEST window for the second recession (the isolated pond actually re-certifies quiet at ~125 s); stop_when_quiet=True and an asserted quiet always apply
+
+
+def isolated_pond_surface():
+    """Root-proven isolated-pond certificate geometry (task sr33_default_20261120 correction03): the thin closed basin with the same dry rim and exactly ONE enclosed wet cell [1, 2]. Removes the
+    communicating wet faces whose post-deposition surface oscillation never damps (kept as the documented negative control `communicating_lake`); the 3x5 native bed, 0.1 kg mobile load, classes
+    and soil profile are unchanged."""
+    z = ph.basin() - 0.08
+    z[1, 1] = z[1, 3] = 0.14
+    return z
+
+
+def lake(tmp, backend, windowed, *, splash=False, discharge=None, communicating=False, saturation=None):
+    z = (ph.basin() - 0.08) if communicating else isolated_pond_surface()  # thin closed profile
     depth = np.maximum(0.135 - z, 0.0)
     mob = np.zeros((3, 5, 6))
     mob[1, 2, 2] = 1.0e-1
     pol = PondCompletionPolicy(hold_s=1.0, deposit_mobile_at_flow_end=True) if discharge is None else PondCompletionPolicy(hold_s=1.0, max_depth_change_m=1e-6, max_unit_discharge_m2_s=discharge, deposit_mobile_at_flow_end=True)
-    kw = {"surface": z, "depth": depth, "mobile": mob, "closed": True, "bottom": "closed", "saturation": 0.999999, "backend": backend, "splash": splash, "rain_mm_h": 0.0, "end_s": 2.0, "max_dt_s": 1.0,
+    kw = {"surface": z, "depth": depth, "mobile": mob, "closed": True, "bottom": "closed", "saturation": QUIET_LAKE_SATURATION if saturation is None else saturation, "backend": backend, "splash": splash, "rain_mm_h": 0.0, "end_s": 2.0, "max_dt_s": 1.0,
           "policy": pol}
     if windowed:
         ev, st, vert, *_r = fb.make_pair(tmp, **kw)[1]
@@ -90,7 +107,7 @@ def test_retained_terminal_deposit_saves_loads_and_continues_bit_exactly(tmp_pat
 def test_second_settlement_after_a_real_recession_with_an_empty_pool_is_zero_calls(tmp_path):
     ev, st, vert = lake(tmp_path / "a", "numpy", False)
     st = settled(ev, st)
-    q = ev.evolve(st, 120.0, stop_when_quiet=True)  # the actual recession re-certifies a quiet hold
+    q = ev.evolve(st, SECOND_RECESSION_TARGET_S, stop_when_quiet=True)  # the actual recession re-certifies a quiet hold (isolated pond: ~125 s)
     assert q.quiet_ready
     done = ev.settle_retaining_water(q.state)  # the pool is empty now: the settlement makes NO native call
     assert done.complete and done.state.sediment.n_terminal_native_calls == 1 and done.state.sediment.n_native_calls == st.sediment.n_native_calls + 2 * (q.state.counters.n_accepted_steps - st.counters.n_accepted_steps)
@@ -219,3 +236,26 @@ def test_second_non_empty_terminal_settlement_after_a_real_recession_counts_two_
     got = fc.load_floating_pond_checkpoint(ck, ev2, IDENT, available_bytes_fn=AVAIL)
     assert got.sediment.n_terminal_native_calls == 2
     same(snapshot(ev2, ev2.step(got, 0.0, 0.2).state, vert2), snapshot(ev, ref, vert))
+
+
+def test_original_communicating_lake_remains_not_quiet_and_settlement_is_refused_typed():
+    """NEGATIVE CONTROL (correction03): the ORIGINAL three-wet-cell communicating lake at the old 0.999999 saturation, real native 60 s evolve under the unchanged policy, is NOT quiet; settlement is
+    refused with a typed error and the accepted state is unchanged. It guards against hiding the original surface-hydraulic issue behind the isolated fixture (qualification follow-up; no damping adopted)."""
+    from maple_syrup.pond_event import PondEventIncomplete
+
+    ev, st, _vert = lake(None, "numpy", False, communicating=True, saturation=0.999999)
+    r = ev.evolve(st, 60.0, stop_when_quiet=True)
+    assert not r.quiet_ready
+    before = (r.state.t_s, r.state.sediment.n_terminal_native_calls, np.asarray(r.state.hydraulic.depth_m).tobytes())
+    with pytest.raises(PondEventIncomplete):
+        ev.settle_retaining_water(r.state)
+    assert (r.state.t_s, r.state.sediment.n_terminal_native_calls, np.asarray(r.state.hydraulic.depth_m).tobytes()) == before
+
+
+def test_isolated_pond_second_recession_actually_quiets_and_second_settlement_completes(tmp_path):
+    ev, st, _vert = lake(tmp_path / "a", "numpy", False)
+    st1 = settled(ev, st)
+    q = ev.evolve(st1, SECOND_RECESSION_TARGET_S, stop_when_quiet=True)
+    assert q.quiet_ready and q.state.t_s < SECOND_RECESSION_TARGET_S  # genuine quiet, not the time cap
+    done = ev.settle_retaining_water(q.state)
+    assert done.complete and done.state.sediment.n_terminal_native_calls == 1

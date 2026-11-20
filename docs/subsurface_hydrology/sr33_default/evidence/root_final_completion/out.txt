@@ -1,0 +1,4 @@
+...........ss                                                            [100%]
+=========================== short test summary info ============================
+SKIPPED [2] tests/phase2_floating_completion/test_gpu_definitions.py:21: GPU definitions: set SYRUP_RELEASE_GPU=1 on the hardware qualification host (free device)
+11 passed, 2 skipped in 35.60s

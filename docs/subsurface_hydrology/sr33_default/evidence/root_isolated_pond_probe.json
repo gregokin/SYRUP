@@ -1,0 +1,20 @@
+{
+  "scope": "Unchanged-physics completion control without communicating wet faces.",
+  "first_quiet_s": 3.0,
+  "second_quiet_ready": true,
+  "second_t_s": 125.0,
+  "second_metrics": {
+    "max_abs_depth_change_m": 0.0,
+    "max_unit_discharge_m2_s": 0.0,
+    "export_m3": 0.0,
+    "n_cells_above_escape": 0,
+    "max_mobile_cell_class_kg": 0.0,
+    "outlet_discharge_m3_s": 0.0,
+    "max_excess_depth_m": 0.0,
+    "excess_volume_m3": 0.0,
+    "rainfall_finished": true,
+    "mobile_per_element_limit_kg": 1e-10
+  },
+  "final_status": "complete",
+  "total_terminal_calls": 1
+}

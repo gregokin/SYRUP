@@ -38,8 +38,8 @@ def _defs() -> str:
     add("E1R", tp.EQ1_REGRESSION), add("E1A", tp.EQ1_ADJUST), add("E2R", tp.EQ2_REGRESSION), add("E2A", tp.EQ2_ADJUST), add("E3R", tp.EQ3_REGRESSION), add("E3A", tp.EQ3_ADJUST)
     add("E3S", tp.EQ3_SAT_TERMS), add("E4R", tp.EQ4_REGRESSION), add("E4A", tp.EQ4_ADJUST)
     consts = {"PD": tp.PARTICLE_DENSITY_G_CM3, "DFA": tp.DF_AIR_COEFF, "DF_LO": tp.DENSITY_FACTOR_RANGE[0], "DF_HI": tp.DENSITY_FACTOR_RANGE[1], "RHO_LO": tp.DENSITY_RANGE_G_CM3[0],
-              "RHO_HI": tp.DENSITY_RANGE_G_CM3[1], "CLAY_MAX": tp.CLAY_MAX, "OM_MAX": tp.OM_MAX_PERCENT, "GAP_MIN": tp.MIN_DENSITY_GAP, "AIR_MAX": tp.AIR_ENTRY_MAX_KPA, "P_FC": tp.FC_PRESSURE_KPA,
-              "SPAN": tp.FC_SPAN_KPA, "LNR": tp.LN_RATIO, "KS_C": tp.KS_COEFF_MM_H, "KS_DIV": tp.MM_H_PER_M_S}
+              "RHO_HI": tp.DENSITY_RANGE_G_CM3[1], "CLAY_MAX": tp.CLAY_MAX, "OM_MAX": tp.OM_MAX_PERCENT, "GAP_MIN": tp.MIN_DENSITY_GAP, "AIR_MAX": tp.AIR_ENTRY_MAX_KPA, "P_FC": tp.LEGACY_6KPA_PRESSURE_KPA,
+              "SPAN": tp.LEGACY_6KPA_SPAN_KPA, "LNR": tp.LN_RATIO, "KS_C": tp.KS_COEFF_MM_H, "KS_DIV": tp.MM_H_PER_M_S}
     for k, v in consts.items():
         lines.append(f"#define {k} ({float(v)!r})")
     ints = {"F_NF": tp.FLAG_NONFINITE, "F_FR": tp.FLAG_FRACTION, "F_CL": tp.FLAG_CLAY, "F_OM": tp.FLAG_ORGANIC_MATTER, "F_DE": tp.FLAG_DENSITY, "F_KO": tp.FLAG_KS_OVERRIDE, "F_DF": tp.FLAG_DENSITY_FACTOR,
@@ -52,7 +52,7 @@ def _defs() -> str:
 
 _BODY = r"""
 __device__ __forceinline__ unsigned int maple_syrup_texture_element(double S, double Si, double C, double OM, double rho_kg, double o_wp, double o_33, double o_sat, double o_air, double o_ks,
-                                                                    double closure, double* fc6p, double* satp, double* ksp, double* wpp, double* airp, unsigned int* provp, int* eqp)
+                                                                    double closure, int fc_mode, double* fc6p, double* satp, double* ksp, double* wpp, double* airp, unsigned int* provp, int* eqp)
 {
     unsigned int flags = 0u;
     const bool finite_in = isfinite(S) && isfinite(Si) && isfinite(C) && isfinite(OM) && isfinite(rho_kg);
@@ -102,8 +102,8 @@ __device__ __forceinline__ unsigned int maple_syrup_texture_element(double S, do
     const double ks_est = (KS_C * pow(gap, 3.0 - lam)) / KS_DIV;
     const double ks = has_ks ? o_ks : ks_est;
     if (curve_ok && !(isfinite(ks) && ks > 0.0)) flags |= F_KS;
-    const bool eq = P_FC <= air;
-    *fc6p = eq ? sat : fc33 + SPAN * gap / (AIR_MAX - air);
+    const bool eq = (fc_mode != 0) && (P_FC <= air);  // mode 0 = Saxton-Rawls 33 kPa (default): the final theta_33, never a fc==saturation outcome; mode 1 = deprecated Tietjen 6 kPa
+    *fc6p = (fc_mode == 0) ? fc33 : (eq ? sat : fc33 + SPAN * gap / (AIR_MAX - air));
     *satp = sat; *ksp = ks; *wpp = wp; *airp = air; *eqp = eq ? 1 : 0;
     unsigned int prov = 0u;
     if (has_wp) prov |= P_WP;
@@ -122,7 +122,7 @@ extern "C" __global__ void maple_syrup_texture_properties(
     const double* a6, long long s6l, long long s6c, const double* a7, long long s7l, long long s7c, const double* a8, long long s8l, long long s8c,
     const double* a9, long long s9l, long long s9c,
     double* out_fc, double* out_sat, double* out_ks, double* out_wp, double* out_air, unsigned char* out_prov, long long osl, long long osc,
-    unsigned long long* diag, double closure, long long L, long long cells, int want_diag)
+    unsigned long long* diag, double closure, long long L, long long cells, int want_diag, int fc_mode)
 {
     const long long c = (long long)blockIdx.x * (long long)blockDim.x + (long long)threadIdx.x;
     if (c >= cells) return;
@@ -133,7 +133,7 @@ extern "C" __global__ void maple_syrup_texture_properties(
         int eq;
         const unsigned int flags = maple_syrup_texture_element(
             a0[l * s0l + c * s0c], a1[l * s1l + c * s1c], a2[l * s2l + c * s2c], a3[l * s3l + c * s3c], a4[l * s4l + c * s4c], a5[l * s5l + c * s5c], a6[l * s6l + c * s6c],
-            a7[l * s7l + c * s7c], a8[l * s8l + c * s8c], a9[l * s9l + c * s9c], closure, &fc6, &sat, &ks, &wp, &air, &prov, &eq);
+            a7[l * s7l + c * s7c], a8[l * s8l + c * s8c], a9[l * s9l + c * s9c], closure, fc_mode, &fc6, &sat, &ks, &wp, &air, &prov, &eq);
         if (flags != 0u) {
             n_flagged += 1ull;
             ov |= (unsigned long long)flags;
@@ -170,7 +170,7 @@ def _load_kernel(cp, device_id: int):
         return fn
 
 
-def run(cp, inputs: dict, out: dict, L: int, N: int, cells: int, layout: str, closure: float) -> tuple[int, int, int, int]:
+def run(cp, inputs: dict, out: dict, L: int, N: int, cells: int, layout: str, closure: float, fc_mode: int, fc_name: str) -> tuple[int, int, int, int]:
     """One launch. Returns the four diagnostic words (`first` is all ones when nothing is flagged). Allocates only the 4-word diagnostic and ONE small auxiliary array of scalar inputs."""
     from maple_syrup import soil_water_remap_cuda as rc
 
@@ -197,8 +197,8 @@ def run(cp, inputs: dict, out: dict, L: int, N: int, cells: int, layout: str, cl
     diag[2] = np.uint64(0xFFFFFFFFFFFFFFFF)
     fn = _load_kernel(cp, rc.current_device_id(cp))
     grid = (cells + CUDA_BLOCK - 1) // CUDA_BLOCK
-    fn((grid,), (CUDA_BLOCK,), tuple(args) + (out["theta_field_capacity_6kpa"], out["theta_saturation"], out["saturated_conductivity_m_s"], wp, air, prov, np.int64(osl), np.int64(osc), diag,
-                                              np.float64(closure), np.int64(L), np.int64(cells), np.int32(1 if diag_on else 0)))
+    fn((grid,), (CUDA_BLOCK,), tuple(args) + (out[fc_name], out["theta_saturation"], out["saturated_conductivity_m_s"], wp, air, prov, np.int64(osl), np.int64(osc), diag,
+                                              np.float64(closure), np.int64(L), np.int64(cells), np.int32(1 if diag_on else 0), np.int32(fc_mode)))
     from maple.core.backend import to_host
 
     words = np.asarray(to_host(diag))  # the one validation-packet read (DIAG_WORDS uint64 = 32 B) through MAPLE's counted transfer path; the cold identity chunks are separate bounded reads

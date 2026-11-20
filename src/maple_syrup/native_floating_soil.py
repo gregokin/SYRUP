@@ -217,6 +217,12 @@ class NativeFloatingConfig:
     latent_saturated_conductivity_m_s: float | None
     sha256: str
 
+    @property
+    def field_capacity_method(self) -> str:
+        """Read-only CONSTANT: a native owner always derives field capacity as the final density-adjusted Saxton-Rawls theta_33 (bound into `sha256`). It is not a dataclass field, so neither
+        `dataclasses.replace` nor the constructor can select another method while keeping this identity."""
+        return stp.METHOD_SR33
+
 
 def native_floating_config(*, layer_thickness_m: Any, grain_texture: Any, organic_matter_percent: Any, bulk_density_kg_m3: Any, latent_theta_field_capacity: Any, latent_theta_saturation: Any,
                            theta_residual: Any, theta_evaporation_stress: Any, evaporation_factor: Any = 1.0, diffusivity_m2_s: Any, bottom_drainage: str = "open", matrix_conductivity_m_s: Any = None,
@@ -274,6 +280,7 @@ def native_floating_config(*, layer_thickness_m: Any, grain_texture: Any, organi
     for a in (layers.depth_edges_m, gt, om, lf, ls, diff, np.array([rho, *scal.values()])):
         h.update(np.ascontiguousarray(a).tobytes())
     h.update(f"{SCHEMA}|{bottom_drainage}|{backend}".encode())
+    h.update(f"|field_capacity_method:{stp.METHOD_SR33}".encode())  # versioned FC meaning: a config (or record) made before this tag existed (6 kPa hybrid FC) can never share this sha256
     if matrix_conductivity_mode == "texture_ks":  # the explicit-mode identity stays byte-identical to the accepted one
         h.update(f"|matrix_conductivity_mode:texture_ks:{float(latent_saturated_conductivity_m_s)!r}".encode())
     for k in sorted(ov or ()):  # EVERY override value (with name, layout, shape and dtype) is part of the identity
@@ -595,9 +602,10 @@ def _batch_properties(batch: Any, config: NativeFloatingConfig, K: int, provider
         kw = {}
         if config.overrides:
             kw = {k: np.ascontiguousarray(v[layer:layer + 1, batch.indices[sel]]) for k, v in config.overrides.items()}
-        res = stp.estimate_soil_texture_properties(sand_fraction=cols[0], silt_fraction=cols[1], clay_fraction=cols[2], organic_matter_percent=om, bulk_density_kg_m3=rho, n_layers=1, n_cells=m,
-                                                   backend=_provider_backend(config), memory_budget_bytes=provider_bytes, **kw)  # a (1, m) call: never larger than the composed (L, B) provider term
-        fc[layer, sel] = res.array("theta_field_capacity_6kpa")[0]
+        res = stp.estimate_soil_texture_properties(
+            sand_fraction=cols[0], silt_fraction=cols[1], clay_fraction=cols[2], organic_matter_percent=om, bulk_density_kg_m3=rho, n_layers=1, n_cells=m,
+            backend=_provider_backend(config), memory_budget_bytes=provider_bytes, field_capacity_method=stp.METHOD_SR33, **kw)  # a (1, m) call: never larger than the composed (L, B) provider term
+        fc[layer, sel] = res.array(res.fc_output_name)[0]
         sat[layer, sel] = res.array("theta_saturation")[0]
         if layer == 0 and ks0 is not None:
             ks0[sel] = res.array("saturated_conductivity_m_s")[0]

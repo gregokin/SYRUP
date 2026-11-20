@@ -207,15 +207,16 @@ def test_ownership_sealing_and_readonly(backend):
     with pytest.raises(tp.TexturePropertyError):
         r.detached("nope", memory_budget_bytes=BIG)
     assert "no native adoption" in r.summary()["scope"] or "no bed/water/clock mutation" in r.summary()["scope"]
-    assert set(r.names()) == set(tp.OUTPUTS)
+    assert set(r.names()) == set(tp.outputs_for(tp.METHOD_TIETJEN_6KPA_DEPRECATED))
 
 
 def test_default_outputs_only_three_maps_and_diagnostics_are_optional(backend):
-    assert set(call(backend=backend).names()) == set(tp.OUTPUTS)
-    assert set(call(backend=backend, diagnostics=True).names()) == set(tp.OUTPUTS) | set(tp.DIAGNOSTICS)
+    legacy = set(tp.outputs_for(tp.METHOD_TIETJEN_6KPA_DEPRECATED))
+    assert set(call(backend=backend).names()) == legacy
+    assert set(call(backend=backend, diagnostics=True).names()) == legacy | set(tp.DIAGNOSTICS)
 
 
 def test_recipe_metadata_is_immutable_and_complete():
-    rec = tp.recipe_record()
-    assert rec["ks_anchor"].startswith("theta_33") and rec["recipe"] == tp.RECIPE_TAG and rec["fc_pressure_kpa"] == 6.0
+    rec = tp.recipe_record(tp.METHOD_TIETJEN_6KPA_DEPRECATED)
+    assert rec["ks_anchor"].startswith("theta_33") and rec["recipe"] == tp.RECIPE_TAG and rec["legacy_6kpa"]["pressure_kpa"] == 6.0 and rec["field_capacity_pressure_kpa"] == 6.0 and rec["legacy_6kpa"]["span_kpa"] == 27.0
     assert set(tp.source_digests()) == {"soil_texture_properties.py", "soil_texture_properties_numba.py", "soil_texture_properties_cuda.py"}

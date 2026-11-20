@@ -1,0 +1,6 @@
+{
+  "baseline": 53,
+  "current": 52,
+  "new": [],
+  "meaning": "Pre-existing style warnings preserved; no introduced Ruff diagnostics. No production formatting changes."
+}

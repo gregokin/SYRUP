@@ -1,0 +1,25 @@
+.....ssssssssssss....................................................... [ 28%]
+........................................................................ [ 57%]
+........................................................................ [ 86%]
+.................................                                        [100%]
+=============================== warnings summary ===============================
+test_correction01.py: 3 warnings
+test_cuda_source_host_check.py: 8 warnings
+test_curve_and_overrides.py: 34 warnings
+test_memory_and_spatial_column.py: 10 warnings
+test_oracles.py: 10 warnings
+test_refusals_and_layouts.py: 27 warnings
+test_sr33_default.py: 10 warnings
+  /home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/tests/phase2_texture_properties/conftest.py:57: FieldCapacityDeprecationWarning: field_capacity_method='tietjen_6kpa_deprecated' (the hybrid 6 kPa field capacity) is DEPRECATED; the default is the Saxton-Rawls 33 kPa field capacity ('saxton_rawls_33kpa', output 'theta_field_capacity'). The legacy method exists only to reproduce historical equations/oracles.
+    return tp.estimate_soil_texture_properties(sand_fraction=S, silt_fraction=Si, clay_fraction=C, organic_matter_percent=OM, bulk_density_kg_m3=rho, n_layers=L, n_cells=N, backend=backend, **kw)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [6] tests/phase2_texture_properties/test_cuda_definitions.py:40: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+SKIPPED [1] tests/phase2_texture_properties/test_cuda_definitions.py:54: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+SKIPPED [1] tests/phase2_texture_properties/test_cuda_definitions.py:72: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+SKIPPED [1] tests/phase2_texture_properties/test_cuda_definitions.py:82: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+SKIPPED [1] tests/phase2_texture_properties/test_cuda_definitions.py:108: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+SKIPPED [1] tests/phase2_texture_properties/test_cuda_definitions.py:115: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+SKIPPED [1] tests/phase2_texture_properties/test_cuda_definitions.py:126: CuPy or a CUDA device is unavailable; the texture-property CUDA backend is not exercised (no claim)
+237 passed, 12 skipped, 102 warnings in 10.76s

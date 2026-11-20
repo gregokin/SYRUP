@@ -12,7 +12,6 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from maple_syrup import soil_texture_properties as tp
 from maple_syrup import soil_texture_properties_cuda as cu
 
 STUB = r'''
@@ -30,7 +29,7 @@ using std::isfinite; using std::isinf; using std::isnan; using std::fabs; using 
 '''
 WRAP = r'''
 extern "C" void host_run(const double* const* a, const long long* st, double* ofc, double* osat, double* oks, double* owp, double* oair, unsigned char* oprov, long long osl, long long osc,
-                         unsigned long long* diag, double closure, long long L, long long cells, int want_diag, int block)
+                         unsigned long long* diag, double closure, long long L, long long cells, int want_diag, int fc_mode, int block)
 {
     const long long grid = (cells + block - 1) / block;
     blockDim.x = (unsigned)block;
@@ -39,7 +38,7 @@ extern "C" void host_run(const double* const* a, const long long* st, double* of
         for (int t = 0; t < block; ++t) {
             threadIdx.x = (unsigned)t;
             maple_syrup_texture_properties(a[0], st[0], st[1], a[1], st[2], st[3], a[2], st[4], st[5], a[3], st[6], st[7], a[4], st[8], st[9], a[5], st[10], st[11], a[6], st[12], st[13],
-                                           a[7], st[14], st[15], a[8], st[16], st[17], a[9], st[18], st[19], ofc, osat, oks, owp, oair, oprov, osl, osc, diag, closure, L, cells, want_diag);
+                                           a[7], st[14], st[15], a[8], st[16], st[17], a[9], st[18], st[19], ofc, osat, oks, owp, oair, oprov, osl, osc, diag, closure, L, cells, want_diag, fc_mode);
         }
     }
 }
@@ -89,10 +88,10 @@ class FakeFn:
         st = np.array([int(args[3 * j + k]) for j in range(10) for k in (1, 2)], dtype=np.int64)
         ptrs = (ctypes.c_void_p * 10)(*[a.ctypes.data for a in arrs])
         outs = [np.asarray(x) for x in args[30:36]]
-        osl, osc, diag, closure, L, cells, want = args[36:43]
+        osl, osc, diag, closure, L, cells, want, fc_mode = args[36:44]
         d = np.asarray(diag)
         self.lib.host_run(ptrs, st.ctypes.data_as(ctypes.c_void_p), *[o.ctypes.data_as(ctypes.c_void_p) for o in outs], ctypes.c_longlong(int(osl)), ctypes.c_longlong(int(osc)),
-                          d.ctypes.data_as(ctypes.c_void_p), ctypes.c_double(float(closure)), ctypes.c_longlong(int(L)), ctypes.c_longlong(int(cells)), ctypes.c_int(int(want)), ctypes.c_int(int(block[0])))
+                          d.ctypes.data_as(ctypes.c_void_p), ctypes.c_double(float(closure)), ctypes.c_longlong(int(L)), ctypes.c_longlong(int(cells)), ctypes.c_int(int(want)), ctypes.c_int(int(fc_mode)), ctypes.c_int(int(block[0])))
 
 
 class FakeCupy:

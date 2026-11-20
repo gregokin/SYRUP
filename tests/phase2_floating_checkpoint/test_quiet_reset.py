@@ -14,6 +14,7 @@ import numpy as np
 import pytest
 from case import AVAIL, IDENT, build, run, snapshot
 from test_terminal import (  # noqa: F401  (the lake fixtures and the backend parametrisation)
+    SECOND_RECESSION_TARGET_S,
     backend,
     lake,
     same,
@@ -112,7 +113,8 @@ def test_second_real_settlements_record_their_own_receipt(tmp_path):
     # an EMPTY real settlement after a recession does not wake (no reset): the quiet certificate and the previous receipt are untouched
     ev3, st3, _vert3 = lake(tmp_path / "c", "numpy", False)
     w3 = settled(ev3, st3)
-    q3 = ev3.evolve(w3, 120.0, stop_when_quiet=True)
+    q3 = ev3.evolve(w3, SECOND_RECESSION_TARGET_S, stop_when_quiet=True)  # bounded test window (isolated pond quiets at ~125 s)
+    assert q3.quiet_ready
     done = ev3.settle_retaining_water(q3.state)
     assert done.complete and done.state.sediment.n_terminal_native_calls == 1 and done.state.sediment.retained_quiet_reset_step == w3.counters.n_accepted_steps
     assert np.asarray(done.state.quiet.ready).item() is True

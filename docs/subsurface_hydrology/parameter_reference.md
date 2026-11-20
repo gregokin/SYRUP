@@ -277,6 +277,14 @@ claim.
   gravity cascade is reused once on the new capacity: with an open bottom the excess leaves **once** as explicit drainage; with a closed
   bottom only unavoidable excess returns to the surface (an internal transfer) and a recession is then pending
   (a pending recession must be followed by a native Rain-0 recession before another interevent day).
+- **Derived field capacity (SR33 default, 2026-11-20).** When the texture provider derives field capacity (native floating soil initialization and event-boundary refresh),
+  the default is the final, density-adjusted Saxton–Rawls **33 kPa** content `theta_33` (neutral output `theta_field_capacity`; a measured `theta_33_override` replaces it).
+  The former Tietjen **6 kPa** hybrid is deprecated: it exists only as the explicit named method `field_capacity_method="tietjen_6kpa_deprecated"` of the pure provider (one
+  `FieldCapacityDeprecationWarning` per call; output `theta_field_capacity_6kpa` keeps its true 6 kPa meaning). Explicitly prescribed `theta_field_capacity` inputs remain authoritative.
+  Ks (Eq 16), explicit K, diffusivity, stress, residual, saturation and the air-entry guard are unchanged. Old configs/checkpoints made before the version tag do not reproduce
+  their recorded config identity and are refused (no migration). See `docs/subsurface_hydrology/sr33_default/`. The Tietjen/EcoHyD K stays the default (user decision); Saxton–Rawls unsaturated Ku (Eq 17, exponent 3 + 2/lambda, lambda = 1/B) is documented only as an unadopted
+  comparison in `sr33_default/impacts.md`. Qualification includes independent CPU and actual CUDA controls; there was no observed-site field run. Known limits: the closed-lake completion fixtures use the isolated-pond geometry (see `sr33_default/qualification.md`) and the frozen
+  package-digest guards are not adapted (they refuse any new source by design); fits made under FC6 are unqualified under SR33.
 - **Green–Ampt history.** J (wetting) and I (cumulative intake) persist across events and days; there is no automatic
   drying or recovery and no reset except the separately approved explicit controlled reset.
 - **E, T and growth.** Never during wind, rain or recession; nothing is caught up. Dry interevent day: one 86400 s soil update.

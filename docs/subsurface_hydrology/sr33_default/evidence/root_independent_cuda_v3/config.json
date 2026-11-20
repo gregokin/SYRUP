@@ -1,0 +1,41 @@
+{
+  "python": "/home/okin/MAPLE/.venv-cupy/bin/python",
+  "output": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_independent_cuda_v3_runs",
+  "cwd": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate",
+  "prefix": [
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/editable",
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/tests/phase2_native_floating_soil",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate"
+  ],
+  "required_files": [
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src/maple_syrup/native_floating_soil.py"
+  ],
+  "sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src",
+      "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    }
+  ],
+  "env": {
+    "CUDA_VISIBLE_DEVICES": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871",
+    "NUMBA_NUM_THREADS": "1",
+    "NUMBA_CACHE_DIR": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_numba_cache",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "MPLCONFIGDIR": "/tmp/syrup-jorn160-mpl",
+    "ROOT_SR33_GPU": "1",
+    "CUPY_CACHE_DIR": "/tmp/syrup-sr33-cupy"
+  },
+  "probe_file": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_independent_controls.py",
+  "gpu_uuid": "GPU-5c8bd3d4-2885-82c6-a0f0-ad2b7f87b871"
+}
