@@ -1,0 +1,207 @@
+{
+  "status": "PASS",
+  "parameter_rows": [
+    {
+      "parameter": "Ks layer1",
+      "baseline_mm_h": 120.78651558947541,
+      "new_mm_h": 144.9438187073705
+    },
+    {
+      "parameter": "effective K layer1",
+      "baseline_mm_h": 38.211706604685595,
+      "new_mm_h": 45.854047925622716
+    },
+    {
+      "parameter": "Ks layer2",
+      "baseline_mm_h": 119.70776661032677,
+      "new_mm_h": 143.64931993239213
+    },
+    {
+      "parameter": "effective K layer2",
+      "baseline_mm_h": 37.87043639509174,
+      "new_mm_h": 45.44452367411009
+    },
+    {
+      "parameter": "Ks layer3",
+      "baseline_mm_h": 104.33238089230187,
+      "new_mm_h": 125.19885707076224
+    },
+    {
+      "parameter": "effective K layer3",
+      "baseline_mm_h": 33.0063195263853,
+      "new_mm_h": 39.60758343166236
+    },
+    {
+      "parameter": "matrix infiltration K",
+      "baseline_mm_h": 38.211706604685595,
+      "new_mm_h": 45.85404792562271
+    },
+    {
+      "parameter": "interface K1",
+      "baseline_mm_h": 38.040306107699614,
+      "new_mm_h": 45.648367329239534
+    },
+    {
+      "parameter": "interface K2",
+      "baseline_mm_h": 35.2714711052763,
+      "new_mm_h": 42.32576532633155
+    }
+  ],
+  "same_forcing_observations_initial_state_clocks": true,
+  "retention_evaporation_d_stress_unchanged": true,
+  "scores": [
+    {
+      "sensor": "501",
+      "kind": "raw",
+      "n": 56,
+      "baseline_rmse_pp": 1.8648329967604909,
+      "new_rmse_pp": 1.8516432206521556,
+      "change_rmse_pp": -0.013189776108335272
+    },
+    {
+      "sensor": "501",
+      "kind": "offset_aligned",
+      "n": 56,
+      "baseline_rmse_pp": 1.8171822806709097,
+      "new_rmse_pp": 1.8033922519766148,
+      "change_rmse_pp": -0.013790028694294909
+    },
+    {
+      "sensor": "502",
+      "kind": "raw",
+      "n": 147,
+      "baseline_rmse_pp": 0.5340329713965695,
+      "new_rmse_pp": 0.5804895799666718,
+      "change_rmse_pp": 0.046456608570102365
+    },
+    {
+      "sensor": "502",
+      "kind": "offset_aligned",
+      "n": 147,
+      "baseline_rmse_pp": 0.5059445894966175,
+      "new_rmse_pp": 0.3966453069771369,
+      "change_rmse_pp": -0.10929928251948057
+    },
+    {
+      "sensor": "503",
+      "kind": "raw",
+      "n": 79,
+      "baseline_rmse_pp": 1.468918506288984,
+      "new_rmse_pp": 1.4187775939948255,
+      "change_rmse_pp": -0.05014091229415851
+    },
+    {
+      "sensor": "503",
+      "kind": "offset_aligned",
+      "n": 79,
+      "baseline_rmse_pp": 1.054236022331744,
+      "new_rmse_pp": 0.998839401604607,
+      "change_rmse_pp": -0.055396620727136914
+    }
+  ],
+  "pooled": {
+    "n": 282,
+    "baseline_aligned_rmse_pp": 1.0490644324729501,
+    "new_aligned_rmse_pp": 1.0036606698022663,
+    "relative_rmse_improvement_percent": 4.32802421521945,
+    "raw_baseline_rmse_pp": 1.2015486920384713,
+    "raw_new_rmse_pp": 1.1918107148599826
+  },
+  "budgets_mm": {
+    "baseline": {
+      "initial": 22.9424,
+      "rain": 25.088,
+      "evaporation": 34.04547324408592,
+      "runoff": 0.0,
+      "bottom_drainage": 0.0,
+      "final": 13.984926755914074,
+      "residual": -8.673617379884035e-15
+    },
+    "plus20": {
+      "initial": 22.9424,
+      "rain": 25.088,
+      "evaporation": 34.46857322995684,
+      "runoff": 0.0,
+      "bottom_drainage": 0.0,
+      "final": 13.56182677004317,
+      "residual": 1.0408340855860843e-14
+    }
+  },
+  "peaks": [
+    {
+      "run": "baseline",
+      "deep_peak_date": "2024-03-20",
+      "deep_peak_theta": 0.07558066105811219,
+      "deep_gain_mm": 0.5357001058112227,
+      "final_layer_theta": [
+        0.021815292522202313,
+        0.0512545643344488,
+        0.06677941070248965
+      ],
+      "jan23_top_rise_pp": 9.06035286964669,
+      "jan23_intake_mm": 10.036000000000001
+    },
+    {
+      "run": "plus20",
+      "deep_peak_date": "2024-03-16",
+      "deep_peak_theta": 0.07611492139659408,
+      "deep_gain_mm": 0.5891261396594105,
+      "final_layer_theta": [
+        0.022241290267581575,
+        0.04896088146798287,
+        0.06441609596486728
+      ],
+      "jan23_top_rise_pp": 9.042286258169629,
+      "jan23_intake_mm": 10.036000000000001
+    }
+  ],
+  "timing": {
+    "baseline": {
+      "native": {
+        "source_checks_and_input_preparation_s": 1.0666251389920944,
+        "operator_prepare_s": 4.891464004002046,
+        "jit_warmup_control_s": 0.0006318140076473355,
+        "integration_s": 0.03980823000892997,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.048606148004182614
+      },
+      "fresh_command_s": 7.446037212997908,
+      "driver_call_wall_s": 6.2864721399964765
+    },
+    "plus20": {
+      "native": {
+        "source_checks_and_input_preparation_s": 1.4300744170000144,
+        "operator_prepare_s": 6.821218425000097,
+        "jit_warmup_control_s": 0.0005692040003850707,
+        "integration_s": 0.03619646000015564,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0860797770001227
+      },
+      "fresh_command_s": 13.756853199000034,
+      "driver_call_wall_s": 8.67491939499996
+    }
+  },
+  "native_cpu_backends_exact": true,
+  "dt900_max_theta_diff": 6.905417305178019e-06,
+  "interpretation": "All rainfall already infiltrated before and after scaling; matrix-K change cannot change intake in this unponded record. Changes arise from faster two-way redistribution, indirect soil-E changes. No refit or production default change. Fresh runtimes are separate runs on shared machine, not controlled speed comparison."
+}

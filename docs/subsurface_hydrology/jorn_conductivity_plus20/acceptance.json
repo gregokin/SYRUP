@@ -1,0 +1,42 @@
+{
+  "status": "ACCEPTED_USER_REQUESTED_CONDUCTIVITY_SENSITIVITY",
+  "utc": "2026-11-20T03:07:08.763241+00:00",
+  "base_main": "2591847ac4ef4a2c3443399448022de456e45aa8",
+  "factor": 1.2,
+  "scope": "All K and Ks x1.2, unchanged 160dayJORNforcing/initialwater/retention/d/E/stress/clock; prescribed experiment, no fit/default/source change",
+  "source_pair": {
+    "SYRUP_files": 180,
+    "SYRUP_sha256": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+    "MAPLE_files": 412,
+    "MAPLE_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
+  },
+  "verification": {
+    "parameter_admission": "All ten numeric conductivity entries x1.2 once; native matrix-K/Ks contract and harmonic interface construction PASS",
+    "input_and_package_guards": "PASS before/after actual runs; source helpers and historical results unchanged",
+    "native_cpu_parity": "NumPy/Numba exact all trajectories/fluxes",
+    "dt900_max_theta_difference": 6.905417305178019e-06,
+    "independent90digit_max_water_error_m": 4.922959870339285e-18,
+    "native_water_closure_residual_m3": 1.0408340855860843e-17,
+    "native_water_closure_bound_m3": 2.7439545911898404e-13,
+    "report_review": "Claude implementation/review + Codex independent actual metric/CSV/figure/DOCX checks and wording corrections",
+    "report_root_label_correction": "Effective conductivity of middle/deep layer supplies interface K only; corrected label and rebuilt report. No numerical content changed."
+  },
+  "limitations": [
+    "Single1m2three-layerCPUfield-column diagnostic, no GPU/scaling/coupled acceptance",
+    "No new checkpoint/restart check or rerun of historical77test suite for this input-only experiment",
+    "Original daily nominal clock plus additional27.5h storm duration; no exact hourly field chronology",
+    "No transpiration/plants; surrogate retention and conductivity; originalpoint-layer support differences",
+    "All actual rain unponded before/after; does not identify matrix Ks or validate gravity drainage",
+    "No Office renderer; verified DOCX XML/ZIP/media and visually inspected all3PNGs",
+    "Recorded runtimes from separate shared-host runs; not controlled performance comparison"
+  ],
+  "results": {
+    "n": 282,
+    "baseline_aligned_rmse_pp": 1.0490644324729501,
+    "new_aligned_rmse_pp": 1.0036606698022663,
+    "relative_rmse_improvement_percent": 4.32802421521945,
+    "raw_baseline_rmse_pp": 1.2015486920384713,
+    "raw_new_rmse_pp": 1.1918107148599826
+  },
+  "docx_sha256": "1c8de4489e775eb92c6e43b31030f8a96de593746c3e90a3bc1a99b4626c6e9e"
+}
