@@ -1,0 +1,1104 @@
+{
+  "status": "ACCEPTED_BOUNDED_CPU_SENSITIVITY",
+  "utc": "2026-11-20T23:34:16.149089+00:00",
+  "base_main": "fe21beb56be62461eb770cb9c67353bf48161f27",
+  "scope": "Fourteen prescribed JORN160day uniform-all-layer FC x stress settings. New benchmark/tests/docs only; no default adoption, calibration, GPU, scaling, field validation or coupled simulation acceptance.",
+  "sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/analysis_candidate/src",
+      "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    }
+  ],
+  "maple_git_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "cases": [
+    {
+      "key": "fc09_s1",
+      "field_capacity_each_layer": 0.09,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "a73495f258f402ceeaafb052b54a1893b0c33b942472c74cda229da3bdf4d044"
+    },
+    {
+      "key": "fc10_s1",
+      "field_capacity_each_layer": 0.1,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "8bf65cfd8c4e77dd377f65ea2b8094fcc3683713b9017340ed69d3ecd2319bbe"
+    },
+    {
+      "key": "fc11_s1",
+      "field_capacity_each_layer": 0.11,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "3cd82203349ccd03a950f5e397f1624896d2b8ae4a12059ab84f47e17c1d654b"
+    },
+    {
+      "key": "fc12_s1",
+      "field_capacity_each_layer": 0.12,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "b026a88315586f586303e96105bd6fbbf0339cec488eb7dbe09c9e188b4429d4"
+    },
+    {
+      "key": "fc13_s1",
+      "field_capacity_each_layer": 0.13,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "61ffc1bb9d18178a28d08ab6b5c1b893e97271b36f2173fdf80c37d045675fd0"
+    },
+    {
+      "key": "fc14_s1",
+      "field_capacity_each_layer": 0.14,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "b66ba4ba672a1a11aff071f0e6f9b500dab66d6a57efaff47d34498a2b284df2"
+    },
+    {
+      "key": "fc15_s1",
+      "field_capacity_each_layer": 0.15,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "2f3879c0ede6447c18f00f3997f0bebe7f4a21d1d1e96891013b1d69c3612246"
+    },
+    {
+      "key": "fc09_s1p5",
+      "field_capacity_each_layer": 0.09,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "d872a32a2551ab02600ac0c7aaa9b8e13c44c743052b3896b22ba178866a2e35"
+    },
+    {
+      "key": "fc10_s1p5",
+      "field_capacity_each_layer": 0.1,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "027dfdd313c43646f46763da4fee8096454c511a356ebf57a911c22d9d546c9d"
+    },
+    {
+      "key": "fc11_s1p5",
+      "field_capacity_each_layer": 0.11,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "7fa78d229839052239f61aeb37344c744d81df0975ef5eb65b21ae69c7cf8df8"
+    },
+    {
+      "key": "fc12_s1p5",
+      "field_capacity_each_layer": 0.12,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "b41e66ec4358474e4a9b99082d1b3bd1e2547a03b04d18fc58a2572703be08db"
+    },
+    {
+      "key": "fc13_s1p5",
+      "field_capacity_each_layer": 0.13,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "d10236c5dc7df81d5d12c0ae9ef0bc4268fb2e74fb54f7ac06c52fa6f3e179db"
+    },
+    {
+      "key": "fc14_s1p5",
+      "field_capacity_each_layer": 0.14,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "7a7a15a5020c744a661dab483907e5137c4939d62bca4f5b7ccdfa72bc43a291"
+    },
+    {
+      "key": "fc15_s1p5",
+      "field_capacity_each_layer": 0.15,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "f26082eca2e61b3037f1de9b72a7c2783bc45180205f18a3cf19b50d4cd8ea0a"
+    }
+  ],
+  "native_runs": 42,
+  "independent_90_digit_controls": 42,
+  "setup_tests_passed": 80,
+  "numpy_numba_max_difference": 0.0,
+  "dt900_max_theta_difference_pp": 0.0006058511263506983,
+  "independent_max_water_error_m": 1.427707034508923e-17,
+  "restart": {
+    "status": "PASS",
+    "utc": "2026-11-20T23:25:53.589647+00:00",
+    "case": "fc12_s1p5",
+    "field_capacity_all_layers": 0.12,
+    "stress": 0.30255,
+    "split_day": 80,
+    "fresh_process_resume": true,
+    "exact_equal_fields": [
+      "rows",
+      "ledger",
+      "cumulative_closure",
+      "matrix_regime",
+      "scores",
+      "physical_end_t_s",
+      "added_rain_hours",
+      "nominal_elapsed_s",
+      "complete",
+      "days_done"
+    ],
+    "scope": "Field-driver public component state reconstruction, not production checkpoint or coupled-simulation acceptance."
+  },
+  "root_artifacts": {
+    "status": "PASS",
+    "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/analysis_candidate/docs/subsurface_hydrology/jorn_fc_sensitivity/SYRUP_JORN_160day_uniform_FC_sensitivity_20261120.docx",
+    "sha256": "4257d5b8611b01cf94e48704acfd23bb4f057e2ab7dadda8f9aee6c46dde5927",
+    "tables": 12,
+    "table_csv_matches": [
+      "cases.csv",
+      "budget_1.csv",
+      "budget_1p5.csv",
+      "exchange.csv",
+      "scores_aligned.csv",
+      "scores_raw.csv",
+      "period_top.csv",
+      "period_bias.csv",
+      "endpoint.csv",
+      "deep.csv",
+      "timing.csv",
+      "checks.csv"
+    ],
+    "media_png_exact": 7,
+    "max_table_columns": 7,
+    "all_report_source_seals_unchanged": 423,
+    "all_case_and_execution_input_hashes_unchanged": true,
+    "manifest_verified": true,
+    "scope": "Independent static Word/table/media/data verification; no Office render claim."
+  },
+  "budgets_and_scores": [
+    {
+      "key": "fc09_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.09,
+        0.09,
+        0.09
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.5081295614079657
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.4192087585743463
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 15.421850369016967,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 5.339431003952488,
+        "evaporation": 27.269118627030547,
+        "gravity_transfers": [
+          8.058792873313187,
+          7.267256127346319
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.182916479797605,
+          -1.4021695422721836
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.028320547004114,
+        "operator_prepare_s": 4.279498877993319,
+        "jit_warmup_control_s": 0.0006456620030803606,
+        "integration_s": 0.03760171799513046,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.06737569101096597
+      }
+    },
+    {
+      "key": "fc10_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.9584459637610943
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.9276877293650672
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 16.55957840718175,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 1.881600719915064,
+        "evaporation": 29.5892208729032,
+        "gravity_transfers": [
+          6.326064438115999,
+          4.789789537185868
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.817511057044966,
+          -1.7181381029196223
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0255290329951094,
+        "operator_prepare_s": 4.37685498999781,
+        "jit_warmup_control_s": 0.0006367909954860806,
+        "integration_s": 0.036907465997501276,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.04862158099422231
+      }
+    },
+    {
+      "key": "fc11_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.11,
+        0.11,
+        0.11
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.1452423817510704
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.1638257143912973
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 16.989435402473894,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 31.040964597526102,
+        "gravity_transfers": [
+          5.326063031378892,
+          2.7850589059254407
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -6.2896921647992325,
+          -1.3662557516015819
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0131143470061943,
+        "operator_prepare_s": 4.312375782013987,
+        "jit_warmup_control_s": 0.0005791400035377592,
+        "integration_s": 0.03713615000015125,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0707973830139963
+      }
+    },
+    {
+      "key": "fc12_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.7509349934454865
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.836329691614488
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 16.04634694325408,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 31.984053056745918,
+        "gravity_transfers": [
+          4.324931692893251,
+          0.7806574478270746
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -6.19977118331136,
+          0.034078727856586916
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.020781667000847,
+        "operator_prepare_s": 4.270131843994022,
+        "jit_warmup_control_s": 0.0006182350043673068,
+        "integration_s": 0.0386031429952709,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.06207254499895498
+      }
+    },
+    {
+      "key": "fc13_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.13,
+        0.13,
+        0.13
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.4942269882708443
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.5852037189629662
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 15.416064842954516,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 32.6143351570455,
+        "gravity_transfers": [
+          3.320594732809781,
+          0.0
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.800986055981294,
+          0.43585344186909875
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.014536324000801,
+        "operator_prepare_s": 4.342481015002704,
+        "jit_warmup_control_s": 0.0006556130101671442,
+        "integration_s": 0.037499138998100534,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.06950311399123166
+      }
+    },
+    {
+      "key": "fc14_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.14,
+        0.14,
+        0.14
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.3085686136140018
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.3433489129140264
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 14.985848350947718,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 33.04455164905228,
+        "gravity_transfers": [
+          2.315998164814363,
+          0.0
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.206461534775621,
+          0.20105581005662432
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.021561923000263,
+        "operator_prepare_s": 4.355433574994095,
+        "jit_warmup_control_s": 0.0006051509990356863,
+        "integration_s": 0.03677905100630596,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.06528437999077141
+      }
+    },
+    {
+      "key": "fc15_s1",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "field_capacity": [
+        0.15,
+        0.15,
+        0.15
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.1982643447480064
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.157521644760566
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 14.55367046718488,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 33.47672953281511,
+        "gravity_transfers": [
+          1.312266604397639,
+          0.0
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.614470241686286,
+          -0.0346056695943755
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0366037750063697,
+        "operator_prepare_s": 4.320226137002464,
+        "jit_warmup_control_s": 0.0006025869952281937,
+        "integration_s": 0.0381272429949604,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.08305197599111125
+      }
+    },
+    {
+      "key": "fc09_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.09,
+        0.09,
+        0.09
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 1.6891825809688628
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.6651900759850526
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 17.71893991155465,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 9.422855219600756,
+        "evaporation": 20.888604868844553,
+        "gravity_transfers": [
+          12.213020551590027,
+          11.348449597793445
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.004718729335479,
+          -0.932466086483986
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0306260990037117,
+        "operator_prepare_s": 4.337319693993777,
+        "jit_warmup_control_s": 0.0006009600037941709,
+        "integration_s": 0.0366096999932779,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.04778483300469816
+      }
+    },
+    {
+      "key": "fc10_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.36963942331694
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.3986909403906314
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 19.211848434812858,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 5.198113580097365,
+        "evaporation": 23.620437985089794,
+        "gravity_transfers": [
+          10.068627248285535,
+          8.12856637203811
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.683163939290266,
+          -1.1092569364857514
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0310403640032746,
+        "operator_prepare_s": 4.440782500008936,
+        "jit_warmup_control_s": 0.0005832669994561002,
+        "integration_s": 0.039788442009012215,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.05987903100322001
+      }
+    },
+    {
+      "key": "fc11_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.11,
+        0.11,
+        0.11
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 3.0484122795642548
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 3.0998653165635206
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 20.533868782282543,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 1.1638335736306338,
+        "evaporation": 26.33269764408683,
+        "gravity_transfers": [
+          7.845969825515211,
+          5.014137791432404
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.249595093549678,
+          -1.284072093999598
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0534717440023087,
+        "operator_prepare_s": 4.3803173350024736,
+        "jit_warmup_control_s": 0.0007161899993661791,
+        "integration_s": 0.03728061600122601,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.07262978199287318
+      }
+    },
+    {
+      "key": "fc12_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.8916740188149768
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.9977354408911814
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 19.8936403863963,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 28.136759613603704,
+        "gravity_transfers": [
+          6.084497584956857,
+          1.85336484601252
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.270290036532003,
+          0.27147434500003165
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0375979220116278,
+        "operator_prepare_s": 4.389582513002097,
+        "jit_warmup_control_s": 0.0006321399996522814,
+        "integration_s": 0.03985491700586863,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.05738546598877292
+      }
+    },
+    {
+      "key": "fc13_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.13,
+        0.13,
+        0.13
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.5462299980352037
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.6807952570331084
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 18.68745316739842,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 29.342946832601577,
+        "gravity_transfers": [
+          4.376617487726749,
+          0.0
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.7090831134528885,
+          1.3894592209595842
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0714083500060951,
+        "operator_prepare_s": 4.772613398003159,
+        "jit_warmup_control_s": 0.0005964559968560934,
+        "integration_s": 0.037558208001428284,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.07102206099079922
+      }
+    },
+    {
+      "key": "fc14_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.14,
+        0.14,
+        0.14
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.3061393708677667
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.397188816091221
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 18.038251614287447,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 29.99214838571257,
+        "gravity_transfers": [
+          2.8724499234885053,
+          0.0
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -3.811525638975029,
+          1.0478285439408814
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0496018529956928,
+        "operator_prepare_s": 4.379604335990734,
+        "jit_warmup_control_s": 0.0006596479943254963,
+        "integration_s": 0.03681995000806637,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0662914180138614
+      }
+    },
+    {
+      "key": "fc15_s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "field_capacity": [
+        0.15,
+        0.15,
+        0.15
+      ],
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.1936067336090503
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.2480586386360364
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 17.616569270045733,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 0.0,
+        "evaporation": 30.41383072995426,
+        "gravity_transfers": [
+          1.8680757867235096,
+          0.0
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -3.2013913771660323,
+          0.823478735763807
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.04042912699515,
+        "operator_prepare_s": 4.491684289008845,
+        "jit_warmup_control_s": 0.0006895629921928048,
+        "integration_s": 0.038984034006716684,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.061099783997633494
+      }
+    }
+  ],
+  "original_live_preservation": {
+    "head": "c76c603dde4e8f79ec48b18d954a386580d8bc89",
+    "tracked_files": 736,
+    "git_status_exact": true,
+    "all_tracked_working_bytes_exact": true
+  },
+  "claude_session": "d37c1dab-3e24-4aca-bfb6-1dd6fefcbc6d",
+  "limits": [
+    "one1m2 CPU column, not GPU or large-domain qualification",
+    "FC overrides do not recompute other SR properties or represent newly self-consistent retention curves",
+    "stress0.2017 is exact rounded specification, not the prior fitted0.20170581117963332;1.5x=0.30255",
+    "dry interevent evaporation remains daily;900s controls refine storms only",
+    "zero transpiration; old dry-fit parameters may absorb omitted T",
+    "point observations versus layer means; no sensor-fault assumption",
+    "fresh driver reconstruction is not a production checkpoint or coupled-model acceptance",
+    "DOCX XML/table/PNG and visual figure checks, no Office pagination render"
+  ]
+}

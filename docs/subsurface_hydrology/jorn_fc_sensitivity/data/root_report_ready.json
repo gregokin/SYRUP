@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "utc": "2026-11-20T23:27:04.071009+00:00",
+  "native_runs": 42,
+  "unique_cases": 14,
+  "all_controls_complete": true,
+  "numpy_numba_max_difference": 0.0,
+  "dt900_max_theta_difference_pp": 0.0006058511263506983,
+  "decimal_max_water_error_m": 1.427707034508923e-17,
+  "independent_controls": 42,
+  "source_seal_files": 423,
+  "restart": "PASS fc12_s1p5 day80 freshprocess exact",
+  "report_readable_now": true
+}

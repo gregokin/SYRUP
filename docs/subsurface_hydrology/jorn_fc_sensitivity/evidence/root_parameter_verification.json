@@ -1,0 +1,120 @@
+{
+  "status": "PASS",
+  "utc": "2026-11-20T23:21:03.654924+00:00",
+  "physical_deltas": "Only uniform all-three-layer FC and requested exact rounded stress; E1, K/Ks1x and all other physical/weather/observational controls unchanged",
+  "old_helper_hashes_exact": true,
+  "cases": [
+    {
+      "key": "fc09_s1",
+      "field_capacity_each_layer": 0.09,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "a73495f258f402ceeaafb052b54a1893b0c33b942472c74cda229da3bdf4d044"
+    },
+    {
+      "key": "fc10_s1",
+      "field_capacity_each_layer": 0.1,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "8bf65cfd8c4e77dd377f65ea2b8094fcc3683713b9017340ed69d3ecd2319bbe"
+    },
+    {
+      "key": "fc11_s1",
+      "field_capacity_each_layer": 0.11,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "3cd82203349ccd03a950f5e397f1624896d2b8ae4a12059ab84f47e17c1d654b"
+    },
+    {
+      "key": "fc12_s1",
+      "field_capacity_each_layer": 0.12,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "b026a88315586f586303e96105bd6fbbf0339cec488eb7dbe09c9e188b4429d4"
+    },
+    {
+      "key": "fc13_s1",
+      "field_capacity_each_layer": 0.13,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "61ffc1bb9d18178a28d08ab6b5c1b893e97271b36f2173fdf80c37d045675fd0"
+    },
+    {
+      "key": "fc14_s1",
+      "field_capacity_each_layer": 0.14,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "b66ba4ba672a1a11aff071f0e6f9b500dab66d6a57efaff47d34498a2b284df2"
+    },
+    {
+      "key": "fc15_s1",
+      "field_capacity_each_layer": 0.15,
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.2017,
+      "case_sha256": "2f3879c0ede6447c18f00f3997f0bebe7f4a21d1d1e96891013b1d69c3612246"
+    },
+    {
+      "key": "fc09_s1p5",
+      "field_capacity_each_layer": 0.09,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "d872a32a2551ab02600ac0c7aaa9b8e13c44c743052b3896b22ba178866a2e35"
+    },
+    {
+      "key": "fc10_s1p5",
+      "field_capacity_each_layer": 0.1,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "027dfdd313c43646f46763da4fee8096454c511a356ebf57a911c22d9d546c9d"
+    },
+    {
+      "key": "fc11_s1p5",
+      "field_capacity_each_layer": 0.11,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "7fa78d229839052239f61aeb37344c744d81df0975ef5eb65b21ae69c7cf8df8"
+    },
+    {
+      "key": "fc12_s1p5",
+      "field_capacity_each_layer": 0.12,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "b41e66ec4358474e4a9b99082d1b3bd1e2547a03b04d18fc58a2572703be08db"
+    },
+    {
+      "key": "fc13_s1p5",
+      "field_capacity_each_layer": 0.13,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "d10236c5dc7df81d5d12c0ae9ef0bc4268fb2e74fb54f7ac06c52fa6f3e179db"
+    },
+    {
+      "key": "fc14_s1p5",
+      "field_capacity_each_layer": 0.14,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "7a7a15a5020c744a661dab483907e5137c4939d62bca4f5b7ccdfa72bc43a291"
+    },
+    {
+      "key": "fc15_s1p5",
+      "field_capacity_each_layer": 0.15,
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255,
+      "case_sha256": "f26082eca2e61b3037f1de9b72a7c2783bc45180205f18a3cf19b50d4cd8ea0a"
+    }
+  ]
+}

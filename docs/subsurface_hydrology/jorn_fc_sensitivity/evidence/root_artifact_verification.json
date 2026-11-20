@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/analysis_candidate/docs/subsurface_hydrology/jorn_fc_sensitivity/SYRUP_JORN_160day_uniform_FC_sensitivity_20261120.docx",
+  "sha256": "4257d5b8611b01cf94e48704acfd23bb4f057e2ab7dadda8f9aee6c46dde5927",
+  "tables": 12,
+  "table_csv_matches": [
+    "cases.csv",
+    "budget_1.csv",
+    "budget_1p5.csv",
+    "exchange.csv",
+    "scores_aligned.csv",
+    "scores_raw.csv",
+    "period_top.csv",
+    "period_bias.csv",
+    "endpoint.csv",
+    "deep.csv",
+    "timing.csv",
+    "checks.csv"
+  ],
+  "media_png_exact": 7,
+  "max_table_columns": 7,
+  "all_report_source_seals_unchanged": 423,
+  "all_case_and_execution_input_hashes_unchanged": true,
+  "manifest_verified": true,
+  "scope": "Independent static Word/table/media/data verification; no Office render claim."
+}

@@ -1,0 +1,1698 @@
+{
+  "utc": "2026-11-20T23:27:04.030243+00:00",
+  "scope": "Immutable42 native case/config/sourceguard and Root independent-audit scientific snapshot plus fresh component restart; raw downloaded NEON records stay in pinned source locations",
+  "files": {
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/config_paths.json": {
+      "sha256": "dffe8b45e95499e343aafda913f539c6a2d06a9a82ae35f7d5f599c2f77290f7",
+      "bytes": 35147
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/report_physics_notes.md": {
+      "sha256": "f66791314361ce00ce3c3f52711bb28f93f36178f878e6a9e7f6bc1cb70801e3",
+      "bytes": 1918
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_decimal_control.py": {
+      "sha256": "95202afa16311cc9c8cd05ad296056ec1ef1b27cdd26bf0f70a8fda978561b15",
+      "bytes": 5455
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_deep_wetting.json": {
+      "sha256": "e036ce164903971363a452e8ba22a882d830db1326f1cc6e9ab0d91ccbfd7730",
+      "bytes": 14175
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_deep_wetting.py": {
+      "sha256": "35a883e113a9b57e095941a2b974a8aa32cab4ef482b49c1b96b460471475404",
+      "bytes": 2024
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_existing_helper_manifest.json": {
+      "sha256": "6e2825bef16e80b3cf527bfc31f6b38e609a8002c8436b94e9747e0afee7ebbc",
+      "bytes": 1199
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_independent_inputs.json": {
+      "sha256": "9ee9477c4fb1d23fae9d117efb00b603725468a6e53dc6aca7fd14ff9be2572d",
+      "bytes": 9837
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_independent_inputs.py": {
+      "sha256": "cfb837062aeb73622a5e3434d473f3efc2120b91da105e7a217a7c7753ed916d",
+      "bytes": 3254
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_parameter_verification.json": {
+      "sha256": "221265d17dc8fc38dbbe644ac805e4852f0f9ad4363d66ef340fb804346d8c76",
+      "bytes": 3638
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_period_scores.json": {
+      "sha256": "b9f5fddff505ffe8133388720ee4a7e99bd3d76ea87e4cf43163a65b16995a36",
+      "bytes": 56657
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_period_scores.py": {
+      "sha256": "57044cf5e8b092407af168d6e1bdd95925299630f5c93370b70f8b53815af8c2",
+      "bytes": 2101
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_preexecution_acceptance.json": {
+      "sha256": "f25f3d503c65fb0e3531d9215aa8d2ab4e7c3b39b43fa8d4cecb23af2e58a60c",
+      "bytes": 1023
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_restart_verification.json": {
+      "sha256": "3031fd4b4e4dea163217ea8420ccf9eb944f7c5838d6a000c4e5877ebf9cd518",
+      "bytes": 549
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_result_audit.json": {
+      "sha256": "b7f8fa8684835ea2eff6260c4b4832d0164978f49f1c5030feae768ba1e91110",
+      "bytes": 76619
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/root_result_audit.py": {
+      "sha256": "aff1cbc9464e79708f09d41feec740064ead89c9ad7ecbf1024d28dc9a8bd1ab",
+      "bytes": 5910
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/run_input_manifest.json": {
+      "sha256": "903b307091e58a49d11f1d934a253ee8c506c42b4b4e52e60de8adeece27786b",
+      "bytes": 22431
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba/result.json": {
+      "sha256": "1fba2ea5fdd992caf5a0d26e9122eee98bba9e4f6bb479decfbee6a1d47c84f5",
+      "bytes": 220593
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba/timing.json": {
+      "sha256": "a813f1be28f96650c4fbdd1fe8db7b5efe0353c362db8ab134e0ff6b8d8361e5",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_config.json": {
+      "sha256": "3234c0f1cd024bdca63b44f8bf785607d66ee79be0ec42c36ed27eda292450b0",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_dt900/result.json": {
+      "sha256": "6818253503d1b9233a5202189ed3fc7c7025dfde958ef0504d5c97b6c489fb9f",
+      "bytes": 221258
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_dt900/timing.json": {
+      "sha256": "31af69666c6848a9ea426acb5a1a896bb85e7cd88cca6cf2c2aca4e58b40eb2c",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_dt900_config.json": {
+      "sha256": "f289154815a92fd95c74607c0f95bfa87529389f2c2699bdeb6972c8e056b89b",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "1ac4e989b366317f9a16bce90be432d141be1318c0c50de9f9ac7f9c6a0757af",
+      "bytes": 1390
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_runs/result.json": {
+      "sha256": "e6c39e8655c063446dbf1b91bbf224dbae22699ed67b7ca3e60d2036c41bc757",
+      "bytes": 1375
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numpy/result.json": {
+      "sha256": "f4505bb36a55d35db8de2acb771f7b0c2b8032093ee4964f34a97665ee0470ac",
+      "bytes": 220593
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numpy/timing.json": {
+      "sha256": "65454e92cc0bd77bc3ac465fda759c22c4b1adaefaf9a3903fa9c185bf7ed187",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numpy_config.json": {
+      "sha256": "f54b0787840acad8bac8e3972a433929d715cc67083831cc949ab645444f2a70",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numpy_runs/result.json": {
+      "sha256": "d02b0d1cf34bd18c9fe4101b8969fe058a039c8d1d301c18b068924eb4726a18",
+      "bytes": 1379
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/case_numba.json": {
+      "sha256": "a73495f258f402ceeaafb052b54a1893b0c33b942472c74cda229da3bdf4d044",
+      "bytes": 19016
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/case_numba_dt900.json": {
+      "sha256": "383360d1eb5f0099a9518fa988f56c36f410008fa0300227eea90a520b47bafc",
+      "bytes": 19015
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/case_numpy.json": {
+      "sha256": "4ec3f8763d8c74f74e8d7f0d2855e8ce25ef06c55ae574db8a6455e9cb7a5ca8",
+      "bytes": 19016
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/root_decimal_verification.json": {
+      "sha256": "ea5922b48061353140f377a75c7b1ba84ae5dabfea3533cc20331c5800ecdcdd",
+      "bytes": 1464
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1/root_result_audit.json": {
+      "sha256": "f6e8c41cd1f4952026ad88daa9b5b86d69b75736fdaccf822d68f73e5d160a4b",
+      "bytes": 4754
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba/result.json": {
+      "sha256": "134c909f47875f4a576ba8bc20d01f38011c93d7ab5ba14d3bd9cfdf7891acbf",
+      "bytes": 220683
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba/timing.json": {
+      "sha256": "e9feef2b7370af506a15aea35febc817657ec83508da905665374a9fb00500b4",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_config.json": {
+      "sha256": "1eab190cd38d8ef8936c71ea9345f4bd33bdf8d075ab7aa3fbc9d7c270a98792",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "4e13e023876f7cdf7bae86ea501ae1e89f6c35159e36fd9824ce81319995c189",
+      "bytes": 221372
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "94b7979d1aed38acae2562a8f58f2f164f61e9a6865d72f04232b74a4ad63525",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "0d0d66b1ac31e8fc1b29b1ff94272325bb9a355fd1a0f87dcc84e544c0740336",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "de6f5c56213fbd47ec3a394095246aa702e69920dc4c64d7eb0cd961a6ad5eb5",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_runs/result.json": {
+      "sha256": "4b617e7c27aa83357db3817a716a7924130b4ca359a35d60f4c49cd5a8a06160",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numpy/result.json": {
+      "sha256": "5e94ad3d8b5e58ab95d16cdece846a65a79ab26463d352e0bf1ff410062d1673",
+      "bytes": 220683
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numpy/timing.json": {
+      "sha256": "5d200d94efb2477aa3d910984e492a8acc909549f00dfca57e3e03c30fc274d1",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numpy_config.json": {
+      "sha256": "bf41cd7a1da517db5c4e351d6f200758f65e5dc0e231e3a5debae503138c0393",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "bca19d594f6e490dec6667b0a047ec46f0858e36caee01acad879bae62438c5f",
+      "bytes": 1385
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/case_numba.json": {
+      "sha256": "d872a32a2551ab02600ac0c7aaa9b8e13c44c743052b3896b22ba178866a2e35",
+      "bytes": 19027
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/case_numba_dt900.json": {
+      "sha256": "374dd11f62aa0903393f8645491bd38bf6deb1b767d1862db8f7efa28602b367",
+      "bytes": 19026
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/case_numpy.json": {
+      "sha256": "8330b9ca4235d8442149f8cf6d10da5d4276c9fefb9725713dfe36a25df15ba8",
+      "bytes": 19027
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/root_decimal_verification.json": {
+      "sha256": "d213cebe1414b00f7904ff3a077ebb5f30ddb3581e911bc3e8c0e59ddd1b034c",
+      "bytes": 1464
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc09_s1p5/root_result_audit.json": {
+      "sha256": "0341439201d4ab4a0ac1c44585fda676e3a9fed56042236ad4bedcd5909ecaff",
+      "bytes": 4777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba/result.json": {
+      "sha256": "c6a3a86550b96b57159f96d8b9aa6a25481fef1d597aa48d2be8a884dc11e1a7",
+      "bytes": 220465
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba/timing.json": {
+      "sha256": "6436cd873afe9bf959072e5022ad43ad13cb20082720be0ff77927fa30132934",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_config.json": {
+      "sha256": "89cf2bb78c9730e45eb48d7237121ac9101b7b2da11f67d9d165802569d440d0",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_dt900/result.json": {
+      "sha256": "a4d585082986c0bdf226cc63ca5b8e486f521496da3fa29c91dfb69c98339096",
+      "bytes": 221183
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_dt900/timing.json": {
+      "sha256": "b76fbeede446906ebb1bdd3e30eed684c098af5714a097e55795f7a91da65f56",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_dt900_config.json": {
+      "sha256": "ec3c545ea2026e5563ddd7d5488e8f80d764187e7ee9d76ef62f84b5330b6332",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "4080e2412dfbe565de62be46b2f74e3ade564ee10001002bf1f5845b1b873b5b",
+      "bytes": 1390
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_runs/result.json": {
+      "sha256": "807f990f55e6a4d87c12175fd1fa53b2fd6218cdd660ff70d75e671a3635e2a8",
+      "bytes": 1376
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numpy/result.json": {
+      "sha256": "6a3e3988e6eceedd940b60b8eba333748f9cf55d13d38bcbf7e3624e58292167",
+      "bytes": 220465
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numpy/timing.json": {
+      "sha256": "55a505cf5b650e842741912c6e2a865f63bfd2e9779d5dd84f598952432c307c",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numpy_config.json": {
+      "sha256": "ea1d00779bbbe93b02a5ccbb37b834cf088932087cbbb592be2f910b11068410",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numpy_runs/result.json": {
+      "sha256": "1b4e38eaf80c5ed50ee2d1e86eb579b3b9c3c7fc8d397a56d6afdfe0b2b12254",
+      "bytes": 1379
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/case_numba.json": {
+      "sha256": "8bf65cfd8c4e77dd377f65ea2b8094fcc3683713b9017340ed69d3ecd2319bbe",
+      "bytes": 19014
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/case_numba_dt900.json": {
+      "sha256": "c8d83c999d16989edd6719a3b9beb42c196f632619dc576bf2a5bec8ab1ba628",
+      "bytes": 19013
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/case_numpy.json": {
+      "sha256": "0bee498d81842deb4fe7c9524e20d1ea3ccd63f99905d64e93800d28e1909fd9",
+      "bytes": 19014
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/root_decimal_verification.json": {
+      "sha256": "083e02dc6ca9f31c1eb7d34fb64ed57bc9964fd271b16f59e86306791944bb11",
+      "bytes": 1464
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1/root_result_audit.json": {
+      "sha256": "9e523eb04185501cafb7430f61f10836926dc98d9003f0df36aec42dbcf3aefb",
+      "bytes": 4772
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba/result.json": {
+      "sha256": "8e064b7e9bf4b7a7d13e5b8c2ba29060566e19aa762a9cef4066e481b3372cba",
+      "bytes": 220683
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba/timing.json": {
+      "sha256": "ce88613b68872a9f87f2e955a4b6f0360c367fb2e466946925a38314a45e44ad",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_config.json": {
+      "sha256": "1abfac5c324b636c31480ba2aeb432ff3895fee9d75e07dca644affe30deb8f3",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "1c8a562a0b0dd9db377e179d5d3429c65de74db08207033e06e461b422bded44",
+      "bytes": 221346
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "38c51bee883b90e619cf34f8bd2f6fdfb10865ee9eaee044e3e2e3bd49de9198",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "fe2bb2434692e804dd7e7552d5b65a80271f5d8c91e4a4f9dfbd92d11a22058c",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "9a7badfa01c5ce1c5b0db7f929942e9a3f56dd3f05c4ee7ec2fe7a756fa052c6",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_runs/result.json": {
+      "sha256": "a6ec14b3481cadaac304a132fe73cff51bff57f595f9759e7ed99e14e3cd5835",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numpy/result.json": {
+      "sha256": "95875cfd9a3b8d2536eccf67ad22d5dcb154a338ef9ddc63c8b2ab3149208747",
+      "bytes": 220683
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numpy/timing.json": {
+      "sha256": "5615d3d9c89d478cde2f45746944c5843e291134cee3d871c8ae6e3be7fd0c04",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numpy_config.json": {
+      "sha256": "ec4eea53d93038cf797671a1af7dbf7785fe2589dd79af2c1da717ec40b7f4e5",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "4d4158fd5312c6c82e8f52fecd28aaee578bfe152c4f67b077c331210100d746",
+      "bytes": 1385
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/case_numba.json": {
+      "sha256": "027dfdd313c43646f46763da4fee8096454c511a356ebf57a911c22d9d546c9d",
+      "bytes": 19025
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/case_numba_dt900.json": {
+      "sha256": "a4249be457a746af314f9be23911c579ceadfa9a7f051e24c5a8e4edbfab2e37",
+      "bytes": 19024
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/case_numpy.json": {
+      "sha256": "34f2cc4b06ea3830d906d22a6174fa415b006b689716a143fbcb07e80d500885",
+      "bytes": 19025
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/root_decimal_verification.json": {
+      "sha256": "a0ef118b80c1353b49fbc6cbc3eb42499d3197eb1b27a12510659c282bcd3327",
+      "bytes": 1462
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc10_s1p5/root_result_audit.json": {
+      "sha256": "12ac0a53eb82d0f9f0b03028ae05c64ba4661409921c68dd001d8dacaa9260bb",
+      "bytes": 4772
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba/result.json": {
+      "sha256": "987711deca12a8163b5062637ff09d22c48d93e774c81b7111bd39d116292039",
+      "bytes": 220333
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba/timing.json": {
+      "sha256": "60067f2c6d24bf7ebe837317c326878f6567a4fdb0ec9b8495653e5f4ffaac42",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_config.json": {
+      "sha256": "2826befecc4217358c8a90dd0a219abc78506b4c7d06736c05f99ce0988078d9",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_dt900/result.json": {
+      "sha256": "94719bbd1aeb504b424429d26225219b78a0aba54ed5a98e7873b16adaf7c5d2",
+      "bytes": 221051
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_dt900/timing.json": {
+      "sha256": "c14bd474da3d5f851ceb4993948df44c56d12ca231dc909cfeb832c086dc1545",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_dt900_config.json": {
+      "sha256": "7de96dea26044277684a3eb171e1a64e9c2e6ee73372dacb614d4ac4b13ab788",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "21fafbe2fde329b4219e3b3bc485fdacb76c03e7b285a47d4537273121b37236",
+      "bytes": 1389
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_runs/result.json": {
+      "sha256": "2dd076c2f1b9f814d9787c55cfff34247e929f07ffc727ff039344d64ae890d8",
+      "bytes": 1376
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numpy/result.json": {
+      "sha256": "9595ddabd622ef9ae8191cadd295f6e6c70fe11cff6d1054d32b1fbd144551de",
+      "bytes": 220333
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numpy/timing.json": {
+      "sha256": "e26211c0d859d629ec215da96a8e1ecd40c4ce87ec9079fbd445001d86e35f4f",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numpy_config.json": {
+      "sha256": "49aedbc112ac86003623bd35b63b91d5f8b0b82cfec96d339811fe363f07395d",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numpy_runs/result.json": {
+      "sha256": "6cced10c512267b5a5538b318ff936113c55ca3405ffc3f245f9a7e60da93f09",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/case_numba.json": {
+      "sha256": "3cd82203349ccd03a950f5e397f1624896d2b8ae4a12059ab84f47e17c1d654b",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/case_numba_dt900.json": {
+      "sha256": "2e346de9f3267eca6382d1df09baf91c475cab55b1adfc0fb39dcefc55fb4442",
+      "bytes": 19017
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/case_numpy.json": {
+      "sha256": "b6a77fc6e17061eee99d0aa2e255cb5bbcb2b1931db8f8553c0b1c08871aed92",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/root_decimal_verification.json": {
+      "sha256": "886abf448dd1f32313a5707fdb3ed1579f2cd047b620cb2e6b8e4f3978b46fb4",
+      "bytes": 1422
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1/root_result_audit.json": {
+      "sha256": "fd6d0ecb95f79bb9741de6125db63f9fdbc965e6c9d96c5e9c99370fea8667db",
+      "bytes": 4765
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba/result.json": {
+      "sha256": "0c0c31ff4f392ef2db35862b416810da8f3011b232c58a7fe361ebbcdf9f323a",
+      "bytes": 220614
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba/timing.json": {
+      "sha256": "bb67052f85f7b4f029b7605bf5a55af1c0cbaa035811079cae0648bc7ecac7ec",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_config.json": {
+      "sha256": "f13e6c8357faea05f7ee0ff5ab2f898dd0435ecf65a00a47d47c86cdd1f160ea",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "57f52f7886797f2d5d329a2126f4a4661f59ccfe1895623be603a55a2e7e350f",
+      "bytes": 221259
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "7838d9fd29369a83811849abe73a067e161f2c03fd95af7c20927393d52dd68c",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "07add6d2e00e428f45dff1b534c7c52a25af6a909bf571f8228b4fad841a7ae2",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "ce92906f614e876c91064e1e75e2c02d52833da91d0b4e4c3f11d212d2452db5",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_runs/result.json": {
+      "sha256": "ccabfcbff83821b91afd835c06c2cea61c52f87c9cbf24a9757105d8983adab4",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numpy/result.json": {
+      "sha256": "c16a6dbac1a6499d79121694f246e0d314d5c2b9324cc8cad66a4259b61902b1",
+      "bytes": 220614
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numpy/timing.json": {
+      "sha256": "9473e0a38ec1a5614f46cd50de52e4bbf1d86c23583c2d692a4275c4b69a48de",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numpy_config.json": {
+      "sha256": "86694648f7db42ef5389540e8715cd5417bba77555cfe8eba015e0a11ae48a0a",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "9f13551bc39355855a6e51686fc16743d73fc55c0d3766948a85e448d8d5f64c",
+      "bytes": 1385
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/case_numba.json": {
+      "sha256": "7fa78d229839052239f61aeb37344c744d81df0975ef5eb65b21ae69c7cf8df8",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/case_numba_dt900.json": {
+      "sha256": "b8db9a787887d8f9c5a67f1f464b168ff8ec62d4ab549a09c243767a80711373",
+      "bytes": 19028
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/case_numpy.json": {
+      "sha256": "20645f4a0e4d9a05bb451ecb403e3970816a8a19aed98e5afb9c81e9be46819a",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/root_decimal_verification.json": {
+      "sha256": "ac52648fad4eb4f9490a38bcd98b6e27d5679a97e0c3acb1503efc0cfa0b9358",
+      "bytes": 1467
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc11_s1p5/root_result_audit.json": {
+      "sha256": "52ac8e4c4d21f1c8a30b62a79b9bfa58efc1135f00df11831fba37b2dfd18df2",
+      "bytes": 4774
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba/result.json": {
+      "sha256": "b871e9f0b9b0c976ad2714f1fd1f0d7c20874e3aa1dd24187f9e50898a161605",
+      "bytes": 220324
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba/timing.json": {
+      "sha256": "4fadeed1bb494b9798d75e7bc704ed6c056edcbc4d233f2ccff2f9c0c109b95d",
+      "bytes": 845
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_config.json": {
+      "sha256": "7cd81422647ed5379b80ae72f9a636fa85d401a5a2468742b8c0c7723a575a98",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_dt900/result.json": {
+      "sha256": "98cd779ab3690815ddf5413eb67fee05438932f5b141cc84a4514cfe54681482",
+      "bytes": 221067
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_dt900/timing.json": {
+      "sha256": "b7cbbcbbb6d11acb86ab13c8c665c1916dfeffe7e9f24fc8b3ec7cb539de5188",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_dt900_config.json": {
+      "sha256": "2eabc5c7039ade4083acffee8cb98f45c7abfc1431c3e4e1ee2948f6e71ec1f1",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "5c259234320d634e8f3d583cab40991e5075f4289e6490441a6408beaf1ac6d3",
+      "bytes": 1392
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_runs/result.json": {
+      "sha256": "1cf10a020c3124ab22e21bb8126af8514235d2c36c57e9aed210c93264c75cf2",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numpy/result.json": {
+      "sha256": "b350aaba5b53279dc041bd27081ba28adc390d2c2799478bfe59df2a2c90454e",
+      "bytes": 220324
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numpy/timing.json": {
+      "sha256": "01f1a3e55136661346b49fb9be1c21ace400cd5518b006226aba244c4bfd2714",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numpy_config.json": {
+      "sha256": "5c838db52a58229d60af0f192fdca9c037e0f9d366d69968588eece089775849",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numpy_runs/result.json": {
+      "sha256": "4f2ad0e51bbb9b439e1031c93deba9799a29136d57d66dbb809c53e370fca0a1",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/case_numba.json": {
+      "sha256": "b026a88315586f586303e96105bd6fbbf0339cec488eb7dbe09c9e188b4429d4",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/case_numba_dt900.json": {
+      "sha256": "eb63c57628449cbe3f03dffa83a3b68a19c6cfb9f5d617a44ab5e6012b35dd10",
+      "bytes": 19017
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/case_numpy.json": {
+      "sha256": "1f0029cf53ee7f8b6c7b0470b48e04404d388a7a762bde689b912a9e1d5b4924",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/root_decimal_verification.json": {
+      "sha256": "97ee31f9214727ccf3d85ab43fc960fce34c12ab6b87ea68464cf85db8760fd5",
+      "bytes": 1422
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1/root_result_audit.json": {
+      "sha256": "d139edbf9c70ea1bead2ee2db6049f73a5aab90946d7f7160b19aedae90dcdcb",
+      "bytes": 4757
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba/result.json": {
+      "sha256": "9049ad582d6b900488d3d4a59b48cccaec3f13d91a3ad8a18015fb485090c8b5",
+      "bytes": 220329
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba/timing.json": {
+      "sha256": "04e5e8345155236b7a950528a1f0492a7bd347460feed57464f5cc21da78d9da",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_config.json": {
+      "sha256": "92208200a6c96b519040ab2c6831e573a2ef713217b2e7d64ab76529ce8a7dd9",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "2a1d399080d15c4707eb0a8e7e12ce2c5caf964f8d8382c3bb01e7b61b3b4043",
+      "bytes": 220985
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "62f48508bb256a42d4a22dae51edbc4ff7c2a28951f7a800af4ec9bab7ce0880",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "23a5fa923bd3d51f15ca0bbacffe87b6e3e652914adee556fe9489d5931fdbdb",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "b9af01de08053bf62d7aa3815909853b15ac5547a8550045cc8ea9657fec9ba3",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_midpoint/result_partial_day80.json": {
+      "sha256": "549cd26fe1f8dd3b8ba7caae94d8d5d1b026daa57d208e933bf3156a4b281daf",
+      "bytes": 111986
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_midpoint/timing.json": {
+      "sha256": "f006900c0023761736035cf4cb21834bc795ede697788a44ae4040356513c391",
+      "bytes": 843
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_midpoint_config.json": {
+      "sha256": "2ea74f9adcfd38212fca64cfaec0cd00115b9fd47701b7de31502ae4e6032580",
+      "bytes": 2783
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_midpoint_runs/result.json": {
+      "sha256": "66ea8368301c2cd2070320ebfed44b9eee417ad9a9188b76565bc15b00da64b4",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_midpoint_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_midpoint_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_resumed/result.json": {
+      "sha256": "9049ad582d6b900488d3d4a59b48cccaec3f13d91a3ad8a18015fb485090c8b5",
+      "bytes": 220329
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_resumed/timing.json": {
+      "sha256": "771c2d5a06c5e6addd043e9f7182dec70adcf76d96e1a5a01cc29267447065cf",
+      "bytes": 844
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_resumed_config.json": {
+      "sha256": "b57aa654d76ce289529449c4104fdcab3b628e0776f2e7ce413808fdd0528309",
+      "bytes": 2781
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_resumed_runs/result.json": {
+      "sha256": "e0318a653e72431de10c37f58b38afb1cd02e13034e749e3274ba4dbcf55b5c7",
+      "bytes": 1396
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_resumed_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_resumed_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_runs/result.json": {
+      "sha256": "cac19e7498f0d5af680478a48f4a866cf38d2dfc7b58cb91a82637efe974e8df",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numpy/result.json": {
+      "sha256": "5e219ed6a318bf6cb1d025c410389b92b5bcd0286b58adcdeaea54fc324de547",
+      "bytes": 220329
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numpy/timing.json": {
+      "sha256": "456e2c6a3c939070d61a0f2eb4439f357c2d2448fd6d1e6b7c411f33ab56412d",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numpy_config.json": {
+      "sha256": "0cff09e87ff8a3a0b849bc77d1b13fbbd04daf35c5dd9b09709e58c93882c80c",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "f39538f2a7ed5b5b6e9c0d4532537f09d577b63be7eed867ce725a623e779bcf",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/case_numba.json": {
+      "sha256": "b41e66ec4358474e4a9b99082d1b3bd1e2547a03b04d18fc58a2572703be08db",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/case_numba_dt900.json": {
+      "sha256": "c33d8b224f7c380642975fe0811567f9c35dfe07f26c78b1455da6d65514736d",
+      "bytes": 19028
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/case_numpy.json": {
+      "sha256": "a286d05cc1039c5b371cf704d399787c20b5fe7dfd92233b52fb73cb8f7516ff",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/driver_state_day80.json": {
+      "sha256": "6f24eed0e44622a330559b94ff579a48cb75291c0a059a25127cdc35507ec86b",
+      "bytes": 107399
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_decimal_verification.json": {
+      "sha256": "01199b4dcfc02ede2af6d4f8273dce2e41774b7d2aa83d083de0bc28a6f1457b",
+      "bytes": 1426
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_midpoint.py": {
+      "sha256": "4efdad36f93e2dd5947a2efa59cae78846385ac5939d6f9fbd3c31f189eb3e0c",
+      "bytes": 676
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_result_audit.json": {
+      "sha256": "955cc92c40d1625b2a337b31dfecec90fb36f73546f81a9d40267a47e0a220c5",
+      "bytes": 4757
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc12_s1p5/root_resumed.py": {
+      "sha256": "5ed19952c55c025a11a1016e8b3e802954e36da3c4907e4f828fb4d439d35abc",
+      "bytes": 649
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba/result.json": {
+      "sha256": "13571e5b9d7ad0f3976769c1a6c60d3be783a15701116c7daf9d6d1b0882d66f",
+      "bytes": 220393
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba/timing.json": {
+      "sha256": "f876587d8143ecbea7d3560b97492cc08cab482b721be07200a3ebce403ab0db",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_config.json": {
+      "sha256": "cdef356eabe0c66191c154803a8be19188d856457abdab702436a235f40f02ae",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_dt900/result.json": {
+      "sha256": "a8c0d547bd727bf68887eebe5a8a1398019c01d4d4c423dec6b63082543476aa",
+      "bytes": 221087
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_dt900/timing.json": {
+      "sha256": "c211e1e64d8608a126e94f7cc59dc8dc1fbcef81af6b688310f676c0e27129fe",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_dt900_config.json": {
+      "sha256": "6bf77fc98f499f5a4b3c53eff947e096019b60f2649522c5a51001f34d824ce3",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "f0ca7f5f0395b51f269f3a559804e3801cd848b29de4b2599599935aed10cbaa",
+      "bytes": 1392
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_runs/result.json": {
+      "sha256": "2851cc5e54887b8b52f4cbcac7220d0f4c3eb3c053a03b9c4d2bf72b1957e83e",
+      "bytes": 1377
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numpy/result.json": {
+      "sha256": "9a839a1c7b3f7279bffd4da916a8d5f8df843afdb73843f8a44c44294359dd07",
+      "bytes": 220393
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numpy/timing.json": {
+      "sha256": "fe674768ca92ccfdf13790614cf3739abd9de7427236fa495fad0424110b1f65",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numpy_config.json": {
+      "sha256": "bf9db27b0859b07aacdf5d0942e186a0cf14c06e05bcea98ae543d36b3d0caf7",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numpy_runs/result.json": {
+      "sha256": "de456e2683893689a7fd6747aab8a9b11da1c9e945f5c762f600cbe3a4fae729",
+      "bytes": 1379
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/case_numba.json": {
+      "sha256": "61ffc1bb9d18178a28d08ab6b5c1b893e97271b36f2173fdf80c37d045675fd0",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/case_numba_dt900.json": {
+      "sha256": "6e2e6b32a78368dd1a72b8ba3ddc1d4e87b90421b1d5ac1ae71bfb9515ec82ea",
+      "bytes": 19017
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/case_numpy.json": {
+      "sha256": "9d48f66e8c1cec92a478693c0d3a8c983da0c0609bae12144f87d3570d45d2b4",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/root_decimal_verification.json": {
+      "sha256": "0a5f56147f50554e5adf8b7cf5985e0bdd3b35ac3a20ff22b44c4b52520405ed",
+      "bytes": 1374
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1/root_result_audit.json": {
+      "sha256": "c5a2008cd3984a2799ead736c3d588f5e9ed82700646f62d9b39acae9947359d",
+      "bytes": 4744
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba/result.json": {
+      "sha256": "d8356826fbbc30d4fb4f481e08f7ec183652e47d7b321e7243e7a49642a2b9e7",
+      "bytes": 220293
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba/timing.json": {
+      "sha256": "54048c8a521ad0708d6ed2d124b3e86ca9f5109f225a2bc15719faa372cc6157",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_config.json": {
+      "sha256": "495a57e1ba947e6af8a8f269cfc708c48b322290cfd8012f82831e6f35cb3851",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "bbc2b51b0e7df96866deeacb6386153ad8266831685f3a3fab51040672b36c54",
+      "bytes": 220914
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "27d920be145b2abf35d60bb255558995784f274854319b04385ef48aad8de27e",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "8ffe0b29f99adb74eb86da6ada8e0acb3ac5ae10b48b0324d277cf67b113d2cc",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "d1fb2bb015be03d9ca09baf33941f35b2b15b55ce76a54ca961f880c8d317018",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_runs/result.json": {
+      "sha256": "0b839c82672cb931989cfd693bcebbef57ca090f4f21b1e28be66dc46acf4dd1",
+      "bytes": 1383
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numpy/result.json": {
+      "sha256": "8f5b54c70bb24866cdfda374ea49a47164048df8aa7dc6886847329463e3e2d9",
+      "bytes": 220293
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numpy/timing.json": {
+      "sha256": "6ba95a50cea7e50a721395c883c52fae711051577985607bed84e18ad48865bf",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numpy_config.json": {
+      "sha256": "39d111dc8931cf041fed2653bc112a69f4bf0cd016d0de9035ea339b4ffcf96f",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "09dac0d5dd1a4920430399d1f4bc1d2395c23b8a13717e2f9bbd915734595101",
+      "bytes": 1385
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/case_numba.json": {
+      "sha256": "d10236c5dc7df81d5d12c0ae9ef0bc4268fb2e74fb54f7ac06c52fa6f3e179db",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/case_numba_dt900.json": {
+      "sha256": "2ea5979a6f3f3a186c2208e2ad38ba707cdbc044fcbdfe7f63ef321dcc7e2e0d",
+      "bytes": 19028
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/case_numpy.json": {
+      "sha256": "18156b413a91c49b2261e1e3bb46b58316fc9571af2e3799fff7c8f5295ba159",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/root_decimal_verification.json": {
+      "sha256": "f2792a309ae4fffe788e5b3d3519207d4d7537374b94d2cb1e2298ab9bbe8311",
+      "bytes": 1379
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc13_s1p5/root_result_audit.json": {
+      "sha256": "af2a72dd65463b5717b69320649a0a5489cf6328e0145e8f4f323069901acf08",
+      "bytes": 4743
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba/result.json": {
+      "sha256": "16cc39402a481d6e78a6f963bc9bccd9bd211c6d3080404ac72346e697c0cd6f",
+      "bytes": 220367
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba/timing.json": {
+      "sha256": "fc375adba19280ea7d2738c63449b333c433edaf728d054518a698335d3df14c",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_config.json": {
+      "sha256": "bfd7c1b9077ee7f2175e61947a4ff02b1f055484c056500a58dca93eb0bcdc28",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_dt900/result.json": {
+      "sha256": "8e8c838b6cb9a8dc3d0552504e118542d05f5fef1757ae278e6509df26d89beb",
+      "bytes": 221082
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_dt900/timing.json": {
+      "sha256": "c98299d6d3bb3869b13d6f4fc4c9521b69dd81e5ef0fb968752974d828945bbe",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_dt900_config.json": {
+      "sha256": "17f2e67c6be914ebf4508eaa159cfe51a6a5cef78c8d44bd523902f57118e6e0",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "137755bfc6c43fa7a3526318c259a91da7bb699398f8d9f6b956c81ba0dd98be",
+      "bytes": 1392
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_runs/result.json": {
+      "sha256": "b2536ec2ae82957c45f1167ed02cd99217c4f114c29c6d1eeb8d8fe85d3cdee3",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numpy/result.json": {
+      "sha256": "45bf6f7a0550b794c7649dbd70fa4bb5fa7cd2f25adc0f28cb79005e29d66147",
+      "bytes": 220367
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numpy/timing.json": {
+      "sha256": "5866c97a9f4f5ad32314d1020b04f8fe22936b426f6f39089f5e0028ae329dd5",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numpy_config.json": {
+      "sha256": "afbdc7f50ac9a41bfeff3e54a9be0e263fe44a1a3e238f35b62d6e501323d323",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numpy_runs/result.json": {
+      "sha256": "4e821d413a0e2933459c4bf31acfb605295a53f5a9264a3ff487b9ba538c1021",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/case_numba.json": {
+      "sha256": "b66ba4ba672a1a11aff071f0e6f9b500dab66d6a57efaff47d34498a2b284df2",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/case_numba_dt900.json": {
+      "sha256": "4b0b3db9a33041b26f7728d9f83f2bef6824f621c2831685695ad6cf2c9b9843",
+      "bytes": 19017
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/case_numpy.json": {
+      "sha256": "f0f3d277911571a92ec0f6ced8b97c17e0fdd665e04df0bdaeb6a50865b43587",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/root_decimal_verification.json": {
+      "sha256": "b4dd9df95d370435098562eea857606d4483baa4778078b030cd3069466250c8",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1/root_result_audit.json": {
+      "sha256": "d4c6c70bf574a387ad226973da52b0d94b1ad39a4902d11a5cf43cbab5b2b6df",
+      "bytes": 4727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba/result.json": {
+      "sha256": "eb5a5819dc86156425fb1b026aea9d2c04f447681e06720f63aae3a10e8157f3",
+      "bytes": 220254
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba/timing.json": {
+      "sha256": "8829634541163fd33626634ac6b9afd96fda59d88bafefd6b54efdbad9b9ca13",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_config.json": {
+      "sha256": "120279b53cce519fc9c3933e2f3e0d51e30e3fe44db88bbc8ab29af92f869259",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "46bba218246b98d40c75774be53b19c7a15ffac10978684767f2685486bc8b84",
+      "bytes": 220947
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "4e4e56755eda513c105bf48d8f0c42dea6ab83f86a47145aa1782ee2d63e0ade",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "2cdcfb4ec4150e245edc0de8a2dc05aec408fda205dfde879d07f3a15640b5ec",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "518e142e5f6c9e3660d17d58fa119fa22a460ec216b8d95627d3094edee52b84",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_runs/result.json": {
+      "sha256": "ce7a49cc6d87f27710776538674c65575fc7433c4935739292f94e4f46a9b195",
+      "bytes": 1383
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numpy/result.json": {
+      "sha256": "f6b5ddfb478026d845531f7e9f76f70e17f05ff81ca5f3e04c2ef75385d3abc7",
+      "bytes": 220254
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numpy/timing.json": {
+      "sha256": "770911ba831741a114e06dfdf7cd3592d720c815d3bfeb3a9874b2c321f8c09c",
+      "bytes": 844
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numpy_config.json": {
+      "sha256": "b1c6ab6b8dd935618cd8e9fc59f100782df4520a2bbe003d65116926eff9fcb6",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "08ac2befebe8a108cf228659b2a027b55cef9c8a0fe37774cf61baf535efb37c",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/case_numba.json": {
+      "sha256": "7a7a15a5020c744a661dab483907e5137c4939d62bca4f5b7ccdfa72bc43a291",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/case_numba_dt900.json": {
+      "sha256": "4575844af3541eab89cee6713b38cd260b228e4fbd02aad5417b4a28c2c3c5c4",
+      "bytes": 19028
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/case_numpy.json": {
+      "sha256": "935c10f6c242dbd9c12f5c044a6528f0c86fb2eccc75859fade7c12f70f95ec4",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/root_decimal_verification.json": {
+      "sha256": "7c2c8f7604808c98e936018e03bd6666b52bc59a0160a40becbda9cc01eb7f94",
+      "bytes": 1381
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc14_s1p5/root_result_audit.json": {
+      "sha256": "e3996a5a42710ef7e84456a0a37a3229abc66e3364e6d2ab2a2de75cbf9d7b30",
+      "bytes": 4745
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba/result.json": {
+      "sha256": "a9ae917e3ac4a493269d89044c5969bf0dbb48032a6e60d24074e7cb04130af7",
+      "bytes": 220402
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba/timing.json": {
+      "sha256": "69c55666d4129bb63cc7b6b9387b9f7cf3ed78418f9c21f8ba657b77d438bc7e",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_config.json": {
+      "sha256": "e2674f62f0f5bcf9b4e1997c750d15e917d1806ef9337cc7f6d0e0315672f69b",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_dt900/result.json": {
+      "sha256": "51227ff4ce598c78e418ef1b63beffe2368f91b2bf95e7c7c4fc561fc49e3ccc",
+      "bytes": 221100
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_dt900/timing.json": {
+      "sha256": "eb7f6ff91ee7a6174547c0b598eaa8634121cbcdd763ebf93604916f82c412c1",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_dt900_config.json": {
+      "sha256": "c2838aab0331c0802313acd2e0f0f0e2c19fc8dc880b83d5661ebd9085843153",
+      "bytes": 2789
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_dt900_runs/result.json": {
+      "sha256": "2545bacc59d5a7115afda8cc3103094e4f3bffb1afd04dffa497ebb16ae2d61b",
+      "bytes": 1392
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_runs/result.json": {
+      "sha256": "fc98561f6ccf3306e77171b1274eae671612940e4a958ddf7dc695a26818b30e",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numpy/result.json": {
+      "sha256": "36b60341b52d2e1e3ea6b164991f7a0aec2641a5a598061f87c6930c4518fd9c",
+      "bytes": 220402
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numpy/timing.json": {
+      "sha256": "eb5581a199db63ddd7475b065d4b7ceed673e8a040ed2f2a63a92b416083680a",
+      "bytes": 849
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numpy_config.json": {
+      "sha256": "ea57d2f54a994cdf7417b169ece6ef8881c567c4ac82a623aec6b26f6afeb155",
+      "bytes": 2771
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numpy_runs/result.json": {
+      "sha256": "a58ea38ca7c473a464d0c72dd35cd20b1d28003375fa46a3f39f190ef09dcdd7",
+      "bytes": 1378
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/case_numba.json": {
+      "sha256": "2f3879c0ede6447c18f00f3997f0bebe7f4a21d1d1e96891013b1d69c3612246",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/case_numba_dt900.json": {
+      "sha256": "179a710c4a44e20a663a5a95f2c467586e88078eee1a4240fb26c247f1cb60af",
+      "bytes": 19017
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/case_numpy.json": {
+      "sha256": "45137d24d84ae42e313e96156218d1b5ed339e27fc7790ed1baf6dd5b4d57ffa",
+      "bytes": 19018
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/root_decimal_verification.json": {
+      "sha256": "b2ce6f878eaabc2a5b6378a6ff00ba00940031cb65d368742ddc0ae790447eb5",
+      "bytes": 1377
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1/root_result_audit.json": {
+      "sha256": "2c8e19ac95f721a5ecb4305e7fe7a8343e254ea42612a28f936213b441383648",
+      "bytes": 4749
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba/result.json": {
+      "sha256": "c27623974daa405058b7d399efc891a0870efda4f969a97f5bed0902e8c7375d",
+      "bytes": 220235
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba/timing.json": {
+      "sha256": "5154088296b117af2a74d2bd0f57cb7b2630b1f53b1785db956c4f063acc53a6",
+      "bytes": 847
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_config.json": {
+      "sha256": "44a458099cf5265d2d0f50b4af632bf02ebda156a0bb5f2ddcb275e7c9f7fa46",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_dt900/result.json": {
+      "sha256": "9c4e888bcdb44646f1549aa3571cef0048c8283212937f876a7b760fbbb09899",
+      "bytes": 220969
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_dt900/timing.json": {
+      "sha256": "a5863b954a244a02a009196703953d35c1ae3fde73c5e1e13332ad5a8399c84d",
+      "bytes": 850
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_dt900_config.json": {
+      "sha256": "2109c69cea703d189d436be5645d2cb5ce3f8c1e8fa1effa52dd086bb7804774",
+      "bytes": 2795
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_dt900_runs/result.json": {
+      "sha256": "9de8a284d47a338338e2585e0501ed149ea5c89aae4de5436cefc2a57da38721",
+      "bytes": 1398
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_dt900_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_dt900_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_runs/result.json": {
+      "sha256": "2e578401b2573a00637779b758d8ecb59f77d458b537eb78aaec74700d80ce82",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numba_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numpy/result.json": {
+      "sha256": "4022260c30fbcfdacc0f0f24fa76b7d256f79caa8c8068612b7c12f08eaf8867",
+      "bytes": 220235
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numpy/timing.json": {
+      "sha256": "e92eeae3e67483a456bf5f63f82722230c18c329fec65199dde489b82e3e401b",
+      "bytes": 848
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numpy_config.json": {
+      "sha256": "9134f2f7475df62a991067410a46f1c207ca150bca01bebd2fe23cf803f6ada6",
+      "bytes": 2777
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numpy_runs/result.json": {
+      "sha256": "d64768a56a0f57a6d6b4a2cc4c2bb209d8f5327c8b2b1a038ebfe1e8e2044ef9",
+      "bytes": 1384
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numpy_runs/sources_after.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/actual_numpy_runs/sources_before.json": {
+      "sha256": "b2baef42e52584763c9dae425f41171a010caf8fc98ba27c209545d6b1d07877",
+      "bytes": 1185
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/case_numba.json": {
+      "sha256": "f26082eca2e61b3037f1de9b72a7c2783bc45180205f18a3cf19b50d4cd8ea0a",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/case_numba_dt900.json": {
+      "sha256": "46e39875f2f52822a5480c034481d8e8b69cab69d196b0f05430cfb6e29a17df",
+      "bytes": 19028
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/case_numpy.json": {
+      "sha256": "2e46c7dd687b2ab7c126d11b9e2cb9336639e82a5dc11dc22fccf5793e265ee5",
+      "bytes": 19029
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/frozen_helper_manifest.json": {
+      "sha256": "8721fc12529e086d234f00407425ab48628616a54fee2b2d9052c6abb7ef1e91",
+      "bytes": 963
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/root_decimal_verification.json": {
+      "sha256": "3f7caac95b9623eddb0bf33096ea80db0dc0bc39339296092f689ff5248d50b5",
+      "bytes": 1377
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/root_execute_numba.py": {
+      "sha256": "cbcb77de3be727eb5977b9ae8356344a2d9296abf9966cce319ae1f733c3d306",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/root_execute_numba_dt900.py": {
+      "sha256": "3264543267393bc0a404ed98262a276804e38531fec9742f255d398071a731b7",
+      "bytes": 1139
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/root_execute_numpy.py": {
+      "sha256": "7f9073855960a56e044ba149d57d11182c3d6171dc74e8cb346788d5c868e668",
+      "bytes": 1133
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/root_release_verified_bootstrap.py": {
+      "sha256": "77068d841eb083f5a6186544e81f1b5069400b80fbba3b366d5b085c0e8b7647",
+      "bytes": 1727
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_fc_sensitivity_20261120/study/fc15_s1p5/root_result_audit.json": {
+      "sha256": "6b2be4cec27c7d6adecc1e43f7ca0107bdaf2802de3f1a33f7939f48d71af986",
+      "bytes": 4745
+    }
+  }
+}
