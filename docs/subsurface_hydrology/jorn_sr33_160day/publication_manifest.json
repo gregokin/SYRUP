@@ -1,9 +1,5 @@
 {
   "files": {
-    ".ruff_cache/.gitignore": "9e3a60f1e6ec4ae60215c11d54b171392745ec25e9dded433d5bd921363af316",
-    ".ruff_cache/0.16.10/1331473395892769500": "f515a6b5fb69e955670b39c166a1ca84d3d9ea46f83097d74339cab9e0f4e0bd",
-    ".ruff_cache/0.16.10/8347023470832701162": "e9c782f1b650401f06092aa670a5d9a084933c18a5a3a1b701072d661fa61cbe",
-    ".ruff_cache/CACHEDIR.TAG": "5953156d7e0c564a427251316eaf26f8870e6483ae2197f916b630e4f93e31ae",
     "SYRUP_JORN_160day_SR33_K_sensitivity_20261120.docx": "5e6f1d96f449330221b727650f861cd747de6fcede2a15a777d4722065e27760",
     "acceptance.json": "364faf47542acc2d030b02e14fdb1acf3483c4afe4e06b4995d67ddbeba1e4e5",
     "artifact_manifest.json": "302d97d9b511f6e63e395cc71ad2203bc25be5f528098b97b2e4bd0ff4f23fa5",
