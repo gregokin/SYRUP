@@ -1,0 +1,632 @@
+{
+  "status": "ACCEPTED_BOUNDED_CPU_SENSITIVITY",
+  "utc": "2026-11-20T23:09:12.855911+00:00",
+  "base_main": "0980aec4ef18fdd6de798d16ade8e0f7c25a5bd8",
+  "scope": "Eight prescribed JORN160day SR33 fixedK1 E/stress settings; new benchmark/tests/docs only; no default change, calibration, GPU, field-validation or coupled-model acceptance",
+  "sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/analysis_candidate/src",
+      "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    }
+  ],
+  "cases": [
+    {
+      "key": "baseline",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 1.0,
+      "case_sha256": "e2f10115e05a97b9e70189c329d94fee917b4d489980ebeafbf41f04b3935abd"
+    },
+    {
+      "key": "e0p8",
+      "E": 0.8,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 0.8,
+      "case_sha256": "8cfcdb89c4e09e1ae26fb637a78195a149a1e482eab61d194806ec5b0640c3d5"
+    },
+    {
+      "key": "e0p6",
+      "E": 0.6,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 0.6,
+      "case_sha256": "e037d42b907d5f8ea3c66d046fc97f404b1ef6e31c220d9dfba8d757ebe32775"
+    },
+    {
+      "key": "e0p4",
+      "E": 0.4,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 0.4,
+      "case_sha256": "bb3299c552f13436aef2b82517f0c302eb849bd8a0e58dd99fac2795e9a096bb"
+    },
+    {
+      "key": "s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255871676945,
+      "effective_E": 0.4444444444444444,
+      "case_sha256": "3d5da60eb580da7711452941caaef6d5f05c2555904a399cbd9723ddb99e4899"
+    },
+    {
+      "key": "s2",
+      "E": 1.0,
+      "stress_multiplier": 2.0,
+      "stress": 0.40341162235926664,
+      "effective_E": 0.25,
+      "case_sha256": "261ee1072276c93d47471dd1ac57e1ece9cbdadfb61891d7a089c1db3c74abe7"
+    },
+    {
+      "key": "s2p5",
+      "E": 1.0,
+      "stress_multiplier": 2.5,
+      "stress": 0.5042645279490833,
+      "effective_E": 0.16,
+      "case_sha256": "9211eae8ac9bd74025297a0ea64546c2b5a505bddf16959ad68c505b7561b063"
+    },
+    {
+      "key": "s3",
+      "E": 1.0,
+      "stress_multiplier": 3.0,
+      "stress": 0.6051174335389,
+      "effective_E": 0.1111111111111111,
+      "case_sha256": "49918b60a40068e8d23d15c356d651e1429d743b0292e18a15157a06094cf8ba"
+    }
+  ],
+  "native_runs": 24,
+  "independent_90_digit_controls": 24,
+  "setup_tests_passed": 55,
+  "numpy_numba_max_difference": 0,
+  "dt900_max_theta_difference_pp": 0.00023390149512941827,
+  "independent_max_water_error_m": 1.071438065473797e-17,
+  "restart": {
+    "status": "PASS",
+    "utc": "2026-11-20T22:56:19.984468+00:00",
+    "case": "s3",
+    "stress_multiplier": 3,
+    "split_day": 80,
+    "fresh_process_resume": true,
+    "exact_equal_fields": [
+      "rows",
+      "ledger",
+      "cumulative_closure",
+      "matrix_regime",
+      "scores",
+      "physical_end_t_s",
+      "added_rain_hours",
+      "nominal_elapsed_s",
+      "complete",
+      "days_done"
+    ],
+    "scope": "Field-driver public component state reconstruction, not production checkpoint or coupled-simulation acceptance."
+  },
+  "root_artifacts": {
+    "status": "PASS",
+    "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/analysis_candidate/docs/subsurface_hydrology/jorn_evap_sensitivity/SYRUP_JORN_160day_SR33_1x_evaporation_sensitivity_20261120.docx",
+    "sha256": "8c74728feb30f1e1a3a56e7ae3433b136cd7beb0eb250459eb54556575e3c6dc",
+    "tables": 11,
+    "table_csv_matches": [
+      "params.csv",
+      "budget_E.csv",
+      "budget_stress.csv",
+      "scores_aligned.csv",
+      "scores_raw.csv",
+      "period_top.csv",
+      "period_all.csv",
+      "period_bias.csv",
+      "endpoint.csv",
+      "timing.csv",
+      "checks.csv"
+    ],
+    "media_png_exact": 6,
+    "max_table_columns": 6,
+    "all_report_source_seals_unchanged": 218,
+    "all_case_and_execution_input_hashes_unchanged": true,
+    "manifest_verified": true,
+    "scope": "Independent static Word/table/media/data verification; no Office render claim."
+  },
+  "budgets_and_scores": [
+    {
+      "key": "baseline",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.2975733127993623
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.2730692268104713
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 17.274912150645765,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 1.28216786332307,
+        "evaporation": 29.473319986031193,
+        "gravity_transfers": [
+          6.773290709326027,
+          5.110236690569767
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -6.176619677195896,
+          -2.2083037724017123
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.1600713090010686,
+        "operator_prepare_s": 4.492911093009752,
+        "jit_warmup_control_s": 0.0006635850004386157,
+        "integration_s": 0.03784121600619983,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.06057471901294775
+      }
+    },
+    {
+      "key": "e0p8",
+      "E": 0.8,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.4086979380084355
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.3922791021449887
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 17.983263803782457,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 2.0542571684621835,
+        "evaporation": 27.99287902775537,
+        "gravity_transfers": [
+          7.654286858910177,
+          6.046888210350163
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.838371812801107,
+          -2.170050946669806
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0679966140014585,
+        "operator_prepare_s": 4.6815148269961355,
+        "jit_warmup_control_s": 0.0006467570055974647,
+        "integration_s": 0.04248417299822904,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.05380840599536896
+      }
+    },
+    {
+      "key": "e0p6",
+      "E": 0.6,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.5299970838740844
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.5284033623367628
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 18.863471542975127,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 3.2709567661121217,
+        "evaporation": 25.895971690912766,
+        "gravity_transfers": [
+          8.912981369366506,
+          7.27595037342623
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -5.378608856843398,
+          -1.9864024699873228
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0508858510002028,
+        "operator_prepare_s": 4.3630981580063235,
+        "jit_warmup_control_s": 0.0006191260035848245,
+        "integration_s": 0.036920682003255934,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0626010810083244
+      }
+    },
+    {
+      "key": "e0p4",
+      "E": 0.4,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.7261128495797453
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.739374987555802
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 20.24493876001838,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 5.493799660530764,
+        "evaporation": 22.291661579450857,
+        "gravity_transfers": [
+          11.231279980040297,
+          9.63426983045663
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.723022571119336,
+          -1.827929448788362
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0686394140066113,
+        "operator_prepare_s": 4.397469742005342,
+        "jit_warmup_control_s": 0.0005950630002189428,
+        "integration_s": 0.038450455002021044,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.05673823399411049
+      }
+    },
+    {
+      "key": "s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255871676945,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.6902306422813447
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.7003984893856585
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 19.915518178595445,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 4.901125226054008,
+        "evaporation": 23.213756595350556,
+        "gravity_transfers": [
+          10.677647282715352,
+          9.042347299005302
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -4.91814670839095,
+          -1.879064759028346
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.031837730013649,
+        "operator_prepare_s": 4.47928959899582,
+        "jit_warmup_control_s": 0.0005880939861526713,
+        "integration_s": 0.042449326007044874,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.0484639589994913
+      }
+    },
+    {
+      "key": "s2",
+      "E": 1.0,
+      "stress_multiplier": 2.0,
+      "stress": 0.40341162235926664,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 2.8958009726809264
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 2.922992668594784
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 21.86990978448694,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 7.713602413711531,
+        "evaporation": 18.44688780180152,
+        "gravity_transfers": [
+          13.309395114499807,
+          11.855276299074387
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -3.8421104021500208,
+          -1.5984660918188016
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0432712469919352,
+        "operator_prepare_s": 4.69034455200017,
+        "jit_warmup_control_s": 0.0006010509969200939,
+        "integration_s": 0.04726239500450902,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.04505881499790121
+      }
+    },
+    {
+      "key": "s2p5",
+      "E": 1.0,
+      "stress_multiplier": 2.5,
+      "stress": 0.5042645279490833,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 3.056876839683371
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 3.0965924878214617
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 23.632958196902138,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 9.242063633793206,
+        "evaporation": 15.155378169304667,
+        "gravity_transfers": [
+          14.74594535783172,
+          13.390508587074615
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -3.005598319343549,
+          -1.3860968802815021
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0892384909966495,
+        "operator_prepare_s": 4.5207852630119305,
+        "jit_warmup_control_s": 0.0006107020017225295,
+        "integration_s": 0.03772271200432442,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.04742437700042501
+      }
+    },
+    {
+      "key": "s3",
+      "E": 1.0,
+      "stress_multiplier": 3.0,
+      "stress": 0.6051174335389,
+      "pooled": {
+        "raw": {
+          "n": 282,
+          "rmse_pp": 3.179186895003108
+        },
+        "offset_aligned": {
+          "n": 282,
+          "rmse_pp": 3.2279731058191894
+        },
+        "persistence_raw": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        },
+        "persistence_offset_aligned": {
+          "n": 282,
+          "rmse_pp": 1.7986693268963394
+        }
+      },
+      "budgets_mm": {
+        "initial_storage": 22.9424,
+        "final_storage": 25.193512559449438,
+        "rain": 25.088,
+        "intake": 25.088,
+        "runoff": 0.0,
+        "bottom_drainage": 10.146623028213707,
+        "evaporation": 12.690264412336864,
+        "gravity_transfers": [
+          15.599040847312555,
+          14.304374917036698
+        ],
+        "net_diffusive_transfers_down_positive": [
+          -2.342037687158796,
+          -1.2247523769274873
+        ]
+      },
+      "timing": {
+        "source_checks_and_input_preparation_s": 1.0736038259929046,
+        "operator_prepare_s": 4.503439874009928,
+        "jit_warmup_control_s": 0.0006050259980838746,
+        "integration_s": 0.03857730700110551,
+        "n_days_integrated_this_process": 160,
+        "n_matrix_steps_this_process": 55,
+        "n_soil_steps_this_process": 215,
+        "n_days_cumulative": 160,
+        "n_matrix_steps_cumulative": 55,
+        "n_soil_steps_cumulative": 215,
+        "notes": "source_checks_and_input_preparation_s starts inside execute AFTER the module imports and excludes interpreter start and those imports; full fresh-process wall time is measured separately by Root. *_this_process count only what this invocation integrated; *_cumulative include resumed days.",
+        "backend": "numba",
+        "python": "3.12.3",
+        "numba": "0.67.0",
+        "clock": "time.perf_counter raw seconds",
+        "output_write_s": 0.03703757800394669
+      }
+    }
+  ],
+  "original_live_preservation": {
+    "head": "c76c603dde4e8f79ec48b18d954a386580d8bc89",
+    "tracked_files": 736,
+    "git_status_exact": true,
+    "all_tracked_working_bytes_exact": true
+  },
+  "claude": {
+    "session": "d37c1dab-3e24-4aca-bfb6-1dd6fefcbc6d",
+    "implementation_and_correction": "CLI JSON reports success and stop; no process1018551 remains; correction tool wrapper returned143 despite complete successful Claude output; independent results and artifact verification govern acceptance"
+  },
+  "limits": [
+    "one1m2 CPU column, not GPU or large-domain qualification",
+    "dry interevent evaporation remains one daily step;900s controls refine storms only",
+    "zero transpiration; April-May dry-period calibration may absorb omitted transpiration",
+    "stress and E mathematically confounded in this quadratic regime",
+    "deep January modeled wetting unresolved; no sensor-fault claim",
+    "fresh driver reconstruction is not production checkpoint or coupled-model acceptance",
+    "DOCX XML/table/PNG verification, no Office pagination render"
+  ],
+  "maple_git_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9"
+}

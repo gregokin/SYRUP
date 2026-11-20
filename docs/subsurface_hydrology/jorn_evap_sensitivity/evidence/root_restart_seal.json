@@ -1,0 +1,50 @@
+{
+  "schema": "syrup.jorn_evap_restart.seal/1",
+  "scope": "Late restart evidence, separate from immutable218file reportseal",
+  "files": {
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/root_restart_verification.json": {
+      "sha256": "78338e69baf4175d87073f92b3d2e80423690c8a370eff61852d635c46ebdc41",
+      "bytes": 510
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_midpoint_runs/result.json": {
+      "sha256": "e3c5f86cfb44cc7ab8b393b87679f83d3838a76c5224ddef7e46778e4b36e4f3",
+      "bytes": 1385
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_midpoint_runs/sources_before.json": {
+      "sha256": "30f5cf7a3d66ee53321f55ce6811b18716d34c80030ecfdb91d503dece6e034b",
+      "bytes": 1189
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_midpoint_runs/sources_after.json": {
+      "sha256": "30f5cf7a3d66ee53321f55ce6811b18716d34c80030ecfdb91d503dece6e034b",
+      "bytes": 1189
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_midpoint/timing.json": {
+      "sha256": "eeb7c6936ecf55d68695782e72d3f4928e199c79a6ea57767cedcc3292980e6a",
+      "bytes": 846
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_midpoint/result_partial_day80.json": {
+      "sha256": "0bd72f377579a4f555ab449af8703124356baf70a5dfdf9e6345cf3507e09929",
+      "bytes": 113001
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_resumed_runs/result.json": {
+      "sha256": "a3cf9637738ba662a6c37c76177faa0ea047e855f603c82d0567d54df9dc2ac6",
+      "bytes": 1383
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_resumed_runs/sources_before.json": {
+      "sha256": "30f5cf7a3d66ee53321f55ce6811b18716d34c80030ecfdb91d503dece6e034b",
+      "bytes": 1189
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_resumed_runs/sources_after.json": {
+      "sha256": "30f5cf7a3d66ee53321f55ce6811b18716d34c80030ecfdb91d503dece6e034b",
+      "bytes": 1189
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_resumed/timing.json": {
+      "sha256": "005ebd9a2567422559054f9f919ef772b3952c5f3b97044f13bfcd7cd67d3ef2",
+      "bytes": 845
+    },
+    "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/study/s3/actual_numba_resumed/result.json": {
+      "sha256": "c439d4a056fc1f58378019b755d99f348bba78c7381e9674dab4e3f070745eda",
+      "bytes": 221228
+    }
+  }
+}

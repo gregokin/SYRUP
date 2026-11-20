@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_evap_sensitivity_20261120/analysis_candidate/docs/subsurface_hydrology/jorn_evap_sensitivity/SYRUP_JORN_160day_SR33_1x_evaporation_sensitivity_20261120.docx",
+  "sha256": "8c74728feb30f1e1a3a56e7ae3433b136cd7beb0eb250459eb54556575e3c6dc",
+  "tables": 11,
+  "table_csv_matches": [
+    "params.csv",
+    "budget_E.csv",
+    "budget_stress.csv",
+    "scores_aligned.csv",
+    "scores_raw.csv",
+    "period_top.csv",
+    "period_all.csv",
+    "period_bias.csv",
+    "endpoint.csv",
+    "timing.csv",
+    "checks.csv"
+  ],
+  "media_png_exact": 6,
+  "max_table_columns": 6,
+  "all_report_source_seals_unchanged": 218,
+  "all_case_and_execution_input_hashes_unchanged": true,
+  "manifest_verified": true,
+  "scope": "Independent static Word/table/media/data verification; no Office render claim."
+}

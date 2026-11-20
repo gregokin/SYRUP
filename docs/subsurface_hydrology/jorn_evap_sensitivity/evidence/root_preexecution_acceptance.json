@@ -1,0 +1,15 @@
+{
+  "status": "PREEXEC_ACCEPTED",
+  "utc": "2026-11-20T22:50:51.753124+00:00",
+  "root_setup_tests": 55,
+  "physics_deltas": "OnlyrequestedEorstress; fixedSR33K1dweathergeometryinitialmasksclocks",
+  "source": "180/4e38",
+  "MAPLE": "412/fbc504bb",
+  "model_laws_changed": false,
+  "review": "Root independently inspectedgenerator/24configs/componenttests. Replaced test-only arbitrary1e-15mass thresholds with actualres.budget.bound_m3; all55repassed. Claude toreviewthissmalltestcorrection inreportstage.",
+  "new_helper_hashes": {
+    "benchmarks/jorn_evap_sensitivity/__init__.py": "0ea8dccc038dee6f2a9e18970090d94e21a4ec56e40f6e7c80e47160c532d6ce",
+    "benchmarks/jorn_evap_sensitivity/generate.py": "24b9baa9125bd10a434e7f74d0255f56513e2cd589b5b30175f574382cbc1c37",
+    "tests/jorn_evap_sensitivity/test_setup.py": "63eec92791c22ccacaafa8dbd2cfd51c9b5e54c91138f0e60fa5e4be65529680"
+  }
+}

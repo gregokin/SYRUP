@@ -1,0 +1,9 @@
+Case,Evaporation factor E,Stress threshold (vol. %),Stress / baseline r,Effective coefficient E / r²,Stress vs top-layer saturation (46.43 vol. %)
+"baseline (E 1, stress x1)",1.00,20.17,1.0,1.0000,below
+E 0.8,0.80,20.17,1.0,0.8000,below
+E 0.6,0.60,20.17,1.0,0.6000,below
+E 0.4,0.40,20.17,1.0,0.4000,below
+stress x1.5,1.00,30.26,1.5,0.4444,below
+stress x2,1.00,40.34,2.0,0.2500,below
+stress x2.5,1.00,50.43,2.5,0.1600,above
+stress x3,1.00,60.51,3.0,0.1111,above

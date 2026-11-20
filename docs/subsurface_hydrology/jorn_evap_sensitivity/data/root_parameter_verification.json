@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "key": "baseline",
+      "E": 1.0,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 1.0,
+      "case_sha256": "e2f10115e05a97b9e70189c329d94fee917b4d489980ebeafbf41f04b3935abd"
+    },
+    {
+      "key": "e0p8",
+      "E": 0.8,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 0.8,
+      "case_sha256": "8cfcdb89c4e09e1ae26fb637a78195a149a1e482eab61d194806ec5b0640c3d5"
+    },
+    {
+      "key": "e0p6",
+      "E": 0.6,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 0.6,
+      "case_sha256": "e037d42b907d5f8ea3c66d046fc97f404b1ef6e31c220d9dfba8d757ebe32775"
+    },
+    {
+      "key": "e0p4",
+      "E": 0.4,
+      "stress_multiplier": 1.0,
+      "stress": 0.20170581117963332,
+      "effective_E": 0.4,
+      "case_sha256": "bb3299c552f13436aef2b82517f0c302eb849bd8a0e58dd99fac2795e9a096bb"
+    },
+    {
+      "key": "s1p5",
+      "E": 1.0,
+      "stress_multiplier": 1.5,
+      "stress": 0.30255871676945,
+      "effective_E": 0.4444444444444444,
+      "case_sha256": "3d5da60eb580da7711452941caaef6d5f05c2555904a399cbd9723ddb99e4899"
+    },
+    {
+      "key": "s2",
+      "E": 1.0,
+      "stress_multiplier": 2.0,
+      "stress": 0.40341162235926664,
+      "effective_E": 0.25,
+      "case_sha256": "261ee1072276c93d47471dd1ac57e1ece9cbdadfb61891d7a089c1db3c74abe7"
+    },
+    {
+      "key": "s2p5",
+      "E": 1.0,
+      "stress_multiplier": 2.5,
+      "stress": 0.5042645279490833,
+      "effective_E": 0.16,
+      "case_sha256": "9211eae8ac9bd74025297a0ea64546c2b5a505bddf16959ad68c505b7561b063"
+    },
+    {
+      "key": "s3",
+      "E": 1.0,
+      "stress_multiplier": 3.0,
+      "stress": 0.6051174335389,
+      "effective_E": 0.1111111111111111,
+      "case_sha256": "49918b60a40068e8d23d15c356d651e1429d743b0292e18a15157a06094cf8ba"
+    }
+  ],
+  "unchanged": "AllK/Ks/d/FC/SAT/residual/source/weather/observations/initialgeometry/clocks; onlyrequestedEorstrlen"
+}
