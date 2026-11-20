@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from conftest import AT, BIG, RT, call, random_valid
+from conftest import AT, BIG, FC6, RT, call, call33, random_valid
 from hostcuda import FakeArr, FakeCupy, build, fake, have_toolchain
 
 from maple_syrup import soil_texture_properties as tp
@@ -63,7 +63,7 @@ def test_kernel_text_equals_numpy_reference_cell_layout(cupy, L, N):
     if L * N > 100:
         assert n.n_fc_equals_saturation > 0  # the 6 kPa == saturation outcome is exercised
     grid, block, nargs = cupy.launches[-1]
-    assert (grid, block, nargs) == (((N + 127) // 128,), (128,), 43)
+    assert (grid, block, nargs) == (((N + 127) // 128,), (128,), 44)  # 43 -> 44: the scalar fc_mode argument (SR33 default task)
     code, options, backend = cupy.modules[-1]
     assert code == cu.render_source() and options == ("--fmad=false", "--prec-div=true", "--prec-sqrt=true", "--ftz=false") and backend == "nvrtc"
 
@@ -133,3 +133,20 @@ def test_source_is_generated_from_the_recipe_tuples():
     for k, v in enumerate(tp.EQ4_REGRESSION):
         assert f"#define E4R{k} ({float(v)!r})" in src
     assert f"#define LNR ({tp.LN_RATIO!r})" in src and "--fmad" not in src and "fma(" not in src
+
+
+@pytest.mark.parametrize("L,N", [(1, 1), (3, 127), (2, 129)])
+def test_default_33_branch_of_the_kernel_text_equals_numpy_and_theta33(cupy, L, N):
+    """NEW (SR33 default): the host-compiled kernel source evaluated with the DEFAULT method (fc_mode 0) equals the NumPy definition bitwise, never reports fc == saturation, and its field capacity is
+    exactly the final theta_33 (equal to the legacy call's `air`-independent anchor via the saturation gap). Host source execution only; not hardware evidence."""
+    rng = np.random.default_rng(90 + N)
+    args = mk(rng, L, N)
+    ov = np.where(rng.random((L, N)) < 0.4, rng.uniform(0.5, 25.0, (L, N)), np.nan)
+    conv = [fake(a) for a in args]
+    g = call33(*conv, L=L, N=N, backend="cuda", diagnostics=True, air_entry_kpa_override=fake(ov), available_bytes_fn=lambda: 1 << 40, host_available_bytes_fn=lambda: 1 << 40)
+    n = call33(*args, L=L, N=N, backend="numpy", diagnostics=True, air_entry_kpa_override=ov)
+    for name in ("theta_saturation", "theta_field_capacity", "theta_1500", "air_entry_kpa", "provenance"):
+        assert np.array_equal(host_out(g, name), n.array(name)), name
+    assert g.n_fc_equals_saturation == n.n_fc_equals_saturation == 0 and g.sha256 == n.sha256 and g.field_capacity_method == tp.METHOD_SR33
+    assert FC6 not in g.names() and cupy.launches[-1][2] == 44
+    assert np.all(host_out(g, "theta_field_capacity") < host_out(g, "theta_saturation"))

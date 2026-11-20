@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import sys
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -41,9 +42,28 @@ def density_controls():
     return json.loads((ORACLES / "root_sr2006_density_oracles.json").read_text())["controls"]
 
 
+LEGACY = tp.METHOD_TIETJEN_6KPA_DEPRECATED
+FC6 = "theta_field_capacity_6kpa"
+
+
+warnings.filterwarnings("ignore", category=tp.FieldCapacityDeprecationWarning)  # the historical-oracle suite selects the deprecated method on purpose; test_sr33_default.py asserts the warning itself
+
+
 def call(S=0.4, Si=0.4, C=0.2, OM=2.5, rho=1400.0, *, L=1, N=1, backend="numpy", **kw):
-    """Provider call with explicit inputs (scalars by default) and a generous quota."""
+    """Provider call with explicit inputs (scalars by default) and a generous quota. ADAPTED for the SR33 default (2026-11-20): this historical-oracle suite describes the 6 kPa hybrid, so it
+    EXPLICITLY selects the deprecated legacy method (`field_capacity_method=LEGACY`); the new default is covered by `test_sr33_default.py` (use `call33`)."""
     kw.setdefault("memory_budget_bytes", BIG)
+    kw.setdefault("field_capacity_method", LEGACY)
+    return tp.estimate_soil_texture_properties(sand_fraction=S, silt_fraction=Si, clay_fraction=C, organic_matter_percent=OM, bulk_density_kg_m3=rho, n_layers=L, n_cells=N, backend=backend, **kw)
+
+
+def call33(*a, **kw):
+    """The same call under the DEFAULT method (no `field_capacity_method` argument at all)."""
+    kw.setdefault("memory_budget_bytes", BIG)
+    return call_default(*a, **kw)
+
+
+def call_default(S=0.4, Si=0.4, C=0.2, OM=2.5, rho=1400.0, *, L=1, N=1, backend="numpy", **kw):
     return tp.estimate_soil_texture_properties(sand_fraction=S, silt_fraction=Si, clay_fraction=C, organic_matter_percent=OM, bulk_density_kg_m3=rho, n_layers=L, n_cells=N, backend=backend, **kw)
 
 

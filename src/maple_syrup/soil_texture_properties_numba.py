@@ -2,7 +2,7 @@
 
 One serial loop over (layer, cell). The element body evaluates EXACTLY the arithmetic of `soil_texture_properties.reference_block`, term for term in the same expression order, reading the SAME coefficient
 tuples (module constants of `soil_texture_properties`); no fastmath, no prange, no reordering, no clipping, and `error_model="numpy"` so that a non-finite quotient is a value (then refused by the
-checks), not a Python exception. Operations without a library call (`+ - * /`, comparisons) are the same IEEE operations as NumPy's, so `theta_saturation`, `theta_field_capacity_6kpa`,
+checks), not a Python exception. Operations without a library call (`+ - * /`, comparisons) are the same IEEE operations as NumPy's, so `theta_saturation`, the field-capacity output (33 kPa default or the deprecated 6 kPa method),
 `theta_1500` and `air_entry_kpa` are expected bitwise equal to the reference (tested, not argued); `saturated_conductivity_m_s` involves `log`/`pow` and is compared at the declared bound
 (rtol 2e-12, atol 1e-14). An absent override is a NaN stand-in. Inputs are only read; outputs are the caller's freshly allocated arrays; a flagged element is counted and reported through the same four
 diagnostic words as the reference. A read-only versus writeable input array is a distinct Numba type, so the first call of each combination compiles once (startup, not steady state).
@@ -64,14 +64,14 @@ def _build():
     PD, DFA = tp.PARTICLE_DENSITY_G_CM3, tp.DF_AIR_COEFF
     DF_LO, DF_HI = tp.DENSITY_FACTOR_RANGE
     RHO_LO, RHO_HI = tp.DENSITY_RANGE_G_CM3
-    CLAY_MAX, OM_MAX, GAP_MIN, AIR_MAX, P_FC, SPAN = tp.CLAY_MAX, tp.OM_MAX_PERCENT, tp.MIN_DENSITY_GAP, tp.AIR_ENTRY_MAX_KPA, tp.FC_PRESSURE_KPA, tp.FC_SPAN_KPA
+    CLAY_MAX, OM_MAX, GAP_MIN, AIR_MAX, P_FC, SPAN = tp.CLAY_MAX, tp.OM_MAX_PERCENT, tp.MIN_DENSITY_GAP, tp.AIR_ENTRY_MAX_KPA, tp.LEGACY_6KPA_PRESSURE_KPA, tp.LEGACY_6KPA_SPAN_KPA
     LNR, KS_C, KS_DIV = tp.LN_RATIO, tp.KS_COEFF_MM_H, tp.MM_H_PER_M_S
     F_NF, F_FR, F_CL, F_OM, F_DE, F_KO = tp.FLAG_NONFINITE, tp.FLAG_FRACTION, tp.FLAG_CLAY, tp.FLAG_ORGANIC_MATTER, tp.FLAG_DENSITY, tp.FLAG_KS_OVERRIDE
     F_DF, F_CU, F_AI, F_GA, F_KS, F_IN = tp.FLAG_DENSITY_FACTOR, tp.FLAG_CURVE, tp.FLAG_AIR_ENTRY, tp.FLAG_DENSITY_GAP, tp.FLAG_KS, tp.INPUT_FLAGS
     P_WP, P_33, P_SAT, P_AIR, P_KS, P_EQ = tp.PROV_THETA_1500, tp.PROV_THETA_33, tp.PROV_THETA_SAT, tp.PROV_AIR, tp.PROV_KS, tp.PROV_FC_EQ_SAT
 
     @numba.njit(error_model="numpy", cache=False)
-    def element(S, Si, C, OM, rho_kg, o_wp, o_33, o_sat, o_air, o_ks, closure):
+    def element(S, Si, C, OM, rho_kg, o_wp, o_33, o_sat, o_air, o_ks, closure, fc_mode):
         flags = 0
         finite_in = math.isfinite(S) and math.isfinite(Si) and math.isfinite(C) and math.isfinite(OM) and math.isfinite(rho_kg)
         if (not finite_in) or math.isinf(o_wp) or math.isinf(o_33) or math.isinf(o_sat) or math.isinf(o_air) or math.isinf(o_ks):
@@ -129,8 +129,12 @@ def _build():
         ks = o_ks if has_ks else ks_est
         if curve_ok and not (math.isfinite(ks) and ks > 0.0):
             flags |= F_KS
-        eq = P_FC <= air
-        fc6 = sat if eq else fc33 + SPAN * gap / (AIR_MAX - air)
+        if fc_mode == 0:  # Saxton-Rawls 33 kPa (default): the final theta_33; never a fc==saturation outcome
+            eq = False
+            fc6 = fc33
+        else:  # deprecated Tietjen 6 kPa
+            eq = P_FC <= air
+            fc6 = sat if eq else fc33 + SPAN * gap / (AIR_MAX - air)
         prov = 0
         if has_wp:
             prov |= P_WP
@@ -147,7 +151,7 @@ def _build():
         return flags, fc6, sat, ks, wp, air, prov, eq
 
     @numba.njit(error_model="numpy", cache=False)
-    def kernel(L, cells, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, st, out_fc, out_sat, out_ks, out_wp, out_air, out_prov, osl, osc, want_diag, closure):
+    def kernel(L, cells, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, st, out_fc, out_sat, out_ks, out_wp, out_air, out_prov, osl, osc, want_diag, closure, fc_mode):
         ov = 0
         n_flagged = 0
         first = -1
@@ -156,7 +160,7 @@ def _build():
             for c in range(cells):
                 flags, fc6, sat, ks, wp, air, prov, eq = element(
                     a0[l * st[0, 0] + c * st[0, 1]], a1[l * st[1, 0] + c * st[1, 1]], a2[l * st[2, 0] + c * st[2, 1]], a3[l * st[3, 0] + c * st[3, 1]], a4[l * st[4, 0] + c * st[4, 1]],
-                    a5[l * st[5, 0] + c * st[5, 1]], a6[l * st[6, 0] + c * st[6, 1]], a7[l * st[7, 0] + c * st[7, 1]], a8[l * st[8, 0] + c * st[8, 1]], a9[l * st[9, 0] + c * st[9, 1]], closure)
+                    a5[l * st[5, 0] + c * st[5, 1]], a6[l * st[6, 0] + c * st[6, 1]], a7[l * st[7, 0] + c * st[7, 1]], a8[l * st[8, 0] + c * st[8, 1]], a9[l * st[9, 0] + c * st[9, 1]], closure, fc_mode)
                 if flags != 0:
                     n_flagged += 1
                     ov |= flags
@@ -187,7 +191,7 @@ def _kernel():
         return _KERNEL
 
 
-def run(inputs: dict, out: dict, L: int, N: int, cells: int, layout: str, closure: float) -> tuple[int, int, int, int]:
+def run(inputs: dict, out: dict, L: int, N: int, cells: int, layout: str, closure: float, fc_mode: int, fc_name: str) -> tuple[int, int, int, int]:
     """Fill `out` (the caller's fresh arrays) from `inputs` (`_Input` records); returns the four diagnostic words of the reference (`first` is all ones when nothing is flagged)."""
     kernel = _kernel()
     nan = np.full(1, np.nan)
@@ -208,7 +212,7 @@ def run(inputs: dict, out: dict, L: int, N: int, cells: int, layout: str, closur
     dummy_f, dummy_u = np.zeros(1), np.zeros(1, dtype=np.uint8)
     osl, osc = (N, 1) if layout == tp.LAYOUT_CELL else (1, 0)
     flat = lambda a: a.reshape(-1)  # noqa: E731 - views of the caller's C-contiguous outputs
-    ov, n_flagged, first, n_eq = kernel(L, cells, *arrays, strides, flat(out["theta_field_capacity_6kpa"]), flat(out["theta_saturation"]), flat(out["saturated_conductivity_m_s"]),
+    ov, n_flagged, first, n_eq = kernel(L, cells, *arrays, strides, flat(out[fc_name]), flat(out["theta_saturation"]), flat(out["saturated_conductivity_m_s"]),
                                         flat(out["theta_1500"]) if diag else dummy_f, flat(out["air_entry_kpa"]) if diag else dummy_f, flat(out["provenance"]) if diag else dummy_u,
-                                        osl, osc, 1 if diag else 0, closure)
+                                        osl, osc, 1 if diag else 0, closure, int(fc_mode))
     return int(ov), int(n_flagged), (0xFFFFFFFFFFFFFFFF if first < 0 else int(first)), int(n_eq)

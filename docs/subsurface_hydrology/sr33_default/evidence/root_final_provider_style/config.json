@@ -1,0 +1,44 @@
+{
+  "python": "/home/okin/MAPLE/.venv/bin/python",
+  "output": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_final_provider_style_runs",
+  "cwd": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate",
+  "prefix": [
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/editable",
+    "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate"
+  ],
+  "required_files": [
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src/maple_syrup/native_floating_soil.py"
+  ],
+  "sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src",
+      "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    }
+  ],
+  "env": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "NUMBA_NUM_THREADS": "1",
+    "NUMBA_CACHE_DIR": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_numba_cache",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "MPLCONFIGDIR": "/tmp/syrup-jorn160-mpl",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "pytest_args": [
+    "-q",
+    "-rs",
+    "tests/phase2_texture_properties"
+  ]
+}

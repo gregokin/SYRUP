@@ -1,0 +1,243 @@
+{
+  "status": "PASS",
+  "scope": "Independent archived-input controls plus analytic gravity-cascade checks.\n\nCPU by default; ROOT_SR33_GPU=1 adds actual CUDA on the externally gated GPU0.\nNo field simulation, calibration, runtime migration or external source mutation.\n",
+  "controls": [
+    {
+      "provider": "numpy",
+      "status": "PASS",
+      "new_fc": [
+        0.09746408113338648,
+        0.09939508831059735,
+        0.10913571555870187
+      ],
+      "legacy_fc": [
+        0.39760410394534984,
+        0.3986665015719523,
+        0.39508647981211864
+      ],
+      "shared_output_bytes_for_million_cells": 123
+    },
+    {
+      "gravity": "numpy",
+      "bottom": "open",
+      "initial_mm": [
+        15.0,
+        8.0,
+        6.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        9.314083055601616
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "gravity": "numpy",
+      "bottom": "open",
+      "initial_mm": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        10.913571555870186
+      ],
+      "drainage_mm": 59.40051149973142,
+      "status": "PASS"
+    },
+    {
+      "gravity": "numpy",
+      "bottom": "closed",
+      "initial_mm": [
+        15.0,
+        8.0,
+        6.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        9.314083055601616
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "gravity": "numpy",
+      "bottom": "closed",
+      "initial_mm": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        34.39048247759577,
+        45.86310940906558
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "provider": "numba",
+      "status": "PASS",
+      "new_fc": [
+        0.09746408113338648,
+        0.09939508831059735,
+        0.10913571555870187
+      ],
+      "legacy_fc": [
+        0.39760410394534984,
+        0.3986665015719523,
+        0.39508647981211864
+      ],
+      "shared_output_bytes_for_million_cells": 123
+    },
+    {
+      "gravity": "numba",
+      "bottom": "open",
+      "initial_mm": [
+        15.0,
+        8.0,
+        6.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        9.314083055601616
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "gravity": "numba",
+      "bottom": "open",
+      "initial_mm": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        10.913571555870186
+      ],
+      "drainage_mm": 59.40051149973142,
+      "status": "PASS"
+    },
+    {
+      "gravity": "numba",
+      "bottom": "closed",
+      "initial_mm": [
+        15.0,
+        8.0,
+        6.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        9.314083055601616
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "gravity": "numba",
+      "bottom": "closed",
+      "initial_mm": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        34.39048247759577,
+        45.86310940906558
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "provider": "cuda",
+      "status": "PASS",
+      "new_fc": [
+        0.09746408113338648,
+        0.09939508831059735,
+        0.10913571555870187
+      ],
+      "legacy_fc": [
+        0.39760410394534984,
+        0.3986665015719523,
+        0.39508647981211864
+      ],
+      "shared_output_bytes_for_million_cells": 123
+    },
+    {
+      "gravity": "cuda",
+      "bottom": "open",
+      "initial_mm": [
+        15.0,
+        8.0,
+        6.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        9.314083055601616
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "gravity": "cuda",
+      "bottom": "open",
+      "initial_mm": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        10.913571555870186
+      ],
+      "drainage_mm": 59.40051149973142,
+      "status": "PASS"
+    },
+    {
+      "gravity": "cuda",
+      "bottom": "closed",
+      "initial_mm": [
+        15.0,
+        8.0,
+        6.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        9.939508831059735,
+        9.314083055601616
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    },
+    {
+      "gravity": "cuda",
+      "bottom": "closed",
+      "initial_mm": [
+        30.0,
+        30.0,
+        30.0
+      ],
+      "final_mm": [
+        9.74640811333865,
+        34.39048247759577,
+        45.86310940906558
+      ],
+      "drainage_mm": 0.0,
+      "status": "PASS"
+    }
+  ]
+}

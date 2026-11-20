@@ -11,6 +11,10 @@ from fpond_builders import ph
 
 from maple_syrup import floating_checkpoint as fc
 
+# SR33 (task sr33_default_20261120): the quiet closed-lake fixtures need a strictly unsaturated but machine-near-saturated start. With the 33 kPa field capacity the old 0.999999 leaves a
+# residual intake (quiet metric 2.2e-9 at 60 s, never ready); nextafter(1, 0) gives genuine quiet by ~3 s (Root probe root_quiet_fixture_probe.json). Initial condition of the fixture only; not a field recommendation.
+QUIET_LAKE_SATURATION = float(np.nextafter(1.0, 0.0))
+
 
 def thick_case():
     z = ph.plane(base=0.12, drop=0.004)
@@ -49,7 +53,7 @@ def test_a_state_after_retained_terminal_settlement_is_refused_by_the_historical
     z = ph.basin() - 0.08
     mob = np.zeros((3, 5, 6))
     mob[1, 2, 2] = 1.0e-1
-    ev, st, _bed, _ctx, _vert, _o = fb.make(surface=z, closed=True, bottom="closed", saturation=0.999999, depth=np.maximum(0.135 - z, 0.0), mobile=mob,
+    ev, st, _bed, _ctx, _vert, _o = fb.make(surface=z, closed=True, bottom="closed", saturation=QUIET_LAKE_SATURATION, depth=np.maximum(0.135 - z, 0.0), mobile=mob,
                                             policy=PondCompletionPolicy(hold_s=1.0, deposit_mobile_at_flow_end=True), max_dt_s=1.0, end_s=2.0, rain_mm_h=0.0, splash=False)
     settled = ev.settle_retaining_water(ev.evolve(st, 60.0, stop_when_quiet=True).state).state
     with pytest.raises(pc.PondCheckpointError):

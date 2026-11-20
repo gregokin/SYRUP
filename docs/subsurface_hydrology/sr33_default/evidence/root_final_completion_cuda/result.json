@@ -1,0 +1,32 @@
+{
+  "config": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_final_completion_cuda_config.json",
+  "config_sha256": "bf4efbdfef3fb06eab94499ae51c4e8f7cf2394e311e998e485895784b8af440",
+  "expected_sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cuda/objects/maple-materialized/53a3e569dff6fd9d62a73eec1f35627645b93401a4510d873d9f0bf24cfd4366/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/candidate/src",
+      "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    }
+  ],
+  "command": [
+    "/home/okin/MAPLE/.venv-cupy/bin/python",
+    "-B",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_release_verified_bootstrap.py",
+    "/home/okin/SYRUP/agent_handoffs/tasks/sr33_default_20261120/root_final_completion_cuda_config.json"
+  ],
+  "utc": "2026-11-20T20:33:48.835917+00:00",
+  "status": "closed",
+  "pid": 979647,
+  "start_ticks": "6611909",
+  "ppid": 979644,
+  "returncode": 0,
+  "seconds": 93.29705497898976,
+  "ended_utc": "2026-11-20T20:35:22.130129+00:00"
+}

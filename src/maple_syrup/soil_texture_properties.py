@@ -3,7 +3,7 @@
 What this is
 ------------
 A pure function of explicit inputs: for `L` fixed layers and `N` cells it turns mandatory sand/silt/clay fractions, organic matter (percent by weight) and an explicit bulk density into the three
-hydraulic maps a later explicit soil column consumes: the field capacity at 6 kPa (`theta_field_capacity_6kpa`), the saturated water content (`theta_saturation`) and the saturated conductivity
+hydraulic maps a later explicit soil column consumes: the field capacity (DEFAULT: Saxton-Rawls 33 kPa, `theta_field_capacity`; the deprecated Tietjen 6 kPa convention is an explicit named legacy method returning `theta_field_capacity_6kpa`), the saturated water content (`theta_saturation`) and the saturated conductivity
 (`saturated_conductivity_m_s`). Optional diagnostics (`theta_1500`, `air_entry_kpa`, a provenance code) are off by default. It reads and mutates NO soil water, bed, geometry, rock/base datum, clock,
 checkpoint or history, performs no native adoption, and chooses no remapping, water-fate, wetting-history, averaging or Green-Ampt rule. Green-Ampt wetting-front suction, the residual content and the
 interface conductivity/diffusivity stay EXPLICIT inputs of the consumer (nothing here derives `Ks/2`, `K_geom` or an interface average). The native bed class -> (sand, silt, clay, OM, density)
@@ -21,8 +21,10 @@ Recipe (Table 1 of Saxton & Rawls, SSSAJ 70:1569-1578, doi 10.2136/sssaj2005.011
   Eq 11-15 retention: `B = (ln 1500 - ln 33) / (ln theta_33 - ln theta_1500)`, `lambda = 1/B`; Eq 12 above the air entry:
            `theta(psi) = theta_33 + (33 - psi)(theta_S - theta_33)/(33 - psi_e)`.
   Eq 16 `Ks[mm/h] = 1930 (theta_S - theta_33)^(3 - lambda)`;   `Ks[m/s] = Ks[mm/h] / 3 600 000`.
-  Field capacity (Tietjen/agreed): `theta_6 = theta_S` when `psi_e >= 6 kPa` (provenance bit `fc_equals_saturation`, a VALID outcome, never a Ks = 0), else
-           `theta_6 = theta_33 + 27 (theta_S - theta_33)/(33 - psi_e)`. `theta_33` (NOT `theta_6`) anchors Eq 16: for a fine soil `theta_6 == theta_S` would give Ks = 0.
+  Field capacity, DEFAULT `field_capacity_method="saxton_rawls_33kpa"` (S&R2006 Table 2: FC = 33 kPa): `theta_field_capacity = theta_33` (the final, density-adjusted value, or the final `theta_33_override`).
+  Deprecated legacy `field_capacity_method="tietjen_6kpa_deprecated"` (explicit, emits one `FieldCapacityDeprecationWarning` per call; output named `theta_field_capacity_6kpa`, the TRUE 6 kPa value):
+           `theta_6 = theta_S` when `psi_e >= 6 kPa` (provenance bit `fc_equals_saturation`, a VALID outcome, never a Ks = 0), else `theta_6 = theta_33 + 27 (theta_S - theta_33)/(33 - psi_e)`.
+  `theta_33` (NOT `theta_6`) anchors Eq 16 in BOTH methods, so selecting the FC method never changes Ks.
 Declared recipe assumption (not a full-SPAW identity claim): the air entry `psi_e` is evaluated from the NORMAL-density Eq 3 input (literal Eq 4) and held fixed under density adjustment.
 
 Domains: REFUSED, never clamped
@@ -48,7 +50,7 @@ Every input is a real host scalar (SCALAR), an exactly `(L,)` float64 C-contiguo
 inputs give `(L,)`, the smallest layout the A1 array interface accepts; shared-only inputs cost O(L) and never expand to N). "numpy" = the reference and the DEFINITION (vectorised over cell chunks);
 "numba" = a compiled serial loop (`soil_texture_properties_numba`); "cuda" = one RawKernel, one thread per cell looping the layers (`soil_texture_properties_cuda`; compiled with
 `--fmad=false --prec-div=true --prec-sqrt=true --ftz=false`). The compiled bodies evaluate the same operations in the same order from the SAME coefficient tuples; bitwise agreement is claimed
-only for the outputs without a transcendental (`theta_saturation`, `theta_field_capacity_6kpa`, `theta_1500`, `air_entry_kpa`) where the tests record it; `saturated_conductivity_m_s` uses `log`/`pow` library calls
+only for the outputs without a transcendental (`theta_saturation`, the field-capacity output, `theta_1500`, `air_entry_kpa`) where the tests record it; `saturated_conductivity_m_s` uses `log`/`pow` library calls
 and is compared at the declared relative bound 2e-12 (absolute 1e-14). No claim about the CUDA device is made by the author (no GPU was run).
 
 Identity, memory, ownership
@@ -69,6 +71,7 @@ import hashlib
 import json
 import math
 import threading
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
@@ -82,7 +85,12 @@ from maple_syrup import subsurface as ss
 __all__ = [
     "BACKENDS",
     "COMPONENT_TAG",
+    "DEFAULT_FIELD_CAPACITY_METHOD",
+    "FIELD_CAPACITY_METHODS",
     "FLAG_TEXT",
+    "FieldCapacityDeprecationWarning",
+    "METHOD_SR33",
+    "METHOD_TIETJEN_6KPA_DEPRECATED",
     "SCHEMA",
     "SoilTextureProperties",
     "TexturePropertyBackendUnavailableError",
@@ -96,9 +104,9 @@ __all__ = [
     "source_digests",
 ]
 
-SCHEMA = "maple_syrup.soil_texture_properties/1"
+SCHEMA = "maple_syrup.soil_texture_properties/2"  # /1 (6 kPa FC under `theta_field_capacity_6kpa`) is the historical schema; /2 adds the explicit FC method
 COMPONENT_TAG = "texture_property_provider_pure"
-RECIPE_TAG = "saxton_rawls_2006_table1_eq1_18_explicit_density_v1"
+RECIPE_TAG = "saxton_rawls_2006_table1_eq1_18_explicit_density_v2_fc33_default"  # v1 = the historical recipe whose only FC was the 6 kPa hybrid
 BACKENDS = ss.BACKENDS
 LAYOUT_SCALAR, LAYOUT_SHARED, LAYOUT_CELL = sp.LAYOUT_SCALAR, sp.LAYOUT_SHARED, sp.LAYOUT_CELL
 
@@ -119,8 +127,8 @@ DENSITY_RANGE_G_CM3 = (1.0, 1.8)
 CLAY_MAX, OM_MAX_PERCENT = 0.6, 8.0
 MIN_DENSITY_GAP = 0.005
 AIR_ENTRY_MAX_KPA = 33.0
-FC_PRESSURE_KPA = 6.0
-FC_SPAN_KPA = 27.0  # 33 - 6 kPa
+LEGACY_6KPA_PRESSURE_KPA = 6.0
+LEGACY_6KPA_SPAN_KPA = 27.0  # 33 - 6 kPa
 LN_RATIO = math.log(1500.0) - math.log(33.0)
 KS_COEFF_MM_H, MM_H_PER_M_S = 1930.0, 3600000.0
 FRACTION_CLOSURE_TERMS = 3
@@ -128,7 +136,15 @@ FRACTION_CLOSURE_TERMS = 3
 INPUTS = ("sand_fraction", "silt_fraction", "clay_fraction", "organic_matter_percent", "bulk_density_kg_m3")
 OVERRIDES = ("theta_1500_override", "theta_33_override", "theta_saturation_override", "air_entry_kpa_override", "saturated_conductivity_override_m_s")
 ALL_INPUTS = INPUTS + OVERRIDES
-OUTPUTS = ("theta_field_capacity_6kpa", "theta_saturation", "saturated_conductivity_m_s")
+METHOD_SR33 = "saxton_rawls_33kpa"
+METHOD_TIETJEN_6KPA_DEPRECATED = "tietjen_6kpa_deprecated"
+DEFAULT_FIELD_CAPACITY_METHOD = METHOD_SR33
+FIELD_CAPACITY_METHODS = (METHOD_SR33, METHOD_TIETJEN_6KPA_DEPRECATED)
+FC_OUTPUT_NAMES = {METHOD_SR33: "theta_field_capacity", METHOD_TIETJEN_6KPA_DEPRECATED: "theta_field_capacity_6kpa"}
+FC_MODES = {METHOD_SR33: 0, METHOD_TIETJEN_6KPA_DEPRECATED: 1}  # the scalar the compiled kernels branch on
+FC_PRESSURE_BY_METHOD_KPA = {METHOD_SR33: 33.0, METHOD_TIETJEN_6KPA_DEPRECATED: LEGACY_6KPA_PRESSURE_KPA}
+OTHER_OUTPUTS = ("theta_saturation", "saturated_conductivity_m_s")
+OUTPUTS = tuple(FC_OUTPUT_NAMES.values()) + OTHER_OUTPUTS  # the union of the names; one result carries exactly ONE field-capacity name (`outputs_for`)
 DIAGNOSTICS = ("theta_1500", "air_entry_kpa", "provenance")
 
 FLAG_NONFINITE, FLAG_FRACTION, FLAG_CLAY, FLAG_ORGANIC_MATTER, FLAG_DENSITY, FLAG_KS_OVERRIDE = 1, 2, 4, 8, 16, 32
@@ -161,6 +177,21 @@ PY_ALLOWANCE_BYTES = 65536
 _SOURCE_FILES = ("soil_texture_properties.py", "soil_texture_properties_numba.py", "soil_texture_properties_cuda.py")
 
 
+class FieldCapacityDeprecationWarning(FutureWarning):
+    """Raised (as a warning, once per provider call) when the deprecated Tietjen 6 kPa field-capacity method is selected explicitly."""
+
+
+def check_field_capacity_method(method: Any) -> str:
+    """Exact-string validation of the FC method; called before any allocation or backend probe."""
+    if type(method) is not str or method not in FIELD_CAPACITY_METHODS:
+        raise TexturePropertyError(f"field_capacity_method must be exactly one of {FIELD_CAPACITY_METHODS}, got {method!r}")
+    return method
+
+
+def outputs_for(method: str) -> tuple[str, ...]:
+    return (FC_OUTPUT_NAMES[method],) + OTHER_OUTPUTS
+
+
 class TexturePropertyError(ss.SubsurfaceError):
     """Invalid explicit input (metadata or value) or an unsupported prediction. Nothing was published."""
 
@@ -183,15 +214,20 @@ def _count(value: Any, name: str, *, minimum: int = 0) -> int:
     return int(value)
 
 
-def recipe_record() -> dict[str, Any]:
-    """The immutable constants/units/assumptions of the recipe (what the identity hashes)."""
-    return {"recipe": RECIPE_TAG, "source": "Saxton & Rawls 2006 SSSAJ 70:1569, Table 1 Eq 1-16, 18 (doi 10.2136/sssaj2005.0117)", "units": {"fractions": "0..1", "organic_matter": "percent by weight",
+def recipe_record(field_capacity_method: str = DEFAULT_FIELD_CAPACITY_METHOD) -> dict[str, Any]:
+    """The immutable constants/units/assumptions of the recipe (what the identity hashes), for ONE explicit field-capacity method (the 33 kPa and 6 kPa records can never be equal)."""
+    check_field_capacity_method(field_capacity_method)
+    rec = {"recipe": RECIPE_TAG, "field_capacity_method": field_capacity_method, "field_capacity_output": FC_OUTPUT_NAMES[field_capacity_method],
+            "field_capacity_pressure_kpa": FC_PRESSURE_BY_METHOD_KPA[field_capacity_method], "field_capacity_deprecated": field_capacity_method == METHOD_TIETJEN_6KPA_DEPRECATED, "source": "Saxton & Rawls 2006 SSSAJ 70:1569, Table 1 Eq 1-16, 18 (doi 10.2136/sssaj2005.0117)", "units": {"fractions": "0..1", "organic_matter": "percent by weight",
             "bulk_density_input": "kg/m3 (divided by 1000 to the paper's g/cm3 inside)", "ks_out": "m/s (mm/h / 3600000)", "air_entry": "kPa"},
             "eq1": [EQ1_REGRESSION, EQ1_ADJUST], "eq2": [EQ2_REGRESSION, EQ2_ADJUST], "eq3": [EQ3_REGRESSION, EQ3_ADJUST, EQ3_SAT_TERMS], "eq4": [EQ4_REGRESSION, EQ4_ADJUST],
             "particle_density_g_cm3": PARTICLE_DENSITY_G_CM3, "df_air_coefficient": DF_AIR_COEFF, "density_factor_range": DENSITY_FACTOR_RANGE, "density_range_g_cm3": DENSITY_RANGE_G_CM3,
-            "clay_max": CLAY_MAX, "om_max_percent": OM_MAX_PERCENT, "min_density_gap": MIN_DENSITY_GAP, "air_entry_max_kpa": AIR_ENTRY_MAX_KPA, "fc_pressure_kpa": FC_PRESSURE_KPA, "fc_span_kpa": FC_SPAN_KPA,
+            "clay_max": CLAY_MAX, "om_max_percent": OM_MAX_PERCENT, "min_density_gap": MIN_DENSITY_GAP, "air_entry_max_kpa": AIR_ENTRY_MAX_KPA,
             "ln_ratio_repr": repr(LN_RATIO), "ks_coefficient_mm_h": KS_COEFF_MM_H, "ks_anchor": "theta_33 (not theta_6)",
             "assumptions": ["air entry from the normal-density Eq3 input, held fixed under density adjustment", "fine earth only; no gravel/coarse", "overrides replace FINAL anchors", "no clamping: unsupported predictions are refused"]}
+    if field_capacity_method == METHOD_TIETJEN_6KPA_DEPRECATED:  # the 6 / 27 kPa constants exist ONLY in the explicit deprecated legacy record; the default record carries no 6 kPa marker
+        rec["legacy_6kpa"] = {"pressure_kpa": LEGACY_6KPA_PRESSURE_KPA, "span_kpa": LEGACY_6KPA_SPAN_KPA, "formula": "theta_S if psi_e >= 6 else theta_33 + 27 (theta_S - theta_33)/(33 - psi_e)"}
+    return rec
 
 
 def closure_bound() -> float:
@@ -283,9 +319,11 @@ class TextureMemoryEstimate:
 
 
 def estimate_property_memory(n_layers: int, n_cells: int, *, layouts: dict, backend: str = "numpy", diagnostics: bool = False, chunk_columns: int = DEFAULT_CHUNK_COLUMNS,
-                             hash_chunk_bytes: int = DEFAULT_HASH_CHUNK_BYTES, reserve_bytes: int = 0, host_reserve_bytes: int = 0, input_bytes: dict | None = None) -> TextureMemoryEstimate:
+                             hash_chunk_bytes: int = DEFAULT_HASH_CHUNK_BYTES, reserve_bytes: int = 0, host_reserve_bytes: int = 0, input_bytes: dict | None = None,
+                             field_capacity_method: str = DEFAULT_FIELD_CAPACITY_METHOD) -> TextureMemoryEstimate:
     """Metadata-only requirement of one `estimate_soil_texture_properties` call. `layouts` maps every SUPPLIED input name to "scalar" | "shared" | "cell" (an absent override is simply not a key)."""
     L, N = _count(n_layers, "n_layers", minimum=1), _count(n_cells, "n_cells", minimum=1)
+    check_field_capacity_method(field_capacity_method)
     if backend not in BACKENDS:
         raise TexturePropertyError(f"backend must be one of {BACKENDS}, got {backend!r}")
     chunk, hc = _count(chunk_columns, "chunk_columns", minimum=1), _count(hash_chunk_bytes, "hash_chunk_bytes", minimum=8)
@@ -311,7 +349,7 @@ def estimate_property_memory(n_layers: int, n_cells: int, *, layouts: dict, back
             raise TexturePropertyError(f"the cuda backend supports at most {MAX_CUDA_ELEMENTS} elements per call (64-bit packed diagnostic), got {L * launched}")
     rows, cells = _rows_cells(L, N, out_layout)
     per = rows * cells
-    outputs = {k: 8 * per for k in OUTPUTS}
+    outputs = {k: 8 * per for k in outputs_for(field_capacity_method)}  # exactly ONE field-capacity array in either method
     if diagnostics:
         outputs.update({"theta_1500": 8 * per, "air_entry_kpa": 8 * per, "provenance": per})
     output_bytes = sum(outputs.values())
@@ -356,9 +394,10 @@ def _poly(c: tuple, S: Any, C: Any, OM: Any) -> Any:
     return c[0] * S + c[1] * C + c[2] * OM + c[3] * S * OM + c[4] * C * OM + c[5] * S * C + c[6]
 
 
-def reference_block(S: Any, Si: Any, C: Any, OM: Any, rho_kg: Any, o_wp: Any, o_33: Any, o_sat: Any, o_air: Any, o_ks: Any, closure: float):
-    """The recipe on `(m,)` float64 arrays (every argument already broadcast). Returns `(flags uint16, fc6, sat, ks, wp, air, provenance uint8, fc_equals_saturation bool)`; values of flagged elements are
-    meaningless. Pure: allocates only work vectors, writes nothing it was given."""
+def reference_block(S: Any, Si: Any, C: Any, OM: Any, rho_kg: Any, o_wp: Any, o_33: Any, o_sat: Any, o_air: Any, o_ks: Any, closure: float, fc_mode: int = FC_MODES[DEFAULT_FIELD_CAPACITY_METHOD]):
+    """The recipe on `(m,)` float64 arrays (every argument already broadcast). `fc_mode` 0 = Saxton-Rawls 33 kPa (default), 1 = deprecated Tietjen 6 kPa. Returns `(flags uint16, fc, sat, ks, wp, air,
+    provenance uint8, fc_equals_saturation bool)` where `fc` is the field capacity of the selected mode (`fc_equals_saturation` is always False in mode 0); values of flagged elements are meaningless. Pure:
+    allocates only work vectors, writes nothing it was given."""
     with np.errstate(all="ignore"):
         fS, fSi, fC, fOM, fR = np.isfinite(S), np.isfinite(Si), np.isfinite(C), np.isfinite(OM), np.isfinite(rho_kg)
         inf_ov = np.isinf(o_wp) | np.isinf(o_33) | np.isinf(o_sat) | np.isinf(o_air) | np.isinf(o_ks)
@@ -406,8 +445,12 @@ def reference_block(S: Any, Si: Any, C: Any, OM: Any, rho_kg: Any, o_wp: Any, o_
         ks_est = (KS_COEFF_MM_H * np.power(gap, 3.0 - lam)) / MM_H_PER_M_S
         ks = np.where(has_ks, o_ks, ks_est)
         flags |= (curve_ok & ~(np.isfinite(ks) & (ks > 0.0))).astype(np.uint16) * np.uint16(FLAG_KS)
-        fc_eq_sat = FC_PRESSURE_KPA <= air
-        fc6 = np.where(fc_eq_sat, sat, fc33 + FC_SPAN_KPA * gap / (AIR_ENTRY_MAX_KPA - air))
+        if fc_mode == FC_MODES[METHOD_SR33]:
+            fc_eq_sat = np.zeros_like(air, dtype=bool)
+            fc6 = fc33
+        else:
+            fc_eq_sat = LEGACY_6KPA_PRESSURE_KPA <= air
+            fc6 = np.where(fc_eq_sat, sat, fc33 + LEGACY_6KPA_SPAN_KPA * gap / (AIR_ENTRY_MAX_KPA - air))
         prov = (has_wp.astype(np.uint8) * np.uint8(PROV_THETA_1500) | has_33.astype(np.uint8) * np.uint8(PROV_THETA_33) | has_sat.astype(np.uint8) * np.uint8(PROV_THETA_SAT)
                 | has_air.astype(np.uint8) * np.uint8(PROV_AIR) | has_ks.astype(np.uint8) * np.uint8(PROV_KS) | fc_eq_sat.astype(np.uint8) * np.uint8(PROV_FC_EQ_SAT))
         return flags, fc6, sat, ks, wp, air, prov, fc_eq_sat
@@ -424,7 +467,7 @@ def _row(inp: _Input | None, l: int, s: int, e: int, absent: float) -> Any:
     return inp.array[l, s:e]
 
 
-def _derive_numpy(inputs: dict, out: dict, L: int, cells: int, chunk: int, closure: float) -> tuple[int, int, int, int]:
+def _derive_numpy(inputs: dict, out: dict, L: int, cells: int, chunk: int, closure: float, fc_mode: int, fc_name: str) -> tuple[int, int, int, int]:
     """Vectorised reference over (layer, cell-chunk). Returns the host diagnostic words (flag OR, n flagged, min packed element|flags (all ones if none), fc==saturation count)."""
     ov, n_flagged, first, n_eq = 0, 0, 0xFFFFFFFFFFFFFFFF, 0
     cell_out = out["theta_saturation"].ndim == 2
@@ -432,7 +475,7 @@ def _derive_numpy(inputs: dict, out: dict, L: int, cells: int, chunk: int, closu
         for s in range(0, cells, chunk):
             e = min(cells, s + chunk)
             vals = [_row(inputs.get(k), l, s, e, 0.0 if k in INPUTS else float("nan")) for k in ALL_INPUTS]
-            flags, fc6, sat, ks, wp, air, prov, eq = reference_block(*vals, closure)
+            flags, fc6, sat, ks, wp, air, prov, eq = reference_block(*vals, closure, fc_mode)
             bad = np.flatnonzero(flags)
             if bad.size:
                 n_flagged += int(bad.size)
@@ -442,7 +485,7 @@ def _derive_numpy(inputs: dict, out: dict, L: int, cells: int, chunk: int, closu
                 continue
             n_eq += int(np.count_nonzero(eq))
             sl = (l, slice(s, e)) if cell_out else (slice(l, l + 1),)
-            out["theta_field_capacity_6kpa"][sl], out["theta_saturation"][sl], out["saturated_conductivity_m_s"][sl] = fc6, sat, ks
+            out[fc_name][sl], out["theta_saturation"][sl], out["saturated_conductivity_m_s"][sl] = fc6, sat, ks
             if "theta_1500" in out:
                 out["theta_1500"][sl], out["air_entry_kpa"][sl], out["provenance"][sl] = wp, air, prov
     return ov, n_flagged, first, n_eq
@@ -467,9 +510,9 @@ def _hash_array(h: Any, name: str, kind: str, array: Any, host_buf: np.ndarray |
                 h.update(memoryview(host_buf[:n]))
 
 
-def _identity(inputs: dict, L: int, N: int, diagnostics: bool, host_buf: np.ndarray | None) -> str:
+def _identity(inputs: dict, L: int, N: int, diagnostics: bool, host_buf: np.ndarray | None, method: str = DEFAULT_FIELD_CAPACITY_METHOD) -> str:
     h = hashlib.sha256()
-    h.update(f"{SCHEMA}\0{json.dumps(recipe_record(), sort_keys=True)}\0diagnostics={diagnostics};L={L};N={N}\0".encode())
+    h.update(f"{SCHEMA}\0{json.dumps(recipe_record(method), sort_keys=True)}\0diagnostics={diagnostics};L={L};N={N}\0".encode())
     for key in ALL_INPUTS:
         i = inputs.get(key)
         if i is None:
@@ -529,6 +572,12 @@ class SoilTextureProperties:
     device_id: int | None
     _maps: Any
     component_tag: str = COMPONENT_TAG
+    field_capacity_method: str = DEFAULT_FIELD_CAPACITY_METHOD
+
+    @property
+    def fc_output_name(self) -> str:
+        """The name of the ONE field-capacity map of this result (`theta_field_capacity` for 33 kPa, `theta_field_capacity_6kpa` for the deprecated legacy method)."""
+        return FC_OUTPUT_NAMES[self.field_capacity_method]
 
     def __post_init__(self) -> None:
         if not getattr(_CONSTRUCT, "allowed", False):
@@ -546,6 +595,11 @@ class SoilTextureProperties:
     def __reduce_ex__(self, protocol):
         raise TexturePropertyError("a SoilTextureProperties is not serialisable; call the provider again")
 
+    def _unknown(self, name: str) -> str:
+        other = [v for v in FC_OUTPUT_NAMES.values() if v == name and v != self.fc_output_name]
+        hint = f"; this result used field_capacity_method={self.field_capacity_method!r}, whose field-capacity output is {self.fc_output_name!r} (there is no alias: {name!r} belongs to the other method)" if other else ""
+        return f"unknown output {name!r}; available: {tuple(self._maps)}{hint}"
+
     def names(self) -> tuple[str, ...]:
         return tuple(self._maps)
 
@@ -556,7 +610,7 @@ class SoilTextureProperties:
     def array(self, name: str) -> np.ndarray:
         """The OWNED read-only NumPy output (no copy). A CUDA result owns private device arrays: use `detached`."""
         if name not in self._maps:
-            raise TexturePropertyError(f"unknown output {name!r}; available: {tuple(self._maps)}")
+            raise TexturePropertyError(self._unknown(name))
         if self.backend == "cuda":
             raise TexturePropertyError("a cuda result owns private device arrays; use detached(name, ...) for an admitted copy")
         return self._maps[name]
@@ -564,7 +618,7 @@ class SoilTextureProperties:
     def detached(self, name: str, *, memory_budget_bytes: Any, reserve_bytes: Any = 0, available_bytes_fn: Callable[[], int] | None = None) -> Any:
         """A fresh writeable copy of one output in the result's own namespace (host for numpy/numba, device for cuda), admitted against the quota/reading BEFORE it is made."""
         if name not in self._maps:
-            raise TexturePropertyError(f"unknown output {name!r}; available: {tuple(self._maps)}")
+            raise TexturePropertyError(self._unknown(name))
         arr = self._maps[name]
         if self.backend == "cuda":  # a copy targets the CURRENT device: bind it to the owner's device before any reader or copy
             from maple_syrup import soil_water_remap_cuda as rc
@@ -595,7 +649,7 @@ class SoilTextureProperties:
 
     def summary(self) -> dict:
         """Bounded metadata only (no array value, no reduction, no transfer)."""
-        return {"component_tag": self.component_tag, "schema": SCHEMA, "recipe": RECIPE_TAG, "backend": self.backend, "n_layers": self.n_layers, "n_cells": self.n_cells, "output_layout": self.layout,
+        return {"component_tag": self.component_tag, "schema": SCHEMA, "recipe": RECIPE_TAG, "field_capacity_method": self.field_capacity_method, "field_capacity_output": self.fc_output_name, "backend": self.backend, "n_layers": self.n_layers, "n_cells": self.n_cells, "output_layout": self.layout,
                 "input_layouts": dict(self.layouts), "outputs": {k: v for k, v in self.estimate.outputs.items()}, "output_bytes": self.output_bytes, "sha256": self.sha256,
                 "source_digests": dict(self.source_digests), "n_fc_equals_saturation": self.n_fc_equals_saturation,
                 "scope": "pure texture->property component; no native adoption, no bed/water/clock mutation, equation verification only (not field validation)"}
@@ -618,13 +672,14 @@ def estimate_soil_texture_properties(*, sand_fraction: Any, silt_fraction: Any, 
                                      saturated_conductivity_override_m_s: Any = None, backend: str = "numpy", diagnostics: bool = False, memory_budget_bytes: Any,
                                      reserve_bytes: Any = 0, available_bytes_fn: Callable[[], int] | None = None, host_memory_budget_bytes: Any = None, host_reserve_bytes: Any = 0,
                                      host_available_bytes_fn: Callable[[], int] | None = None, chunk_columns: Any = None,
-                                     hash_chunk_bytes: Any = DEFAULT_HASH_CHUNK_BYTES) -> SoilTextureProperties:
+                                     hash_chunk_bytes: Any = DEFAULT_HASH_CHUNK_BYTES, field_capacity_method: Any = DEFAULT_FIELD_CAPACITY_METHOD) -> SoilTextureProperties:
     """Validate the explicit inputs, compute the property maps (module docstring) and return an owned `SoilTextureProperties`. Order: metadata (no value read), quotas and availability, then
     output allocation and the value-checking kernel; any refusal is raised before anything is returned and the inputs are never modified or retained.
 
     Quotas follow the S1/A1 convention: `memory_budget_bytes`, `reserve_bytes`, `available_bytes_fn` apply to the main side (host for numpy/numba, DEVICE for cuda); the host side of a CUDA call (identity
     buffer + packet) is admitted separately against `host_memory_budget_bytes` (None = no separate quota), `host_reserve_bytes`, `host_available_bytes_fn`; these three are refused for the CPU backends."""
     L, N = _count(n_layers, "n_layers", minimum=1), _count(n_cells, "n_cells", minimum=1)
+    method = check_field_capacity_method(field_capacity_method)  # validated before any allocation or backend probe
     if backend not in BACKENDS:
         raise TexturePropertyError(f"backend must be one of {BACKENDS}, got {backend!r}")
     if type(diagnostics) is not bool:
@@ -664,7 +719,7 @@ def estimate_soil_texture_properties(*, sand_fraction: Any, silt_fraction: Any, 
                 raise TexturePropertyError(f"{key} lives on device {int(i.array.device.id)} but the current device is {rc.current_device_id(cp)}; no implicit transfer")
     layouts = {k: i.kind for k, i in inputs.items()}
     est = estimate_property_memory(L, N, layouts=layouts, backend=backend, diagnostics=diagnostics, chunk_columns=chunk, hash_chunk_bytes=hc, reserve_bytes=reserve,
-                                   host_reserve_bytes=host_reserve, input_bytes={k: i.nbytes for k, i in inputs.items()})
+                                   host_reserve_bytes=host_reserve, input_bytes={k: i.nbytes for k, i in inputs.items()}, field_capacity_method=method)
     if backend == "cuda":
         _admit(est.device_required_bytes, budget, available_bytes_fn, "device", est, "memory_budget_bytes")
         _admit(est.host_required_bytes, host_budget, host_available_bytes_fn, "host", est, "host_memory_budget_bytes")
@@ -675,26 +730,30 @@ def estimate_soil_texture_properties(*, sand_fraction: Any, silt_fraction: Any, 
     closure = closure_bound()
     xp = cp if cp is not None else np
     shape = (L, N) if layout == LAYOUT_CELL else (L,)
-    out = {k: xp.zeros(shape, dtype=xp.float64) for k in OUTPUTS}
+    fc_name, fc_mode = FC_OUTPUT_NAMES[method], FC_MODES[method]
+    out = {k: xp.zeros(shape, dtype=xp.float64) for k in outputs_for(method)}
     if diagnostics:
         out["theta_1500"], out["air_entry_kpa"] = xp.zeros(shape, dtype=xp.float64), xp.zeros(shape, dtype=xp.float64)
         out["provenance"] = xp.zeros(shape, dtype=xp.uint8)
     if backend == "numpy":
-        info = _derive_numpy(inputs, out, L, cells, min(chunk, cells), closure)
+        info = _derive_numpy(inputs, out, L, cells, min(chunk, cells), closure, fc_mode, fc_name)
     elif backend == "numba":
         from maple_syrup import soil_texture_properties_numba as nb
 
-        info = nb.run(inputs, out, L, N, cells, layout, closure)
+        info = nb.run(inputs, out, L, N, cells, layout, closure, fc_mode, fc_name)
     else:
         from maple_syrup import soil_texture_properties_cuda as cu
 
-        info = cu.run(cp, inputs, out, L, N, cells, layout, closure)
+        info = cu.run(cp, inputs, out, L, N, cells, layout, closure, fc_mode, fc_name)
     _raise(info, cells)
+    if method == METHOD_TIETJEN_6KPA_DEPRECATED:  # one warning per call, never per cell; emitted only after a successful, published result
+        warnings.warn("field_capacity_method='tietjen_6kpa_deprecated' (the hybrid 6 kPa field capacity) is DEPRECATED; the default is the Saxton-Rawls 33 kPa field capacity "
+                      "('saxton_rawls_33kpa', output 'theta_field_capacity'). The legacy method exists only to reproduce historical equations/oracles.", FieldCapacityDeprecationWarning, stacklevel=2)
     host_buf = np.empty(max(1, hc // 8), dtype=np.float64) if cp is not None else None
-    sha = _identity(inputs, L, N, diagnostics, host_buf)
+    sha = _identity(inputs, L, N, diagnostics, host_buf, method)
     if cp is None:
         for arr in out.values():
             arr.flags.writeable = False
     device_id = None if cp is None else rc.current_device_id(cp)
     with _constructing():
-        return SoilTextureProperties(backend, L, N, layout, layouts, sha, source_digests(), est, int(info[3]), device_id, out)
+        return SoilTextureProperties(backend, L, N, layout, layouts, sha, source_digests(), est, int(info[3]), device_id, out, field_capacity_method=method)

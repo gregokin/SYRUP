@@ -23,6 +23,11 @@ from maple_syrup.pond_event import PondCompletionPolicy
 IDENT = {"case": "h2c2", "v": 1}
 
 
+# SR33 (task sr33_default_20261120): the quiet closed-lake fixtures need a strictly unsaturated but machine-near-saturated start. With the 33 kPa field capacity the old 0.999999 leaves a
+# residual intake (quiet metric 2.2e-9 at 60 s, never ready); nextafter(1, 0) gives genuine quiet by ~3 s (Root probe root_quiet_fixture_probe.json). Initial condition of the fixture only; not a field recommendation.
+QUIET_LAKE_SATURATION = float(np.nextafter(1.0, 0.0))
+
+
 @pytest.fixture
 def case_state():
     keep = (dict(sc.CASE), dict(sc.TERRAIN), sc.DZ)
@@ -139,10 +144,11 @@ def _pref(ev):
 
 def lake_original():
     z = ph.basin() - 0.08
+    z[1, 1] = z[1, 3] = 0.14  # correction03: Root-proven isolated-pond certificate geometry (one enclosed wet cell); the communicating original is the negative control in phase2_floating_checkpoint/test_terminal.py
     mob = np.zeros((3, 5, 6))
     mob[1, 2, 2] = 1.0e-1
     pol = PondCompletionPolicy(hold_s=1.0, deposit_mobile_at_flow_end=True)
-    ev, st, *_r = fb.make(surface=z, closed=True, bottom="closed", saturation=0.999999, depth=np.maximum(0.135 - z, 0.0), mobile=mob, policy=pol, max_dt_s=1.0, end_s=2.0, rain_mm_h=0.0, splash=False)
+    ev, st, *_r = fb.make(surface=z, closed=True, bottom="closed", saturation=QUIET_LAKE_SATURATION, depth=np.maximum(0.135 - z, 0.0), mobile=mob, policy=pol, max_dt_s=1.0, end_s=2.0, rain_mm_h=0.0, splash=False)
     sc.DZ = 0.1  # fb.make beds use the small-voxel MAPLE probe geometry; z below is the RECORDED committed source elevation of the original topology
     sc.CASE.update(z=np.array(ev._initial_topology.source_bed_m), closed=True, policy=pol, max_dt_s=1.0, splash=False, rain=(0.0, 2.0))
     sc.TERRAIN.update(ny=3, nx=5)
@@ -156,10 +162,12 @@ def test_terminal_settlement_and_a_later_empty_second_settlement_through_the_con
     assert wake.sediment.n_terminal_native_calls == 1 and wake.sediment.retained_quiet_reset_step == wake.counters.n_accepted_steps
     ck = tmp_path / "ck"
     cc.save_floating_context_checkpoint(ck, wake, ev, IDENT, available_bytes_fn=AVAIL)
-    ref = ev.evolve(wake, 120.0, stop_when_quiet=True)  # real recession re-certifies, uninterrupted
+    ref = ev.evolve(wake, 600.0, stop_when_quiet=True)  # real recession re-certifies, uninterrupted (bounded test window; isolated pond quiets at ~125 s)
+    assert ref.quiet_ready
     ev2, got = cc.load_floating_context_checkpoint(ck, sc.factory("numpy", False), IDENT, available_bytes_fn=AVAIL)
     same(snapshot(ev2, got, ev2.vertical), snapshot(ev, wake, ev.vertical))
-    cont = ev2.evolve(got, 120.0, stop_when_quiet=True)
+    cont = ev2.evolve(got, 600.0, stop_when_quiet=True)
+    assert cont.quiet_ready
     same(snapshot(ev2, cont.state, ev2.vertical), snapshot(ev, ref.state, ev.vertical))
     done_ref, done = ev.settle_retaining_water(ref.state), ev2.settle_retaining_water(cont.state)  # EMPTY second settlement: no native call
     assert done.complete and done.state.sediment.n_terminal_native_calls == 1 == done_ref.state.sediment.n_terminal_native_calls
