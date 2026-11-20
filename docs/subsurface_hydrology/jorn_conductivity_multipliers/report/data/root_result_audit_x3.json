@@ -1,0 +1,591 @@
+{
+  "status": "PASS",
+  "scope": "independent actual input joins/Fraction scores/native-backend parity; no refit",
+  "backend_max_absolute_differences": {
+    "water_m": 0.0,
+    "layer_theta": 0.0,
+    "physical_t_s": 0.0,
+    "rain_m3": 0.0,
+    "intake_m3": 0.0,
+    "evaporation_m3": 0.0,
+    "wetting_J_m": 0.0,
+    "cumulative_matrix_intake_m": 0.0,
+    "drainage_m3": 0.0,
+    "runoff_pool_m3": 0.0,
+    "diffusion_m3": 0.0,
+    "percolation_m3": 0.0
+  },
+  "timestep_refinement_max_theta_difference": 1.310296996523408e-05,
+  "timestep_refinement_max_percentage_point_difference": 0.001310296996523408,
+  "scores": {
+    "501": {
+      "raw": {
+        "n": 56,
+        "rmse_percentage_points": 1.7460993884912845,
+        "bias_percentage_points": 0.5832915146928807
+      },
+      "offset_aligned": {
+        "n": 56,
+        "rmse_percentage_points": 1.6932498380885224,
+        "bias_percentage_points": 0.39807151469288077
+      },
+      "persistence_raw": {
+        "n": 56,
+        "rmse_percentage_points": 0.8805761101201224,
+        "bias_percentage_points": -0.11321428571428606
+      },
+      "persistence_offset_aligned": {
+        "n": 56,
+        "rmse_percentage_points": 0.8805761101201224,
+        "bias_percentage_points": -0.11321428571428606
+      }
+    },
+    "502": {
+      "raw": {
+        "n": 147,
+        "rmse_percentage_points": 1.0844928290482323,
+        "bias_percentage_points": -1.0367838019773918
+      },
+      "offset_aligned": {
+        "n": 147,
+        "rmse_percentage_points": 0.552398967201385,
+        "bias_percentage_points": -0.4515978019773945
+      },
+      "persistence_raw": {
+        "n": 147,
+        "rmse_percentage_points": 2.3427809221050935,
+        "bias_percentage_points": 1.7776190476190477
+      },
+      "persistence_offset_aligned": {
+        "n": 147,
+        "rmse_percentage_points": 2.3427809221050935,
+        "bias_percentage_points": 1.7776190476190477
+      }
+    },
+    "503": {
+      "raw": {
+        "n": 79,
+        "rmse_percentage_points": 1.063821443092665,
+        "bias_percentage_points": 0.91865104949146
+      },
+      "offset_aligned": {
+        "n": 79,
+        "rmse_percentage_points": 0.7173867579075353,
+        "bias_percentage_points": 0.47628504949146316
+      },
+      "persistence_raw": {
+        "n": 79,
+        "rmse_percentage_points": 0.8864586063429545,
+        "bias_percentage_points": 0.6935443037974681
+      },
+      "persistence_offset_aligned": {
+        "n": 79,
+        "rmse_percentage_points": 0.8864586063429545,
+        "bias_percentage_points": 0.6935443037974681
+      }
+    }
+  },
+  "pooled": {
+    "raw": {
+      "n": 282,
+      "rmse_percentage_points": 1.2391833153089766,
+      "mse": 0.00015355752889401468
+    },
+    "offset_aligned": {
+      "n": 282,
+      "rmse_percentage_points": 0.9341253671834526,
+      "mse": 8.725902016156202e-05
+    },
+    "persistence_raw": {
+      "n": 282,
+      "rmse_percentage_points": 1.7986693268963394,
+      "mse": 0.00032352113475177306
+    },
+    "persistence_offset_aligned": {
+      "n": 282,
+      "rmse_percentage_points": 1.7986693268963394,
+      "mse": 0.00032352113475177306
+    }
+  },
+  "wet_day_responses": [
+    {
+      "date": "2024-01-23",
+      "rain_mm": 10.036000000000001,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": 3.06,
+            "model": 8.875304932265253,
+            "rain_in_window_mm": 10.036000000000001
+          },
+          "3d": {
+            "observed": 2.4499999999999993,
+            "model": 6.827109092342052,
+            "rain_in_window_mm": 10.036000000000001
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.07999999999999952,
+            "model": 0.2054825123306056,
+            "rain_in_window_mm": 10.036000000000001
+          },
+          "3d": {
+            "observed": 1.0599999999999998,
+            "model": 0.43260103955753415,
+            "rain_in_window_mm": 10.036000000000001
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": 0.04966894229979507,
+            "rain_in_window_mm": 10.036000000000001
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.11941435749692336,
+            "rain_in_window_mm": 10.036000000000001
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-06",
+      "rain_mm": 1.505,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": 0.07000000000000062,
+            "model": 1.1176946166897794,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": null,
+            "model": 2.0714990514272875,
+            "rain_in_window_mm": 3.5119999999999996
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.23000000000000104,
+            "model": -0.022928640676772583,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": -0.29,
+            "model": 0.004788023216216464,
+            "rain_in_window_mm": 3.5119999999999996
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": 0.02302229880814799,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.069740620676767,
+            "rain_in_window_mm": 3.5119999999999996
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-07",
+      "rain_mm": 2.0069999999999997,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": 0.5599999999999994,
+            "model": 1.4550052919385035,
+            "rain_in_window_mm": 2.0069999999999997
+          },
+          "3d": {
+            "observed": 0.41999999999999954,
+            "model": 0.5278497209119798,
+            "rain_in_window_mm": 2.0069999999999997
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.11999999999999927,
+            "model": 0.022620309924044346,
+            "rain_in_window_mm": 2.0069999999999997
+          },
+          "3d": {
+            "observed": 0.010000000000000286,
+            "model": 0.021451075270155495,
+            "rain_in_window_mm": 2.0069999999999997
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": 0.025148193731686086,
+            "rain_in_window_mm": 2.0069999999999997
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.06756478475583583,
+            "rain_in_window_mm": 2.0069999999999997
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-10",
+      "rain_mm": 1.505,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": -0.39000000000000007,
+            "model": 1.110725606366321,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": 0.16000000000000042,
+            "model": 0.6373698516320442,
+            "rain_in_window_mm": 2.0069999999999997
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.3799999999999998,
+            "model": 0.02585704810642575,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": -0.1899999999999999,
+            "model": 0.06250257939048598,
+            "rain_in_window_mm": 2.0069999999999997
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": 0.021801304639376684,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.0641127316213394,
+            "rain_in_window_mm": 2.0069999999999997
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-11",
+      "rain_mm": 0.502,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": 0.5299999999999999,
+            "model": 0.05018906705304832,
+            "rain_in_window_mm": 0.502
+          },
+          "3d": {
+            "observed": 0.5500000000000005,
+            "model": -0.5919072594976316,
+            "rain_in_window_mm": 1.004
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": 0.02999999999999947,
+            "model": 0.026284102588274016,
+            "rain_in_window_mm": 0.502
+          },
+          "3d": {
+            "observed": 0.3500000000000003,
+            "model": 0.044246020169132205,
+            "rain_in_window_mm": 1.004
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": 0.021507941706225275,
+            "rain_in_window_mm": 0.502
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.06318319180610016,
+            "rain_in_window_mm": 1.004
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-13",
+      "rain_mm": 0.502,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": 0.0,
+            "model": -0.1185515047633548,
+            "rain_in_window_mm": 0.502
+          },
+          "3d": {
+            "observed": -0.11000000000000038,
+            "model": -1.3334559987008832,
+            "rain_in_window_mm": 0.502
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": 0.16000000000000042,
+            "model": 0.0076004888850719765,
+            "rain_in_window_mm": 0.502
+          },
+          "3d": {
+            "observed": 0.3600000000000006,
+            "model": -0.028295808155845426,
+            "rain_in_window_mm": 0.502
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": 0.07000000000000062,
+            "model": 0.02087176482413744,
+            "rain_in_window_mm": 0.502
+          },
+          "3d": {
+            "observed": 0.23999999999999994,
+            "model": 0.05897729307875882,
+            "rain_in_window_mm": 0.502
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-28",
+      "rain_mm": 1.505,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": -0.2599999999999998,
+            "model": 1.2849939438397704,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": 1.2400000000000002,
+            "model": 2.7731386603338426,
+            "rain_in_window_mm": 4.012999999999999
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.2799999999999997,
+            "model": -0.03700334080684736,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": -0.29,
+            "model": -0.008798471211067527,
+            "rain_in_window_mm": 4.012999999999999
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": -0.0049354633301954,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": -0.1899999999999999,
+            "model": -0.013034317179989874,
+            "rain_in_window_mm": 4.012999999999999
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-02-29",
+      "rain_mm": 2.508,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": 1.45,
+            "model": 2.097580132900878,
+            "rain_in_window_mm": 2.508
+          },
+          "3d": {
+            "observed": 1.4600000000000002,
+            "model": 0.9834958384772039,
+            "rain_in_window_mm": 2.508
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.1799999999999996,
+            "model": 0.0234426382404479,
+            "rain_in_window_mm": 2.508
+          },
+          "3d": {
+            "observed": -0.020000000000000573,
+            "model": 0.018827267158855188,
+            "rain_in_window_mm": 2.508
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": -0.00421389302055486,
+            "rain_in_window_mm": 2.508
+          },
+          "3d": {
+            "observed": null,
+            "model": -0.012126610853278874,
+            "rain_in_window_mm": 2.508
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-04-01",
+      "rain_mm": 1.505,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": null,
+            "model": 1.3733789945228072,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.9983832647799686,
+            "rain_in_window_mm": 1.505
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.2799999999999997,
+            "model": -0.011942021748552467,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": 0.0,
+            "model": -0.048705611688877604,
+            "rain_in_window_mm": 1.505
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": -0.03092722619078281,
+            "rain_in_window_mm": 1.505
+          },
+          "3d": {
+            "observed": -0.020000000000000573,
+            "model": -0.0882706546192949,
+            "rain_in_window_mm": 1.505
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-05-16",
+      "rain_mm": 2.5089999999999995,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": null,
+            "model": 2.255772551278353,
+            "rain_in_window_mm": 2.5089999999999995
+          },
+          "3d": {
+            "observed": null,
+            "model": 1.6156289673347979,
+            "rain_in_window_mm": 2.5089999999999995
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": -0.51,
+            "model": 0.03072990478555221,
+            "rain_in_window_mm": 2.5089999999999995
+          },
+          "3d": {
+            "observed": -0.1799999999999996,
+            "model": 0.05656099847761026,
+            "rain_in_window_mm": 2.5089999999999995
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": -0.15999999999999973,
+            "model": -0.034645663041067004,
+            "rain_in_window_mm": 2.5089999999999995
+          },
+          "3d": {
+            "observed": null,
+            "model": -0.09740376407408047,
+            "rain_in_window_mm": 2.5089999999999995
+          }
+        }
+      }
+    },
+    {
+      "date": "2024-06-21",
+      "rain_mm": 1.004,
+      "responses_percentage_points": {
+        "501": {
+          "1d": {
+            "observed": null,
+            "model": 0.9479327099456598,
+            "rain_in_window_mm": 1.004
+          },
+          "3d": {
+            "observed": null,
+            "model": 0.7374705698620359,
+            "rain_in_window_mm": 1.004
+          }
+        },
+        "502": {
+          "1d": {
+            "observed": null,
+            "model": -0.00038851483612142856,
+            "rain_in_window_mm": 1.004
+          },
+          "3d": {
+            "observed": null,
+            "model": -0.011309348296867361,
+            "rain_in_window_mm": 1.004
+          }
+        },
+        "503": {
+          "1d": {
+            "observed": null,
+            "model": -0.02929029195528135,
+            "rain_in_window_mm": 1.004
+          },
+          "3d": {
+            "observed": null,
+            "model": -0.08373210928653146,
+            "rain_in_window_mm": 1.004
+          }
+        }
+      }
+    }
+  ],
+  "budgets_mm": {
+    "initial": 22.9424,
+    "rain": 25.088,
+    "evaporation": 37.06730805900255,
+    "runoff": 0.0,
+    "bottom_drainage": 0.0,
+    "final": 10.963091940997462,
+    "residual": 6.938893903907228e-15
+  },
+  "n_direct_deep24h_pairs_on_wet_days": 2,
+  "matrix_regime": {
+    "n_ponded_steps": 0.0,
+    "n_onsets": 0.0,
+    "room_rejected_m3": 0.0,
+    "runoff_matrix_pool_m3": 0.0,
+    "surface_return_m3": 0.0
+  }
+}

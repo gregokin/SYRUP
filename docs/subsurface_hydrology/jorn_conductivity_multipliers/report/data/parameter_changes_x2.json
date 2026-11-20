@@ -1,0 +1,55 @@
+{
+  "factor": 2,
+  "changes": [
+    {
+      "field": "provenance.layer_properties[0].Ks_mm_h",
+      "before": 120.78651558947541,
+      "after": 241.57303117895083
+    },
+    {
+      "field": "provenance.layer_properties[0].Ks_m_s",
+      "before": 3.355180988596539e-05,
+      "after": 6.710361977193078e-05
+    },
+    {
+      "field": "provenance.layer_properties[1].Ks_mm_h",
+      "before": 119.70776661032677,
+      "after": 239.41553322065354
+    },
+    {
+      "field": "provenance.layer_properties[1].Ks_m_s",
+      "before": 3.3252157391757436e-05,
+      "after": 6.650431478351487e-05
+    },
+    {
+      "field": "provenance.layer_properties[2].Ks_mm_h",
+      "before": 104.33238089230187,
+      "after": 208.66476178460374
+    },
+    {
+      "field": "provenance.layer_properties[2].Ks_m_s",
+      "before": 2.8981216914528297e-05,
+      "after": 5.7962433829056594e-05
+    },
+    {
+      "field": "matrix.ks_top_m_s",
+      "before": 3.355180988596539e-05,
+      "after": 6.710361977193078e-05
+    },
+    {
+      "field": "matrix.conductivity_m_s",
+      "before": 1.0614362945745998e-05,
+      "after": 2.1228725891491996e-05
+    },
+    {
+      "field": "layers.interface_conductivity_m_s[0]",
+      "before": 1.0566751696583226e-05,
+      "after": 2.113350339316645e-05
+    },
+    {
+      "field": "layers.interface_conductivity_m_s[1]",
+      "before": 9.797630862576748e-06,
+      "after": 1.9595261725153497e-05
+    }
+  ]
+}

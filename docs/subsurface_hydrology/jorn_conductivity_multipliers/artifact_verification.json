@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_conductivity_multipliers_20261120/report/SYRUP_JORN_160day_K_Ks_multipliers_2x_3x_4x_20261120.docx",
+  "docx_sha256": "632d4556902d29cd759c642de457fc050ee801b911f291d4a9892485b43b94af",
+  "ZIP_XML_media": "Four embedded figures and four repeating-header tables validated; all media match independently viewed PNGs",
+  "daily_CSV": "All160rows for all5factors exactly match sealed state/forcing/observation/E data",
+  "old_new_source_and_results_unchanged": true,
+  "visual_review": "Root viewed4PNGs, legible/uncropped; check final figure identities, re-view changed image if needed.",
+  "limits": "No Word/LibreOffice renderer, no rendered-pagination assertion. No new checkpoint/GPU/fulltest-suite claims."
+}
