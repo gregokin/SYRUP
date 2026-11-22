@@ -1,0 +1,278 @@
+{
+  "schema": "syrup.observed_drydown.config/2",
+  "name": "JORN4_B dry-window fixed-stress comparison s1p5 (stress 0.30255, E=1, d=0.00102395)",
+  "provenance": {
+    "protocol": "syrup.site_hydraulics_interface_comparison/1",
+    "role": "calibration_all_windows",
+    "method": "harmonic",
+    "properties": "DERIVED SURROGATES, not measured hydraulic values: Saxton-Rawls 2006 regression outputs from NEON megapit texture/density with the declared floors; prescribed bounded sensitivity inputs of the existing soil_layers; the native provider default recipe is not adopted and no derived air entry is fed as a measured override",
+    "receipt": {
+      "file": "docs/subsurface_hydrology/site_properties_mixing/data/root_relative_density_probe.json",
+      "sha256": "9ad303384f26116f37088aa6609d3519c7396d22d46d8d0ac42919358165675f",
+      "effective_density_rule": "max(raw_density,1000kg/m3,0.901*normal_density), applied after raw-density soil-texture/OM layer assembly."
+    },
+    "organic_matter_rule": "OM = 1.724 * estimatedOC(g/kg) / 10 percent (provisional conversion)",
+    "residual": 0.01,
+    "evaporation_stress": "one shared constant JOINTLY calibrated with d to the pooled observations of all three windows (empirical threshold, not theta1500)",
+    "labels": {
+      "raw": "measured/provider inputs retained in the receipt",
+      "effective": "floored values used here"
+    },
+    "layers": [
+      {
+        "record": "JORN_A",
+        "raw_density_g_cm3": 1.4196,
+        "effective_density_g_cm3": 1.4196,
+        "density_factor": 0.9043091729490303,
+        "raw_air_entry_kpa": -0.6079086840620981,
+        "effective_air_entry_kpa": 0,
+        "theta_saturation": 0.4643018867924528,
+        "theta_field_capacity": 0.39760410394534984,
+        "theta1500": 0.039508152304,
+        "Ks_mm_h": 120.78651558947541,
+        "Ks_m_s": 3.355180988596539e-05
+      },
+      {
+        "record": "JORN_10_20_dry_mass",
+        "raw_density_g_cm3": 1.31638,
+        "effective_density_g_cm3": 1.4172961608026395,
+        "density_factor": 0.9009999999999999,
+        "raw_air_entry_kpa": -0.5913324627159721,
+        "effective_air_entry_kpa": 0,
+        "theta_saturation": 0.4651712600744756,
+        "theta_field_capacity": 0.39866650157195227,
+        "theta1500": 0.04043829918009047,
+        "Ks_mm_h": 119.70776661032677,
+        "Ks_m_s": 3.3252157391757436e-05
+      },
+      {
+        "record": "JORN_Bw",
+        "raw_density_g_cm3": 0.9035,
+        "effective_density_g_cm3": 1.4346276006597622,
+        "density_factor": 0.901,
+        "raw_air_entry_kpa": -0.46075362971474765,
+        "effective_air_entry_kpa": 0,
+        "theta_saturation": 0.4586310940906557,
+        "theta_field_capacity": 0.39508647981211864,
+        "theta1500": 0.046312178008,
+        "Ks_mm_h": 104.33238089230187,
+        "Ks_m_s": 2.8981216914528297e-05
+      }
+    ],
+    "interface": {
+      "method": "harmonic",
+      "units": "m s-1",
+      "factor": 0.31635738822500753,
+      "ks_m_s": [
+        3.355180988596539e-05,
+        3.3252157391757436e-05,
+        2.8981216914528297e-05
+      ],
+      "local_conductivity_m_s": [
+        1.0614362945745998e-05,
+        1.0519565665303261e-05,
+        9.168422090662584e-06
+      ],
+      "weights_upper_lower": [
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5000000000000001,
+          0.49999999999999994
+        ]
+      ],
+      "interface_conductivity_m_s": [
+        1.0566751696583226e-05,
+        9.797630862576748e-06
+      ],
+      "edges_m": [
+        0.0,
+        0.1,
+        0.2,
+        0.3
+      ]
+    },
+    "ecohyd_factor": 0.31635738822500753,
+    "scope": "dry-down window diagnostic only: T=0, gravity on, no storm/rain/LEAF/wind/bed, no field ET closure claim",
+    "historical_template_role": "heldout",
+    "historical_evaporation_stress": "top-layer predicted theta1500, fixed within a run (earlier comparison; superseded for this protocol)",
+    "historical_fixed_d_stress_calibration": {
+      "protocol": "syrup.evaporation_stress_calibration/1",
+      "label": "empirical evaporation-stress threshold (volumetric fraction) calibrated to pooled observed changes; NOT the measured theta1500 / wilting point; all three windows are used in the fit (mechanism diagnostic, no held-out claim)",
+      "stress": 0.18,
+      "site_theta1500": 0.039508152304,
+      "stress_source": "calibrated shared constant",
+      "E": 1.0,
+      "d": 0.05,
+      "T": 0
+    },
+    "historical_evaporation_stress_fixed_d_fit": "one shared constant calibrated to the pooled observations of all three windows (empirical threshold, not theta1500)",
+    "diffusion": "one shared diffusion coefficient d JOINTLY calibrated with the stress to the pooled observations of all three windows (empirical value, not a measured or physical diffusivity)",
+    "joint_calibration": {
+      "protocol": "syrup.joint_d_stress_calibration/1",
+      "label": "empirical diffusion coefficient d and evaporation-stress threshold (volumetric fraction) JOINTLY calibrated to pooled observed changes with E = 1 fixed; NOT the measured theta1500 / wilting point, retention or Ks; all three windows are used in the fit (mechanism diagnostic, no held-out claim, not a new default)",
+      "fitted": [
+        "diffusion_coefficient",
+        "theta_evaporation_stress"
+      ],
+      "fixed": {
+        "E": 1.0,
+        "T": 0
+      },
+      "d": 0.05,
+      "stress": 0.18,
+      "windows_used": [
+        "JORN4_A",
+        "JORN4_B",
+        "MOAB2_C"
+      ],
+      "held_out_windows": [],
+      "method": "harmonic"
+    },
+    "dry_stress_comparison": {
+      "case_key": "JORN4_B_s1p5",
+      "window": "JORN4_B",
+      "window_text": "JORN plot 004, 2025-04-26 to 2025-04-30",
+      "stress": 0.30255,
+      "stress_label": "0.30255 = 1.5 x 0.2017 (user-selected JORN setting)",
+      "evaporation_factor": 1.0,
+      "diffusion_coefficient": 0.0010239461376024856,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "field_capacity_source": "JORN: user preset theta_field_capacity_all_layers (cases/subsurface_validation/jorn_defaults.json), scalar applied to all three layers",
+      "transpiration": 0,
+      "rain": 0,
+      "template": {
+        "file": "docs/subsurface_hydrology/joint_d_stress_calibration/data/actual_cpu/configs/harmonic_JORN4_B.json",
+        "sha256": "8addfb6a20bff22e33656176355e52ff226c6244705b082415942dbfa1071c94"
+      },
+      "deltas_from_template": {
+        "theta_field_capacity": {
+          "old": [
+            0.39760410394534984,
+            0.39866650157195227,
+            0.39508647981211864
+          ],
+          "new": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "theta_evaporation_stress": {
+          "old": 0.18,
+          "new": 0.30255
+        },
+        "diffusion_coefficient": {
+          "old": 0.05,
+          "new": 0.0010239461376024856
+        },
+        "syrup_package_pin": {
+          "old": "37d89f23dbf60626c85f85ea5dd6d1734d3bc7a4aa61d8f2fdfc29f237bcfbd0",
+          "new": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2"
+        },
+        "scenario_name": "fixed_d_stress_s1p5_E1_open"
+      },
+      "unchanged": "saturation, residual, interface conductivities, window, weather, initial inventory, QA observations, MAPLE pin, controls (backends numba+numpy, the template's midpoint public-state reconstruction day) and the 86400 s daily step",
+      "preset": {
+        "path": "cases/subsurface_validation/jorn_defaults.json",
+        "sha256": "2bc4320148a946b3170c8558919d37884d38895a198736ae2c14e1446aae989d",
+        "used_for": "JORN field capacity, d, E and the selected stress"
+      },
+      "d_provenance": "0.0010239461376024856: earlier joint fit of d and stress at E = 1, T = 0, old field capacity to 53 JORN/MOAB 2025 dry observations; retained, not re-fitted; these windows were part of that fit (not held-out validation)",
+      "stress_provenance": "0.2017 and 0.30255 are fixed, rounded/user-selected values, never fitted here",
+      "role": "fixed-stress dry-window comparison: no refit, no added transpiration, no new physics",
+      "historical_note": "template provenance keys (historical_*, joint_calibration, layers, interface) retain their historical values (stress 0.18, d 0.05, old 6 kPa field capacity, 37d89f23 pin) as read-only context"
+    }
+  },
+  "site": {
+    "key": "JORN_plot4_2025-04",
+    "raw_section": "JORN",
+    "site": "JORN",
+    "hor": "004",
+    "plot": 4,
+    "latitude_deg": 32.59052,
+    "latitude_source": "NEON JORN megapit DP1.00096.001 permegapit decimalLatitude 32.590520 (measured pit location, not a plot GPS)"
+  },
+  "air": {
+    "root": "AIR_JORN",
+    "month": "2025-04",
+    "level": "000.020"
+  },
+  "window": {
+    "run_start_utc": "2025-04-22T17:00:00Z",
+    "min_dry_hours": 120,
+    "exclusion_hours": 72,
+    "anchor": "first_joint",
+    "boundary_second_of_day": 25200,
+    "max_days": 4,
+    "calendar_utc_offset_hours": -7
+  },
+  "layers": {
+    "edges_m": [
+      0.0,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "theta_residual": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "theta_field_capacity": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "theta_saturation": [
+      0.4643018867924528,
+      0.4651712600744756,
+      0.4586310940906557
+    ],
+    "theta_evaporation_stress": 0.30255,
+    "interface_conductivity_m_s": [
+      1.0566751696583226e-05,
+      9.797630862576748e-06
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "fixed_d_stress_s1p5_E1_open",
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "potential_et": "weather",
+      "bottom": "open"
+    }
+  ],
+  "controls": {
+    "backends": [
+      "numba",
+      "numpy"
+    ],
+    "numba_rtol": 2e-12,
+    "numba_atol": 1e-14,
+    "restart_after_day": 2
+  },
+  "pins": {
+    "depth_table_sha256": "876fd5bdcfb8b93352399dab20a3b41e01b2ca3f74bb140e3216feb80812827f",
+    "inventory_sha256": "fc8b74ace7c32d24dd471baa9a316c3c4d46dcc63c56ea353fee99bbb0010ea8",
+    "inventory_candidate_key": "JORN_plot4_2025-04",
+    "air_manifest_sha256": "1db84000caeb862b1571334940a464c4a20d47b474f109bb8d663cd567e99dac",
+    "expected_sources": {
+      "maple_syrup": {
+        "package_sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+        "files": 180
+      },
+      "maple": {
+        "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+        "files": 412
+      }
+    }
+  }
+}

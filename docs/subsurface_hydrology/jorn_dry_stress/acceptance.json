@@ -1,0 +1,1315 @@
+{
+  "status": "ACCEPTED_SCOPED_JORN_DEFAULT_AND_FIXED_STRESS_CPU_COMPARISON",
+  "utc": "2026-11-22T21:59:49.917122+00:00",
+  "base_main": "99465040d947ec6ff377003a88f3b2636d923f15",
+  "scope": "User-selected JORN case-level FC10% all layers and stress0.30255 defaults, plus six fixed-stress dry-window comparisons. No global physics/default or MOAB-default change, new fitting, GPU/scaling/coupled acceptance or deep-layer investigation.",
+  "preset": {
+    "path": "cases/subsurface_validation/jorn_defaults.json",
+    "sha256": "2bc4320148a946b3170c8558919d37884d38895a198736ae2c14e1446aae989d",
+    "parameters": {
+      "theta_field_capacity_all_layers": 0.1,
+      "theta_evaporation_stress": 0.30255,
+      "evaporation_factor": 1.0,
+      "diffusion_coefficient": 0.0010239461376024856,
+      "conductivity_multiplier": 1.0,
+      "interface_conductivity_method": "harmonic"
+    }
+  },
+  "sources": [
+    {
+      "module": "maple",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/phase1_publication_c1_20261112/runs/runtime-store-cpu/objects/maple-materialized/5d850789f9e82dc456227cb1eb4dfcc255b3ee4dfb0ed74883813c93e98d0ab3/source/src",
+      "sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e",
+      "files": 412
+    },
+    {
+      "module": "maple_syrup",
+      "root": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/analysis_candidate/src",
+      "sha256": "4e38a472e268a56491b788d5b1271cc3c3da23bb1cc3221a8c59d90f3cc864d2",
+      "files": 180
+    }
+  ],
+  "maple_git_revision": "9f466d2cfcd52991b24496cf67f4562d6268afa9",
+  "cases": [
+    {
+      "key": "JORN4_A_s1",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "66b39e139eeba888638eeac7e759b2eb37f99c202f5c8e28d380bd2351109c1a",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "JORN4_A_s1p5",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "ebee56d1500cbff9f153bb77b5876ac12b2442f145716be0d048efdeb8417ff9",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "JORN4_B_s1",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "8847945050078f7ba7cddd041148808fc465c0bcd247b7522a912171d8b416c2",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "JORN4_B_s1p5",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "eda184905649ca8700e78054eb9036e92303930f316646be7691bd1157443dac",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "MOAB2_C_s1",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "case_sha256": "ea11d42cd948a2ba616e1a40af44ade2bed4ba6ce8975a1cb1c178c81cd965cd",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "MOAB2_C_s1p5",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "case_sha256": "972c2d6a2a1511f58ff8079f918a4b2a9ad8520b7e2b08694cb895a7c0e32622",
+      "declared_template_deltas_only": true
+    }
+  ],
+  "unique_cases": 6,
+  "native_driver_window_evaluations": 24,
+  "independent90digit_controls": 6,
+  "extra_warm_timing_calls": 7,
+  "root_final_tests_passed": 55,
+  "maximum_decimal_water_error_m": 2.10815081825908e-18,
+  "numpy_numba_exact": true,
+  "sameprocess_reconstruction_checks": true,
+  "freshprocess_or_native_checkpoint_claim": false,
+  "zero_gravity_and_bottom_drainage_all_days": true,
+  "original53_observations_and_forcing_exact": true,
+  "primary_upper_two_observation_counts": {
+    "JORN": 26,
+    "MOAB": 10,
+    "combined": 36
+  },
+  "all_three_context_counts": {
+    "JORN": 39,
+    "MOAB": 14,
+    "combined": 53
+  },
+  "groups": {
+    "0.2017": {
+      "all_sites_all_layers": {
+        "raw": {
+          "n": 53,
+          "rmse_pp": 0.4796297399947975,
+          "bias_pp": -0.1488585237049376
+        },
+        "aligned": {
+          "n": 53,
+          "rmse_pp": 0.3797164849597224,
+          "bias_pp": -0.1103271086105977
+        },
+        "persistence": {
+          "n": 53,
+          "rmse_pp": 0.8860437827250189,
+          "bias_pp": 0.3216981132075472
+        }
+      },
+      "JORN_all_layers": {
+        "raw": {
+          "n": 39,
+          "rmse_pp": 0.5089738440461327,
+          "bias_pp": -0.3018854526156668
+        },
+        "aligned": {
+          "n": 39,
+          "rmse_pp": 0.36546392872582123,
+          "bias_pp": -0.24622801671823047
+        },
+        "persistence": {
+          "n": 39,
+          "rmse_pp": 0.4202136208876234,
+          "bias_pp": 0.077948717948718
+        }
+      },
+      "JORN4_A_all_layers": {
+        "raw": {
+          "n": 28,
+          "rmse_pp": 0.5590258134463842,
+          "bias_pp": -0.4090400014324795
+        },
+        "aligned": {
+          "n": 28,
+          "rmse_pp": 0.4186528490571417,
+          "bias_pp": -0.36794485857533604
+        },
+        "persistence": {
+          "n": 28,
+          "rmse_pp": 0.46610850974547,
+          "bias_pp": 0.02285714285714282
+        }
+      },
+      "all_sites_upper_two": {
+        "raw": {
+          "n": 36,
+          "rmse_pp": 0.5727779212170497,
+          "bias_pp": -0.25760147896134544
+        },
+        "aligned": {
+          "n": 36,
+          "rmse_pp": 0.44246870254969334,
+          "bias_pp": -0.1187463956280124
+        },
+        "persistence": {
+          "n": 36,
+          "rmse_pp": 1.0662473134002888,
+          "bias_pp": 0.5244444444444446
+        }
+      },
+      "JORN_upper_two": {
+        "raw": {
+          "n": 26,
+          "rmse_pp": 0.6149396917080499,
+          "bias_pp": -0.48960696102289875
+        },
+        "aligned": {
+          "n": 26,
+          "rmse_pp": 0.42427520089083043,
+          "bias_pp": -0.3075297302536681
+        },
+        "persistence": {
+          "n": 26,
+          "rmse_pp": 0.49090575626943067,
+          "bias_pp": 0.18730769230769242
+        }
+      },
+      "JORN4_A_upper_two": {
+        "raw": {
+          "n": 18,
+          "rmse_pp": 0.6937700642596728,
+          "bias_pp": -0.6507094852873362
+        },
+        "aligned": {
+          "n": 18,
+          "rmse_pp": 0.4968425183704485,
+          "bias_pp": -0.4634370408428918
+        },
+        "persistence": {
+          "n": 18,
+          "rmse_pp": 0.5542211752640919,
+          "bias_pp": 0.15722222222222224
+        }
+      },
+      "JORN4_B_all_layers": {
+        "raw": {
+          "n": 11,
+          "rmse_pp": 0.35069340406709254,
+          "bias_pp": -0.029128419263780177
+        },
+        "aligned": {
+          "n": 11,
+          "rmse_pp": 0.1655364887340117,
+          "bias_pp": 0.06359667164531094
+        },
+        "persistence": {
+          "n": 11,
+          "rmse_pp": 0.2702524072720977,
+          "bias_pp": 0.21818181818181845
+        }
+      },
+      "JORN4_B_upper_two": {
+        "raw": {
+          "n": 8,
+          "rmse_pp": 0.38213498895287423,
+          "bias_pp": -0.12712628142791463
+        },
+        "aligned": {
+          "n": 8,
+          "rmse_pp": 0.17208312427153039,
+          "bias_pp": 0.04326171857208516
+        },
+        "persistence": {
+          "n": 8,
+          "rmse_pp": 0.3034798181098706,
+          "bias_pp": 0.25500000000000034
+        }
+      },
+      "MOAB_all_layers": {
+        "raw": {
+          "n": 14,
+          "rmse_pp": 0.38630556501256735,
+          "bias_pp": 0.27743077826066526
+        },
+        "aligned": {
+          "n": 14,
+          "rmse_pp": 0.4168583889018702,
+          "bias_pp": 0.2682539925463794
+        },
+        "persistence": {
+          "n": 14,
+          "rmse_pp": 1.574853734705,
+          "bias_pp": 1.000714285714286
+        }
+      },
+      "MOAB2_C_all_layers": {
+        "raw": {
+          "n": 14,
+          "rmse_pp": 0.38630556501256735,
+          "bias_pp": 0.27743077826066526
+        },
+        "aligned": {
+          "n": 14,
+          "rmse_pp": 0.4168583889018702,
+          "bias_pp": 0.2682539925463794
+        },
+        "persistence": {
+          "n": 14,
+          "rmse_pp": 1.574853734705,
+          "bias_pp": 1.000714285714286
+        }
+      },
+      "MOAB_upper_two": {
+        "raw": {
+          "n": 10,
+          "rmse_pp": 0.4448328065494175,
+          "bias_pp": 0.3456127743986932
+        },
+        "aligned": {
+          "n": 10,
+          "rmse_pp": 0.4865986333860285,
+          "bias_pp": 0.37209027439869236
+        },
+        "persistence": {
+          "n": 10,
+          "rmse_pp": 1.8617760337913902,
+          "bias_pp": 1.4010000000000002
+        }
+      },
+      "MOAB2_C_upper_two": {
+        "raw": {
+          "n": 10,
+          "rmse_pp": 0.4448328065494175,
+          "bias_pp": 0.3456127743986932
+        },
+        "aligned": {
+          "n": 10,
+          "rmse_pp": 0.4865986333860285,
+          "bias_pp": 0.37209027439869236
+        },
+        "persistence": {
+          "n": 10,
+          "rmse_pp": 1.8617760337913902,
+          "bias_pp": 1.4010000000000002
+        }
+      }
+    },
+    "0.30255": {
+      "all_sites_all_layers": {
+        "raw": {
+          "n": 53,
+          "rmse_pp": 0.6390213716911811,
+          "bias_pp": 0.05813253686697714
+        },
+        "aligned": {
+          "n": 53,
+          "rmse_pp": 0.5409377491537544,
+          "bias_pp": 0.09666395196131704
+        },
+        "persistence": {
+          "n": 53,
+          "rmse_pp": 0.8860437827250189,
+          "bias_pp": 0.3216981132075472
+        }
+      },
+      "JORN_all_layers": {
+        "raw": {
+          "n": 39,
+          "rmse_pp": 0.4955346364607672,
+          "bias_pp": -0.14860452926963716
+        },
+        "aligned": {
+          "n": 39,
+          "rmse_pp": 0.2526795482660352,
+          "bias_pp": -0.0929470933722008
+        },
+        "persistence": {
+          "n": 39,
+          "rmse_pp": 0.4202136208876234,
+          "bias_pp": 0.077948717948718
+        }
+      },
+      "JORN4_A_all_layers": {
+        "raw": {
+          "n": 28,
+          "rmse_pp": 0.5211599681492873,
+          "bias_pp": -0.22783920524510623
+        },
+        "aligned": {
+          "n": 28,
+          "rmse_pp": 0.27366809925575797,
+          "bias_pp": -0.18674406238796284
+        },
+        "persistence": {
+          "n": 28,
+          "rmse_pp": 0.46610850974547,
+          "bias_pp": 0.02285714285714282
+        }
+      },
+      "all_sites_upper_two": {
+        "raw": {
+          "n": 36,
+          "rmse_pp": 0.7684673236597562,
+          "bias_pp": 0.04690170233762456
+        },
+        "aligned": {
+          "n": 36,
+          "rmse_pp": 0.6437106056347086,
+          "bias_pp": 0.18575678567095763
+        },
+        "persistence": {
+          "n": 36,
+          "rmse_pp": 1.0662473134002888,
+          "bias_pp": 0.5244444444444446
+        }
+      },
+      "JORN_upper_two": {
+        "raw": {
+          "n": 26,
+          "rmse_pp": 0.5982150221995618,
+          "bias_pp": -0.2599883654162951
+        },
+        "aligned": {
+          "n": 26,
+          "rmse_pp": 0.2748228684490648,
+          "bias_pp": -0.07791113464706445
+        },
+        "persistence": {
+          "n": 26,
+          "rmse_pp": 0.49090575626943067,
+          "bias_pp": 0.18730769230769242
+        }
+      },
+      "JORN4_A_upper_two": {
+        "raw": {
+          "n": 18,
+          "rmse_pp": 0.6462487926811546,
+          "bias_pp": -0.3692723555668125
+        },
+        "aligned": {
+          "n": 18,
+          "rmse_pp": 0.30141254717196725,
+          "bias_pp": -0.18199991112236807
+        },
+        "persistence": {
+          "n": 18,
+          "rmse_pp": 0.5542211752640919,
+          "bias_pp": 0.15722222222222224
+        }
+      },
+      "JORN4_B_all_layers": {
+        "raw": {
+          "n": 11,
+          "rmse_pp": 0.423364501681216,
+          "bias_pp": 0.053083736849738716
+        },
+        "aligned": {
+          "n": 11,
+          "rmse_pp": 0.18901486496567457,
+          "bias_pp": 0.14580882775882983
+        },
+        "persistence": {
+          "n": 11,
+          "rmse_pp": 0.2702524072720977,
+          "bias_pp": 0.21818181818181845
+        }
+      },
+      "JORN4_B_upper_two": {
+        "raw": {
+          "n": 8,
+          "rmse_pp": 0.47261460193037735,
+          "bias_pp": -0.01409938757763107
+        },
+        "aligned": {
+          "n": 8,
+          "rmse_pp": 0.2026161425943125,
+          "bias_pp": 0.15628861242236872
+        },
+        "persistence": {
+          "n": 8,
+          "rmse_pp": 0.3034798181098706,
+          "bias_pp": 0.25500000000000034
+        }
+      },
+      "MOAB_all_layers": {
+        "raw": {
+          "n": 14,
+          "rmse_pp": 0.9283561567545954,
+          "bias_pp": 0.6340429353904027
+        },
+        "aligned": {
+          "n": 14,
+          "rmse_pp": 0.9643092330778958,
+          "bias_pp": 0.6248661496761168
+        },
+        "persistence": {
+          "n": 14,
+          "rmse_pp": 1.574853734705,
+          "bias_pp": 1.000714285714286
+        }
+      },
+      "MOAB2_C_all_layers": {
+        "raw": {
+          "n": 14,
+          "rmse_pp": 0.9283561567545954,
+          "bias_pp": 0.6340429353904027
+        },
+        "aligned": {
+          "n": 14,
+          "rmse_pp": 0.9643092330778958,
+          "bias_pp": 0.6248661496761168
+        },
+        "persistence": {
+          "n": 14,
+          "rmse_pp": 1.574853734705,
+          "bias_pp": 1.000714285714286
+        }
+      },
+      "MOAB_upper_two": {
+        "raw": {
+          "n": 10,
+          "rmse_pp": 1.0933947804322377,
+          "bias_pp": 0.8448158784978158
+        },
+        "aligned": {
+          "n": 10,
+          "rmse_pp": 1.1381283997181888,
+          "bias_pp": 0.871293378497815
+        },
+        "persistence": {
+          "n": 10,
+          "rmse_pp": 1.8617760337913902,
+          "bias_pp": 1.4010000000000002
+        }
+      },
+      "MOAB2_C_upper_two": {
+        "raw": {
+          "n": 10,
+          "rmse_pp": 1.0933947804322377,
+          "bias_pp": 0.8448158784978158
+        },
+        "aligned": {
+          "n": 10,
+          "rmse_pp": 1.1381283997181888,
+          "bias_pp": 0.871293378497815
+        },
+        "persistence": {
+          "n": 10,
+          "rmse_pp": 1.8617760337913902,
+          "bias_pp": 1.4010000000000002
+        }
+      }
+    }
+  },
+  "window_results": [
+    {
+      "key": "JORN4_A_s1",
+      "window": "JORN4_A",
+      "site": "JORN",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "days": 10,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 8,
+            "rmse_pp": 0.43586576430825225,
+            "bias_pp": -0.41567295465981324
+          },
+          "aligned": {
+            "n": 8,
+            "rmse_pp": 0.628829113127339,
+            "bias_pp": -0.6150049546598125
+          },
+          "persistence": {
+            "n": 8,
+            "rmse_pp": 0.7907354171908579,
+            "bias_pp": 0.5912500000000002
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 10,
+            "rmse_pp": 0.8452143231845717,
+            "bias_pp": -0.8387387097893545
+          },
+          "aligned": {
+            "n": 10,
+            "rmse_pp": 0.35776198190421027,
+            "bias_pp": -0.3421827097893551
+          },
+          "persistence": {
+            "n": 10,
+            "rmse_pp": 0.2295212408471165,
+            "bias_pp": -0.19000000000000017
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 10,
+            "rmse_pp": 0.09304399263321433,
+            "bias_pp": 0.025965069506262636
+          },
+          "aligned": {
+            "n": 10,
+            "rmse_pp": 0.21545789369854176,
+            "bias_pp": -0.1960589304937358
+          },
+          "persistence": {
+            "n": 10,
+            "rmse_pp": 0.23543576618687323,
+            "bias_pp": -0.21900000000000008
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 28,
+          "rmse_pp": 0.5590258134463842,
+          "bias_pp": -0.4090400014324795
+        },
+        "aligned": {
+          "n": 28,
+          "rmse_pp": 0.4186528490571417,
+          "bias_pp": -0.36794485857533604
+        },
+        "persistence": {
+          "n": 28,
+          "rmse_pp": 0.46610850974547,
+          "bias_pp": 0.02285714285714282
+        }
+      },
+      "initial_storage_mm": 16.804799999999997,
+      "final_storage_mm": 14.595537891613832,
+      "evaporation_mm": 2.2092621083861665,
+      "bottom_drainage_mm": 0.0,
+      "net_gradient_transfer_mm_down_positive": [
+        -0.25564224934704394,
+        0.03727290584737558
+      ],
+      "gravity_transfer_mm": [
+        0.0,
+        0.0
+      ],
+      "max_layer_budget_error_m": 5.421010862427522e-19,
+      "ledger": {
+        "residual_m3": 0.0,
+        "bound_m3": 1.895558909836836e-15,
+        "n_terms": 127
+      },
+      "backend_agreement": {
+        "numba_vs_numpy": {
+          "water_m": 0.0,
+          "percolation_m": 0.0,
+          "diffusion_m": 0.0,
+          "evaporation_m": 0.0,
+          "evaporation_unmet_m": 0.0,
+          "drainage_m": 0.0,
+          "surface_return_m": 0.0,
+          "step_residual_m3": 0.0,
+          "step_bound_m3": 0.0
+        }
+      },
+      "restart": {
+        "after_day": 3,
+        "backends": [
+          "numba",
+          "numpy"
+        ],
+        "whole_trajectory_and_cumulative_identical": true,
+        "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+      },
+      "inputs_exact_historical": true
+    },
+    {
+      "key": "JORN4_A_s1p5",
+      "window": "JORN4_A",
+      "site": "JORN",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "days": 10,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 8,
+            "rmse_pp": 0.3156924183125646,
+            "bias_pp": 0.18542941327904014
+          },
+          "aligned": {
+            "n": 8,
+            "rmse_pp": 0.2558728543409011,
+            "bias_pp": -0.013902586720959155
+          },
+          "persistence": {
+            "n": 8,
+            "rmse_pp": 0.7907354171908579,
+            "bias_pp": 0.5912500000000002
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 10,
+            "rmse_pp": 0.8197671262567815,
+            "bias_pp": -0.8130337706434947
+          },
+          "aligned": {
+            "n": 10,
+            "rmse_pp": 0.3333952735057894,
+            "bias_pp": -0.3164777706434952
+          },
+          "persistence": {
+            "n": 10,
+            "rmse_pp": 0.2295212408471165,
+            "bias_pp": -0.19000000000000017
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 10,
+            "rmse_pp": 0.0935632996879402,
+            "bias_pp": 0.026740465333965003
+          },
+          "aligned": {
+            "n": 10,
+            "rmse_pp": 0.21488298553835808,
+            "bias_pp": -0.19528353466603346
+          },
+          "persistence": {
+            "n": 10,
+            "rmse_pp": 0.23543576618687323,
+            "bias_pp": -0.21900000000000008
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 28,
+          "rmse_pp": 0.5211599681492873,
+          "bias_pp": -0.22783920524510623
+        },
+        "aligned": {
+          "n": 28,
+          "rmse_pp": 0.27366809925575797,
+          "bias_pp": -0.18674406238796284
+        },
+        "persistence": {
+          "n": 28,
+          "rmse_pp": 0.46610850974547,
+          "bias_pp": 0.02285714285714282
+        }
+      },
+      "initial_storage_mm": 16.804799999999997,
+      "final_storage_mm": 15.533880433439544,
+      "evaporation_mm": 1.2709195665604538,
+      "bottom_drainage_mm": 0.0,
+      "net_gradient_transfer_mm_down_positive": [
+        -0.19800146185473563,
+        0.0394526026773883
+      ],
+      "gravity_transfer_mm": [
+        0.0,
+        0.0
+      ],
+      "max_layer_budget_error_m": 8.029872339970767e-19,
+      "ledger": {
+        "residual_m3": 2.168404344971009e-19,
+        "bound_m3": 1.895558909836836e-15,
+        "n_terms": 127
+      },
+      "backend_agreement": {
+        "numba_vs_numpy": {
+          "water_m": 0.0,
+          "percolation_m": 0.0,
+          "diffusion_m": 0.0,
+          "evaporation_m": 0.0,
+          "evaporation_unmet_m": 0.0,
+          "drainage_m": 0.0,
+          "surface_return_m": 0.0,
+          "step_residual_m3": 0.0,
+          "step_bound_m3": 0.0
+        }
+      },
+      "restart": {
+        "after_day": 3,
+        "backends": [
+          "numba",
+          "numpy"
+        ],
+        "whole_trajectory_and_cumulative_identical": true,
+        "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+      },
+      "inputs_exact_historical": true
+    },
+    {
+      "key": "JORN4_B_s1",
+      "window": "JORN4_B",
+      "site": "JORN",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "days": 4,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.23373970071007252,
+            "bias_pp": 0.21924561044770596
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.12135185727787957,
+            "bias_pp": -0.09033638955229395
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.3256531897586756,
+            "bias_pp": 0.2699999999999999
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.4872576852918714,
+            "bias_pp": -0.4734981733035352
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.2109476950651774,
+            "bias_pp": 0.17685982669646427
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.2795532149698879,
+            "bias_pp": 0.2400000000000008
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 3,
+            "rmse_pp": 0.24807747577568637,
+            "bias_pp": 0.23219921317391168
+          },
+          "aligned": {
+            "n": 3,
+            "rmse_pp": 0.14665697716534976,
+            "bias_pp": 0.11782321317391302
+          },
+          "persistence": {
+            "n": 3,
+            "rmse_pp": 0.14899664425751333,
+            "bias_pp": 0.11999999999999997
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 11,
+          "rmse_pp": 0.35069340406709254,
+          "bias_pp": -0.029128419263780177
+        },
+        "aligned": {
+          "n": 11,
+          "rmse_pp": 0.1655364887340117,
+          "bias_pp": 0.06359667164531094
+        },
+        "persistence": {
+          "n": 11,
+          "rmse_pp": 0.2702524072720977,
+          "bias_pp": 0.21818181818181845
+        }
+      },
+      "initial_storage_mm": 15.263599999999999,
+      "final_storage_mm": 14.627351662132675,
+      "evaporation_mm": 0.6362483378673225,
+      "bottom_drainage_mm": 0.0,
+      "net_gradient_transfer_mm_down_positive": [
+        -0.10742163281022582,
+        -0.005070279757166493
+      ],
+      "gravity_transfer_mm": [
+        0.0,
+        0.0
+      ],
+      "max_layer_budget_error_m": 5.929230630780102e-19,
+      "ledger": {
+        "residual_m3": -8.673617379884035e-19,
+        "bound_m3": 7.456240069814157e-16,
+        "n_terms": 55
+      },
+      "backend_agreement": {
+        "numba_vs_numpy": {
+          "water_m": 0.0,
+          "percolation_m": 0.0,
+          "diffusion_m": 0.0,
+          "evaporation_m": 0.0,
+          "evaporation_unmet_m": 0.0,
+          "drainage_m": 0.0,
+          "surface_return_m": 0.0,
+          "step_residual_m3": 0.0,
+          "step_bound_m3": 0.0
+        }
+      },
+      "restart": {
+        "after_day": 2,
+        "backends": [
+          "numba",
+          "numpy"
+        ],
+        "whole_trajectory_and_cumulative_identical": true,
+        "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+      },
+      "inputs_exact_historical": true
+    },
+    {
+      "key": "JORN4_B_s1p5",
+      "window": "JORN4_B",
+      "site": "JORN",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "days": 4,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.46122637102592506,
+            "bias_pp": 0.4410434330787177
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.1883947023007631,
+            "bias_pp": 0.13146143307871777
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.3256531897586756,
+            "bias_pp": 0.2699999999999999
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.48373480191720114,
+            "bias_pp": -0.46924220823397983
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.21590284533698106,
+            "bias_pp": 0.1811157917660197
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.2795532149698879,
+            "bias_pp": 0.2400000000000008
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 3,
+            "rmse_pp": 0.24812363750030952,
+            "bias_pp": 0.23223873532272482
+          },
+          "aligned": {
+            "n": 3,
+            "rmse_pp": 0.1467042387930266,
+            "bias_pp": 0.11786273532272615
+          },
+          "persistence": {
+            "n": 3,
+            "rmse_pp": 0.14899664425751333,
+            "bias_pp": 0.11999999999999997
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 11,
+          "rmse_pp": 0.423364501681216,
+          "bias_pp": 0.053083736849738716
+        },
+        "aligned": {
+          "n": 11,
+          "rmse_pp": 0.18901486496567457,
+          "bias_pp": 0.14580882775882983
+        },
+        "persistence": {
+          "n": 11,
+          "rmse_pp": 0.2702524072720977,
+          "bias_pp": 0.21818181818181845
+        }
+      },
+      "initial_storage_mm": 15.263599999999999,
+      "final_storage_mm": 14.956569848735668,
+      "evaporation_mm": 0.3070301512643309,
+      "bottom_drainage_mm": 0.0,
+      "net_gradient_transfer_mm_down_positive": [
+        -0.09921191402716009,
+        -0.004923750693342678
+      ],
+      "gravity_transfer_mm": [
+        0.0,
+        0.0
+      ],
+      "max_layer_budget_error_m": 4.87890977618477e-19,
+      "ledger": {
+        "residual_m3": 2.168404344971009e-19,
+        "bound_m3": 7.456240069814157e-16,
+        "n_terms": 55
+      },
+      "backend_agreement": {
+        "numba_vs_numpy": {
+          "water_m": 0.0,
+          "percolation_m": 0.0,
+          "diffusion_m": 0.0,
+          "evaporation_m": 0.0,
+          "evaporation_unmet_m": 0.0,
+          "drainage_m": 0.0,
+          "surface_return_m": 0.0,
+          "step_residual_m3": 0.0,
+          "step_bound_m3": 0.0
+        }
+      },
+      "restart": {
+        "after_day": 2,
+        "backends": [
+          "numba",
+          "numpy"
+        ],
+        "whole_trajectory_and_cumulative_identical": true,
+        "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+      },
+      "inputs_exact_historical": true
+    },
+    {
+      "key": "MOAB2_C_s1",
+      "window": "MOAB2_C",
+      "site": "MOAB",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "days": 6,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 6,
+            "rmse_pp": 0.5588727313844221,
+            "bias_pp": 0.5159540423452869
+          },
+          "aligned": {
+            "n": 6,
+            "rmse_pp": 0.6163493809293845,
+            "bias_pp": 0.5777165423452865
+          },
+          "persistence": {
+            "n": 6,
+            "rmse_pp": 2.399496474957472,
+            "bias_pp": 2.2783333333333338
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.1618099800041765,
+            "bias_pp": 0.09010087247880265
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.14871360386603222,
+            "bias_pp": 0.06365087247880118
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.1707337107896387,
+            "bias_pp": 0.085
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.16619686820845195,
+            "bias_pp": 0.10697578791559556
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.12748581238570664,
+            "bias_pp": 0.00866328791559682
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.12267844146385296,
+            "bias_pp": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 14,
+          "rmse_pp": 0.38630556501256735,
+          "bias_pp": 0.27743077826066526
+        },
+        "aligned": {
+          "n": 14,
+          "rmse_pp": 0.4168583889018702,
+          "bias_pp": 0.2682539925463794
+        },
+        "persistence": {
+          "n": 14,
+          "rmse_pp": 1.574853734705,
+          "bias_pp": 1.000714285714286
+        }
+      },
+      "initial_storage_mm": 17.963,
+      "final_storage_mm": 15.400781211225542,
+      "evaporation_mm": 2.562218788774456,
+      "bottom_drainage_mm": 0.0,
+      "net_gradient_transfer_mm_down_positive": [
+        -0.032799452313190015,
+        0.014660622348813985
+      ],
+      "gravity_transfer_mm": [
+        0.0,
+        0.0
+      ],
+      "max_layer_budget_error_m": 7.589415207398531e-19,
+      "ledger": {
+        "residual_m3": -8.673617379884035e-19,
+        "bound_m3": 1.2603935672927945e-15,
+        "n_terms": 79
+      },
+      "backend_agreement": {
+        "numba_vs_numpy": {
+          "water_m": 0.0,
+          "percolation_m": 0.0,
+          "diffusion_m": 0.0,
+          "evaporation_m": 0.0,
+          "evaporation_unmet_m": 0.0,
+          "drainage_m": 0.0,
+          "surface_return_m": 0.0,
+          "step_residual_m3": 0.0,
+          "step_bound_m3": 0.0
+        }
+      },
+      "restart": {
+        "after_day": 3,
+        "backends": [
+          "numba",
+          "numpy"
+        ],
+        "whole_trajectory_and_cumulative_identical": true,
+        "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+      },
+      "inputs_exact_historical": true
+    },
+    {
+      "key": "MOAB2_C_s1p5",
+      "window": "MOAB2_C",
+      "site": "MOAB",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "days": 6,
+      "scores": {
+        "501": {
+          "raw": {
+            "n": 6,
+            "rmse_pp": 1.4044702491793504,
+            "bias_pp": 1.340950011784127
+          },
+          "aligned": {
+            "n": 6,
+            "rmse_pp": 1.4635546240034192,
+            "bias_pp": 1.4027125117841268
+          },
+          "persistence": {
+            "n": 6,
+            "rmse_pp": 2.399496474957472,
+            "bias_pp": 2.2783333333333338
+          }
+        },
+        "502": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.1731338887863793,
+            "bias_pp": 0.10061467856834864
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.15922446247366795,
+            "bias_pp": 0.07416467856834717
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.1707337107896387,
+            "bias_pp": 0.085
+          }
+        },
+        "503": {
+          "raw": {
+            "n": 4,
+            "rmse_pp": 0.16636608294185623,
+            "bias_pp": 0.10711057762186997
+          },
+          "aligned": {
+            "n": 4,
+            "rmse_pp": 0.12760252303448558,
+            "bias_pp": 0.008798077621871223
+          },
+          "persistence": {
+            "n": 4,
+            "rmse_pp": 0.12267844146385296,
+            "bias_pp": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "raw": {
+          "n": 14,
+          "rmse_pp": 0.9283561567545954,
+          "bias_pp": 0.6340429353904027
+        },
+        "aligned": {
+          "n": 14,
+          "rmse_pp": 0.9643092330778958,
+          "bias_pp": 0.6248661496761168
+        },
+        "persistence": {
+          "n": 14,
+          "rmse_pp": 1.574853734705,
+          "bias_pp": 1.000714285714286
+        }
+      },
+      "initial_storage_mm": 17.963,
+      "final_storage_mm": 16.55860835687492,
+      "evaporation_mm": 1.4043916431250782,
+      "bottom_drainage_mm": 0.0,
+      "net_gradient_transfer_mm_down_positive": [
+        -0.009761078680754806,
+        0.01496190117220842
+      ],
+      "gravity_transfer_mm": [
+        0.0,
+        0.0
+      ],
+      "max_layer_budget_error_m": 5.692061405548898e-19,
+      "ledger": {
+        "residual_m3": -6.505213034913027e-19,
+        "bound_m3": 1.2603935672927945e-15,
+        "n_terms": 79
+      },
+      "backend_agreement": {
+        "numba_vs_numpy": {
+          "water_m": 0.0,
+          "percolation_m": 0.0,
+          "diffusion_m": 0.0,
+          "evaporation_m": 0.0,
+          "evaporation_unmet_m": 0.0,
+          "drainage_m": 0.0,
+          "surface_return_m": 0.0,
+          "step_residual_m3": 0.0,
+          "step_bound_m3": 0.0
+        }
+      },
+      "restart": {
+        "after_day": 3,
+        "backends": [
+          "numba",
+          "numpy"
+        ],
+        "whole_trajectory_and_cumulative_identical": true,
+        "label": "column_state(column, water_m, t_s) export by this driver: NOT a production lifecycle checkpoint and no checkpoint acceptance"
+      },
+      "inputs_exact_historical": true
+    }
+  ],
+  "root_artifacts": {
+    "status": "PASS",
+    "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/analysis_candidate/docs/subsurface_hydrology/jorn_dry_stress/SYRUP_JORN_MOAB_dry_period_stress_comparison_20261122.docx",
+    "sha256": "43ef691d28ec21d5286cde4f1ece186e938f1baa952306af6d2a74756c51f261",
+    "tables": 9,
+    "table_csv_matches": [
+      "cases.csv",
+      "upper_two.csv",
+      "upper_two_bias.csv",
+      "all_layers.csv",
+      "no_change.csv",
+      "budget.csv",
+      "evap_effect.csv",
+      "checks.csv",
+      "timing.csv"
+    ],
+    "media_png_exact": 4,
+    "max_table_columns": 6,
+    "all_report_source_seals_unchanged": 85,
+    "all_case_and_execution_input_hashes_unchanged": true,
+    "manifest_verified": true,
+    "scope": "Independent static Word/table/media/data verification; no Office render claim."
+  },
+  "original_live_preservation": {
+    "head": "c76c603dde4e8f79ec48b18d954a386580d8bc89",
+    "tracked_files": 736,
+    "all_working_hashes_exact": true,
+    "git_status_exact": true
+  },
+  "claude_session": "d37c1dab-3e24-4aca-bfb6-1dd6fefcbc6d",
+  "limits": [
+    "These dry windows were used in the earlier joint fit: not held-out validation",
+    "All columns remain below FC; this cannot identify or validate the FC10 choice",
+    "Transpiration is zero in this controlled experiment, not proved zero in the field and not mandated for future LEAF coupling",
+    "Third-layer discrepancy deferred; observations retained, no causal or sensor diagnosis",
+    "One1m2 CPU column; no GPU/full-domain/whole-model performance acceptance",
+    "Sameprocess public-state reconstruction only; no freshprocess or nativecheckpoint claim",
+    "DOCX tables/media and original PNG figures checked; no Office pagination render"
+  ]
+}

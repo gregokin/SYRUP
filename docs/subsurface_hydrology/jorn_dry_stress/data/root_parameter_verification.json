@@ -1,0 +1,77 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "key": "JORN4_A_s1",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "66b39e139eeba888638eeac7e759b2eb37f99c202f5c8e28d380bd2351109c1a",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "JORN4_A_s1p5",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "ebee56d1500cbff9f153bb77b5876ac12b2442f145716be0d048efdeb8417ff9",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "JORN4_B_s1",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "8847945050078f7ba7cddd041148808fc465c0bcd247b7522a912171d8b416c2",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "JORN4_B_s1p5",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "case_sha256": "eda184905649ca8700e78054eb9036e92303930f316646be7691bd1157443dac",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "MOAB2_C_s1",
+      "stress": 0.2017,
+      "field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "case_sha256": "ea11d42cd948a2ba616e1a40af44ade2bed4ba6ce8975a1cb1c178c81cd965cd",
+      "declared_template_deltas_only": true
+    },
+    {
+      "key": "MOAB2_C_s1p5",
+      "stress": 0.30255,
+      "field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "case_sha256": "972c2d6a2a1511f58ff8079f918a4b2a9ad8520b7e2b08694cb895a7c0e32622",
+      "declared_template_deltas_only": true
+    }
+  ],
+  "preset_sha256": "2bc4320148a946b3170c8558919d37884d38895a198736ae2c14e1446aae989d",
+  "agents_append_only": true,
+  "current_native_source": "180/4e38",
+  "MAPLE": "412/fbc",
+  "old_helper_hashes_unchanged": true,
+  "MOAB_native_FC33_matches_independent_retention_inversion": true
+}

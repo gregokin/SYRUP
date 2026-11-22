@@ -1,0 +1,7 @@
+Case,Days,Fresh driver bundle (s),Whole fresh command (s),Warm native column call (s)
+JORN4_A_s1,10,5.50,6.57,0.0013
+JORN4_A_s1p5,10,2.93,3.98,0.0012
+JORN4_B_s1,4,2.93,3.99,0.0007
+JORN4_B_s1p5,4,2.89,3.94,0.0007
+MOAB2_C_s1,6,2.95,3.98,0.0008
+MOAB2_C_s1p5,6,2.89,3.91,0.0008

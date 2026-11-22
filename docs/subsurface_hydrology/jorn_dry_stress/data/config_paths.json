@@ -1,0 +1,141 @@
+{
+  "candidate": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/analysis_candidate",
+  "preset": {
+    "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/analysis_candidate/cases/subsurface_validation/jorn_defaults.json",
+    "sha256": "2bc4320148a946b3170c8558919d37884d38895a198736ae2c14e1446aae989d"
+  },
+  "moab_properties": {
+    "field_capacity": [
+      0.13932602200462846,
+      0.15622473499486667,
+      0.15622473499486667
+    ],
+    "recipe": "saxton_rawls_2006_table1_eq1_18_explicit_density_v2_fc33_default",
+    "provider_input_sha256": "737cc3376e0831ce27c00752df2312d39ffc19bbe171a886a7913e7a5c592eed"
+  },
+  "windows": {
+    "JORN4_A": "JORN plot 004, 2025-04-08 to 2025-04-18",
+    "JORN4_B": "JORN plot 004, 2025-04-26 to 2025-04-30",
+    "MOAB2_C": "MOAB plot 002, 2025-05-22 to 2025-05-28"
+  },
+  "stress": {
+    "s1": 0.2017,
+    "s1p5": 0.30255
+  },
+  "cases": {
+    "JORN4_A_s1": {
+      "window": "JORN4_A",
+      "site": "JORN",
+      "stress_label": "s1",
+      "theta_evaporation_stress": 0.2017,
+      "theta_field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1/case.json",
+      "sha256": "66b39e139eeba888638eeac7e759b2eb37f99c202f5c8e28d380bd2351109c1a",
+      "runner_config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1/actual_config.json",
+      "probe": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1/root_execute.py",
+      "output_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1/actual_runs",
+      "result_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1/actual"
+    },
+    "JORN4_A_s1p5": {
+      "window": "JORN4_A",
+      "site": "JORN",
+      "stress_label": "s1p5",
+      "theta_evaporation_stress": 0.30255,
+      "theta_field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1p5/case.json",
+      "sha256": "ebee56d1500cbff9f153bb77b5876ac12b2442f145716be0d048efdeb8417ff9",
+      "runner_config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1p5/actual_config.json",
+      "probe": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1p5/root_execute.py",
+      "output_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1p5/actual_runs",
+      "result_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_A_s1p5/actual"
+    },
+    "JORN4_B_s1": {
+      "window": "JORN4_B",
+      "site": "JORN",
+      "stress_label": "s1",
+      "theta_evaporation_stress": 0.2017,
+      "theta_field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1/case.json",
+      "sha256": "8847945050078f7ba7cddd041148808fc465c0bcd247b7522a912171d8b416c2",
+      "runner_config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1/actual_config.json",
+      "probe": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1/root_execute.py",
+      "output_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1/actual_runs",
+      "result_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1/actual"
+    },
+    "JORN4_B_s1p5": {
+      "window": "JORN4_B",
+      "site": "JORN",
+      "stress_label": "s1p5",
+      "theta_evaporation_stress": 0.30255,
+      "theta_field_capacity": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1p5/case.json",
+      "sha256": "eda184905649ca8700e78054eb9036e92303930f316646be7691bd1157443dac",
+      "runner_config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1p5/actual_config.json",
+      "probe": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1p5/root_execute.py",
+      "output_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1p5/actual_runs",
+      "result_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/JORN4_B_s1p5/actual"
+    },
+    "MOAB2_C_s1": {
+      "window": "MOAB2_C",
+      "site": "MOAB",
+      "stress_label": "s1",
+      "theta_evaporation_stress": 0.2017,
+      "theta_field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1/case.json",
+      "sha256": "ea11d42cd948a2ba616e1a40af44ade2bed4ba6ce8975a1cb1c178c81cd965cd",
+      "runner_config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1/actual_config.json",
+      "probe": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1/root_execute.py",
+      "output_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1/actual_runs",
+      "result_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1/actual"
+    },
+    "MOAB2_C_s1p5": {
+      "window": "MOAB2_C",
+      "site": "MOAB",
+      "stress_label": "s1p5",
+      "theta_evaporation_stress": 0.30255,
+      "theta_field_capacity": [
+        0.13932602200462846,
+        0.15622473499486667,
+        0.15622473499486667
+      ],
+      "diffusion_coefficient": 0.0010239461376024856,
+      "evaporation_factor": 1.0,
+      "path": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1p5/case.json",
+      "sha256": "972c2d6a2a1511f58ff8079f918a4b2a9ad8520b7e2b08694cb895a7c0e32622",
+      "runner_config": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1p5/actual_config.json",
+      "probe": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1p5/root_execute.py",
+      "output_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1p5/actual_runs",
+      "result_dir": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/study/MOAB2_C_s1p5/actual"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+Case,Initial storage (mm),Evaporation (mm),Final storage (mm),Upper interface net exchange (mm),Lower interface net exchange (mm)
+JORN4_A_s1,16.805,2.209,14.596,-0.256,+0.037
+JORN4_A_s1p5,16.805,1.271,15.534,-0.198,+0.039
+JORN4_B_s1,15.264,0.636,14.627,-0.107,-0.005
+JORN4_B_s1p5,15.264,0.307,14.957,-0.099,-0.005
+MOAB2_C_s1,17.963,2.562,15.401,-0.033,+0.015
+MOAB2_C_s1p5,17.963,1.404,16.559,-0.010,+0.015

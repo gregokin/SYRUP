@@ -1,0 +1,7 @@
+"No-change reference (day-0 sensor value held), RMSE",n upper two,Upper two,n all three,All three
+JORN A (Apr 8-18),18,0.554,28,0.466
+JORN B (Apr 26-30),8,0.303,11,0.270
+JORN pooled,26,0.491,39,0.420
+MOAB C (May 22-28),10,1.862,14,1.575
+MOAB pooled,10,1.862,14,1.575
+Combined JORN + MOAB,36,1.066,53,0.886

@@ -1,0 +1,8 @@
+parameter,value
+theta_field_capacity_all_layers,0.1
+theta_evaporation_stress,0.30255
+evaporation_factor,1.0
+diffusion_coefficient,0.0010239461376024856
+conductivity_multiplier,1.0
+interface_conductivity_method,harmonic
+preset_sha256,2bc4320148a946b3170c8558919d37884d38895a198736ae2c14e1446aae989d

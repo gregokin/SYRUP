@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scope": "Independent90-digit closed water-budget control; no production-step call.",
+  "days": 4,
+  "decimal_digits": 90,
+  "max_water_error_m": 1.0876507862433314e-18,
+  "evaporation_mm": 0.6362483378673225,
+  "bottom_drainage_mm": 0.0,
+  "gravity_transfer_mm": [
+    0.0,
+    0.0
+  ]
+}
