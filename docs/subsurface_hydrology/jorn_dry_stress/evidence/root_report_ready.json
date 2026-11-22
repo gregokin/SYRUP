@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "utc": "2026-11-22T21:51:19.551539+00:00",
+  "unique_cases": 6,
+  "native_driver_window_evaluations": 24,
+  "extra_warm_timing_native_calls": 7,
+  "root_setup_tests_passed": 55,
+  "independent90_digit_controls": 6,
+  "maximum_decimal_water_error_m": 2.10815081825908e-18,
+  "numpy_numba_exact": true,
+  "all_component_reconstruction_checks_passed": true,
+  "reconstruction_scope": "sameprocess public column_state rebuild, not freshprocess/nativecheckpoint/coupledacceptance",
+  "zero_gravity_drainage_all_days": true,
+  "all53_original_observations_retained": true,
+  "source_seal_files": 85,
+  "report_readable_now": true
+}

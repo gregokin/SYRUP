@@ -1,0 +1,7 @@
+case,driver_overall_rmse_mean_of_layer_mse_m3m3,driver_pooled_rmse_alternative_m3m3,label
+JORN4_A_s1,0.005516712188666664,0.005590258134463843,native driver metrics (per-layer-weighted overall RMSE differs from the pooled scores of this report)
+JORN4_A_s1p5,0.005100437678343015,0.005211599681492873,native driver metrics (per-layer-weighted overall RMSE differs from the pooled scores of this report)
+JORN4_B_s1,0.0034331556598910713,0.003506934040670925,native driver metrics (per-layer-weighted overall RMSE differs from the pooled scores of this report)
+JORN4_B_s1p5,0.0041162056289824455,0.004233645016812159,native driver metrics (per-layer-weighted overall RMSE differs from the pooled scores of this report)
+MOAB2_C_s1,0.003493530203659015,0.0038630556501256736,native driver metrics (per-layer-weighted overall RMSE differs from the pooled scores of this report)
+MOAB2_C_s1p5,0.008226359457722104,0.009283561567545954,native driver metrics (per-layer-weighted overall RMSE differs from the pooled scores of this report)

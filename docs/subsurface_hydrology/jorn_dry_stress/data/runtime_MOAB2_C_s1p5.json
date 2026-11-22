@@ -1,0 +1,9 @@
+{
+  "driver_call_wall_s": 2.8896952219947707,
+  "scope": "includes driver import/case validation/preparation/column runs (numba+numpy+restart control)/scoring/output; excludes outer interpreter/bootstrap/source checks",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "peak_rss_kib": 326360,
+  "model_scope": "one 1 m2 three-layer column dry window, CPU, not a GPU/scaling benchmark",
+  "source_helper_unchanged": true
+}

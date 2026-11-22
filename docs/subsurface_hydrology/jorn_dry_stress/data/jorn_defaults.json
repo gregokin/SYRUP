@@ -1,0 +1,52 @@
+{
+  "schema": "syrup.jorn_defaults/1",
+  "version": 1,
+  "status": "user_selected_case_level_default",
+  "decision": {
+    "date_utc": "2026-11-22",
+    "by": "user",
+    "basis": "visual preference of the JORN 160-day uniform field-capacity comparison",
+    "not_a_calibration": true,
+    "not_a_refit": true,
+    "stress_note": "0.30255 = 1.5 x 0.2017 (a rounded sensitivity value); it is the user's selected JORN setting, not a newly fitted parameter and not the earlier jointly fitted 0.20170581117963332"
+  },
+  "scope": {
+    "applies_to": "future JORN (NEON Jornada plot 004) soil-column runs that LOAD this preset explicitly",
+    "not": [
+      "a global SYRUP physics default",
+      "a MOAB default (MOAB keeps its own SR33-derived field capacity and properties)",
+      "a new calibration or refit",
+      "a retroactive migration of frozen configs, source locks, restart identities or published results"
+    ],
+    "transpiration": "T = 0 only in the current controlled experiments; this preset does not require T = 0 for future LEAF coupling"
+  },
+  "units": {
+    "theta_field_capacity_all_layers": "volumetric fraction m3/m3; 0.10 means 10 vol. %",
+    "theta_evaporation_stress": "volumetric fraction m3/m3 (a normalisation scale of the quadratic evaporation reduction; may exceed saturation)",
+    "evaporation_factor": "dimensionless multiplier of the potential soil evaporation",
+    "diffusion_coefficient": "dimensionless Tietjen exchange multiplier d",
+    "conductivity_multiplier": "dimensionless multiplier of ALL Ks, matrix K and interface K relative to the accepted SR33 values"
+  },
+  "parameters": {
+    "theta_field_capacity_all_layers": 0.1,
+    "theta_evaporation_stress": 0.30255,
+    "evaporation_factor": 1.0,
+    "diffusion_coefficient": 0.0010239461376024856,
+    "conductivity_multiplier": 1.0,
+    "interface_conductivity_method": "harmonic"
+  },
+  "geometry_context": {
+    "layer_edges_m": [0.0, 0.1, 0.2, 0.3],
+    "layers": 3
+  },
+  "preserved_from_accepted_jorn": "saturation, residual content, Ks, matrix K and interface conductivities stay exactly the accepted SR33-derived JORN values; no conductivity or other retention value is recomputed when the field capacity is overridden",
+  "source": {
+    "accepted_study_commit": "99465040d947ec6ff377003a88f3b2636d923f15",
+    "case_file": "docs/subsurface_hydrology/jorn_fc_sensitivity/data/case_numba_fc10_s1p5.json",
+    "case_file_sha256": "027dfdd313c43646f46763da4fee8096454c511a356ebf57a911c22d9d546c9d"
+  },
+  "d_provenance": "d = 0.0010239461376024856 came from the earlier joint fit of d and the evaporation stress at E = 1, with T = 0 and the old 6 kPa field capacity, to 53 JORN/MOAB 2025 dry-period observations; it is retained unchanged and is not re-fitted here",
+  "deferred": {
+    "third_layer_wetting_discrepancy": "the model 20-30 cm wetting at the January 2024 storm versus the 25.8 cm sensor is unresolved and deferred by user decision; all outputs and measurements are retained; no sensor, wetting-front or support-cause investigation, censoring or refit is based on it"
+  }
+}

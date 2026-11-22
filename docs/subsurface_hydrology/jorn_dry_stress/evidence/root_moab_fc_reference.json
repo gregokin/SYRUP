@@ -1,0 +1,19 @@
+{
+  "status": "INDEPENDENT_ALGEBRA_REFERENCE",
+  "method": "Invert historical true6kPa retention interpolation using positive MOAB air-entry and saturation; this checks native SR33 values, does not replace native estimator",
+  "MOAB_implied_density_adjusted_theta33": [
+    0.13932602200462824,
+    0.1562247349948668,
+    0.1562247349948668
+  ],
+  "old_FC6": [
+    0.37996672767136985,
+    0.39218936166045765,
+    0.39218936166045765
+  ],
+  "initial_theta": [
+    0.065282375,
+    0.060064500000000014,
+    0.05428312499999999
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "docx": "/home/okin/SYRUP/agent_handoffs/tasks/jorn_dry_stress_20261122/analysis_candidate/docs/subsurface_hydrology/jorn_dry_stress/SYRUP_JORN_MOAB_dry_period_stress_comparison_20261122.docx",
+  "sha256": "43ef691d28ec21d5286cde4f1ece186e938f1baa952306af6d2a74756c51f261",
+  "tables": 9,
+  "table_csv_matches": [
+    "cases.csv",
+    "upper_two.csv",
+    "upper_two_bias.csv",
+    "all_layers.csv",
+    "no_change.csv",
+    "budget.csv",
+    "evap_effect.csv",
+    "checks.csv",
+    "timing.csv"
+  ],
+  "media_png_exact": 4,
+  "max_table_columns": 6,
+  "all_report_source_seals_unchanged": 85,
+  "all_case_and_execution_input_hashes_unchanged": true,
+  "manifest_verified": true,
+  "scope": "Independent static Word/table/media/data verification; no Office render claim."
+}

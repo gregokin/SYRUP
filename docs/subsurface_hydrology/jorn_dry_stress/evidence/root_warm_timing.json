@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "scope": "Warm native column-call timing: includes operator preparation, arrays and daily updates; excludes input preparation/scoring/I/O. Not kernel-only timing.",
+  "backend": "numba",
+  "warmup_call_s": 2.470056158985244,
+  "rows": [
+    {
+      "key": "JORN4_A_s1",
+      "days": 10,
+      "warm_native_column_call_s": 0.0013483490038197488,
+      "exact_trajectory_to_primary": true
+    },
+    {
+      "key": "JORN4_A_s1p5",
+      "days": 10,
+      "warm_native_column_call_s": 0.001166690984973684,
+      "exact_trajectory_to_primary": true
+    },
+    {
+      "key": "JORN4_B_s1",
+      "days": 4,
+      "warm_native_column_call_s": 0.0007224839937407523,
+      "exact_trajectory_to_primary": true
+    },
+    {
+      "key": "JORN4_B_s1p5",
+      "days": 4,
+      "warm_native_column_call_s": 0.0006646700203418732,
+      "exact_trajectory_to_primary": true
+    },
+    {
+      "key": "MOAB2_C_s1",
+      "days": 6,
+      "warm_native_column_call_s": 0.000778243993408978,
+      "exact_trajectory_to_primary": true
+    },
+    {
+      "key": "MOAB2_C_s1p5",
+      "days": 6,
+      "warm_native_column_call_s": 0.0008139760175254196,
+      "exact_trajectory_to_primary": true
+    }
+  ],
+  "extra_native_window_calls": 7,
+  "not_a_controlled_machine_speed_benchmark": true
+}
