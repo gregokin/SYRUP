@@ -93,6 +93,7 @@ decides the dry/wet switch on the pre-hydrology depth, this module on the post-h
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import weakref
 from dataclasses import dataclass, field, replace
@@ -1864,10 +1865,13 @@ class PondEvent:
 
 def _control_identity(control: PondEventControl, context: BedContext) -> tuple:
     """Digest parts of the resident-window options: EMPTY for every dense default (so every dense digest is unchanged)."""
+    from maple_syrup.sediment_bed import terrain_identity
+    terrain = terrain_identity(context)
+    extra = () if terrain is None else (("terrain", json.dumps(terrain, sort_keys=True)),)
     if control.bed_storage == "dense":
-        return ()
+        return extra
     return (("windowed", control.deep_publication, control.deep_publication_high_water_records,
-             context.window_max_journal_records, deep_storage_record(context)),)
+             context.window_max_journal_records, deep_storage_record(context)),) + extra
 
 
 def require_supported_bed_context(context: BedContext, control: PondEventControl | None = None) -> None:
@@ -1879,8 +1883,13 @@ def require_supported_bed_context(context: BedContext, control: PondEventControl
     high-water mark must lie below the ACTUAL journal cap (`resolved_journal_cap`) and the bound MAPLE package must be a
     source whose append-cap refusal the recognizer knows (M94 pinned message or the accepted typed
     `JournalCapacityError`, checked structurally)."""
+    if (control is not None and control.bed_storage == 'windowed'
+            and (getattr(context, 'fixed_base', None) is not None or getattr(context, 'domain', None) is not None)):
+        raise PondBedError('the terrain pond route is Dense only; windowed terrain is unqualified')
     if bool(getattr(context.avalanching_spec, "enabled", False)):
-        raise PondBedError("avalanching must be explicitly disabled for the pond event")
+        from maple_syrup.pond_bed import _terrain_avalanche_context
+        if not _terrain_avalanche_context(None, context):
+            raise PondBedError("avalanching must be explicitly disabled outside the qualified closed-edge terrain route")
     if context.depth_update_rule != "constant_depth":
         raise PondBedError("the pond event requires constant_depth")
     if context.record_exchange_history is not False:

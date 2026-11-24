@@ -57,6 +57,14 @@ class BedContext:
     # logical stored values, physics and mass authority are unchanged.
     deep_chunk_encoding: str = 'full'
     deep_overlay_max_bytes: int | None = None
+    # Terrain (defaults LAST, None = every existing construction, call and digest unchanged): the genuine native
+    # `FixedBaseState` (immutable world datum beneath the column) and `DomainState` (irregular physical footprint)
+    # the case compiled with, carried BY REFERENCE in the bed namespace. They are forwarded to the native commit,
+    # avalanche callback and surface diagnostic ONLY when present (`fixed_base=` / `domain=` keywords), so every
+    # terrain-free context makes byte-identical native calls. Never a second authority: MAPLE's own validators and
+    # terrain APIs decide what they mean (`world_elevation_m`, `check_committed_reference_consistent_with_fixed_base`).
+    fixed_base: Any = None
+    domain: Any = None
 
 
 def maple_supports_exchange_history() -> bool:
@@ -166,9 +174,66 @@ def bed_from_case(case, *, xp=None) -> tuple[BedState, BedContext]:
     state = BedState(case.voxel_column, case.active_layer, case.water, case.sediment_ledger,
                      case.committed_topography, case.sediment_availability)
     state = to_device_tree(state, namespace)
+    # Terrain owners (None on every pre-terrain compiled case and on every older MAPLE without the attribute): placed
+    # in the bed namespace AFTER the state and the fraction, in this fixed order (the device planner counts exactly
+    # these transfers), through MAPLE's own counted tree placement; on NumPy the arrays are returned by reference.
+    terrain = {}
+    for name in ('fixed_base', 'domain'):
+        owner = getattr(case, name, None)
+        if owner is not None:
+            terrain[name] = to_device_tree(owner, namespace)
     context = BedContext(cfg.geometry, cfg.grain_classes, cfg.numerics.mass_resolution_kg,
-                         cfg.topographic_commit, cfg.avalanching, to_device(fractions, namespace))
+                         cfg.topographic_commit, cfg.avalanching, to_device(fractions, namespace), **terrain)
     return state, context
+
+
+def terrain_kwargs(context: BedContext, *, domain: bool = True) -> dict[str, Any]:
+    """The genuine upstream `fixed_base=` (and, when `domain`, `domain=`) keywords of a context, present ONLY when the
+    context carries the owner, so a terrain-free context yields `{}` and the native call is byte-identical."""
+    out: dict[str, Any] = {}
+    fixed_base = getattr(context, 'fixed_base', None)
+    if fixed_base is not None:
+        out['fixed_base'] = fixed_base
+    if domain and getattr(context, 'domain', None) is not None:
+        out['domain'] = context.domain
+    return out
+
+
+def terrain_identity(context: BedContext) -> dict[str, Any] | None:
+    """SCALAR identity of the context's terrain owners through the native identity helpers (content fingerprint,
+    algorithm version, shape, counts; no array is read, hashed or copied): None without terrain. Used by seals,
+    receipts and tamper checks; never a physics input."""
+    fixed_base = getattr(context, 'fixed_base', None)
+    domain = getattr(context, 'domain', None)
+    if fixed_base is None and domain is None:
+        return None
+    out: dict[str, Any] = {}
+    if fixed_base is not None:
+        from maple.core.types.fixed_base import fixed_base_identity
+
+        out['fixed_base'] = fixed_base_identity(fixed_base)
+    if domain is not None:
+        from maple.core.types.domain import domain_identity
+
+        out['domain'] = domain_identity(domain)
+    return out
+
+
+def water_outside_domain_nonzero(state: BedState, context: BedContext) -> int:
+    """Number of water leaf entries (surface depth + water-borne mass) that are NONZERO on a NoData cell of the
+    context's domain footprint, through fused reductions in the bed namespace and ONE counted scalar read per leaf
+    (no mask download, no whole-leaf host shadow). 0 without a domain. Every water leaf on NoData must stay exactly
+    zero: a footprint cell that does not exist holds no water."""
+    domain = getattr(context, 'domain', None)
+    if domain is None:
+        return 0
+    from maple.core.backend import array_namespace, to_int
+
+    valid = domain.valid_mask
+    xp = array_namespace(valid, state.water.depth_m, state.water.mobile_mass_by_cell_class_kg)
+    depth = xp.where(valid, 0.0, state.water.depth_m)
+    mobile = xp.where(valid[..., None], 0.0, state.water.mobile_mass_by_cell_class_kg)
+    return int(to_int(xp.count_nonzero(depth))) + int(to_int(xp.count_nonzero(mobile)))
 
 
 def with_water(state: BedState, context: BedContext, depth_m, mobile_kg=None) -> BedState:
@@ -420,6 +485,8 @@ def current_routing_surface_m(state: BedState, context: BedContext):
     geometry diagnostic, never a mass authority."""
     committed = state.committed_topography
     if is_windowed_bed(state):
+        if terrain_kwargs(context):
+            raise BedIntegrationError('a windowed bed with a fixed base / domain footprint is not qualified')
         from maple.surface.topographic_commit.windowed_commit import (
             windowed_committed_surface_elevation_m,
         )
@@ -431,8 +498,12 @@ def current_routing_surface_m(state: BedState, context: BedContext):
             diagnose_combined_surface_state,
         )
 
+        # With a fixed base the dense commit's own diagnostic yields the WORLD surface (the base added exactly
+        # once by MAPLE's `world_elevation_m`), the same datum the committed reference holds; without one the
+        # call is byte-identical to before.
         surface = diagnose_combined_surface_state(state.voxel_column, state.active_layer, context.geometry,
-                                                  context.mass_resolution_kg).combined_elevation_m
+                                                  context.mass_resolution_kg,
+                                                  **terrain_kwargs(context, domain=False)).combined_elevation_m
     reference_m = committed.reference_elevation_m
     return reference_m + (surface - reference_m)
 
@@ -537,9 +608,12 @@ def commit_bed(state: BedState, context: BedContext, graph: RoutingGraph,
         if candidate is None:
             return BedCommit(state, graph, False, trigger)
     else:
+        terrain = terrain_kwargs(context)
         if is_windowed_bed(state):
             if bool(getattr(context.avalanching_spec, 'enabled', False)):
                 raise BedIntegrationError('windowed commits require explicitly disabled avalanching')
+            if terrain:
+                raise BedIntegrationError('a windowed bed with a fixed base / domain footprint is not qualified')
             from maple.surface.topographic_commit.windowed_commit import (
                 stage_windowed_topography,
             )
@@ -566,9 +640,21 @@ def commit_bed(state: BedState, context: BedContext, graph: RoutingGraph,
             threshold = reroute_threshold_m(context)
         if reference.allow_masked_nodata and bool(getattr(context.avalanching_spec, 'enabled', False)):
             # MAPLE's avalanching knows the whole grid, not SYRUP's inactive / nodata mask: a slope relaxation could
-            # move bed mass into or out of masked cells. Refused until that interaction is qualified separately.
-            raise BedIntegrationError('avalanching inside commits is not supported with a masked-nodata terrain '
-                                      '(unqualified mass exchange across the mask); disable avalanching or the mask')
+            # move bed mass into or out of masked cells. Refused unless the context carries the native domain
+            # footprint AND SYRUP's inactive cells are exactly the footprint's NoData cells: MAPLE's own
+            # domain-aware avalanche (`domain=` keyword) then never moves mass across the mask. One host compare
+            # of two `(ny, nx)` bool masks at a commit (never per step; one counted bounded download of the
+            # footprint mask on a device bed).
+            domain = getattr(context, 'domain', None)
+            if domain is None:
+                raise BedIntegrationError('avalanching inside commits is not supported with a masked-nodata terrain '
+                                          '(unqualified mass exchange across the mask); disable avalanching or the mask')
+            from maple.core.backend import to_host as _to_host
+
+            if not np.array_equal(np.asarray(graph.active, dtype=np.bool_),
+                                  np.asarray(_to_host(domain.valid_mask), dtype=np.bool_)):
+                raise BedIntegrationError('avalanching with a masked-nodata terrain needs the routing active mask to '
+                                          'be exactly the native domain footprint (inactive iff NoData); refused')
         if not isinstance(context.record_exchange_history, bool):
             raise BedIntegrationError('record_exchange_history must be bool')
         history_kwargs = {}
@@ -583,16 +669,21 @@ def commit_bed(state: BedState, context: BedContext, graph: RoutingGraph,
                                           time_s, context.topographic_commit_spec)
         if not force and not trigger.should_commit:
             return BedCommit(state, graph, False, trigger)
+        # Terrain: the genuine upstream keywords, present ONLY when the context carries the owner (a terrain-free
+        # context makes exactly the previous calls). The avalanche callback receives the base and the footprint
+        # (MAPLE's domain-aware relaxation); the commit receives the base (its refreshed committed elevation is
+        # then the world surface and it refuses a committed reference that is not a world reference).
         avalanche, avalanche_box = make_availability_aware_avalanche_callback(
-            context.avalanching_spec, state.sediment_availability, context.initial_available_fraction)
+            context.avalanching_spec, state.sediment_availability, context.initial_available_fraction, **terrain)
         water, water_box = make_water_depth_commit_callback(
             state.water, context.geometry, committed_elevation_m(state.committed_topography),
             depth_update_rule=context.depth_update_rule,
-            **({'trusted_packet': True} if is_windowed_bed(state) else {}))
+            **({'trusted_packet': True} if is_windowed_bed(state) else {}), **terrain_kwargs(context, domain=False))
         result = commit_topography(state.ledger, state.committed_topography, state.voxel_column,
                                    state.active_layer, context.geometry, context.mass_resolution_kg,
                                    time_s, avalanche_callback=avalanche, water_callback=water,
-                                   **({'trusted_packet': True} if is_windowed_bed(state) else {}), **history_kwargs)
+                                   **({'trusted_packet': True} if is_windowed_bed(state) else {}), **history_kwargs,
+                                   **terrain_kwargs(context, domain=False))
         if context.record_exchange_history and (
                 result.pre_commit_n_physical_touches is None or result.pre_commit_gross_physical_activity_kg is None
                 or result.exchange_history_receipt is None):

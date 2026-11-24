@@ -1,12 +1,14 @@
 """Narrow, genuine DENSE-CUDA source association (candidate A1; nothing existing is edited or routed through this module).
 
-It answers ONE question for a later CUDA owner: is the imported `maple` package exactly one of two named, immutable native
-packages (the merged MAPLE39 package or the native9f package), and which genuine module/class objects does this process bind to
-that package? The answer is a sealed, factory-minted association record. It is EVIDENCE OF ASSOCIATION, not CPU/GPU physics
-acceptance and not a device-capability claim; it does not touch a device, an array or CuPy.
+It answers ONE question for a later CUDA owner: is the imported `maple` package exactly one of four named, immutable native
+packages (the merged MAPLE39, native9f, current native1dca or the separately named terrain native_terrain_20261123 package), and which genuine
+module/class objects does this process bind to that package? The answer is a sealed, factory-minted association record. It is
+EVIDENCE OF ASSOCIATION, not CPU/GPU physics acceptance and not a device-capability claim; it does not touch a device, an array or CuPy.
 
-* Registry: two module-private literal package digests under two distinct profile names. There is no caller-supplied digest, no
+* Registry: four module-private literal package digests under distinct profile names. There is no caller-supplied digest, no
   generic whitelist, no extension API and no fallback; an unknown profile or a digest of the other family is a typed refusal.
+  The terrain profile (`PROFILE_NATIVE_TERRAIN_20261123`) is the only pairing the terrain Dense CUDA preparation and the Dense CUDA wind handoff
+  accept for a bed context that carries a fixed base / domain footprint; the three older names are unchanged.
 * Cold verification (`verify_dense_cuda_source`) runs only after its streamed-hash stage was ADMITTED against the caller's
   `available_bytes_fn` + reserve; class/binding checks that need no hash precede the hash. The hash is the process-cached
   `sediment_bed.bound_maple_package_digest()` (the first call IS the fresh streamed hash).
@@ -46,6 +48,8 @@ __all__ = [
     "DenseCudaSourceProfileError",
     "PROFILE_NATIVE39",
     "PROFILE_NATIVE9F",
+    "PROFILE_NATIVE1DCA",
+    "PROFILE_NATIVE_TERRAIN_20261123",
     "MAX_RECORD_PATH_CHARS",
     "RECORD_RETAINED_BYTES",
     "check_dense_cuda_source_hot",
@@ -58,12 +62,20 @@ __all__ = [
 
 PROFILE_NATIVE39 = "native39_dense_cuda"
 PROFILE_NATIVE9F = "native9f_dense_cuda"
+PROFILE_NATIVE1DCA = "native1dca_dense_cuda"
+#: Separately named TERRAIN association: the exact committed c4b9343 package (`native_maple_terrain_20261123.PINS["package_digest"]`,
+#: the bundle receipt's `package_source_digest`). Not a default and not a fallback for any older name.
+PROFILE_NATIVE_TERRAIN_20261123 = "native_terrain_20261123_dense_cuda"
 #: module-private, immutable; deliberately not derived from or added to any other source list
 _REGISTRY = types.MappingProxyType({
     PROFILE_NATIVE39: types.MappingProxyType(
         {"family": "native39", "package_sha256": "af54626ab432670539ed71480fd884f13581dfdfcfec63d7c85053ca215adfec"}),
+    PROFILE_NATIVE1DCA: types.MappingProxyType(
+        {"family": "native1dca", "package_sha256": "191416153d3eca03e0b5e0817720d1365055de5b0b37391ac95454321aee7d68"}),
     PROFILE_NATIVE9F: types.MappingProxyType(
         {"family": "native9f", "package_sha256": "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"}),
+    PROFILE_NATIVE_TERRAIN_20261123: types.MappingProxyType(
+        {"family": "native_terrain_20261123", "package_sha256": "f4e4dc694dff1bbf126ddbb69a8cd0bc089d8006ebb5f4ed2ce1ac30e8e5b8bc"}),
 })
 #: Retained-record charge. The record BORROWS (does not copy) the module/class/function objects and the registry literal strings. Owned
 #: allocations: the object, the read-only payload mapping (~16 entries) and a weakref slot (<= 2048 B declared). The two file strings are

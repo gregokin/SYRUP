@@ -272,6 +272,8 @@ def check_event(event: Any) -> Any:
     if type(event) is not PondEvent or event.vertical is None or type(event.vertical) is not fp.FloatingPondVertical:
         _fail("event must be a PondEvent with a FloatingPondVertical")
     v = event.vertical
+    if getattr(getattr(v, 'config', None), 'property_mode', 'texture') != 'texture':
+        _fail("supplied_final property mode is unqualified for CUDA floating pond checkpoint save/reload")
     if v.backend != "cuda" or getattr(event.xp, "__name__", None) != "cupy" or event.control.backend != "cuda":
         _fail(f"the CUDA floating file needs a CUDA vertical on a CuPy event (vertical {v.backend!r}, array namespace {getattr(event.xp, '__name__', None)!r}, hydraulic {event.control.backend!r}); "
               "CPU events use floating_checkpoint")

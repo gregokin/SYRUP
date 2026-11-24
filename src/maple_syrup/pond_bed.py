@@ -42,6 +42,7 @@ from maple_syrup.sediment_bed import (
     apply_bed_pickup_transport_deposit,
     bed_already_committed,
     current_routing_surface_m,
+    terrain_kwargs,
     deep_storage_is_default,
     is_windowed_bed,
     net_routing_displacement_m,
@@ -89,6 +90,31 @@ def require_paired_entry():
     return entry
 
 
+def _terrain_avalanche_context(state: BedState, context: BedContext) -> bool:
+    """The narrow Dense world-base/footprint route; native owners and closed faces.
+
+    The pond event already refreshes its physical topology after a native commit.
+    Native MAPLE supplies the complete avalanche law and masked neighbour links.
+    This check reads metadata only; no whole-column scan or device transfer.
+    """
+    base, domain = getattr(context, 'fixed_base', None), getattr(context, 'domain', None)
+    if base is None or domain is None or (state is not None and is_windowed_bed(state)):
+        return False
+    if getattr(context.geometry, 'surface_edge_policy', None) != 'closed':
+        return False
+    from maple.core.backend import array_namespace
+    from maple.core.types.domain import validate_domain_state
+    from maple.core.types.fixed_base import validate_fixed_base_state
+    g = context.geometry
+    validate_domain_state(domain, g.ny, g.nx)
+    validate_fixed_base_state(base, g.ny, g.nx)
+    owners = (base.elevation_m, domain.valid_mask)
+    if state is not None:
+        owners += (state.voxel_column.mass_kg, state.water.depth_m)
+    array_namespace(*owners)
+    return True
+
+
 def require_supported_bed(state: BedState, context: BedContext, *, allow_windowed: bool = False) -> None:
     """Actual-MAPLE bed with disabled avalanching and the solver-owned depth rule; refuse anything else.
 
@@ -113,7 +139,7 @@ def require_supported_bed(state: BedState, context: BedContext, *, allow_windowe
             validate_deep_storage(context, state)
         except BedIntegrationError as exc:
             raise PondBedError(str(exc)) from None
-    if bool(getattr(context.avalanching_spec, "enabled", False)):
+    if bool(getattr(context.avalanching_spec, "enabled", False)) and not _terrain_avalanche_context(state, context):
         raise PondBedError("avalanching must be explicitly disabled for the pond event (its mass exchange over a "
                            "static pond topology is unqualified)")
     if context.depth_update_rule != "constant_depth":
@@ -165,13 +191,15 @@ def native_commit(state: BedState, context: BedContext, time_s: float, *, force:
         make_water_depth_commit_callback = make_windowed_water_depth_commit_callback  # noqa: F811
         extra = {"trusted_packet": True}
     avalanche, avalanche_box = make_availability_aware_avalanche_callback(
-        context.avalanching_spec, state.sediment_availability, context.initial_available_fraction)
+        context.avalanching_spec, state.sediment_availability, context.initial_available_fraction,
+        **terrain_kwargs(context))
+    terrain_kw = terrain_kwargs(context, domain=False)
     water, water_box = make_water_depth_commit_callback(
         state.water, context.geometry, committed_elevation_m(state.committed_topography),
-        depth_update_rule=context.depth_update_rule, **extra)
+        depth_update_rule=context.depth_update_rule, **extra, **terrain_kw)
     result = commit_topography(state.ledger, state.committed_topography, state.voxel_column, state.active_layer,
                                context.geometry, context.mass_resolution_kg, time_s,
-                               avalanche_callback=avalanche, water_callback=water, **extra)
+                               avalanche_callback=avalanche, water_callback=water, **extra, **terrain_kw)
     water_box.publish()  # local box only
     xp = array_namespace(state.water.depth_m)
     if (not water_box.ran or water_box.depth_update.rule != "constant_depth"

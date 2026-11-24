@@ -47,10 +47,38 @@ from maple_syrup import native_dense_profile as ndp
 from maple_syrup import sediment_bed as sb
 from maple_syrup import subsurface as ss
 
-__all__ = ["PROFILE_NAME", "H_AUTHORITY", "NativeDenseCudaPlan", "NativeDenseCudaPreparation", "NativeDenseCudaProfileError",
-           "NativeDenseCudaMemoryError", "plan_native_dense_cuda", "prepare_native_dense_cuda_case"]
+__all__ = ["PROFILE_NAME", "CURRENT_PROFILE_NAME", "TERRAIN_PROFILE_NAME", "H_AUTHORITY", "NativeDenseCudaPlan", "NativeDenseCudaPreparation",
+           "NativeDenseCudaProfileError", "NativeDenseCudaMemoryError", "plan_native_dense_cuda", "prepare_native_dense_cuda_case"]
 
 PROFILE_NAME = "native_maple_9f_dense_cuda_v1"
+CURRENT_PROFILE_NAME = "native_maple_1dca_dense_cuda_v1"
+#: Separately named TERRAIN Dense CUDA profile: ONLY a `native_case_profile.TERRAIN_CUDA_PROFILE_NAME` admission paired with the
+#: `dense_cuda_source.PROFILE_NATIVE_TERRAIN_20261123` association reaches it (never a 9f/1dca registry entry). The compiled fixed base / domain
+#: footprint owners are placed on the device ONCE by `bed_from_case` (after the state and the fraction, in that order), counted in the
+#: transfer plan/counters, kept resident on the BedContext and included in the content fingerprint; no full-volume host shadow.
+TERRAIN_PROFILE_NAME = "native_maple_terrain_20261123_dense_cuda_v1"
+_CUDA_ADMISSIONS = {ncp.CUDA_SOURCE_PROFILE_NAME: (PROFILE_NAME, dcs.PROFILE_NATIVE9F),
+                    ncp.CURRENT_CUDA_PROFILE_NAME: (CURRENT_PROFILE_NAME, dcs.PROFILE_NATIVE1DCA),
+                    ncp.TERRAIN_CUDA_PROFILE_NAME: (TERRAIN_PROFILE_NAME, dcs.PROFILE_NATIVE_TERRAIN_20261123)}
+
+
+def _profiles(source_name):
+    try:
+        return _CUDA_ADMISSIONS[source_name]
+    except (KeyError, TypeError):
+        raise NativeDenseCudaProfileError("an explicit qualified CUDA source admission is required") from None
+
+
+def _terrain_leaves(owner_holder):
+    """`(path, array)` of every terrain owner array (fixed base, then domain; dataclass field order = MAPLE's `_map_tree` transfer
+    order) of an object exposing `fixed_base` / `domain` (a compiled case or a BedContext); empty without terrain."""
+    out = []
+    for name in ("fixed_base", "domain"):
+        owner = getattr(owner_holder, name, None)
+        if owner is not None:
+            out.extend((p, a) for p, a in _walk(owner, "context." + name) if _backend.is_array(a))
+    return out
+
 H_AUTHORITY = "device_bed.water.depth_m"
 OWN_RECORD_RETAINED_BYTES = 8192  # sealed payload mapping (~24 entries), counters mapping and tuples; independent of N, K, V, L
 CUPY_PINNED_STAGING = "largest_transferred_leaf"  # conservative host staging allowance (unverified; Root measures)
@@ -97,7 +125,7 @@ def _check_args(admission, device_id, host_reserve, device_reserve, backend, lim
         payload = admission._payload("admission")
     except ncp.NativeCaseProfileError as exc:
         raise NativeDenseCudaProfileError(f"unauthenticated admission: {exc}") from exc
-    if payload["profile_name"] != ncp.CUDA_SOURCE_PROFILE_NAME:
+    if payload["profile_name"] not in _CUDA_ADMISSIONS:
         raise NativeDenseCudaProfileError(
             f"the device bed preparation requires a {ncp.CUDA_SOURCE_PROFILE_NAME} admission, got {payload['profile_name']!r} "
             f"(a {ncp.PROFILE_NAME} CPU admission is never accepted here)")
@@ -134,11 +162,11 @@ def _walk(obj, path=""):
         yield path, obj
 
 
-def _host_leaves_meta(state, fraction_shape):
-    """(path, shape, dtype str, nbytes) of every transferred array occurrence in transfer order (state first, then the fraction) and a
-    refusal of anything the cold fingerprint/transfer contract cannot cover. Metadata only."""
+def _host_leaves_meta(state, fraction_shape, terrain=()):
+    """(path, shape, dtype str, nbytes) of every transferred array occurrence in transfer order (state first, then the fraction, then
+    the terrain owner arrays) and a refusal of anything the cold fingerprint/transfer contract cannot cover. Metadata only."""
     out = []
-    for path, leaf in _walk(state, "bed"):
+    for path, leaf in (*_walk(state, "bed"), *terrain):
         if not isinstance(leaf, np.ndarray):
             if _backend.is_array(leaf):
                 raise NativeDenseCudaProfileError(f"{path} is already a device array; the compiled case must be host data")
@@ -149,7 +177,11 @@ def _host_leaves_meta(state, fraction_shape):
             raise NativeDenseCudaProfileError(f"{path} is not C-contiguous (the exact streamed fingerprint contract needs C order)")
         out.append((path, tuple(leaf.shape), leaf.dtype.str, int(leaf.nbytes)))
     f = ("context.initial_available_fraction", tuple(fraction_shape), np.dtype(np.float64).str, 8 * int(np.prod(fraction_shape)))
-    out.append(f)
+    n_terrain = len(terrain)
+    if n_terrain:  # the fraction is transferred BEFORE the terrain owners (bed_from_case order)
+        out.insert(len(out) - n_terrain, f)
+    else:
+        out.append(f)
     return out
 
 
@@ -176,6 +208,8 @@ class NativeDenseCudaPlan:
     source_cold: bool
     fraction_bytes: int = 0
     leaves: tuple = ()
+    # Terrain profile only (default LAST): bytes of the fixed-base / footprint owner arrays placed on the device (0 otherwise).
+    terrain_bytes: int = 0
 
     def host_total(self) -> int:
         return self.host_required_bytes + self.caller_host_reserve_bytes
@@ -188,17 +222,24 @@ def _plan(compiled, payload, meta, dev, hr, dr) -> NativeDenseCudaPlan:
     ny, nx = meta["shape"]
     N, V, K = ny * nx, meta["n_voxels"], meta["n_classes"]
     state = _host_shell(compiled)
-    leaves = _host_leaves_meta(state, (ny, nx, K))
+    terrain = _terrain_leaves(compiled) if payload["profile_name"] == ncp.TERRAIN_CUDA_PROFILE_NAME else ()
+    leaves = _host_leaves_meta(state, (ny, nx, K), terrain)
     inv = _array_leaf_inventory(state)  # what to_device_tree(state) moves: alias-counted, metadata only
-    state_leaves = leaves[:-1]
-    if inv["n_leaves"] != len(state_leaves) or inv["transfer_bytes"] != sum(x[3] for x in state_leaves):
+    n_state = int(inv["n_leaves"])
+    state_leaves, frac_leaf, terrain_leaves = leaves[:n_state], leaves[n_state], leaves[n_state + 1:]
+    if inv["transfer_bytes"] != sum(x[3] for x in state_leaves) or len(terrain_leaves) != len(terrain) \
+            or frac_leaf[0] != "context.initial_available_fraction":
         raise NativeDenseCudaProfileError("the planned leaf inventory differs from MAPLE's alias-counted transfer inventory")
-    frac_bytes = leaves[-1][3]
-    transfer_bytes = int(inv["transfer_bytes"]) + frac_bytes
-    n_occ = int(inv["n_leaves"]) + 1
+    for (path, _s, _d, nbytes), (want_path, _a) in zip(terrain_leaves, terrain):  # each owner array is ONE counted placement
+        if path != want_path:
+            raise NativeDenseCudaProfileError("the planned terrain owner inventory differs from MAPLE's tree placement order")
+    terrain_bytes = sum(x[3] for x in terrain_leaves)
+    frac_bytes = frac_leaf[3]
+    transfer_bytes = int(inv["transfer_bytes"]) + frac_bytes + terrain_bytes
+    n_occ = n_state + 1 + len(terrain_leaves)
     largest = max(x[3] for x in leaves)
     dense = meta["dense"]
-    src = dcs.plan_source_verification(dcs.PROFILE_NATIVE9F)
+    src = dcs.plan_source_verification(_profiles(payload["profile_name"])[1])
     chunk = min(_ls.HASH_CHUNK_BYTES, max(largest, 8))
     host_stages = {
         "stage_source_audit": meta["audit"]["total"],
@@ -214,13 +255,17 @@ def _plan(compiled, payload, meta, dev, hr, dr) -> NativeDenseCudaPlan:
     host_required = host_peak + sum(host_retained.values())
     scratch = {k: dense[k] for k in ("voxel_totals", "voxel_masks", "partition_active", "ledger", "fixed")}
     scratch["native_flags"] = _ls.native_validation_bytes(N, K, "cuda")
+    # terrain profile: the native world-reference check and the fused dry-NoData water predicate on the device (same enumerated
+    # terms as the CPU model; 0 without terrain)
+    scratch["terrain_validation"] = int(dense.get("fixed_base_check", 0)) + int(dense.get("domain_check", 0))
     device_terms = (("transferred_leaves_alias_counted", int(inv["transfer_bytes"])), ("context_fraction", frac_bytes),
+                    ("terrain_owners_placed_resident", terrain_bytes),
                     ("allocator_rounding", ALLOCATOR_ROUNDING_BYTES * n_occ), *(("validation_" + k, v) for k, v in scratch.items()),
                     ("validation_scratch", sum(scratch.values())))
     device_required = transfer_bytes + ALLOCATOR_ROUNDING_BYTES * n_occ + sum(scratch.values())
-    return NativeDenseCudaPlan(PROFILE_NAME, (ny, nx), V, K, dev, n_occ, int(inv["n_aliased_leaves"]), transfer_bytes, frac_bytes,
+    return NativeDenseCudaPlan(_profiles(payload["profile_name"])[0], (ny, nx), V, K, dev, n_occ, int(inv["n_aliased_leaves"]), transfer_bytes, frac_bytes,
                                host_terms, device_terms, host_required, device_required, hr, dr, meta["resident"], src.cold,
-                               frac_bytes, tuple(leaves))
+                               frac_bytes, tuple(leaves), terrain_bytes)
 
 
 def _meta(admission, compiled, payload, limits):
@@ -250,7 +295,7 @@ _SEALED: "weakref.WeakKeyDictionary[Any, types.MappingProxyType]" = weakref.Weak
 _FIELDS = ("profile_name", "source_profile", "bundle_id", "package_digest", "syrup_package_digest", "case_identity_sha256",
            "latitude_deg", "route", "shape", "n_voxels", "n_classes", "class_ids", "ledger_kind", "device_id", "h_authority",
            "transfer_evidence", "fingerprint", "memory", "caller_host_reserve_bytes", "caller_device_reserve_bytes", "source",
-           "bed", "context", "admission")
+           "bed", "context", "admission", "terrain")
 
 
 class NativeDenseCudaPreparation:
@@ -357,13 +402,13 @@ def _scalar_token(path, v) -> bytes:
     raise NativeDenseCudaProfileError(f"{path} holds an unsupported non-array leaf {type(v).__name__}")
 
 
-def _fingerprint(state, fraction, *, device: bool) -> tuple[str, int, int]:
-    """SHA-256 over every physical leaf (state traversal order, then the initial available fraction): path, dtype, shape header then RAW
-    bytes streamed in <= HASH_CHUNK_BYTES chunks (host: memoryview, no copy; device: counted bounded D2H per chunk). Returns
-    (hexdigest, n_chunks_downloaded, bytes_downloaded). Float reductions are never used as byte identity."""
+def _fingerprint(state, fraction, *, device: bool, terrain=()) -> tuple[str, int, int]:
+    """SHA-256 over every physical leaf (state traversal order, then the initial available fraction, then the terrain owner arrays):
+    path, dtype, shape header then RAW bytes streamed in <= HASH_CHUNK_BYTES chunks (host: memoryview, no copy; device: counted bounded
+    D2H per chunk). Returns (hexdigest, n_chunks_downloaded, bytes_downloaded). Float reductions are never used as byte identity."""
     h = hashlib.sha256(b"maple_syrup.native_dense_cuda_profile.fingerprint/1")
     n_chunks = n_bytes = 0
-    for path, leaf in (*_walk(state, "bed"), ("context.initial_available_fraction", fraction)):
+    for path, leaf in (*_walk(state, "bed"), ("context.initial_available_fraction", fraction), *terrain):
         if not _backend.is_array(leaf):
             h.update(path.encode() + b"=" + _scalar_token(path, leaf) + b"\0")
             continue
@@ -392,14 +437,15 @@ def _host_fraction(compiled):
 def _host_stage(compiled, meta):
     """Unchanged CPU validation suite on the caller's host leaves (shell, no copy) + the host fingerprint; releases the host fraction."""
     frac = _host_fraction(compiled)
+    terrain = {k: getattr(compiled, k) for k in ("fixed_base", "domain") if getattr(compiled, k, None) is not None}
     ctx = sb.BedContext(compiled.config.geometry, compiled.config.grain_classes, compiled.config.numerics.mass_resolution_kg,
-                        compiled.config.topographic_commit, compiled.config.avalanching, frac)
+                        compiled.config.topographic_commit, compiled.config.avalanching, frac, **terrain)
     state = _host_shell(compiled)
     try:
         ndp._validate_bed(state, ctx, compiled, meta)
     except ndp.NativeDenseProfileError as exc:
         raise NativeDenseCudaProfileError(f"host validation refused the compiled case: {exc}") from exc
-    digest, _c, _b = _fingerprint(state, frac, device=False)
+    digest, _c, _b = _fingerprint(state, frac, device=False, terrain=_terrain_leaves(ctx))
     return digest
 
 
@@ -419,6 +465,10 @@ def _device_validate(state, ctx, compiled, host_leaves, meta, dev, cp):
         raise NativeDenseCudaProfileError("constant_depth is required for SYRUP hydraulic ownership")
     leaves = [(p, a) for p, a in _walk(state, "bed") if _backend.is_array(a)] + [("context.initial_available_fraction",
                                                                                       ctx.initial_available_fraction)]
+    leaves += _terrain_leaves(ctx)  # resident terrain owners: same per-leaf dtype/shape/layout/device checks below
+    for name in ("fixed_base", "domain"):
+        if (getattr(ctx, name, None) is None) != (getattr(compiled, name, None) is None):
+            raise NativeDenseCudaProfileError(f"the device context's {name} does not match the compiled case")
     if len(leaves) != len(host_leaves):
         raise NativeDenseCudaProfileError("device leaf count differs from the host leaf inventory")
     for (path, arr), (hp, shape, dtype, nbytes) in zip(leaves, host_leaves):
@@ -449,6 +499,12 @@ def _device_validate(state, ctx, compiled, host_leaves, meta, dev, cp):
     want = compiled.expected_total_mass_by_class_kg
     if inv.shape != want.shape or np.max(np.abs(inv - want), initial=0.0) > reservoir_bound_kg(ny * nx * meta["n_voxels"], inv, want):
         raise NativeDenseCudaProfileError("device bed class totals differ from the native expected class totals")
+    try:
+        # terrain: native structural validators, MAPLE's own world-reference check (bed namespace) and the fused dry-NoData water
+        # predicate; the footprint inventory invariant was checked natively on the host arrays whose fingerprint the device bed must equal
+        ndp._validate_terrain(state, ctx, meta)
+    except ndp.NativeDenseProfileError as exc:
+        raise NativeDenseCudaProfileError(f"device terrain validation refused: {exc}") from exc
 
 
 def _zero_mobile_and_pending(state) -> None:
@@ -483,7 +539,7 @@ def _cold_checks(admission, plan, compiled, meta, host_fn, hr):
     except ncp.NativeCaseProfileError as exc:
         raise NativeDenseCudaProfileError(f"cold source/case recheck refused: {exc}") from exc
     try:
-        src = dcs.verify_dense_cuda_source(dcs.PROFILE_NATIVE9F, available_bytes_fn=host_fn,
+        src = dcs.verify_dense_cuda_source(_profiles(admission.profile_name)[1], available_bytes_fn=host_fn,
                                            reserve_bytes=hr + dcs.RECORD_RETAINED_BYTES + OWN_RECORD_RETAINED_BYTES)
     except dcs.DenseCudaSourceError as exc:
         raise NativeDenseCudaProfileError(f"dense-CUDA source verification refused: {exc}") from exc
@@ -522,7 +578,7 @@ def prepare_native_dense_cuda_case(admission, *, device_id: int, caller_host_res
     _device_validate(state, ctx, compiled, plan.leaves, meta, plan.device_id, cp)
     _zero_mobile_and_pending(state)
     pre = _backend.read_transfer_counters()
-    dev_digest, n_chunks, n_bytes = _fingerprint(state, ctx.initial_available_fraction, device=True)
+    dev_digest, n_chunks, n_bytes = _fingerprint(state, ctx.initial_available_fraction, device=True, terrain=_terrain_leaves(ctx))
     fp = _backend.read_transfer_counters().delta(pre)
     if dev_digest != host_digest:
         raise NativeDenseCudaProfileError("the device bed content fingerprint differs from the host compiled case")
@@ -537,13 +593,14 @@ def prepare_native_dense_cuda_case(admission, *, device_id: int, caller_host_res
               *(("host_" + k, v) for k, v in plan.host_terms), *(("device_" + k, v) for k, v in plan.device_terms))
     obj = object.__new__(NativeDenseCudaPreparation)
     _SEALED[obj] = types.MappingProxyType(dict(
-        profile_name=PROFILE_NAME, source_profile=ncp.CUDA_SOURCE_PROFILE_NAME, bundle_id=meta["bundle_id"],
+        profile_name=plan.profile_name, source_profile=admission.profile_name, bundle_id=meta["bundle_id"],
         package_digest=admission.package_digest, syrup_package_digest=admission.syrup_package_digest,
         case_identity_sha256=admission.case_identity_sha256, latitude_deg=admission.latitude_deg, route=admission.route,
         shape=meta["shape"], n_voxels=meta["n_voxels"], n_classes=meta["n_classes"], class_ids=meta["class_ids"],
         ledger_kind=meta["ledger_kind"], device_id=plan.device_id, h_authority=H_AUTHORITY, transfer_evidence=evidence,
         fingerprint=dev_digest, memory=memory, caller_host_reserve_bytes=hr,
-        caller_device_reserve_bytes=plan.caller_device_reserve_bytes, source=src, bed=state, context=ctx, admission=admission))
+        caller_device_reserve_bytes=plan.caller_device_reserve_bytes, source=src, bed=state, context=ctx, admission=admission,
+        terrain=admission.terrain))
     return obj
 
 
@@ -556,13 +613,13 @@ def _recheck(p, host_reserve, device_reserve, host_fn, device_fn) -> None:
     scratch = dict(plan.device_terms)["validation_scratch"]
     _admit(plan, host_fn, device_fn, device_required=scratch, stage="recheck")
     src, host_digest = _cold_checks(admission, plan, compiled, meta, host_fn, plan.caller_host_reserve_bytes)
-    dcs.check_dense_cuda_source_hot(p["source"], dcs.PROFILE_NATIVE9F)
+    dcs.check_dense_cuda_source_hot(p["source"], _profiles(p["source_profile"])[1])
     if p["source"].package_sha256 != src.package_sha256:
         raise NativeDenseCudaProfileError("recheck: the source association changed since preparation")
     state, ctx = p["bed"], p["context"]
     _device_validate(state, ctx, compiled, plan.leaves, meta, plan.device_id, cp)
     _zero_mobile_and_pending(state)
-    digest, _c, _b = _fingerprint(state, ctx.initial_available_fraction, device=True)
+    digest, _c, _b = _fingerprint(state, ctx.initial_available_fraction, device=True, terrain=_terrain_leaves(ctx))
     if digest != p["fingerprint"] or digest != host_digest:
         raise NativeDenseCudaProfileError("recheck: the device bed is no longer the initial bed (content fingerprint differs from the "
                                           "sealed record or the host compiled case)")

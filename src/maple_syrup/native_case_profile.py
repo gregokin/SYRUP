@@ -1,9 +1,10 @@
-"""Opt-in native MAPLE 9f466d2c source profiles + ordinary-case/latitude admission (CANDIDATE).
+"""Opt-in exact native MAPLE source profiles + ordinary-case/latitude admission.
 
-SCOPE. Two explicit, literal source profiles that share every pinned 9f check: the DEFAULT CPU profile
+SCOPE. Three explicit, literal source profiles: the DEFAULT CPU profile
 `native_maple_9f_case_latitude_cpu_v1` (unchanged record/behavior; refuses a process that imported cupy) and the separate device-runtime
-SOURCE profile `native_maple_9f_case_latitude_cuda_v1`. Each (1) freshly verifies the exact committed MAPLE
-``9f466d2cfcd52991b24496cf67f4562d6268afa9`` source/runtime that THIS process imported (the SAME real MAPLE package for either profile) and
+SOURCE profile `native_maple_9f_case_latitude_cuda_v1` retain their exact 9f466d2c pins. The separate CPU profile
+`native_maple_1dca_case_latitude_cpu_v1` selects only the committed 1dca8539 descriptor. Each (1) freshly verifies its exact selected
+MAPLE source/runtime that THIS process imported and
 (2) admits one ordinary native case (three-file package or single file) through MAPLE's own resolve -> compile -> load, binding the
 authored ``case.yaml`` (path, SHA-256, ``location.latitude_deg``) to the same compiled landscape.
 
@@ -11,6 +12,21 @@ The CUDA name only PERMITS a CuPy import in the process. It performs no GPU exec
 CuPy is installed/authentic nor that a device is available; the compiled landscape stays host data. Neither profile is native water
 storage/exchange, a codec, wind, a global digest whitelist, a production default, a MASY bridge, a CLI or new physics preparation; those keep
 refusing under the existing 39bcf79 gates, which this module neither imports nor edits. No GPU, Git, install or upstream change.
+
+TERRAIN (separately named, never a default): `native_maple_terrain_20261123_case_latitude_cpu_v1` / `_cuda_v1` select ONLY the
+committed c4b9343 descriptor (`native_maple_terrain_20261123`) and, through the PACKAGE route only, admit what the older profiles keep refusing:
+a genuine package-compiled imported elevation (irregular `domain` footprint optional), an imported/planar fixed base, the native
+terrain/regional wind context (`slope.yaml`, including `runtime.physical_edge_policy: open_support` and the upstream residual-only
+`flat_reference_residual` approximation, which is upstream's own choice, not a new speed law), creep/avalanche, the dry geometric
+commit and bounded voxel growth. They still refuse imported sediment, a pre-existing airborne seed, non-square cells, an enabled
+`water_coupling`, any prescribed external shear, an authored initial water depth and non-bare initial vegetation (the LEAF runtime
+owns plants). MAPLE's own domain / regional / open-support / edge-policy / availability validations are never bypassed: the genuine
+`resolve_case_package` -> `compile_case_package` -> `load_compiled_case` chain runs unchanged and its refusals are this module's
+typed refusals. Before any native resolve/compile/load every authored file (case/model/wind and slope.yaml) AND every case-local
+elevation/base source file is pinned by a bounded, link-refusing, escape-refusing read; the pins are bound into the sealed
+admission and its `recheck()`; the native `package_files` census is compared with the YAML pins ONLY and the native source
+inventory with the raster pins ONLY. Compile and load are both run and COMPARED (masses, committed topography, terrain
+identities); no bed is reconstructed here.
 
 One process, one source profile: MAPLE is imported once per process; this module never swaps ``sys.modules``. Build/export/
 materialization are orchestrated OUTSIDE (``dependency_bundle``); this module consumes a strictly verified materialized
@@ -39,10 +55,12 @@ from typing import Any
 import yaml
 
 from maple_syrup import dependency_bundle
+from maple_syrup import native_maple_terrain_20261123 as _terrain  # pure descriptor (no imports): the terrain names are module constants
 from maple_syrup.provenance import source_tree_digest
 
 __all__ = [
-    "CUDA_SOURCE_PROFILE_NAME", "REFERENCE_BUNDLE_ID", "COMPILED_CASE_FIELDS", "NATIVE_COMMIT", "PACKAGE_DIGEST", "PROFILE_NAME", "RESOLVED_PACKAGE_FIELDS",
+    "CUDA_SOURCE_PROFILE_NAME", "CURRENT_PROFILE_NAME", "CURRENT_CUDA_PROFILE_NAME", "TERRAIN_PROFILE_NAME", "TERRAIN_CUDA_PROFILE_NAME",
+    "REFERENCE_BUNDLE_ID", "COMPILED_CASE_FIELDS", "NATIVE_COMMIT", "PACKAGE_DIGEST", "PROFILE_NAME", "RESOLVED_PACKAGE_FIELDS",
     "CaseLimits", "NativeCaseAdmission", "NativeCaseProfileError", "NativeSourceProfile", "admit_package_case",
     "admit_single_file_case", "inspect_headers", "load_admitted_case", "verify_source_profile",
 ]
@@ -51,7 +69,18 @@ PROFILE_NAME = "native_maple_9f_case_latitude_cpu_v1"
 #: Device-runtime SOURCE capability only: same pinned 9f source checks, but a process that imported CuPy is not refused. It does not
 #: assert CuPy is installed/authentic or that any device exists, and it prepares no device arrays.
 CUDA_SOURCE_PROFILE_NAME = "native_maple_9f_case_latitude_cuda_v1"
-_SOURCE_PROFILES = {PROFILE_NAME: False, CUDA_SOURCE_PROFILE_NAME: True}  # literal name -> device-runtime capability
+CURRENT_PROFILE_NAME = "native_maple_1dca_case_latitude_cpu_v1"
+CURRENT_CUDA_PROFILE_NAME = "native_maple_1dca_case_latitude_cuda_v1"
+#: Separately named TERRAIN profiles (committed c4b9343 descriptor; package route only; see the module notes). Never a default.
+TERRAIN_PROFILE_NAME = _terrain.PROFILE_NAME
+TERRAIN_CUDA_PROFILE_NAME = _terrain.CUDA_PROFILE_NAME
+_SOURCE_PROFILES = {PROFILE_NAME: False, CUDA_SOURCE_PROFILE_NAME: True, CURRENT_PROFILE_NAME: False, CURRENT_CUDA_PROFILE_NAME: True,
+                    TERRAIN_PROFILE_NAME: False, TERRAIN_CUDA_PROFILE_NAME: True}  # literal name -> device-runtime capability
+_TERRAIN_PROFILES = frozenset({TERRAIN_PROFILE_NAME, TERRAIN_CUDA_PROFILE_NAME})
+
+
+def _is_terrain(profile: Any) -> bool:
+    return type(profile) is str and profile in _TERRAIN_PROFILES
 NATIVE_COMMIT = "9f466d2cfcd52991b24496cf67f4562d6268afa9"
 PACKAGE_DIGEST = "fbc504bbcd1ec0c02e6a96089134a06187532455ef7ba5e6f146801c8313c02e"
 PROJECT_DIGEST = "90fa69cf32afbec3bf5fb5a3cf682de44a80ea286322547e3c1cebb791241d25"
@@ -84,6 +113,7 @@ COMPILED_CASE_FIELDS = (
 
 _ROUTES = ("package", "single_file")
 _PACKAGE_FILES = ("case.yaml", "model.yaml", "wind.yaml")
+_SLOPE_FILE = "slope.yaml"
 _OUTPUT_NAMES = ("processed", "diagnostics", "masks", "provenance.yaml")
 #: Authored case-level sections the first profile refuses BEFORE native compilation (presence alone refuses).
 _REFUSED_CASE_KEYS = {
@@ -91,6 +121,19 @@ _REFUSED_CASE_KEYS = {
     "import": "empirical import is not in the first profile",
     "initial_mobile_seed": "an initial airborne/mobile seed is not in the first profile",
     "regional_slope": "regional_slope is not in the first profile",
+}
+#: Authored sections the TERRAIN profiles refuse BEFORE native compilation (presence alone refuses). `import`, `fixed_base` and
+#: `domain` are admitted (their native validations run unchanged); `regional_slope` is authored only through `slope.yaml`.
+_TERRAIN_REFUSED_CASE_KEYS = {
+    "initial_mobile_seed": "a pre-existing airborne/mobile seed is not in the terrain profile",
+    "regional_slope": "the terrain profile takes the regional context from slope.yaml only (package route)",
+    "water_initial_depth": "an authored initial water depth is not in the terrain profile (SYRUP owns all water)",
+    "prescribed_external_shear": "a prescribed external shear is not in the terrain profile",
+}
+_TERRAIN_REFUSED_IMPORT_KEYS = {
+    "sediment": "imported sediment (direct voxel / layered import) is not in the terrain profile",
+    "vegetation": "imported vegetation is not in the terrain profile (the LEAF runtime owns plants)",
+    "forcing": "an imported wind forcing series is not in the terrain profile",
 }
 
 
@@ -107,6 +150,12 @@ class CaseLimits:
     max_wind_bytes: int = 4 << 20
     max_yaml_nodes: int = 200_000
     max_yaml_depth: int = 64
+    # Terrain profiles only (defaults LAST; the older profiles never read them): the authored slope.yaml cap, the per-file cap of
+    # one case-local elevation/base source raster and the number of such sources. Each source is read ONCE into memory for its
+    # pin (at most `max_source_bytes` resident at a time) and released; no raster is decoded here.
+    max_slope_bytes: int = 1 << 20
+    max_source_bytes: int = 256 << 20
+    max_sources: int = 8
 
     def __post_init__(self):
         for f in dataclasses.fields(self):
@@ -288,19 +337,35 @@ def _census(sys_modules, root: Path, table: dict[str, str]) -> list[tuple[str, s
     return out
 
 
+def _profile_pins(profile: str):
+    """Exact descriptor selected by the sealed profile name; old defaults stay9f."""
+    if type(profile) is not str or profile not in _SOURCE_PROFILES:
+        raise NativeCaseProfileError(f"unknown native source profile {profile!r}")
+    if profile in _TERRAIN_PROFILES:
+        return _terrain.PINS
+    if profile in (CURRENT_PROFILE_NAME, CURRENT_CUDA_PROFILE_NAME):
+        from maple_syrup import native_maple_1dca as current
+        return current.PINS
+    return dict(commit=NATIVE_COMMIT, package_digest=PACKAGE_DIGEST, project_digest=PROJECT_DIGEST,
+                archive_sha256=ARCHIVE_SHA256, pyproject_sha256=PYPROJECT_SHA256,
+                distribution_sha256=DISTRIBUTION_SHA256, package_file_count=PACKAGE_FILE_COUNT,
+                compiled_fields=COMPILED_CASE_FIELDS, resolved_fields=RESOLVED_PACKAGE_FIELDS)
+
+
 def verify_source_profile(target: str | os.PathLike, *, expected_syrup_digest: str | None = None,
                           profile: str = PROFILE_NAME) -> NativeSourceProfile:
-    """Freshly verify the materialized 9f bundle AND that this process imported exactly it.
+    """Freshly verify the selected materialized bundle AND that this process imported exactly it.
 
     Refuses (before any case work): not materialized/mutated bundle, wrong bundle/origin/revision/distribution/recipe,
     a different package or pyproject digest, any imported ``maple.*`` module that is not the bundle's own byte-identical
     file (or a verified namespace package), a ``cupy`` import (CPU-only profile), or a SYRUP tree that differs from
-    `expected_syrup_digest` when given. `profile` is one of the two literal names (default CPU, unchanged); only the CPU profile
-    refuses a process that imported cupy. The CUDA name is a source capability, not a claim that CuPy or a device is usable."""
+    `expected_syrup_digest` when given. `profile` is one of four literal names (default 9f CPU, unchanged); both CPU profiles
+    refuse a process that imported cupy. Each CUDA name is a source capability, not a claim that CuPy or a device is usable."""
     if type(profile) is not str or profile not in _SOURCE_PROFILES:
         raise NativeCaseProfileError(f"profile must be exactly one of {tuple(_SOURCE_PROFILES)}, got {profile!r}")
+    pins = _profile_pins(profile)
     if not _SOURCE_PROFILES[profile] and "cupy" in sys.modules:
-        raise NativeCaseProfileError("the CPU-only 9f case profile refuses a process that imported cupy")
+        raise NativeCaseProfileError(f"the CPU-only {profile} case profile refuses a process that imported cupy")
     target_path = Path(target).resolve()
     try:
         runtime = dependency_bundle.check_runtime(target_path)
@@ -310,15 +375,15 @@ def verify_source_profile(target: str | os.PathLike, *, expected_syrup_digest: s
     origin = manifest["origin"]
     if manifest["bundle_id"] != runtime["bundle_id"] or target_path.name != manifest["bundle_id"]:
         raise NativeCaseProfileError("materialized bundle identity is inconsistent")
-    if origin["original_source"]["revision"] != NATIVE_COMMIT or origin["patch_chain"]:
-        raise NativeCaseProfileError("bundle origin is not the unpatched committed 9f466d2c archive")
+    if origin["original_source"]["revision"] != pins["commit"] or origin["patch_chain"]:
+        raise NativeCaseProfileError("bundle origin is not the unpatched committed archive of the selected profile")
     proj = manifest["project"]
-    if (proj["package_source_digest"]["digest_sha256"] != PACKAGE_DIGEST or runtime["package_source_digest"] != PACKAGE_DIGEST
-            or proj["pyproject_sha256"] != PYPROJECT_SHA256 or proj["package_source_digest"]["file_count"] != PACKAGE_FILE_COUNT
-            or proj["project_source_digest"]["digest_sha256"] != PROJECT_DIGEST or manifest["archive"]["sha256"] != ARCHIVE_SHA256):
-        raise NativeCaseProfileError("bundle project/package digest is not the pinned 9f source")
+    if (proj["package_source_digest"]["digest_sha256"] != pins["package_digest"] or runtime["package_source_digest"] != pins["package_digest"]
+            or proj["pyproject_sha256"] != pins["pyproject_sha256"] or proj["package_source_digest"]["file_count"] != pins["package_file_count"]
+            or proj["project_source_digest"]["digest_sha256"] != pins["project_digest"] or manifest["archive"]["sha256"] != pins["archive_sha256"]):
+        raise NativeCaseProfileError("bundle project/package digest is not the selected pinned source")
     dist = {e["path"][len("distribution/"):]: e["sha256"] for e in manifest["files"] if e["path"].startswith("distribution/")}
-    if dist != DISTRIBUTION_SHA256:
+    if dist != pins["distribution_sha256"]:
         raise NativeCaseProfileError("bundle distribution metadata is not the pinned recorded metadata")
     root = target_path / "source" / "src" / "maple"
     census = _census(sys.modules, root, {e["path"]: e["sha256"] for e in manifest["files"]})
@@ -330,8 +395,8 @@ def verify_source_profile(target: str | os.PathLike, *, expected_syrup_digest: s
     if expected_syrup_digest is not None and syrup != expected_syrup_digest:
         raise NativeCaseProfileError("SYRUP package digest differs from the expected source")
     return _make(NativeSourceProfile, dict(
-        profile=profile, maple_commit=NATIVE_COMMIT, bundle_id=manifest["bundle_id"], target=str(target_path),
-        package_digest=PACKAGE_DIGEST, project_digest=proj["project_source_digest"]["digest_sha256"],
+        profile=profile, maple_commit=pins["commit"], bundle_id=manifest["bundle_id"], target=str(target_path),
+        package_digest=pins["package_digest"], project_digest=proj["project_source_digest"]["digest_sha256"],
         syrup_package_digest=syrup, syrup_package_root=str(syrup_root), maple_modules=tuple(census),
         dependency=json.dumps(runtime["dependency"], sort_keys=True), python=sys.version.split()[0]))
 
@@ -347,9 +412,99 @@ def _require_profile(profile: Any) -> None:
 @dataclass(frozen=True)
 class _Headers:
     case_dir: str
-    files: tuple[tuple[str, str, str, int], ...]  # (name, canonical path, sha256, size)
+    files: tuple[tuple[str, str, str, int], ...]  # (name, canonical path, sha256, size) -- authored YAML files ONLY
     case_raw: Any
     model_raw: Any
+    # Terrain profiles only: every case-local elevation/base source file the authored case references, pinned BEFORE any
+    # native resolve/compile/load: (native location, authored path, canonical path, sha256, size, format). Kept apart from
+    # `files` so the native `package_files` census is compared with the YAML pins only and the native source inventory with
+    # these raster pins only.
+    sources: tuple[tuple[str, str, str, str, int, str], ...] = ()
+    slope_raw: Any = None
+
+
+def _terrain_native():
+    """Native terrain-side helpers (resolvers, the generic source walk, identity/validators). Imported ONLY on a terrain
+    profile: the older pinned sources carry no `maple.core.types.domain`, and their admission must import nothing new."""
+    try:
+        from maple.case_tools.importers.readers import resolve_source_path
+        from maple.case_tools.importers.resolve import case_import_bearing_specs, collect_import_sources
+        from maple.core.parameters.case_import import resolve_case_import
+        from maple.core.parameters.fixed_base import resolve_fixed_base
+        from maple.core.parameters.voxel_growth import validate_voxel_growth
+        from maple.core.types.domain import domain_identity, domain_states_equivalent, validate_domain_state
+        from maple.core.types.fixed_base import fixed_base_identity, fixed_base_states_equivalent, validate_fixed_base_state
+        from maple.surface.topographic_commit.height import check_committed_reference_consistent_with_fixed_base
+    except ImportError as exc:
+        raise NativeCaseProfileError(f"the imported maple source lacks the terrain API: {exc}") from exc
+    return types.SimpleNamespace(
+        resolve_source_path=resolve_source_path, bearing_specs=case_import_bearing_specs, collect_sources=collect_import_sources,
+        resolve_case_import=resolve_case_import, resolve_fixed_base=resolve_fixed_base, validate_voxel_growth=validate_voxel_growth,
+        domain_identity=domain_identity, domain_equivalent=domain_states_equivalent, validate_domain=validate_domain_state,
+        fixed_base_identity=fixed_base_identity, fixed_base_equivalent=fixed_base_states_equivalent,
+        validate_fixed_base=validate_fixed_base_state, check_world_reference=check_committed_reference_consistent_with_fixed_base)
+
+
+def _confined(base: Path, authored: str, what: str) -> Path:
+    """`base / authored` as a CONFINED case-local path: a relative, normal authored path (no absolute path, no `..`, no empty or
+    `.` part) whose every directory component below `base` is a real directory and not a link. The final component is opened
+    link-refusing by `_read_regular`. Nothing is resolved through the file system's own link following."""
+    if type(authored) is not str or not authored:
+        raise NativeCaseProfileError(f"{what}: the authored source path must be a nonempty string")
+    rel = Path(authored)
+    if rel.is_absolute() or any(part in ("", ".", "..") for part in rel.parts) or rel.anchor:
+        raise NativeCaseProfileError(f"{what}: source path {authored!r} must be a normal case-relative path (no absolute path, no '..')")
+    current = base
+    for part in rel.parts[:-1]:
+        current = current / part
+        try:
+            st = os.lstat(current)
+        except OSError as exc:
+            raise NativeCaseProfileError(f"{what}: {current} cannot be inspected: {exc}") from exc
+        if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode):
+            raise NativeCaseProfileError(f"{what}: {current} is a link or not a directory; source files must live inside the case package")
+    target = current / rel.parts[-1]
+    if os.path.islink(target):
+        raise NativeCaseProfileError(f"{what}: {target} is a symbolic link; refused")
+    return target
+
+
+def _pin_sources(base: Path, case_raw: Any, limits: CaseLimits) -> tuple:
+    """Terrain profiles: enumerate the case-local elevation/base source files through the genuine native resolvers and the
+    native generic source walk (`case_import_bearing_specs` / `collect_import_sources`, the SAME walk the native inventory uses),
+    refuse anything the terrain profile does not admit, then pin each file by a bounded, link-refusing read. Returns the
+    `_Headers.sources` tuple. Native resolver refusals become typed refusals; no raster is decoded."""
+    nat = _terrain_native()
+    try:
+        case_import = nat.resolve_case_import(case_raw.get("import"))
+        fixed_base = nat.resolve_fixed_base(case_raw.get("fixed_base"))
+    except ValueError as exc:
+        raise NativeCaseProfileError(f"native import / fixed_base resolve refused: {exc}") from exc
+    if case_import.elevation is None:
+        raise NativeCaseProfileError("the terrain profile requires an imported elevation (`import.elevation`)")
+    for key, why in _TERRAIN_REFUSED_IMPORT_KEYS.items():
+        if getattr(case_import, key, None) is not None:
+            raise NativeCaseProfileError(f"authored `import.{key}` refused: {why}")
+    bearing = nat.bearing_specs(case_import=case_import, fixed_base=fixed_base)
+    found = []
+    for name in sorted(bearing):
+        for location, spec in nat.collect_sources(bearing[name], name):
+            found.append((location, spec))
+    if not found:
+        raise NativeCaseProfileError("the terrain profile found no source file behind the imported elevation")
+    if len(found) > limits.max_sources:
+        raise NativeCaseProfileError(f"{len(found)} source files exceed max_sources={limits.max_sources}; nothing was read")
+    pinned = []
+    for location, spec in found:
+        if getattr(spec, "base_dir", None) is not None:
+            raise NativeCaseProfileError(f"{location}: an authored case.yaml must not carry a source base_dir binding")
+        target = _confined(base, spec.path, location)
+        if nat.resolve_source_path(spec, base) != target.resolve():
+            raise NativeCaseProfileError(f"{location}: the native source path resolution does not name the confined case-local file")
+        data = _read_regular(target, limits.max_source_bytes, location)
+        pinned.append((location, spec.path, str(target), _sha(data), len(data), str(spec.format)))
+        del data
+    return tuple(pinned)
 
 
 def _disabled(doc: dict, key: str) -> bool:
@@ -363,21 +518,33 @@ def _check_route(route: Any) -> str:
     return route
 
 
-def _gate(case_dir, route, limits: CaseLimits | None, *, existing_output: bool) -> _Headers:
+def _enabled(doc: dict, key: str) -> bool:
+    section = doc.get(key)
+    return isinstance(section, dict) and section.get("enabled") is True
+
+
+def _gate(case_dir, route, limits: CaseLimits | None, *, existing_output: bool, terrain: bool = False) -> _Headers:
     """Pin and inspect the authored files with bounded reads BEFORE any native resolve/compile/load or output write.
 
     `existing_output=False` (compile): no compiled output may exist. `True` (load): processed/diagnostics/provenance.yaml must
-    exist and are never rewritten. Everything else is IDENTICAL, so load cannot use a weaker parser."""
+    exist and are never rewritten. Everything else is IDENTICAL, so load cannot use a weaker parser. `terrain=False` is the
+    unchanged first-profile gate; `terrain=True` (package route only) additionally pins slope.yaml (when present) and every
+    case-local elevation/base source file, and applies the terrain refusal set instead of the first profile's."""
     route = _check_route(route)
     limits = limits or CaseLimits()
+    if terrain and route != "package":
+        raise NativeCaseProfileError("the terrain profile admits the three-file package route only (slope.yaml / package provenance)")
     base = Path(case_dir)
     if os.path.islink(base) or not base.is_dir():
         raise NativeCaseProfileError(f"{base} is not a real case directory")
     base = base.resolve()
-    caps = {"case.yaml": limits.max_case_bytes, "model.yaml": limits.max_model_bytes, "wind.yaml": limits.max_wind_bytes}
+    caps = {"case.yaml": limits.max_case_bytes, "model.yaml": limits.max_model_bytes, "wind.yaml": limits.max_wind_bytes,
+            _SLOPE_FILE: limits.max_slope_bytes}
     names = _PACKAGE_FILES if route == "package" else ("case.yaml",)
-    if os.path.lexists(base / "slope.yaml"):
-        raise NativeCaseProfileError("an authored slope.yaml (or a link of that name) is not in the first profile")
+    if os.path.lexists(base / _SLOPE_FILE):
+        if not terrain:
+            raise NativeCaseProfileError("an authored slope.yaml (or a link of that name) is not in the first profile")
+        names = names + (_SLOPE_FILE,)  # pinned like the other authored files (link-refusing bounded read)
     if route == "single_file" and (os.path.lexists(base / "model.yaml") or os.path.lexists(base / "wind.yaml")):
         raise NativeCaseProfileError("single-file route refuses sibling model.yaml/wind.yaml (ambiguous route)")
     if existing_output:
@@ -394,22 +561,32 @@ def _gate(case_dir, route, limits: CaseLimits | None, *, existing_output: bool) 
         files.append((name, str(base / name), _sha(data), len(data)))
         docs[name] = _bounded_yaml(data, limits, name)
     case_raw, model_raw = docs["case.yaml"], docs.get("model.yaml", {})
-    for key, why in _REFUSED_CASE_KEYS.items():
+    refused = _TERRAIN_REFUSED_CASE_KEYS if terrain else _REFUSED_CASE_KEYS
+    for key, why in refused.items():
         if key in case_raw or key in model_raw:
             raise NativeCaseProfileError(f"authored `{key}` refused: {why}")
-    # Defaults of both are ENABLED natively, so the first profile requires them authored disabled (in either file).
-    for key in ("avalanching", "surface_creep"):
-        if not (_disabled(case_raw, key) or _disabled(model_raw, key)):
-            raise NativeCaseProfileError(f"`{key}: {{enabled: false}}` must be authored (native default is enabled)")
+    if terrain:
+        if _enabled(case_raw, "water_coupling") or _enabled(model_raw, "water_coupling"):
+            raise NativeCaseProfileError("`water_coupling: {enabled: true}` refused: all water is SYRUP-owned (native water_coupling stays disabled)")
+        slope_raw = docs.get(_SLOPE_FILE)
+        if slope_raw is not None and (set(slope_raw) != {"regional_slope"} or not isinstance(slope_raw["regional_slope"], dict)):
+            raise NativeCaseProfileError("slope.yaml must be a mapping whose sole top-level key is `regional_slope`")
+        sources = _pin_sources(base, case_raw, limits)
+    else:
+        # Defaults of both are ENABLED natively, so the first profile requires them authored disabled (in either file).
+        for key in ("avalanching", "surface_creep"):
+            if not (_disabled(case_raw, key) or _disabled(model_raw, key)):
+                raise NativeCaseProfileError(f"`{key}: {{enabled: false}}` must be authored (native default is enabled)")
+        slope_raw, sources = None, ()
     veg = case_raw.get("vegetation")
     if veg not in (None, {}) and not (isinstance(veg, dict) and veg.get("source") in (None, "none")):
-        raise NativeCaseProfileError("only bare/neutral vegetation is in the first profile")
-    return _Headers(case_dir=str(base), files=tuple(files), case_raw=case_raw, model_raw=model_raw)
+        raise NativeCaseProfileError("only bare/neutral vegetation is admitted (the LEAF runtime owns plants)")
+    return _Headers(case_dir=str(base), files=tuple(files), case_raw=case_raw, model_raw=model_raw, sources=sources, slope_raw=slope_raw)
 
 
-def inspect_headers(case_dir, *, route: str, limits: CaseLimits | None = None) -> _Headers:
+def inspect_headers(case_dir, *, route: str, limits: CaseLimits | None = None, terrain: bool = False) -> _Headers:
     """Compile-side gate (no compiled output may exist). Kept as the public name of the shared gate."""
-    return _gate(case_dir, route, limits, existing_output=False)
+    return _gate(case_dir, route, limits, existing_output=False, terrain=bool(terrain))
 
 
 # --- admission -------------------------------------------------------------------------------------------
@@ -422,10 +599,16 @@ class NativeCaseAdmission(_Sealed):
     __slots__ = ()
     _KIND = "admission"
     _FIELDS = ("profile_name", "bundle_id", "package_digest", "syrup_package_digest", "route", "case_dir", "files",
-               "case_identity_sha256", "latitude_deg", "compiled", "resolved_roughness_owner", "provenance_code_version")
+               "case_identity_sha256", "latitude_deg", "compiled", "resolved_roughness_owner", "provenance_code_version",
+               "sources", "terrain")
     for _n in _FIELDS:
         locals()[_n] = _prop(_n, "admission")
     del _n
+
+    @property
+    def is_terrain(self) -> bool:
+        """True only when admitted under one of the two explicit terrain profile names (derived from the sealed name)."""
+        return _is_terrain(self._payload("admission")["profile_name"])
 
     @property
     def device_runtime_capability(self) -> bool:
@@ -456,7 +639,9 @@ class NativeCaseAdmission(_Sealed):
         """Re-hash every authored file and re-verify the source profile; refuses any change since admission."""
         p = self._payload("admission")
         verify_source_profile(p["profile_target"], expected_syrup_digest=p["syrup_package_digest"], profile=p["profile_name"])
-        for name, path, sha, size in p["files"]:
+        pins = [(name, path, sha, size) for name, path, sha, size in p["files"]]
+        pins += [(loc, path, sha, size) for loc, _ap, path, sha, size, _f in p["sources"]]  # terrain: the raster source pins too
+        for name, path, sha, size in pins:
             try:
                 same = _sha(_read_regular(Path(path), size + 1, name)) == sha
             except NativeCaseProfileError:
@@ -465,6 +650,8 @@ class NativeCaseAdmission(_Sealed):
                 raise NativeCaseProfileError(f"{path} changed since admission")
         if p["compiled"].location.latitude_deg != p["latitude_deg"]:
             raise NativeCaseProfileError("the native compiled location differs from the sealed latitude")
+        if p["terrain"] != _terrain_identity(p["compiled"]):
+            raise NativeCaseProfileError("the native compiled terrain identity (fixed base / domain) differs from the sealed admission")
 
 
 def _native():
@@ -487,15 +674,32 @@ def _latitude(nat, case_raw) -> float | None:
         raise NativeCaseProfileError(f"native location refused: {exc}") from exc
 
 
-def _check_field_census(nat, route: str) -> None:
-    if tuple(f.name for f in dataclasses.fields(nat.case_compiler.CompiledCase)) != COMPILED_CASE_FIELDS:
+def _check_field_census(nat, route: str, profile_name: str = PROFILE_NAME) -> None:
+    pins = _profile_pins(profile_name)
+    if tuple(f.name for f in dataclasses.fields(nat.case_compiler.CompiledCase)) != pins["compiled_fields"]:
         raise NativeCaseProfileError("native CompiledCase fields differ from the pinned census; refused")
-    if route == "package" and tuple(f.name for f in dataclasses.fields(nat.schema.ResolvedCasePackage)) != RESOLVED_PACKAGE_FIELDS:
+    if route == "package" and tuple(f.name for f in dataclasses.fields(nat.schema.ResolvedCasePackage)) != pins["resolved_fields"]:
         raise NativeCaseProfileError("native ResolvedCasePackage fields differ from the pinned census; refused")
 
 
-def _check_config(config, label: str) -> None:
-    if config.avalanching.enabled is not False or config.surface_creep.enabled is not False:
+def _check_config(config, label: str, terrain: bool = False) -> None:
+    if terrain:
+        # Creep / avalanching / bounded voxel growth are admitted; they must still resolve to plain Booleans, growth stays the
+        # native bounded policy (`max_levels` required when enabled, checked by the native validator) and water stays SYRUP's.
+        for name in ("avalanching", "surface_creep"):
+            if type(getattr(config, name).enabled) is not bool:
+                raise NativeCaseProfileError(f"{label}: {name}.enabled must resolve to a Boolean")
+        try:
+            _terrain_native().validate_voxel_growth(config.geometry.voxel_growth)
+        except ValueError as exc:
+            raise NativeCaseProfileError(f"{label}: native voxel growth validation refused: {exc}") from exc
+        if config.geometry.voxel_growth.enabled and config.geometry.voxel_growth.max_levels is None:
+            raise NativeCaseProfileError(f"{label}: voxel growth must be bounded (max_levels)")
+        if config.water_coupling.enabled is not False:
+            raise NativeCaseProfileError(f"{label}: native water_coupling must resolve disabled (all water is SYRUP-owned)")
+        if config.prescribed_external_shear.enabled is not False:
+            raise NativeCaseProfileError(f"{label}: a prescribed external shear is not supported")
+    elif config.avalanching.enabled is not False or config.surface_creep.enabled is not False:
         raise NativeCaseProfileError(f"{label}: avalanching and surface creep must resolve disabled")
     g = config.geometry
     for v in (g.dx_m, g.dy_m):
@@ -505,23 +709,71 @@ def _check_config(config, label: str) -> None:
         raise NativeCaseProfileError(f"{label}: non-square cells ({g.dx_m} x {g.dy_m}) are not supported")
 
 
-def _check_owner(own, config, label: str) -> None:
-    if own is None or own.owner != "topographic_wind" or own.roughness_m != config.topographic_wind.aerodynamic_roughness_m:
+def _check_owner(own, config, label: str, terrain: bool = False, regional_enabled: bool = False) -> None:
+    if own is None or own.roughness_m != config.topographic_wind.aerodynamic_roughness_m:
+        raise NativeCaseProfileError(f"{label}: roughness ownership does not carry the ONE injected roughness")
+    if terrain:
+        # The genuine native ownership rule: slope.yaml owns z0 iff the regional context is enabled.
+        if own.owner != ("slope.yaml" if regional_enabled else "topographic_wind"):
+            raise NativeCaseProfileError(f"{label}: roughness owner {own.owner!r} is not the native owner of this regional context")
+    elif own.owner != "topographic_wind":
         raise NativeCaseProfileError(f"{label}: roughness ownership is not the ordinary topographic_wind owner")
 
 
-def _resolve_package(nat, headers: _Headers, lat) -> str:
-    """Genuine package resolve + full scope/location/ordinary-roughness check; returns the verified owner."""
+def _check_native_sources(entries, headers: _Headers, label: str) -> None:
+    """The native source inventory (`ImportSourceEntry` objects or their provenance dicts) must be EXACTLY the pinned raster
+    sources: same native locations, authored paths, content hashes, byte counts and confined canonical files."""
+    def field(e, name):
+        return e[name] if isinstance(e, dict) else getattr(e, name)
+    try:
+        got = {(field(e, "location"), field(e, "authored_path"), field(e, "sha256"),
+                int(field(e, "bytes" if isinstance(e, dict) else "n_bytes"))) for e in entries}
+        want = {(loc, ap, sha, size) for loc, ap, _p, sha, size, _f in headers.sources}
+        if got != want:
+            raise NativeCaseProfileError(f"{label}: the native source inventory differs from the pinned case-local source files")
+        canonical = {loc: path for loc, _ap, path, _s, _n, _f in headers.sources}
+        for e in entries:
+            if Path(field(e, "resolved_path")).resolve() != Path(canonical[field(e, "location")]).resolve():
+                raise NativeCaseProfileError(f"{label}: a native source resolved outside the pinned case-local file")
+    except (KeyError, AttributeError, TypeError, ValueError) as exc:
+        raise NativeCaseProfileError(f"{label}: malformed native source inventory: {type(exc).__name__}: {exc}") from exc
+
+
+def _resolve_package(nat, headers: _Headers, lat, terrain: bool = False) -> str:
+    """Genuine package resolve + full scope/location/ordinary-roughness check; returns the verified owner. The native resolver
+    runs every domain / regional / open-support / edge-policy / fixed-base / availability validation itself (unchanged)."""
     try:
         res = nat.schema.resolve_case_package(headers.case_dir)
     except Exception as exc:
         raise NativeCaseProfileError(f"native resolve refused: {type(exc).__name__}: {exc}") from exc
-    if res.fixed_base.present or res.regional_slope.enabled or res.slope_yaml_path is not None or res.slope_yaml_sha256 is not None:
-        raise NativeCaseProfileError("resolved case carries a fixed base / regional slope / slope.yaml")
-    _check_owner(res.roughness_ownership, res.config, "resolved package")
-    if res.vegetation.source != "none" or res.case_import.sediment is not None:
-        raise NativeCaseProfileError("resolved case is not bare/neutral")
-    _check_config(res.config, "resolved package")
+    if terrain:
+        pinned = {name: (path, sha) for name, path, sha, _s in headers.files}
+        if (res.slope_yaml_path is not None) != (_SLOPE_FILE in pinned):
+            raise NativeCaseProfileError("the native resolver's slope.yaml presence differs from the pinned package")
+        if res.slope_yaml_path is not None and (Path(res.slope_yaml_path).resolve() != Path(pinned[_SLOPE_FILE][0])
+                                                or res.slope_yaml_sha256 != pinned[_SLOPE_FILE][1]):
+            raise NativeCaseProfileError("the native resolver's slope.yaml path/hash differs from the pinned authored file")
+        if res.case_import.elevation is None or res.topography.base != "imported":
+            raise NativeCaseProfileError("the terrain profile requires `import.elevation` with `topography.base: imported`")
+        for key, why in _TERRAIN_REFUSED_IMPORT_KEYS.items():
+            if getattr(res.case_import, key, None) is not None:
+                raise NativeCaseProfileError(f"resolved `import.{key}` refused: {why}")
+        if res.vegetation.source != "none":
+            raise NativeCaseProfileError("resolved initial vegetation is not bare (the LEAF runtime owns plants)")
+        if res.water_initial_depth.depth_m is not None:
+            raise NativeCaseProfileError("resolved case authors an initial water depth; all water is SYRUP-owned")
+        if res.initial_mobile_seed.mass_by_class_kg:
+            raise NativeCaseProfileError("resolved case carries a pre-existing airborne/mobile seed")
+        _check_owner(res.roughness_ownership, res.config, "resolved package", terrain=True, regional_enabled=bool(res.regional_slope.enabled))
+        _check_config(res.config, "resolved package", terrain=True)
+        _check_native_sources(res.import_sources, headers, "resolved package")
+    else:
+        if res.fixed_base.present or res.regional_slope.enabled or res.slope_yaml_path is not None or res.slope_yaml_sha256 is not None:
+            raise NativeCaseProfileError("resolved case carries a fixed base / regional slope / slope.yaml")
+        _check_owner(res.roughness_ownership, res.config, "resolved package")
+        if res.vegetation.source != "none" or res.case_import.sediment is not None:
+            raise NativeCaseProfileError("resolved case is not bare/neutral")
+        _check_config(res.config, "resolved package")
     if res.location.latitude_deg != lat:
         raise NativeCaseProfileError("resolved location disagrees with the pinned authored case.yaml")
     return res.roughness_ownership.owner
@@ -546,19 +798,53 @@ def _resolve_single(nat, headers: _Headers, lat) -> str:
     return own.owner
 
 
-def _check_compiled(nat, c, lat, label: str) -> None:
-    if c.fixed_base_spec.present or c.fixed_base is not None or c.fixed_base_source is not None \
-            or c.fixed_base_admission is not None or c.fixed_base_load_admission is not None:
-        raise NativeCaseProfileError(f"{label}: a fixed base is present in the compiled case")
-    if c.regional_slope.enabled or c.regional_slope_result is not None:
-        raise NativeCaseProfileError(f"{label}: regional slope is present in the compiled case")
-    if c.roughness_ownership is not None:  # None on a native LOAD (upstream limit); verified earlier from the resolver
-        _check_owner(c.roughness_ownership, c.config, label)
+def _terrain_identity(c) -> dict[str, Any] | None:
+    """Sealed SCALAR terrain identity of a compiled case through the native identity helpers (no array read): None for a case
+    without terrain owners (every older profile); otherwise the fixed-base / domain identities plus the terrain-relevant
+    resolved switches a downstream owner must pair with."""
+    fixed_base, domain = getattr(c, "fixed_base", None), getattr(c, "domain", None)
+    if fixed_base is None and domain is None and not _is_terrain_shape(c):
+        return None
+    nat = _terrain_native()
+    g = c.config.geometry
+    return {
+        "fixed_base": None if fixed_base is None else nat.fixed_base_identity(fixed_base),
+        "domain": None if domain is None else nat.domain_identity(domain),
+        "domain_authored": bool(c.domain_spec.present),
+        "regional_slope_enabled": bool(c.regional_slope.enabled),
+        "surface_edge_policy": str(g.surface_edge_policy),
+        "avalanching_enabled": bool(c.config.avalanching.enabled),
+        "surface_creep_enabled": bool(c.config.surface_creep.enabled),
+        "voxel_growth_enabled": bool(g.voxel_growth.enabled),
+        "imported_elevation": c.case_import.elevation is not None,
+    }
+
+
+def _is_terrain_shape(c) -> bool:
+    """A compiled case of the terrain API (it carries the `domain_spec` field) that authored an imported elevation."""
+    return hasattr(c, "domain_spec") and getattr(getattr(c, "case_import", None), "elevation", None) is not None
+
+
+def _check_compiled(nat, c, lat, label: str, profile_name: str = PROFILE_NAME) -> None:
+    terrain = _is_terrain(profile_name)
+    if profile_name in (CURRENT_PROFILE_NAME, CURRENT_CUDA_PROFILE_NAME) or terrain:
+        if c.leaf_vegetation is not None:
+            raise NativeCaseProfileError(f"{label}: initial case must be bare; live LEAF is applied through the owning runtime adapter")
+    if terrain:
+        _check_compiled_terrain(c, label)
+    else:
+        if c.fixed_base_spec.present or c.fixed_base is not None or c.fixed_base_source is not None \
+                or c.fixed_base_admission is not None or c.fixed_base_load_admission is not None:
+            raise NativeCaseProfileError(f"{label}: a fixed base is present in the compiled case")
+        if c.regional_slope.enabled or c.regional_slope_result is not None:
+            raise NativeCaseProfileError(f"{label}: regional slope is present in the compiled case")
+        if c.roughness_ownership is not None:  # None on a native LOAD (upstream limit); verified earlier from the resolver
+            _check_owner(c.roughness_ownership, c.config, label)
     if c.initial_mobile_state is not None:
         raise NativeCaseProfileError(f"{label}: an initial mobile/airborne seed is present")
     if c.vegetation is None or c.threshold_modifier_spec != nat.neutral_modifiers({}):
         raise NativeCaseProfileError(f"{label}: non-neutral threshold modifiers")
-    _check_config(c.config, label)
+    _check_config(c.config, label, terrain=terrain)
     if c.location.latitude_deg != lat:
         raise NativeCaseProfileError(f"{label}: compiled location disagrees with the pinned authored case.yaml")
     rec = c.provenance_record.get("location")
@@ -566,22 +852,59 @@ def _check_compiled(nat, c, lat, label: str) -> None:
         raise NativeCaseProfileError(f"{label}: provenance location disagrees with the pinned authored case.yaml")
 
 
-def _check_source_pins(c, headers: _Headers, route: str) -> None:
+def _check_compiled_terrain(c, label: str) -> None:
+    """Terrain owners of a compiled/loaded case through the NATIVE validators (cold: the base content fingerprint and the
+    footprint tables are re-verified from the arrays once; the committed reference must be MAPLE's own world reference)."""
+    nat = _terrain_native()
+    g = c.config.geometry
+    ny, nx = int(g.ny), int(g.nx)
+    try:
+        if c.fixed_base_spec.present:
+            if c.fixed_base is None or c.fixed_base_source is None:
+                raise ValueError("an authored fixed base compiled to no selected/source base")
+            nat.validate_fixed_base(c.fixed_base, ny, nx, verify_content=True)
+            nat.validate_fixed_base(c.fixed_base_source, ny, nx, verify_content=True)
+            nat.check_world_reference(c.committed_topography, g, c.fixed_base, n_voxels=int(c.voxel_column.mass_kg.shape[2]),
+                                      operation=f"SYRUP terrain admission ({label})")
+        elif c.fixed_base is not None or c.fixed_base_source is not None:
+            raise ValueError("a fixed base is present although none was authored")
+        if c.domain_spec.present:
+            if c.domain is not None:
+                nat.validate_domain(c.domain, ny, nx, verify_content=True)
+                if not (c.domain.boundary_x == g.boundary_x.kind.value and c.domain.boundary_y == g.boundary_y.kind.value):
+                    raise ValueError("the compiled footprint's boundary kinds differ from the geometry")
+        elif c.domain is not None:
+            raise ValueError("a domain footprint is present although none was authored")
+    except ValueError as exc:
+        raise NativeCaseProfileError(f"{label}: native terrain validation refused: {exc}") from exc
+    if c.case_import.elevation is None or any(getattr(c.case_import, k, None) is not None for k in _TERRAIN_REFUSED_IMPORT_KEYS):
+        raise NativeCaseProfileError(f"{label}: the compiled import recipe is not the terrain profile's (elevation only)")
+    if c.roughness_ownership is not None:  # None on a native LOAD (upstream limit); verified earlier from the resolver
+        _check_owner(c.roughness_ownership, c.config, label, terrain=True, regional_enabled=bool(c.regional_slope.enabled))
+
+
+def _check_source_pins(c, headers: _Headers, route: str, terrain: bool = False) -> None:
     src = c.provenance_record["source"]
     pinned = {name: sha for name, _p, sha, _s in headers.files}
     if src.get("case_yaml_sha256") != pinned["case.yaml"] or Path(src["case_yaml_path"]).resolve() != Path(headers.files[0][1]):
         raise NativeCaseProfileError("compiled provenance case.yaml path/hash differs from the pinned authored file")
     if route == "package":
+        # The native `package_files` census is the authored YAML files ONLY (case/model/wind and, when present, slope.yaml):
+        # compared with the YAML pins only. The raster source pins are compared separately below.
         got = {e["authored_path"]: e["sha256"] for e in src.get("package_files", [])}
         if got != pinned:
             raise NativeCaseProfileError("compiled provenance package files differ from the pinned authored files")
+    if terrain:
+        _check_native_sources(list(src.get("files", []) or []), headers, "compiled provenance sources")
+        _check_native_sources(tuple(c.import_sources), headers, "compiled import_sources")
 
 
 def _early(nat, profile, headers, route) -> tuple[float | None, str]:
     """Everything that must hold BEFORE any native compile/load entry."""
-    _check_field_census(nat, route)
+    _check_field_census(nat, route, profile.profile)
     lat = _latitude(nat, headers.case_raw)
-    owner = _resolve_package(nat, headers, lat) if route == "package" else _resolve_single(nat, headers, lat)
+    terrain = _is_terrain(profile.profile)
+    owner = _resolve_package(nat, headers, lat, terrain=terrain) if route == "package" else _resolve_single(nat, headers, lat)
     return lat, owner
 
 
@@ -591,26 +914,39 @@ def _seal_admission(profile, headers, route, compiled, lat, owner) -> NativeCase
         profile_name=pp["profile"], bundle_id=pp["bundle_id"], package_digest=pp["package_digest"],
         syrup_package_digest=pp["syrup_package_digest"], route=route, case_dir=headers.case_dir, files=headers.files,
         case_identity_sha256=compiled.provenance_record["case_identity_sha256"], latitude_deg=lat, compiled=compiled,
-        resolved_roughness_owner=owner, provenance_code_version=str(compiled.code_version), profile_target=pp["target"]))
+        resolved_roughness_owner=owner, provenance_code_version=str(compiled.code_version), profile_target=pp["target"],
+        sources=headers.sources, terrain=_terrain_identity(compiled) if _is_terrain(pp["profile"]) else None))
 
 
 def _finish(nat, profile, headers, route, compiled, loaded, lat, owner) -> NativeCaseAdmission:
+    terrain = _is_terrain(profile.profile)
     for label, c in (("compiled", compiled), ("loaded", loaded)):
-        _check_compiled(nat, c, lat, label)
-        _check_source_pins(c, headers, route)
+        _check_compiled(nat, c, lat, label, profile.profile)
+        _check_source_pins(c, headers, route, terrain=terrain)
     import numpy as np
     for name in ("voxel_column", "active_layer"):
         if not np.array_equal(getattr(compiled, name).mass_kg, getattr(loaded, name).mass_kg):
             raise NativeCaseProfileError(f"compiled and loaded {name} masses differ")
     if compiled.provenance_record["case_identity_sha256"] != loaded.provenance_record["case_identity_sha256"]:
         raise NativeCaseProfileError("compiled and loaded case identities differ")
+    if terrain:
+        # Genuinely compiled AND loaded, then COMPARED (never reconstructed): the committed world reference and the terrain
+        # owners of the two must coincide (native scalar equivalence of the owners; array equality of the committed state).
+        nat_t = _terrain_native()
+        if not nat_t.fixed_base_equivalent(compiled.fixed_base, loaded.fixed_base) or not nat_t.domain_equivalent(compiled.domain, loaded.domain):
+            raise NativeCaseProfileError("compiled and loaded terrain owners (fixed base / domain) differ")
+        for f in dataclasses.fields(compiled.committed_topography):
+            if not np.array_equal(getattr(compiled.committed_topography, f.name), getattr(loaded.committed_topography, f.name)):
+                raise NativeCaseProfileError(f"compiled and loaded committed topography differ ({f.name})")
+        if not np.array_equal(compiled.water.depth_m, loaded.water.depth_m):
+            raise NativeCaseProfileError("compiled and loaded water depths differ")
     return _seal_admission(profile, headers, route, loaded, lat, owner)
 
 
 def admit_package_case(profile: NativeSourceProfile, case_dir, *, limits: CaseLimits | None = None) -> NativeCaseAdmission:
     """Ordinary three-file package: bounded pin -> early gate -> native resolve -> native compile -> native load."""
     _require_profile(profile)
-    headers = _gate(case_dir, "package", limits, existing_output=False)
+    headers = _gate(case_dir, "package", limits, existing_output=False, terrain=_is_terrain(profile.profile))
     nat = _native()
     lat, owner = _early(nat, profile, headers, "package")
     try:
@@ -624,7 +960,7 @@ def admit_package_case(profile: NativeSourceProfile, case_dir, *, limits: CaseLi
 def admit_single_file_case(profile: NativeSourceProfile, case_dir, *, limits: CaseLimits | None = None) -> NativeCaseAdmission:
     """Full single-file case: bounded pin -> early gate (owner/geometry via native public resolvers) -> compile -> load."""
     _require_profile(profile)
-    headers = _gate(case_dir, "single_file", limits, existing_output=False)
+    headers = _gate(case_dir, "single_file", limits, existing_output=False, terrain=_is_terrain(profile.profile))
     nat = _native()
     lat, owner = _early(nat, profile, headers, "single_file")
     try:
@@ -639,13 +975,14 @@ def load_admitted_case(profile: NativeSourceProfile, case_dir, *, route: str, li
     """Re-admit an ALREADY compiled case (native load only). Same gate and early checks as compile; never rewrites output."""
     route = _check_route(route)  # before any I/O, including the profile's cold re-verification
     _require_profile(profile)
-    headers = _gate(case_dir, route, limits, existing_output=True)
+    terrain = _is_terrain(profile.profile)
+    headers = _gate(case_dir, route, limits, existing_output=True, terrain=terrain)
     nat = _native()
     lat, owner = _early(nat, profile, headers, route)
     try:
         loaded = nat.case_compiler.load_compiled_case(headers.case_dir)
     except Exception as exc:
         raise NativeCaseProfileError(f"native load refused: {type(exc).__name__}: {exc}") from exc
-    _check_compiled(nat, loaded, lat, "loaded")
-    _check_source_pins(loaded, headers, route)
+    _check_compiled(nat, loaded, lat, "loaded", profile.profile)
+    _check_source_pins(loaded, headers, route, terrain=terrain)
     return _seal_admission(profile, headers, route, loaded, lat, owner)

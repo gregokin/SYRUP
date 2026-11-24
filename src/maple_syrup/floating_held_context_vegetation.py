@@ -415,6 +415,8 @@ def export_held_context_vegetation(vertical: Any, cached: Any, pins: Any, *, mem
     wvb = _wvb()
     t = vertical.held_template()
     cfg = vertical.config
+    if getattr(cfg, 'property_mode', 'texture') != 'texture':
+        raise HeldContextError('supplied-final soil maps need a new held-context record schema; export is unqualified')
     if type(cfg) is not nfs.NativeFloatingConfig or cfg.sha256 != t.config_sha256:
         raise HeldContextError("the vertical's native config does not match its held template identity")
     if t.preferential is None:
@@ -456,6 +458,8 @@ def _snapshot_base(vertical: Any) -> tuple[dict, dict]:
     published `_snapshot` arithmetic, kept here so the old module stays untouched). The identities carry the template's matrix identity as a placeholder until the law is re-prepared."""
     t = vertical.held_template()
     cfg = vertical.config
+    if getattr(cfg, 'property_mode', 'texture') != 'texture':
+        raise HeldContextError('supplied-final soil maps need a new held-context record schema; export is unqualified')
     col = t.column
     L, N, K = int(col.n_layers), int(col.n_cells), int(cfg.grain_texture.shape[0])
     lay = {k: str(v) for k, v in dict(col.layouts).items()}

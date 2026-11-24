@@ -1,7 +1,7 @@
-"""Opt-in CPU native MAPLE 9f466d2c ORDINARY DENSE bed preparation (CANDIDATE, new file; nothing existing is edited).
+"""Opt-in exact CPU native MAPLE ORDINARY DENSE bed preparation.
 
-SCOPE. One narrow cold setup capability, profile ``native_maple_9f_dense_cpu_v1``: from a genuine `NativeCaseAdmission`
-(`native_case_profile`, same process, same verified 9f bundle) derive the actual `(BedState, BedContext)` through the UNCHANGED
+SCOPE. Separate narrow cold setup profiles ``native_maple_9f_dense_cpu_v1`` and ``native_maple_1dca_dense_cpu_v1``: from a genuine `NativeCaseAdmission`
+(`native_case_profile`, same process, same exact selected CPU bundle) derive the actual `(BedState, BedContext)` through the UNCHANGED
 `sediment_bed.bed_from_case`, after refusing every unsupported source/case/storage/feature/backend request from cheap
 metadata, and after the native PUBLIC full validators accept the result. It then seals scalar provenance with REFERENCES to the
 genuine returned objects. It does NOT:
@@ -13,7 +13,18 @@ genuine returned objects. It does NOT:
 * accept any codec/checkpoint/storage-admission (`storage_admission`, journal recognizers, layered/pond/Windowed codecs are OUT;
   nothing here is a native39 profile and no 9f digest is added to any whitelist),
 * claim a universal fence: generic low-level APIs called OUTSIDE this helper keep their existing behaviour,
-* provide Windowed, CUDA, wind, MASY, LEAF, availability builders, fixed base/regional slope or avalanching/creep.
+* provide Windowed, CUDA, wind, MASY, LEAF, availability builders, fixed base/regional slope or avalanching/creep (the 9f/1dca
+  profiles; unchanged).
+
+TERRAIN (separately named ``native_maple_terrain_20261123_dense_cpu_v1``, selected ONLY by a `native_case_profile.TERRAIN_PROFILE_NAME`
+admission): the same cold preparation for the committed c4b9343 terrain case. It additionally carries the genuine native `FixedBaseState`
+/ `DomainState` the case compiled with on the returned `BedContext` (BY REFERENCE on NumPy: no copy, charged as resident/aliased,
+not as new allocation), admits creep/avalanche, bounded voxel growth and the regional context, and runs the native terrain validators
+in the suite: structural base/footprint validation, MAPLE's own `check_committed_reference_consistent_with_fixed_base` (the committed
+reference must be the world reference), the native initial-committed derivation WITH the base for the fresh-baseline comparison,
+the native footprint inventory invariant (`check_domain_inventory`: every sediment owner exactly zero on NoData) and the SYRUP water
+rule (all water on NoData exactly zero). It still refuses imported sediment, an airborne seed, non-square cells, an enabled native
+water_coupling and a non-bare initial vegetation. No surface formula is copied: the native terrain APIs are the authority.
 
 Memory (whole call, derived terms; see `required_bytes`). The compiled native case is ALREADY allocated by native initialization
 (by reference; compile/load is inherited and NOT bounded here). BEFORE the mandatory cold `admission.recheck()` and before any array
@@ -50,10 +61,16 @@ from maple_syrup import conservation as _conservation  # noqa: F401
 from maple_syrup import sediment_bed as _sediment_bed  # noqa: F401
 from maple_syrup import subsurface as _subsurface  # noqa: F401
 
-__all__ = ["PROFILE_NAME", "DenseLimits", "NativeDensePreparation", "NativeDenseProfileError", "dense_terms", "required_bytes",
-           "source_audit_terms", "plan_preparation", "prepare_native_dense_case"]
+__all__ = ["PROFILE_NAME", "CURRENT_PROFILE_NAME", "TERRAIN_PROFILE_NAME", "DenseLimits", "NativeDensePreparation", "NativeDenseProfileError",
+           "dense_terms", "required_bytes", "source_audit_terms", "plan_preparation", "prepare_native_dense_case"]
 
 PROFILE_NAME = "native_maple_9f_dense_cpu_v1"
+CURRENT_PROFILE_NAME = "native_maple_1dca_dense_cpu_v1"
+#: Separately named TERRAIN Dense CPU profile (committed c4b9343; see the module notes). Never a default.
+TERRAIN_PROFILE_NAME = "native_maple_terrain_20261123_dense_cpu_v1"
+_CPU_ADMISSIONS = (ncp.PROFILE_NAME, ncp.CURRENT_PROFILE_NAME, ncp.TERRAIN_PROFILE_NAME)
+_DENSE_PROFILE_BY_ADMISSION = {ncp.PROFILE_NAME: PROFILE_NAME, ncp.CURRENT_PROFILE_NAME: CURRENT_PROFILE_NAME,
+                               ncp.TERRAIN_PROFILE_NAME: TERRAIN_PROFILE_NAME}
 #: Allocation-count constants of the MODEL (each justified where it is used, in `dense_terms` / `source_audit_terms`).
 _READ_CHUNK = 1 << 20  # dependency_bundle._CHUNK and provenance._READ_CHUNK_BYTES (os.read buffer, both 1 MiB)
 _JSON_OBJECT_BYTES_PER_TEXT_BYTE = 16  # source-specific MODEL coefficient for the CLOSED real manifests (see source_audit_terms); not a universal JSON bound
@@ -84,6 +101,9 @@ class DenseLimits:
     max_cells: int = 1 << 20
     max_voxel_elements: int = 1 << 26
     max_classes: int = 32
+    # Terrain profile only (default LAST): the explicit cap on the resident terrain owners (fixed-base raster + the footprint's
+    # six tables) a preparation may carry/place; older profiles carry none and never read it.
+    max_terrain_bytes: int = 1 << 28
 
     def __post_init__(self):
         for f in dataclasses.fields(self):
@@ -96,7 +116,7 @@ class DenseLimits:
 _SEALED: "weakref.WeakKeyDictionary[Any, types.MappingProxyType]" = weakref.WeakKeyDictionary()
 _FIELDS = ("profile_name", "bundle_id", "package_digest", "syrup_package_digest", "case_identity_sha256", "latitude_deg",
            "route", "shape", "n_voxels", "n_classes", "class_ids", "ledger_kind", "backend", "memory", "caller_reserve_bytes",
-           "bed", "context", "admission")
+           "bed", "context", "admission", "terrain")
 
 
 class NativeDensePreparation:
@@ -146,7 +166,7 @@ class NativeDensePreparation:
         compiled, meta = _scope(p["admission"], "numpy", None, caller_reserve_bytes, available_bytes_fn)
         _recheck_admission(p["admission"])
         _require_dense(p["bed"].voxel_column)
-        _check_identity(p["bed"], compiled)
+        _check_identity(p["bed"], compiled, p["context"])
         _validate_bed(p["bed"], p["context"], compiled, meta)
 
 
@@ -177,6 +197,23 @@ def _types():
         ledger=importlib.import_module("maple.core.types.sediment_ledger"),
         compiled=importlib.import_module("maple.case_tools.compilers.case_compiler").CompiledCase)
     return ns
+
+
+def _terrain_types():
+    """Native terrain classes/validators, imported ONLY for the terrain profile (older pinned sources lack the domain module)."""
+    import importlib
+
+    try:
+        fb = importlib.import_module("maple.core.types.fixed_base")
+        dom = importlib.import_module("maple.core.types.domain")
+        height = importlib.import_module("maple.surface.topographic_commit.height")
+        footprint = importlib.import_module("maple.case_tools.validators.domain_footprint")
+    except ImportError as exc:
+        raise NativeDenseProfileError(f"the imported maple source lacks the terrain API: {exc}") from exc
+    return types.SimpleNamespace(fixed_base=fb.FixedBaseState, validate_fixed_base=fb.validate_fixed_base_state,
+                                 domain=dom.DomainState, validate_domain=dom.validate_domain_state,
+                                 check_world_reference=height.check_committed_reference_consistent_with_fixed_base,
+                                 check_domain_inventory=footprint.check_domain_inventory)
 
 
 def _require_dense(column) -> None:
@@ -259,8 +296,18 @@ def source_audit_terms(profile_target, syrup_root, authored_sizes) -> dict[str, 
     return terms
 
 
-def dense_terms(n_cells: int, n_voxels: int, n_classes: int, ledger_bytes: int) -> dict[str, int]:
+def dense_terms(n_cells: int, n_voxels: int, n_classes: int, ledger_bytes: int, *, has_fixed_base: bool = False,
+                has_domain: bool = False) -> dict[str, int]:
     """Named bytes of the Dense stage (N cells, V voxels, K classes; f8 = 8 bytes). Enumerated from the native validators' source:
+
+    Terrain profile only (both flags False for every older profile, which then yields exactly the previous terms):
+
+    * fixed_base_check = 8 x 8 N: `check_committed_reference_consistent_with_fixed_base` (committed inventory summed over classes,
+      its conversion, the world sum, `reference + offset`, their difference and four magnitude reductions, each `(ny, nx)`), plus the
+      base added once more inside the native initial-committed derivation used for the baseline comparison.
+    * domain_check = 7 x 2 x 8 N + 2 x 8 N + N K + 2 N: `check_domain_inventory` reduces each of the seven owners per cell with a max
+      and a min (two `(ny, nx)` f8 temporaries each, no N V K boolean), the SYRUP water rule's two masked copies (`(ny, nx)` f8 and
+      `(ny, nx, K)` f8 counted as N K bytes of f8 -> 8 N K) and two `(ny, nx)` boolean masks.
 
     * fractions = 8 N K: the ONE retained new array (`resolve_initial_available_fraction_array`).
     * voxel_totals = 12 x 8 N V: `check_voxel_column_state` holds `mass.sum(-1)`, `local_scale` (maximum + its operand), the
@@ -279,6 +326,10 @@ def dense_terms(n_cells: int, n_voxels: int, n_classes: int, ledger_bytes: int) 
     terms = {"fractions": 8 * N * K, "voxel_totals": 12 * 8 * N * V, "voxel_masks": 3 * N * V * K,
              "partition_active": 8 * 8 * N * K, "committed": 12 * 8 * N * K + 6 * 8 * N, "ledger": 2 * int(ledger_bytes),
              "fixed": _FIXED_DENSE_BYTES}
+    if has_fixed_base:
+        terms["fixed_base_check"] = 8 * 8 * N
+    if has_domain:
+        terms["domain_check"] = 7 * 2 * 8 * N + 2 * 8 * N + 8 * N * K + 2 * N
     terms["total"] = sum(terms.values())
     return terms
 
@@ -316,8 +367,8 @@ def _scope(admission, backend, limits, reserve, available_bytes_fn):
         payload = admission._payload("admission")  # read-only mapping view of the sealed scalars
     except ncp.NativeCaseProfileError as exc:
         raise NativeDenseProfileError(f"unauthenticated admission: {exc}") from exc
-    if payload["profile_name"] != ncp.PROFILE_NAME:  # a device-runtime source admission is not a CPU Dense preparation input
-        raise NativeDenseProfileError(f"this CPU Dense preparation requires a {ncp.PROFILE_NAME} admission, got {payload['profile_name']!r}")
+    if payload["profile_name"] not in _CPU_ADMISSIONS:  # no device-runtime admission
+        raise NativeDenseProfileError(f"this CPU Dense preparation requires an explicit qualified CPU admission, got {payload['profile_name']!r}")
     t = _types()
     if type(compiled) is not t.compiled:
         raise NativeDenseProfileError("admission does not carry the genuine native CompiledCase")
@@ -339,17 +390,69 @@ def _scope(admission, backend, limits, reserve, available_bytes_fn):
     meta["memory"] = (("available_reading_bytes", int(avail)), ("required_bytes", meta["required_bytes"]),
                       *(("audit_" + k, v) for k, v in meta["audit"].items()), *(("dense_" + k, v) for k, v in meta["dense"].items()),
                       ("resident_bytes_inherited_aliased", meta["resident"]),
-                      ("exchange_original_plus_candidate_bytes", 2 * meta["resident"]))
+                      ("exchange_original_plus_candidate_bytes", 2 * meta["resident"]),
+                      ("terrain_resident_bytes_inherited_aliased", meta.get("terrain_bytes", 0)))
     return compiled, meta
+
+
+def _is_terrain_admission(payload) -> bool:
+    return payload["profile_name"] in (ncp.TERRAIN_PROFILE_NAME, ncp.TERRAIN_CUDA_PROFILE_NAME)
+
+
+def _terrain_metadata(compiled, limits) -> tuple[int, bool, bool]:
+    """Terrain profile: the compiled case's terrain owners from METADATA (exact native classes, structural validators, byte
+    cap); returns `(terrain_bytes, has_fixed_base, has_domain)`. Admits creep/avalanche/regional context/bounded growth; refuses an
+    enabled native water_coupling, an external shear, imported sediment, an airborne seed and LEAF vegetation."""
+    tt = _terrain_types()
+    cfg = compiled.config
+    g = cfg.geometry
+    if compiled.leaf_vegetation is not None or compiled.initial_mobile_state is not None:
+        raise NativeDenseProfileError("initial case must be bare and carry no airborne seed (the LEAF runtime owns plants)")
+    if cfg.water_coupling.enabled is not False or cfg.prescribed_external_shear.enabled is not False:
+        raise NativeDenseProfileError("native water_coupling must be disabled and no external shear prescribed (SYRUP owns water)")
+    if compiled.case_import.sediment is not None or compiled.case_import.elevation is None:
+        raise NativeDenseProfileError("the terrain profile needs an imported elevation and admits no imported sediment")
+    if type(cfg.avalanching.enabled) is not bool or type(cfg.surface_creep.enabled) is not bool:
+        raise NativeDenseProfileError("avalanching / surface creep must resolve to Booleans")
+    growth = g.voxel_growth
+    if type(growth.enabled) is not bool or (growth.enabled and growth.max_levels is None):
+        raise NativeDenseProfileError("voxel growth must be a bounded native policy (max_levels when enabled)")
+    terrain_bytes = 0
+    fixed_base, domain = compiled.fixed_base, compiled.domain
+    if (compiled.fixed_base_spec.present != (fixed_base is not None)) or (compiled.domain_spec.present is False and domain is not None):
+        raise NativeDenseProfileError("compiled terrain owners disagree with the authored sections")
+    try:
+        if fixed_base is not None:
+            if type(fixed_base) is not tt.fixed_base:
+                raise ValueError("fixed_base is not exactly the native FixedBaseState")
+            tt.validate_fixed_base(fixed_base, int(g.ny), int(g.nx))
+            terrain_bytes += _leaf_bytes(fixed_base)
+        if domain is not None:
+            if type(domain) is not tt.domain:
+                raise ValueError("domain is not exactly the native DomainState")
+            tt.validate_domain(domain, int(g.ny), int(g.nx))
+            terrain_bytes += _leaf_bytes(domain)
+    except ValueError as exc:
+        raise NativeDenseProfileError(f"native terrain validation refused: {exc}") from exc
+    if terrain_bytes > limits.max_terrain_bytes:
+        raise NativeDenseProfileError(f"terrain owners ({terrain_bytes} B) exceed the declared max_terrain_bytes={limits.max_terrain_bytes}")
+    return terrain_bytes, fixed_base is not None, domain is not None
 
 
 def _scope_metadata(admission, compiled, t, limits, payload):
     _require_dense(compiled.voxel_column)
-    if compiled.fixed_base_spec.present or compiled.fixed_base is not None or compiled.regional_slope.enabled \
-            or compiled.regional_slope_result is not None or compiled.initial_mobile_state is not None:
-        raise NativeDenseProfileError("fixed base / regional slope / initial mobile seed are outside this capability")
+    terrain = _is_terrain_admission(payload)
+    terrain_bytes, has_fixed_base, has_domain = 0, False, False
+    if terrain:
+        terrain_bytes, has_fixed_base, has_domain = _terrain_metadata(compiled, limits)
+    else:
+        if payload["profile_name"] in (ncp.CURRENT_PROFILE_NAME, ncp.CURRENT_CUDA_PROFILE_NAME) and compiled.leaf_vegetation is not None:
+            raise NativeDenseProfileError("initial case must be bare; LEAF vegetation is supplied by the owning runtime adapter")
+        if compiled.fixed_base_spec.present or compiled.fixed_base is not None or compiled.regional_slope.enabled \
+                or compiled.regional_slope_result is not None or compiled.initial_mobile_state is not None:
+            raise NativeDenseProfileError("fixed base / regional slope / initial mobile seed are outside this capability")
     cfg = compiled.config
-    if cfg.avalanching.enabled is not False or cfg.surface_creep.enabled is not False:
+    if not terrain and (cfg.avalanching.enabled is not False or cfg.surface_creep.enabled is not False):
         raise NativeDenseProfileError("avalanching and surface creep must be disabled")
     spec = compiled.sediment_availability_spec
     if spec.builder is not None or spec.builder_by_class:
@@ -357,7 +460,7 @@ def _scope_metadata(admission, compiled, t, limits, payload):
     g = cfg.geometry
     if g.dx_m != g.dy_m:
         raise NativeDenseProfileError("non-square cells are unsupported")
-    if getattr(getattr(g, "voxel_growth", None), "enabled", False):
+    if not terrain and getattr(getattr(g, "voxel_growth", None), "enabled", False):
         raise NativeDenseProfileError("voxel growth must be disabled (no phantom padding)")
     if compiled.water is None:
         raise NativeDenseProfileError("the case must carry a native WaterState")
@@ -394,18 +497,59 @@ def _scope_metadata(admission, compiled, t, limits, payload):
     audit = source_audit_terms(payload["profile_target"], Path(maple_syrup.__file__).resolve().parent,
                                [size for _n, _p, _h, size in payload["files"]])
     ledger_bytes = _leaf_bytes(ledger)
-    dense = dense_terms(ny * nx, V, K, ledger_bytes)
+    dense = dense_terms(ny * nx, V, K, ledger_bytes, has_fixed_base=has_fixed_base, has_domain=has_domain)
+    # The terrain owners are RESIDENT compiled arrays, aliased by reference on NumPy (listed, never charged as new).
     resident = _leaf_bytes(compiled.voxel_column) + _leaf_bytes(compiled.active_layer) + _leaf_bytes(compiled.water) \
-        + _leaf_bytes(compiled.sediment_availability) + ledger_bytes + _leaf_bytes(compiled.committed_topography)
+        + _leaf_bytes(compiled.sediment_availability) + ledger_bytes + _leaf_bytes(compiled.committed_topography) + terrain_bytes
     return dict(bundle_id=admission.bundle_id, shape=(ny, nx), n_voxels=V, n_classes=K, ledger_kind=ledger_kind, audit=audit,
-                dense=dense, required_bytes=required_bytes(audit, dense), resident=resident,
+                dense=dense, required_bytes=required_bytes(audit, dense), resident=resident, terrain_bytes=terrain_bytes,
                 class_ids=tuple(c.class_id for c in cfg.grain_classes.classes))
 
 
-def _check_identity(state, compiled) -> None:
-    """One authority, no clone: the bed leaves ARE the compiled case's arrays."""
+def _validate_terrain(state, context, meta) -> None:
+    """Terrain part of the validation suite (the NATIVE validators are the authority): the committed reference must be MAPLE's own
+    world reference of the inventories with the base; every sediment owner must be exactly zero outside the footprint (native
+    footprint inventory check on host arrays); every water leaf on NoData must be exactly zero (fused predicate, no mask download)."""
+    from maple_syrup import sediment_bed as sb
+
+    fixed_base, domain = getattr(context, "fixed_base", None), getattr(context, "domain", None)
+    if fixed_base is None and domain is None:
+        return
+    tt = _terrain_types()
+    ny, nx = meta["shape"]
+    try:
+        if fixed_base is not None:
+            tt.validate_fixed_base(fixed_base, ny, nx)
+            tt.check_world_reference(state.committed_topography, context.geometry, fixed_base, n_voxels=meta["n_voxels"],
+                                     operation="SYRUP terrain Dense preparation")
+        if domain is not None:
+            tt.validate_domain(domain, ny, nx)
+            if isinstance(domain.valid_mask, np.ndarray):  # host bed: the native footprint inventory validator on the actual arrays
+                committed = state.committed_topography
+                tt.check_domain_inventory(
+                    domain.valid_mask, context="SYRUP terrain Dense preparation",
+                    voxel_mass_kg=state.voxel_column.mass_kg, active_layer_mass_kg=state.active_layer.mass_kg,
+                    available_mass_kg=state.sediment_availability.available_mass_kg, bound_mass_kg=state.sediment_availability.bound_mass_kg,
+                    committed_active_layer_mass_kg=committed.committed_active_layer_mass_by_class_kg,
+                    committed_voxel_mass_kg=committed.committed_voxel_mass_by_class_kg)
+    except ValueError as exc:
+        raise NativeDenseProfileError(f"native terrain validator refused the case bed: {str(exc)[:200]}") from exc
+    if sb.water_outside_domain_nonzero(state, context):
+        raise NativeDenseProfileError("water is nonzero on a NoData cell of the domain footprint; all water on NoData must stay zero")
+
+
+def _check_identity(state, compiled, context=None) -> None:
+    """One authority, no clone: the bed leaves ARE the compiled case's arrays (and, on a terrain context, so are the terrain owners)."""
     if state.voxel_column.mass_kg is not compiled.voxel_column.mass_kg or state.active_layer.mass_kg is not compiled.active_layer.mass_kg:
         raise NativeDenseProfileError("the bed no longer shares the compiled case's native material arrays (memory/authority contract)")
+    if context is not None:
+        for name in ("fixed_base", "domain"):
+            mine, theirs = getattr(context, name, None), getattr(compiled, name, None)
+            if (mine is None) != (theirs is None):
+                raise NativeDenseProfileError(f"the bed context's {name} does not match the compiled case")
+            if mine is not None and any(getattr(mine, f.name) is not getattr(theirs, f.name) for f in dataclasses.fields(mine)
+                                        if isinstance(getattr(mine, f.name), np.ndarray)):
+                raise NativeDenseProfileError(f"the bed context's {name} is not the compiled case's own array (memory/authority contract)")
 
 
 def _validate_bed(state, context, compiled, meta) -> None:
@@ -441,7 +585,8 @@ def _validate_bed(state, context, compiled, meta) -> None:
             raise ValueError("committed topography axes differ from the bed (ny, nx, n_classes)")
         # The advertised profile is a FRESH case: the committed baseline must be exactly what the native initial derivation yields
         # from this very physical state (no pending history, clock 0, zero offset) -- finite-but-inconsistent baselines fail here.
-        fresh = native_initial(state.voxel_column, state.active_layer, g, mres)
+        # With a fixed base the native derivation yields the WORLD reference (keyword present only on a terrain context).
+        fresh = native_initial(state.voxel_column, state.active_layer, g, mres, **sb.terrain_kwargs(context, domain=False))
         for f in dataclasses.fields(committed):
             if not np.array_equal(getattr(committed, f.name), getattr(fresh, f.name)):
                 raise ValueError(f"committed topography {f.name} differs from the native initial state of this physical bed")
@@ -464,6 +609,7 @@ def _validate_bed(state, context, compiled, meta) -> None:
     want = compiled.expected_total_mass_by_class_kg  # type/dtype/shape/finite/nonnegative already refused in `_scope_metadata`
     if inv.shape != want.shape or np.max(np.abs(inv - want), initial=0.0) > reservoir_bound_kg(ny * nx * V, inv, want):
         raise NativeDenseProfileError("bed class totals differ from the native expected class totals")
+    _validate_terrain(state, context, meta)
 
 
 def plan_preparation(admission, *, caller_reserve_bytes: int = 0, available_bytes_fn: Callable[[], int] | None = None) -> dict[str, Any]:
@@ -479,7 +625,7 @@ def plan_preparation(admission, *, caller_reserve_bytes: int = 0, available_byte
 
 def prepare_native_dense_case(admission, *, caller_reserve_bytes: int, backend: str = "numpy", limits: DenseLimits | None = None,
                               available_bytes_fn: Callable[[], int] | None = None) -> NativeDensePreparation:
-    """Genuine admitted native9f case -> sealed Dense `(BedState, BedContext)` preparation (see module notes).
+    """Genuine admitted CPU (9f or 1dca) case -> sealed Dense `(BedState, BedContext)` preparation (see module notes).
 
     Order: argument/scope/geometry/class/backend refusals and the WHOLE-CALL memory admission (source audit + dense stage) from
     METADATA -> fresh cold `admission.recheck()` -> unchanged `bed_from_case` (NumPy) -> the full native validation suite -> seal.
@@ -500,13 +646,15 @@ def prepare_native_dense_case(admission, *, caller_reserve_bytes: int, backend: 
         raise NativeDenseProfileError("bed_from_case did not return a genuine Dense BedState/BedContext")
     if context.depth_update_rule != "constant_depth":
         raise NativeDenseProfileError("constant_depth is required for SYRUP hydraulic ownership")
-    _check_identity(state, compiled)
+    _check_identity(state, compiled, context)
     _validate_bed(state, context, compiled, meta)
     obj = object.__new__(NativeDensePreparation)
     _SEALED[obj] = types.MappingProxyType(dict(
-        profile_name=PROFILE_NAME, bundle_id=meta["bundle_id"], package_digest=admission.package_digest,
+        profile_name=_DENSE_PROFILE_BY_ADMISSION[admission.profile_name],
+        bundle_id=meta["bundle_id"], package_digest=admission.package_digest,
         syrup_package_digest=admission.syrup_package_digest, case_identity_sha256=admission.case_identity_sha256,
         latitude_deg=admission.latitude_deg, route=admission.route, shape=meta["shape"], n_voxels=meta["n_voxels"],
         n_classes=meta["n_classes"], class_ids=meta["class_ids"], ledger_kind=meta["ledger_kind"], backend="numpy",
-        memory=meta["memory"], caller_reserve_bytes=int(caller_reserve_bytes), bed=state, context=context, admission=admission))
+        memory=meta["memory"], caller_reserve_bytes=int(caller_reserve_bytes), bed=state, context=context, admission=admission,
+        terrain=admission.terrain))
     return obj

@@ -92,6 +92,20 @@ E3b contract (CUDA branch and texture-Ks mode)
   actually affected cells (including a zero-net composition exchange); depth mode holds it. Interface conductivity, diffusivity, suction and residual are NOT derived from it and no averaging exists. A Ks-only
   change builds a new operator over the same column/state (no cascade) and the persistent `J`/cumulative intake are rebound exactly (never reset).
 
+Supplied-final property mode (explicit opt-in; `property_mode="supplied_final"`)
+-------------------------------------------------------------------------------
+* `property_mode="texture"` (the default) is the accepted behaviour above, byte for byte (same config identity, same provider calls, same guards). `"supplied_final"` is the deliberate HYBRID input mode: the
+  caller PRESCRIBES the FINAL field capacity/saturation maps `(L,N)` and top-layer saturated conductivity map `(1,N)` through the EXISTING override names `theta_33_override`, `theta_saturation_override` and
+  `saturated_conductivity_override_m_s` (all three required, nothing else accepted; finite host float64, equal shapes, `residual < FC <= sat <= 1`, `Ks > 0`; checked and sealed at `native_floating_config`, the cell
+  count against the actual bed at `_check_bed`, BEFORE any owner exists or is mutated). The Saxton-Rawls estimator is NOT called and none of its pedotransfer-domain checks is waived or relaxed: there is simply
+  nothing to estimate when the final properties are given, so its rho/rho_normal validity guard has no input to refuse. The maps are fixed prescribed properties, not an evolving-texture calibration.
+* Selection is the SAME bounded owner path as the texture mode: per compact batch the supplied values of exactly the batch's layers/indices are selected for the slots holding actual material (the E2 material mask
+  `layer_total_kg > 0` stays the source authority); a zero-mass slot RETAINS the explicit latent values and layer 0 of a texture-Ks owner the latent Ks, as before. Canonical native depth, availability/admission,
+  witness, dirty/changed rules, reconciliation, named capacity return, bottom export, W/J/I and the refresh transactions are untouched; the CUDA branch inherits the selection through the same `_batch_properties`
+  tile call (counted cold `to_host` of the tile, same scratch). Only the new mode is bound into the config identity (`|property_mode:supplied_final`); `field_capacity_method` then reports the supplied FC
+  (`FC_METHOD_SUPPLIED_FINAL`) instead of SR33. A held-context/checkpoint record carries no property mode, so a supplied-final owner is refused at export (`floating_held_context._snapshot`) and a legacy record
+  can never reconstruct one (its sha256 cannot match).
+
 Not in scope: Pond/wind scheduler/checkpoint/restart/every-N output, CUDA owners and device-resident beds (refused), vegetation. Author-side: CPU/host only.
 """
 
@@ -118,7 +132,10 @@ from maple_syrup import subsurface as ss
 from maple_syrup.conservation import volume_roundoff_bound_m3
 
 __all__ = [
+    "FC_METHOD_SUPPLIED_FINAL",
     "MODES",
+    "PROPERTY_MODES",
+    "SUPPLIED_FINAL_OVERRIDES",
     "NativeBed",
     "NativeBinding",
     "NativeFloatingConfig",
@@ -142,6 +159,9 @@ __all__ = [
 SCHEMA = "maple_syrup.native_floating_soil/1"
 WITNESS_RECIPE = "native_floating_soil.witness/2"  # v2 binds the ACTIVE MASK PATTERN (v1 hashed only the active COUNT and the rows); witnesses of the two recipes are never equal
 MODES = ("properties", "depth")
+PROPERTY_MODES = ("texture", "supplied_final")  # "texture": the accepted estimator path (default, identity unchanged); "supplied_final": caller-prescribed FINAL FC/sat/Ks maps, no estimator call
+SUPPLIED_FINAL_OVERRIDES = ("theta_33_override", "theta_saturation_override", "saturated_conductivity_override_m_s")  # the EXISTING override names that carry the complete supplied maps
+FC_METHOD_SUPPLIED_FINAL = "supplied_final_theta_field_capacity"  # what `field_capacity_method` truthfully reports in the supplied mode (never a provider method name)
 RECEIPT_HISTORY = 8
 DEFAULT_BATCH_CELLS = 64
 _F8 = 8
@@ -216,25 +236,42 @@ class NativeFloatingConfig:
     matrix_conductivity_mode: str
     latent_saturated_conductivity_m_s: float | None
     sha256: str
+    property_mode: str = "texture"  # "texture" (default; identity unchanged) | "supplied_final" (bound into `sha256`)
 
     @property
     def field_capacity_method(self) -> str:
-        """Read-only CONSTANT: a native owner always derives field capacity as the final density-adjusted Saxton-Rawls theta_33 (bound into `sha256`). It is not a dataclass field, so neither
-        `dataclasses.replace` nor the constructor can select another method while keeping this identity."""
-        return stp.METHOD_SR33
+        """Read-only, derived from the property mode (both bound into `sha256`): in the default texture mode a native owner derives field capacity as the final density-adjusted Saxton-Rawls theta_33
+        (`stp.METHOD_SR33`); in `supplied_final` mode the field capacity is the caller-PRESCRIBED final map and is reported as `FC_METHOD_SUPPLIED_FINAL`, never as an SR33 derivation. There is no
+        constructor argument that selects a method independently of the mode."""
+        return FC_METHOD_SUPPLIED_FINAL if self.property_mode == "supplied_final" else stp.METHOD_SR33
+
+    @property
+    def supplied_final(self) -> bool:
+        return self.property_mode == "supplied_final"
 
 
 def native_floating_config(*, layer_thickness_m: Any, grain_texture: Any, organic_matter_percent: Any, bulk_density_kg_m3: Any, latent_theta_field_capacity: Any, latent_theta_saturation: Any,
                            theta_residual: Any, theta_evaporation_stress: Any, evaporation_factor: Any = 1.0, diffusivity_m2_s: Any, bottom_drainage: str = "open", matrix_conductivity_m_s: Any = None,
                            matrix_suction_m: Any, matrix_vegetation_factor: Any, initial_wetting_m: Any, initial_cumulative_intake_m: Any, overrides: Any = None,
-                           backend: str = "numpy", matrix_conductivity_mode: str = "explicit", latent_saturated_conductivity_m_s: Any = None) -> NativeFloatingConfig:
+                           backend: str = "numpy", matrix_conductivity_mode: str = "explicit", latent_saturated_conductivity_m_s: Any = None, property_mode: str = "texture") -> NativeFloatingConfig:
     """Validate and own every explicit input (nothing is defaulted or inferred). Raises `NativeFloatingError` before anything exists.
 
     Matrix conductivity: `matrix_conductivity_mode="explicit"` (the default; the accepted behaviour) uses the explicit scalar `matrix_conductivity_m_s`. `"texture_ks"` is the explicit opt-in feedback mode: the
     Green-Ampt matrix conductivity of each cell is the CURRENT UPPER-layer (layer 0) saturated conductivity of the accepted Saxton-Rawls provider (or a measured `saturated_conductivity_override_m_s`); a layer 0 with
-    exactly zero mass keeps the USER-SUPPLIED `latent_saturated_conductivity_m_s`. No interface conductivity, diffusivity, suction or residual is derived from it and no vertical averaging exists."""
+    exactly zero mass keeps the USER-SUPPLIED `latent_saturated_conductivity_m_s`. No interface conductivity, diffusivity, suction or residual is derived from it and no vertical averaging exists.
+
+    Property mode: `property_mode="texture"` (the default; the accepted behaviour, identity byte-identical) estimates FC/sat/Ks from the compact texture with the provider. `"supplied_final"` is the explicit
+    hybrid input mode (texture_ks matrix law only; unchanged rho1000..1800/texture/OM material admission remains): `overrides` must hold EXACTLY the three complete FINAL maps `theta_33_override`, `theta_saturation_override`, `saturated_conductivity_override_m_s` as finite host float64 FC/sat `(L,N)` and top-layer Ks `(1,N)` arrays of
+    one common shape (no NaN "not measured" slots) with `theta_residual < FC <= sat <= 1` and `Ks > 0` everywhere; they are owned as read-only copies and every value is part of `sha256` (as every override
+    already is), and the mode tag is bound into the identity. The provider is never called in this mode (no estimate exists to guard; no provider check is waived). `N` is verified against the actual bed in
+    `_check_bed`, before any owner work."""
     if backend not in ("numpy", "numba", "cuda"):
         raise NativeFloatingError(f"backend must be 'numpy', 'numba' or 'cuda', got {backend!r}")
+    if type(property_mode) is not str or property_mode not in PROPERTY_MODES:
+        raise NativeFloatingError(f"property_mode must be exactly one of {PROPERTY_MODES}, got {property_mode!r}")
+    supplied = property_mode == "supplied_final"
+    if supplied and matrix_conductivity_mode != "texture_ks":
+        raise NativeFloatingError("supplied_final requires matrix_conductivity_mode='texture_ks'; a wholly unused Ks map is refused")
     if matrix_conductivity_mode not in ("explicit", "texture_ks"):
         raise NativeFloatingError("matrix_conductivity_mode must be 'explicit' or 'texture_ks'")
     if matrix_conductivity_mode == "explicit":
@@ -268,7 +305,9 @@ def native_floating_config(*, layer_thickness_m: Any, grain_texture: Any, organi
     if bottom_drainage not in ("open", "closed"):
         raise NativeFloatingError("bottom_drainage must be 'open' or 'closed'")
     ov = None
-    if overrides is not None:
+    if supplied:
+        ov = _supplied_final_maps(overrides, L, scal["theta_residual"])  # complete, finite, consistent maps or a typed refusal BEFORE anything exists (sealed copies)
+    elif overrides is not None:
         if not isinstance(overrides, dict) or set(overrides) - set(stp.OVERRIDES):
             raise NativeFloatingError(f"overrides must be a dict over {stp.OVERRIDES}")
         ov = {k: np.array(v, dtype=np.float64, copy=True) for k, v in overrides.items()}
@@ -283,6 +322,8 @@ def native_floating_config(*, layer_thickness_m: Any, grain_texture: Any, organi
     h.update(f"|field_capacity_method:{stp.METHOD_SR33}".encode())  # versioned FC meaning: a config (or record) made before this tag existed (6 kPa hybrid FC) can never share this sha256
     if matrix_conductivity_mode == "texture_ks":  # the explicit-mode identity stays byte-identical to the accepted one
         h.update(f"|matrix_conductivity_mode:texture_ks:{float(latent_saturated_conductivity_m_s)!r}".encode())
+    if supplied:  # ONLY the new mode is bound: every default (texture) identity stays byte-identical to the accepted one; the tag states the actual FC meaning of this config
+        h.update(f"|property_mode:supplied_final|field_capacity_method:{FC_METHOD_SUPPLIED_FINAL}".encode())
     for k in sorted(ov or ()):  # EVERY override value (with name, layout, shape and dtype) is part of the identity
         h.update(f"|override:{k}:{ov[k].dtype}:{ov[k].shape}:".encode())
         h.update(np.ascontiguousarray(ov[k]).tobytes())
@@ -291,7 +332,45 @@ def native_floating_config(*, layer_thickness_m: Any, grain_texture: Any, organi
     return NativeFloatingConfig(layers, edges, gt, om, rho, lf, ls, scal["theta_residual"], scal["theta_evaporation_stress"], scal["evaporation_factor"], diff,
                                 bottom_drainage, None if matrix_conductivity_mode == "texture_ks" else scal["matrix_conductivity_m_s"], scal["matrix_suction_m"], scal["matrix_vegetation_factor"], scal["initial_wetting_m"],
                                 scal["initial_cumulative_intake_m"], ov, backend, matrix_conductivity_mode,
-                                None if latent_saturated_conductivity_m_s is None else float(latent_saturated_conductivity_m_s), h.hexdigest())
+                                None if latent_saturated_conductivity_m_s is None else float(latent_saturated_conductivity_m_s), h.hexdigest(), property_mode)
+
+
+def _supplied_final_maps(overrides: Any, L: int, theta_residual: float) -> dict:
+    """The complete supplied FINAL maps of the `supplied_final` property mode: exactly `SUPPLIED_FINAL_OVERRIDES` (missing or extra names are refused: an unused override would otherwise be silently ignored), FC/sat
+    are host float64 `(L,N)` arrays and top-layer Ks is `(1,N)` (the accepted D1 array validator `fsl._array`, cell layout only, no scalar/shared/list/masked form), one common N, every value finite (NaN is "not measured" for the
+    provider and has no meaning here), `theta_residual < FC <= sat <= 1` and `Ks > 0` on every slot (the D1 column ordering `fsl._validate_values` later re-checks the porous slots; here every slot is checked
+    because the maps are prescribed whole). Returns sealed read-only copies; nothing is adjusted or clamped."""
+    if not isinstance(overrides, dict) or set(overrides) != set(SUPPLIED_FINAL_OVERRIDES):
+        raise NativeFloatingError(f"property_mode='supplied_final' requires overrides to be a dict holding exactly {SUPPLIED_FINAL_OVERRIDES} (complete final FC/saturation/Ks maps; nothing else)")
+    raw = {}
+    for k in SUPPLIED_FINAL_OVERRIDES:
+        v = overrides[k]
+        rows = 1 if k == SUPPLIED_FINAL_OVERRIDES[2] else L
+        if type(v) is not np.ndarray or v.dtype != np.float64 or v.ndim != 2 or v.shape[0] != rows:
+            raise NativeFloatingError(f"supplied map {k} must be a host float64 numpy array of shape ({rows}, N)")
+        try:
+            kind, arr = fsl._array(k, np.ascontiguousarray(v), {fsl.LAYOUT_CELL: tuple(int(n) for n in v.shape)}, scalar_ok=False)
+        except fsl.FloatingSoilError as exc:
+            raise NativeFloatingError(f"supplied map {k}: {exc}") from None
+        if kind != fsl.LAYOUT_CELL or arr.shape[1] < 1:
+            raise NativeFloatingError(f"supplied map {k} must be a per-cell ({L}, N) map with N >= 1")
+        raw[k] = arr
+    cell_counts = {int(a.shape[1]) for a in raw.values()}
+    if len(cell_counts) != 1:
+        raise NativeFloatingError("the supplied final FC/sat (L,N) and top-layer Ks (1,N) maps must share one N")
+    fc, sat, ks = (raw[k] for k in SUPPLIED_FINAL_OVERRIDES)
+    if not (np.all(np.isfinite(fc)) and np.all(np.isfinite(sat)) and np.all(np.isfinite(ks))):
+        raise NativeFloatingError("the supplied final maps must be finite on every slot (no NaN 'not measured' slots in supplied_final mode)")
+    if not np.all((fc > theta_residual) & (sat >= fc) & (sat <= 1.0)):
+        raise NativeFloatingError("the supplied final maps must satisfy theta_residual < field capacity <= saturation <= 1 on every slot; nothing is clamped")
+    if not np.all(ks > 0.0):
+        raise NativeFloatingError("the supplied final saturated conductivity must be > 0 on every slot")
+    out = {}
+    for k, a in raw.items():
+        c = np.array(a, dtype=np.float64, copy=True)
+        c.flags.writeable = False
+        out[k] = c
+    return out
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -330,6 +409,10 @@ def _check_bed(bed: Any, config: NativeFloatingConfig | None = None) -> tuple[in
             raise NativePackingError(f"the stated bulk density {config.bulk_density_kg_m3!r} kg/m3 is inconsistent with the actual MAPLE packing {rho!r} kg/m3; nothing is adjusted")
         if K != config.grain_texture.shape[0]:
             raise NativeFloatingError(f"grain_texture has {config.grain_texture.shape[0]} rows but the native bed has {K} grain classes")
+        if config.property_mode == "supplied_final":  # the prescribed maps must cover exactly this bed's flat cells (metadata only; refused before any admission, row read or owner work)
+            n_sup = int(config.overrides[SUPPLIED_FINAL_OVERRIDES[0]].shape[1])
+            if n_sup != ny * nx:
+                raise NativeFloatingError(f"the supplied final maps hold {n_sup} cells but the native bed has {ny * nx} flat cells ({ny}x{nx}); nothing is adjusted")
     return ny * nx, V, K, int(mask.sum())
 
 
@@ -577,13 +660,18 @@ def _batch_properties(batch: Any, config: NativeFloatingConfig, K: int, provider
     """`(theta_field_capacity (L, B), theta_saturation (L, B), layer-0 Ks (B,) or None)` of one compact batch (Ks only in the explicit `texture_ks` mode: the provider's saturated conductivity of the UPPER layer,
     the latent value for a layer 0 holding no material). The pure provider is called ONLY for slots holding actual material (per layer, on exactly those cells); a zero-mass slot
     receives the explicit latent values and no texture is fabricated, estimated or passed for it (a rock-only profile calls nothing). The class fractions are mapped by the explicit `(K, 3)` matrix and handed
-    to the provider UNCHANGED: the provider's own declared MAPLE summation bound is the only closure contract (no renormalisation)."""
+    to the provider UNCHANGED: the provider's own declared MAPLE summation bound is the only closure contract (no renormalisation).
+
+    `property_mode="supplied_final"`: the SAME selection (the E2 material mask per layer, the exact batch indices) reads the caller-prescribed FINAL maps instead of calling the provider: no texture is formed,
+    no estimate exists and no provider check is waived; a zero-mass slot still retains the latent values (and layer 0 the latent Ks). The tile download is the same counted `to_host` of the material totals."""
     L, B = config.layers.n_layers, batch.n_cells
     from maple.core.backend import to_host
 
-    frac = np.asarray(to_host(batch.layer_fraction), dtype=np.float64)  # a device batch tile is moved through the counted `to_host` (bounded B, cold)
-    total = np.asarray(to_host(batch.layer_total_kg), dtype=np.float64)
-    tex = np.einsum("lbk,kc->lbc", frac, config.grain_texture)
+    supplied = config.property_mode == "supplied_final"
+    total = np.asarray(to_host(batch.layer_total_kg), dtype=np.float64)  # a device batch tile is moved through the counted `to_host` (bounded B, cold)
+    if not supplied:
+        frac = np.asarray(to_host(batch.layer_fraction), dtype=np.float64)
+        tex = np.einsum("lbk,kc->lbc", frac, config.grain_texture)
     fc = np.empty((L, B))
     sat = np.empty((L, B))
     fc[:] = config.latent_theta_field_capacity[:, None]
@@ -594,6 +682,13 @@ def _batch_properties(batch: Any, config: NativeFloatingConfig, K: int, provider
     for layer in range(L):
         sel = np.flatnonzero(total[layer] > 0.0)
         if sel.size == 0:
+            continue
+        if supplied:  # prescribed FINAL values of exactly this layer and these cells; no estimator, no copy of the whole map
+            cells = batch.indices[sel]
+            fc[layer, sel] = config.overrides[SUPPLIED_FINAL_OVERRIDES[0]][layer, cells]
+            sat[layer, sel] = config.overrides[SUPPLIED_FINAL_OVERRIDES[1]][layer, cells]
+            if layer == 0 and ks0 is not None:
+                ks0[sel] = config.overrides[SUPPLIED_FINAL_OVERRIDES[2]][0, cells]
             continue
         m = int(sel.size)
         cols = [np.ascontiguousarray(tex[layer:layer + 1, sel, c]) for c in range(3)]

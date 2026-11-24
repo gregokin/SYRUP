@@ -1,0 +1,7 @@
+# Separate Dense terrain integration interface
+
+The opt-in `native_maple_terrain_20261123` profiles bind MAPLEc4b9343 and its genuine bundle (packagef4e4dc69). They carry the actual immutable fixed base and physical footprint through native case compilation, Dense CUDA preparation, routing diagnostics, avalanche/commit callbacks and persistent-water wind handoff. Regional aerodynamics remain MAPLE-owned; the MASY runner passes its frozen plane and configured padding. Historical9f/1dca profiles and locks retain their own pins.
+
+The new Native floating-soil `property_mode="supplied_final"` requires matrix mode `texture_ks`, final FC/saturation hostFP64(L,N)maps and top-layer saturated conductivity(1,N). Maps are sealed, validated and hashed. No unused texture estimation occurs. Existing Native material admission (rho1000..1800, valid texture closure, OM0..8) remains; this is not arbitrary-material support. Existing diffusion/lower-boundary laws and all water accounting remain authoritative. The actual hybrid uses MAPLErho1250 with explicit Jornada hydraulic inputs; it is not a Moab calibration.
+
+All held-context and direct host/CUDA pond checkpoint writers/loaders refuse supplied_final pending a separately qualified persistence schema. Terrain pond checkpoints likewise refuse. No combined soil/plant/wind restart is claimed. MASY separately qualifies the full scheduled run; component CPU and CUDA controls do not establish general capacity, windowed support or scientific validation.

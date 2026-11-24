@@ -515,6 +515,8 @@ def _snapshot(vertical: Any, pref_spec: Any) -> tuple[dict, dict]:
     col = t.column
     if type(cfg) is not nfs.NativeFloatingConfig or cfg.sha256 != t.config_sha256:
         raise HeldContextError("the vertical's native config does not match its held template identity")
+    if getattr(cfg, "property_mode", "texture") != "texture":  # the /1 and /2 records carry no property mode: a supplied-final config cannot be preserved (its reconstruction would be a texture config with another sha256)
+        raise HeldContextError(f"the vertical's native config uses property_mode={cfg.property_mode!r}; the /1 and /2 held-context records represent only the texture property mode and never reinterpret it")
     if t.matrix_op.layouts["vegetation_factor"] != "scalar":  # /1 and /2 rebuild the matrix operator from the config's SCALAR g: a per-cell (dynamic) g is not representable and must never be exported as one
         raise HeldContextError("the vertical's matrix operator carries a per-cell vegetation factor; the /1 and /2 held contexts hold the config's scalar g only (use the versioned dynamic-vegetation held context /3 | /4)")
     L, N, K = int(col.n_layers), int(col.n_cells), int(cfg.grain_texture.shape[0])

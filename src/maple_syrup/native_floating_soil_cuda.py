@@ -21,6 +21,9 @@ The transaction logic is the CPU one (same cold witness `_scan`, same descriptor
 * Order: the CURRENT device is gated first (before any availability reader, tile or transfer); metadata (namespace/device agreement of the bed arrays, packing, shapes) next; then the composed DEVICE and HOST
   admission with separate budgets/reserves/readings; only then the windowed validators, scan, tiles and allocations. A host bed with a CUDA owner (or the reverse), or a bed on another device, is a typed
   refusal: no implicit transfer and no backend fallback.
+* Property mode: `config.property_mode == "supplied_final"` is served by the SAME per-tile call (`nfs._batch_properties` inside `_scatter_tiles`): the supplied final FC/sat/Ks of exactly the tile's layers and
+  indices are selected on the host (the counted cold `to_host` of the tile's material totals is the only download; no provider call) and scattered into the resident maps with the same device index arrays and
+  the same B-tile scratch. The supplied-map cell count is checked against the bed in `nfs._check_bed` (after the device gate, before admission). Nothing else of this branch changes.
 """
 
 from __future__ import annotations

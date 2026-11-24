@@ -323,6 +323,8 @@ def _digest_of(*values: Any, schema: str = SCHEMA) -> str:
 def _event_checks(event: Any) -> None:
     if not isinstance(event, PondEvent):
         _refuse("event must be a PondEvent")
+    if getattr(event.context, 'fixed_base', None) is not None or getattr(event.context, 'domain', None) is not None:
+        _refuse('terrain pond persistence is not qualified; preserve the live native state and use diagnostics only')
     if getattr(event.xp, "__name__", None) not in BACKENDS:
         _refuse(f"unsupported array namespace {event.xp!r}")
 
